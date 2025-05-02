@@ -11,10 +11,10 @@ def fetch_yfinance_stock_data(symbol):
 
         weekly_change = None
         if len(hist) >= 2:
-            weekly_change = ((hist['Close'][-1] - hist['Close'][0]) / hist['Close'][0]) * 100
+            weekly_change = ((hist['Close'].iloc[-1] - hist['Close'].iloc[0]) / hist['Close'].iloc[0]) * 100
 
-        trend_positive = hist['Close'][-1] > hist['Close'][0] if len(hist) >= 2 else None
-        price_change_24h = abs((hist['Close'][-1] - hist['Close'][-2]) / hist['Close'][-2]) * 100 if len(hist) >= 2 else None
+        trend_positive = hist['Close'].iloc[-1] > hist['Close'].iloc[0] if len(hist) >= 2 else None
+        price_change_24h = abs((hist['Close'].iloc[-1] - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100 if len(hist) >= 2 else None
         volume_7d_avg = hist['Volume'].mean() if not hist['Volume'].isna().all() else None
 
         print(f"📊 {symbol} | MC: {market_cap}, V: {volume}, Δ7d: {weekly_change}, Trend: {trend_positive}, Δ24h: {price_change_24h}, V_avg: {volume_7d_avg}")
