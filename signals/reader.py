@@ -52,7 +52,7 @@ def get_tradable_crypto_assets():
 # fetch_yfinance_stock_data está ahora en scoring.py
 # fetch_coingecko_crypto_data está en broker/coingecko.py
 
-def get_top_signals(asset_type="stocks", min_criteria=5):
+def get_top_signals(asset_type="stocks", min_criteria=5, verbose=False):
     opportunities = []
     already_considered = set()
     target_assets = stock_assets if asset_type == "stocks" else get_tradable_crypto_assets()
@@ -60,11 +60,10 @@ def get_top_signals(asset_type="stocks", min_criteria=5):
     for symbol in target_assets:
         if symbol in already_considered:
             continue
-
-        if is_position_open(symbol):  # ⛔ Saltar símbolos ya abiertos
+        if is_position_open(symbol):
             continue
-
         already_considered.add(symbol)
+
         try:
             if asset_type == "stocks":
                 market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
@@ -85,10 +84,12 @@ def get_top_signals(asset_type="stocks", min_criteria=5):
             if volume and volume_7d_avg and volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
-            print(f"🔍 {symbol}: {score} puntos")
+            if verbose:
+                print(f"🔍 {symbol}: score={score}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
 
             if score >= min_criteria and (asset_type == "crypto" or is_approved_by_finnhub(symbol)):
                 opportunities.append((symbol, score))
+
         except Exception as e:
             print(f"❌ Error checking {symbol}: {e}")
 
@@ -110,7 +111,7 @@ def get_top_signals(asset_type="stocks", min_criteria=5):
 
     return top_symbols
 
-def get_top_shorts(min_criteria=5):
+def get_top_shorts(min_criteria=5, verbose=False):
     shorts = []
     for symbol in stock_assets:
         try:
@@ -133,7 +134,8 @@ def get_top_shorts(min_criteria=5):
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if score >= min_criteria and is_approved_by_finnhub(symbol):
-                print(f"🔻 {symbol}: {score} puntos (SHORT)")
+                if verbose:
+                    print(f"🔻 {symbol}: {score} puntos (SHORT)")
                 shorts.append((symbol, score))
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
@@ -156,4 +158,3 @@ def get_top_shorts(min_criteria=5):
             break
 
     return top_symbols
-
