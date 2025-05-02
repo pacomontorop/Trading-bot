@@ -52,7 +52,7 @@ def is_market_volatile_or_low_volume():
         last_vix = float(vix_close.iloc[-1].item())
         last_spy_volume = int(spy_volume.iloc[-1])
 
-        base_threshold = 30_000_000
+        base_threshold = 10_000_000
 
         print(f"📊 Último VIX: {last_vix:.2f} | Último volumen SPY: {last_spy_volume:,}")
 
