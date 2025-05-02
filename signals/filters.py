@@ -4,6 +4,7 @@ import requests
 import alpaca_trade_api as tradeapi
 import yfinance as yf
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 load_dotenv()
 api = tradeapi.REST(
@@ -29,40 +30,52 @@ def confirm_secondary_indicators(symbol):
 
 def has_negative_news(symbol):
     return False
+    
+def get_projected_volume_spy():
+    try:
+        now = datetime.utcnow()
+        if now.hour < 13 or (now.hour == 13 and now.minute < 30):
+            return 0  # Mercado aún cerrado
+
+        data = yf.download("SPY", period="1d", interval="5m", progress=False)
+        if data.empty:
+            return 0
+
+        total_minutes = (now - datetime(now.year, now.month, now.day, 13, 30)).total_seconds() / 60
+        minutes_passed = max(total_minutes, 1)
+        volume_so_far = data["Volume"].sum()
+
+        projected_volume = volume_so_far / minutes_passed * 390
+        return projected_volume
+    except Exception as e:
+        print(f"❌ Error calculando volumen proyectado: {e}")
+        return 0
 
 def is_market_volatile_or_low_volume():
     try:
-        # Descargar varios días para asegurar datos útiles
         vix = yf.download('^VIX', period='5d', interval='1d')
-        spy = yf.Ticker("SPY")
-        hist = spy.history(period="5d")
-
-        if vix.empty or hist.empty:
-            print("⚠️ No se pudo obtener datos de VIX o SPY.")
+        if vix.empty:
+            print("⚠️ No se pudo obtener datos de VIX.")
             return False
 
-        # Tomar el último dato con volumen válido
         vix_close = vix['Close'].dropna()
-        spy_volume = hist['Volume'].dropna()
-
-        if vix_close.empty or spy_volume.empty:
-            print("⚠️ No hay datos suficientes de cierre o volumen.")
+        if vix_close.empty:
+            print("⚠️ No hay datos suficientes de cierre de VIX.")
             return False
 
         last_vix = float(vix_close.iloc[-1].item())
-        last_spy_volume = int(spy_volume.iloc[-1])
+        projected_volume = get_projected_volume_spy()
+        base_threshold = 30_000_000
 
-        base_threshold = 10_000_000
-
-        print(f"📊 Último VIX: {last_vix:.2f} | Último volumen SPY: {last_spy_volume:,}")
+        print(f"📊 Último VIX: {last_vix:.2f} | Volumen SPY proyectado: {int(projected_volume):,}")
 
         is_volatile = last_vix > 30
-        is_low_volume = last_spy_volume < base_threshold
+        is_low_volume = projected_volume < base_threshold
 
         if is_volatile:
             print(f"⚠️ Día muy volátil (VIX {last_vix:.2f} > 30)")
         if is_low_volume:
-            print(f"⚠️ Volumen bajo en SPY ({last_spy_volume:,} < {base_threshold:,})")
+            print(f"⚠️ Volumen proyectado bajo en SPY ({int(projected_volume):,} < {base_threshold:,})")
 
         return is_volatile or is_low_volume
 
