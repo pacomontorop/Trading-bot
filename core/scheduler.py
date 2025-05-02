@@ -4,8 +4,6 @@ from datetime import datetime
 from pytz import timezone
 from datetime import datetime
 
-def get_ny_time():
-    return datetime.now(timezone('America/New_York'))
 
 from core.executor import (
     place_order_with_trailing_stop,
@@ -21,14 +19,26 @@ from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
 
+def get_ny_time():
+    return datetime.now(timezone('America/New_York'))
+
+def is_market_open(now_ny=None):
+    if not now_ny:
+        now_ny = get_ny_time()
+    return (
+        now_ny.weekday() < 5 and
+        time(9, 30) <= now_ny.time() <= time(16, 0)
+    )
+
 def pre_market_scan():
     print("🌀 pre_market_scan iniciado.", flush=True)
+
     while True:
         now_ny = get_ny_time()
         current_hour = now_ny.hour
 
-        if is_market_open():
-            if now_ny < now_ny.replace(hour=9, minute=30, second=0, microsecond=0):
+        if is_market_open(now_ny):
+            if now_ny.time() < time(9, 30):
                 print("⏳ Mercado abrirá pronto. Esperando volumen...", flush=True)
             elif is_market_volatile_or_low_volume():
                 log_event("⚠️ Día demasiado volátil o con volumen bajo. No se operan acciones.")
@@ -44,12 +54,13 @@ def pre_market_scan():
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
 
-        if current_hour in range(9, 11) or current_hour in range(15, 18):  # hora NY
-            time.sleep(300)
-        elif current_hour in range(11, 15):
-            time.sleep(600)
+        # Frecuencia dinámica según hora NY
+        if 9 <= current_hour < 11 or 15 <= current_hour < 18:
+            time.sleep(300)  # cada 5 minutos
+        elif 11 <= current_hour < 15:
+            time.sleep(600)  # cada 10 minutos
         else:
-            time.sleep(1800)
+            time.sleep(1800)  # cada 30 minutos fuera de horas relevantes
 
 
 def crypto_scan():
