@@ -35,8 +35,8 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
         return
 
     if is_position_open(symbol):
-       print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nueva compra.")
-       return
+        print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nueva compra.")
+        return
 
     current_price = get_current_price(symbol)
     if not current_price:
@@ -49,7 +49,8 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
         return
 
     try:
-        api.submit_order(
+        # Enviar orden de mercado
+        order = api.submit_order(
             symbol=symbol,
             qty=qty,
             side='buy',
@@ -57,6 +58,19 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
             time_in_force='gtc'
         )
 
+        print(f"📥 Orden de compra enviada para {symbol}. Esperando ejecución...")
+
+        # Esperar que la orden esté completada
+        for _ in range(20):  # Esperamos hasta 40s
+            order_status = api.get_order(order.id)
+            if order_status.status == 'filled':
+                break
+            time.sleep(2)
+        else:
+            print(f"❌ Orden de compra para {symbol} no se llenó a tiempo.")
+            return
+
+        # Colocar trailing stop una vez completada la compra
         trail_price = round(current_price * (trail_percent / 100), 2)
         api.submit_order(
             symbol=symbol,
@@ -67,13 +81,16 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
             trail_price=trail_price
         )
 
+        print(f"📈 Trailing stop colocado para {symbol}")
         open_positions.add(symbol)
         invested_today_usd += qty * current_price
         executed_symbols_today.add(symbol)
         pending_trades.add(f"{symbol}: {qty} unidades")
-        log_event(f"✅ Orden de compra y trailing colocados para {symbol}: {qty} unidades")
+        log_event(f"✅ Orden de compra y trailing colocadas para {symbol}: {qty} unidades")
+
     except Exception as e:
         log_event(f"❌ Error placing order for {symbol}: {e}")
+
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
     reset_daily_investment()
@@ -105,7 +122,8 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
         return
 
     try:
-        api.submit_order(
+        # Enviar orden de venta en corto
+        order = api.submit_order(
             symbol=symbol,
             qty=qty,
             side='sell',
@@ -113,6 +131,19 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
             time_in_force='gtc'
         )
 
+        print(f"📥 Orden short enviada para {symbol}. Esperando ejecución...")
+
+        # Esperar a que se ejecute
+        for _ in range(20):  # Hasta 40s
+            order_status = api.get_order(order.id)
+            if order_status.status == 'filled':
+                break
+            time.sleep(2)
+        else:
+            print(f"❌ Orden short para {symbol} no se llenó a tiempo.")
+            return
+
+        # Colocar recompra con trailing
         trail_price = round(current_price * (trail_percent / 100), 2)
         api.submit_order(
             symbol=symbol,
@@ -123,11 +154,13 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
             trail_price=trail_price
         )
 
+        print(f"📉 Trailing stop de recompra colocado para {symbol}")
         open_positions.add(symbol)
         invested_today_usd += qty * current_price
         executed_symbols_today.add(symbol)
         pending_trades.add(f"{symbol} SHORT: {qty} unidades")
-        log_event(f"✅ Orden de venta en corto y recompra trailing colocadas para {symbol}: {qty} unidades")
+        log_event(f"✅ Orden short y recompra trailing colocadas para {symbol}: {qty} unidades")
+
     except Exception as e:
         log_event(f"❌ Error en orden short para {symbol}: {e}")
-  
+
