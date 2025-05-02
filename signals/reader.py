@@ -4,7 +4,7 @@ import yfinance as yf
 from broker.coingecko import fetch_coingecko_crypto_data
 from signals.filters import is_position_open, is_approved_by_finnhub
 from broker.alpaca import api
-from signals.data_fetchers import fetch_yfinance_stock_data 
+from signals.scoring import fetch_yfinance_stock_data 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
 # ejemplo
 
