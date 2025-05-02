@@ -106,12 +106,16 @@ def daily_summary():
             pending_trades.clear()
         time.sleep(3600)
 
+import threading
+from core.monitor import monitor_open_positions
+# ...
+
 def start_schedulers():
-    # Hilo principal NO daemon (el primero)
-    threading.Thread(target=monitor_open_positions).start()
-    # Los demás pueden ser daemon si quieres
+    # Todos daemon, da igual, el while infinito los mantiene vivos
+    threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=crypto_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
 
