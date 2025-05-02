@@ -49,7 +49,7 @@ def is_market_volatile_or_low_volume():
             print("⚠️ No hay datos suficientes de cierre o volumen.")
             return False
 
-        last_vix = float(vix_close.iloc[-1])
+        last_vix = float(vix_close.iloc[-1].item())
         last_spy_volume = int(spy_volume.iloc[-1])
 
         base_threshold = 30_000_000
