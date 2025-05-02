@@ -67,7 +67,9 @@ def is_market_volatile_or_low_volume():
         projected_volume = get_projected_volume_spy()
         base_threshold = 30_000_000
 
+        projected_volume = float(projected_volume)  # ya seguro
         print(f"📊 Último VIX: {last_vix:.2f} | Volumen SPY proyectado: {int(projected_volume):,}")
+
 
         is_volatile = last_vix > 30
         is_low_volume = projected_volume < base_threshold
