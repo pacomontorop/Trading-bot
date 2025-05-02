@@ -1,4 +1,7 @@
 import threading
+import time
+from datetime import datetime
+
 from core.executor import (
     place_order_with_trailing_stop,
     place_short_order_with_trailing_buy,
@@ -12,10 +15,9 @@ from signals.filters import is_market_volatile_or_low_volume
 from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
-import time
-from datetime import datetime
 
 def pre_market_scan():
+    print("🌀 pre_market_scan iniciado.")
     while True:
         now = datetime.utcnow()
         current_hour = now.hour
@@ -43,6 +45,7 @@ def pre_market_scan():
             time.sleep(1800)
 
 def crypto_scan():
+    print("🌀 crypto_scan iniciado.")
     while True:
         if is_market_volatile_or_low_volume():
             log_event("⚠️ Día demasiado volátil o volumen bajo. No se operan criptos.")
@@ -62,6 +65,7 @@ def crypto_scan():
         time.sleep(1200)
 
 def short_scan():
+    print("🌀 short_scan iniciado.")
     while True:
         if is_market_open() and not is_market_volatile_or_low_volume():
             print("🔍 Buscando oportunidades en corto...")
@@ -77,12 +81,14 @@ def short_scan():
         time.sleep(1800)
 
 def daily_summary():
+    print("🌀 daily_summary iniciado.")
     while True:
         now = datetime.utcnow()
         if now.hour == 20:
             subject = "Resumen diario de trading 📈"
             body = "Oportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
             body += "\n\nÓrdenes ejecutadas hoy:\n" + "\n".join(sorted(pending_trades))
+
             try:
                 positions = api.list_positions()
                 total_pnl = 0
@@ -102,11 +108,9 @@ def daily_summary():
         time.sleep(3600)
 
 def start_schedulers():
-    # Hilo principal no-daemon
-    threading.Thread(target=pre_market_scan).start()
-
-    # Hilos auxiliares como daemon
+    print("🟢 Lanzando schedulers...")
     threading.Thread(target=monitor_open_positions, daemon=True).start()
+    threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=crypto_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
