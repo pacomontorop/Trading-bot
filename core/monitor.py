@@ -9,7 +9,7 @@ def monitor_open_positions():
             positions = api.list_positions()
             if not positions:
                 print("⚠️ No hay posiciones abiertas actualmente.")
-                time.sleep(3600)
+                time.sleep(900)
                 continue
 
             positions_data = []
@@ -36,4 +36,4 @@ def monitor_open_positions():
             print(f"❌ Error monitorizando posiciones: {e}")
             log_event(f"❌ Error monitorizando posiciones: {e}")
 
-        time.sleep(3600)
+        time.sleep(900)
