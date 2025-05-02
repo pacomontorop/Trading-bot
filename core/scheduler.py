@@ -115,5 +115,3 @@ def start_schedulers():
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
 
-    while True:
-        time.sleep(3600)
