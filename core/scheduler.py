@@ -17,7 +17,7 @@ from utils.logger import log_event
 from core.monitor import monitor_open_positions
 
 def pre_market_scan():
-    print("🌀 pre_market_scan iniciado.")
+    print("🌀 pre_market_scan iniciado.", flush=True)
     while True:
         now = datetime.utcnow()
         current_hour = now.hour
@@ -25,15 +25,15 @@ def pre_market_scan():
         if is_market_open():
             if is_market_volatile_or_low_volume():
                 log_event("⚠️ Día demasiado volátil o con volumen bajo. No se operan acciones.")
-                print("😴 No operamos en acciones hoy.")
+                print("😴 No operamos en acciones hoy.", flush=True)
             else:
-                print("🔍 Buscando oportunidades en acciones...")
+                print("🔍 Buscando oportunidades en acciones...", flush=True)
                 opportunities = get_top_signals(asset_type="stocks", min_criteria=5)
                 for symbol in opportunities:
                     place_order_with_trailing_stop(symbol, 1000, 2.0)
                     pending_opportunities.add(symbol)
         else:
-            print("⏳ Mercado cerrado para acciones.")
+            print("⏳ Mercado cerrado para acciones.", flush=True)
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
 
@@ -45,18 +45,18 @@ def pre_market_scan():
             time.sleep(1800)
 
 def crypto_scan():
-    print("🌀 crypto_scan iniciado.")
+    print("🌀 crypto_scan iniciado.", flush=True)
     while True:
         if is_market_volatile_or_low_volume():
             log_event("⚠️ Día demasiado volátil o volumen bajo. No se operan criptos.")
-            print("😴 No operamos en cripto hoy.")
+            print("😴 No operamos en cripto hoy.", flush=True)
         else:
-            print("🔍 Buscando oportunidades en cripto...")
+            print("🔍 Buscando oportunidades en cripto...", flush=True)
             opportunities = get_top_signals(asset_type="crypto", min_criteria=5)
             for symbol in opportunities:
                 price = get_current_price(symbol)
                 if not price:
-                    print(f"❌ Precio no disponible para {symbol}")
+                    print(f"❌ Precio no disponible para {symbol}", flush=True)
                     continue
                 place_order_with_trailing_stop(symbol, 1000, 2.0)
                 pending_opportunities.add(symbol)
@@ -65,10 +65,10 @@ def crypto_scan():
         time.sleep(1200)
 
 def short_scan():
-    print("🌀 short_scan iniciado.")
+    print("🌀 short_scan iniciado.", flush=True)
     while True:
         if is_market_open() and not is_market_volatile_or_low_volume():
-            print("🔍 Buscando oportunidades en corto...")
+            print("🔍 Buscando oportunidades en corto...", flush=True)
             shorts = get_top_shorts(min_criteria=5)
             for symbol in shorts:
                 try:
@@ -76,12 +76,12 @@ def short_scan():
                     if asset.shortable:
                         place_short_order_with_trailing_buy(symbol, 1000, 2.0)
                 except Exception as e:
-                    print(f"❌ Error verificando shortabilidad de {symbol}: {e}")
+                    print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
         time.sleep(1800)
 
 def daily_summary():
-    print("🌀 daily_summary iniciado.")
+    print("🌀 daily_summary iniciado.", flush=True)
     while True:
         now = datetime.utcnow()
         if now.hour == 20:
@@ -108,9 +108,10 @@ def daily_summary():
         time.sleep(3600)
 
 def start_schedulers():
-    print("🟢 Lanzando schedulers...")
+    print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=crypto_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
