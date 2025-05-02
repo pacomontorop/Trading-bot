@@ -6,9 +6,9 @@ from utils.logger import log_event
 
 load_dotenv()
 api = tradeapi.REST(
-    os.getenv(\"APCA_API_KEY_ID\"),
-    os.getenv(\"APCA_API_SECRET_KEY\"),
-    \"https://paper-api.alpaca.markets\",
+    os.getenv("APCA_API_KEY_ID"),
+    os.getenv("APCA_API_SECRET_KEY"),
+    "https://paper-api.alpaca.markets",
     api_version='v2'
 )
 
