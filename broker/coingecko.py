@@ -1,5 +1,7 @@
 
 import requests
+import time
+import random
 
 # Convert Alpaca crypto symbol to CoinGecko ID
 def get_coingecko_id_from_symbol(symbol):
@@ -16,6 +18,10 @@ def get_coingecko_id_from_symbol(symbol):
     return known.get(base_symbol)
 
 # Fetch market data for crypto using CoinGecko
+import time
+import random
+import requests
+
 def fetch_coingecko_crypto_data(symbol):
     try:
         coingecko_id = get_coingecko_id_from_symbol(symbol)
@@ -23,8 +29,16 @@ def fetch_coingecko_crypto_data(symbol):
             print(f"⚠️ No CoinGecko ID para {symbol}")
             return (None,) * 6
 
+        # 🕒 Backoff aleatorio para evitar errores 429
+        time.sleep(random.uniform(1.0, 2.5))
+
         url = f"https://api.coingecko.com/api/v3/coins/{coingecko_id}"
         response = requests.get(url, timeout=10)
+
+        if response.status_code == 429:
+            print(f"❌ Error 429 obteniendo {symbol} desde CoinGecko (rate limit)")
+            return (None,) * 6
+
         if response.status_code != 200:
             print(f"❌ Error {response.status_code} obteniendo {symbol} desde CoinGecko")
             return (None,) * 6
@@ -40,5 +54,5 @@ def fetch_coingecko_crypto_data(symbol):
 
         return market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg
     except Exception as e:
-        print(f"❌ Error fetching {symbol} from CoinGecko: {e}")
+        print(f"❌ Error general en fetch_coingecko_crypto_data para {symbol}: {e}")
         return (None,) * 6
