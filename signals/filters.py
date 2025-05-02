@@ -39,10 +39,10 @@ def get_projected_volume_spy():
             print("⏳ Mercado aún no ha abierto. No se puede proyectar volumen.")
             return 0
 
-        data = yf.download("SPY", period="1d", interval="5m", progress=False)
+        data = yf.download("SPY", period="2d", interval="5m", progress=False)
         if data.empty:
-            print("⚠️ Datos de SPY vacíos.")
-            return 0
+            print("⚠️ No hay datos de SPY, usando volumen medio histórico estimado.")
+            return 50_000_000
 
         minutes_passed = max((now - market_open_time).total_seconds() / 60, 1)
         volume_so_far = data["Volume"].sum()
