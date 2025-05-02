@@ -16,7 +16,9 @@ from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
 
+
 def pre_market_scan():
+    print("🟢 Hilo `pre_market_scan` iniciado.")
     while True:
         now = datetime.utcnow()
         current_hour = now.hour
@@ -25,7 +27,6 @@ def pre_market_scan():
             if is_market_volatile_or_low_volume():
                 log_event("⚠️ Día demasiado volátil o con volumen bajo. No se operan acciones.")
                 print("😴 No operamos en acciones hoy.")
-                print("⚠️ Saltando compra por volumen o volatilidad.")
             else:
                 print("🔍 Buscando oportunidades en acciones...")
                 opportunities = get_top_signals(asset_type="stocks", min_criteria=5)
@@ -37,16 +38,16 @@ def pre_market_scan():
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
 
-        if current_hour in range(13, 15):
-            time.sleep(300)
-        elif current_hour in range(19, 22):
+        if current_hour in range(13, 15) or current_hour in range(19, 22):
             time.sleep(300)
         elif current_hour in range(15, 19):
             time.sleep(600)
         else:
             time.sleep(1800)
 
+
 def crypto_scan():
+    print("🟢 Hilo `crypto_scan` iniciado.")
     while True:
         if is_market_volatile_or_low_volume():
             log_event("⚠️ Día demasiado volátil o volumen bajo. No se operan criptos.")
@@ -65,7 +66,9 @@ def crypto_scan():
             log_event(f"🟡 Total invertido en este ciclo cripto: {invested_today_usd:.2f} USD")
         time.sleep(1200)
 
+
 def short_scan():
+    print("🟢 Hilo `short_scan` iniciado.")
     while True:
         if is_market_open() and not is_market_volatile_or_low_volume():
             print("🔍 Buscando oportunidades en corto...")
@@ -80,7 +83,9 @@ def short_scan():
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
         time.sleep(1800)
 
+
 def daily_summary():
+    print("🟢 Hilo `daily_summary` iniciado.")
     while True:
         now = datetime.utcnow()
         if now.hour == 20:
@@ -106,16 +111,30 @@ def daily_summary():
             pending_trades.clear()
         time.sleep(3600)
 
-import threading
-from core.monitor import monitor_open_positions
-# ...
+
+def monitor_wrapper():
+    print("🟢 Hilo `monitor_open_positions` iniciado.")
+    monitor_open_positions()
+
+
+def start_thread(target):
+    def wrapper():
+        try:
+            target()
+        except Exception as e:
+            print(f"❌ Error en hilo `{target.__name__}`: {e}")
+    threading.Thread(target=wrapper, daemon=True).start()
+
 
 def start_schedulers():
-    # Todos daemon, da igual, el while infinito los mantiene vivos
-    threading.Thread(target=monitor_open_positions, daemon=True).start()
-    threading.Thread(target=pre_market_scan, daemon=True).start()
-    threading.Thread(target=crypto_scan, daemon=True).start()
-    threading.Thread(target=daily_summary, daemon=True).start()
-    threading.Thread(target=short_scan, daemon=True).start()
+    print("🚀 Iniciando todos los hilos del bot...")
+    for fn in [
+        monitor_wrapper,
+        pre_market_scan,
+        crypto_scan,
+        daily_summary,
+        short_scan
+    ]:
+        start_thread(fn)
 
 
