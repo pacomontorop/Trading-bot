@@ -1,3 +1,5 @@
+import yfinance as yf
+
 def fetch_yfinance_stock_data(symbol):
     try:
         ticker = yf.Ticker(symbol)
