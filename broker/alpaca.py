@@ -17,7 +17,7 @@ def is_market_open():
         clock = api.get_clock()
         return clock.is_open
     except Exception as e:
-        log_event(f\"❌ Error checking market open: {e}\")
+        log_event(f"❌ Error checking market open: {e}")
         return False
 
 def get_current_price(symbol):
@@ -26,6 +26,6 @@ def get_current_price(symbol):
         if not bars.df.empty:
             return bars.df['close'].iloc[0]
     except Exception as e:
-        log_event(f\"❌ Error fetching price for {symbol}: {e}\")
+        log_event(f"❌ Error fetching price for {symbol}: {e}")
     return None
 
