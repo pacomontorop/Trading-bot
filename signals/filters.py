@@ -34,17 +34,18 @@ def has_negative_news(symbol):
 def get_projected_volume_spy():
     try:
         now = datetime.utcnow()
-        if now.hour < 13 or (now.hour == 13 and now.minute < 30):
-            return 0  # Mercado aún cerrado
+        market_open_time = datetime(now.year, now.month, now.day, 13, 30)
+        if now < market_open_time:
+            print("⏳ Mercado aún no ha abierto. No se puede proyectar volumen.")
+            return 0
 
         data = yf.download("SPY", period="1d", interval="5m", progress=False)
         if data.empty:
+            print("⚠️ Datos de SPY vacíos.")
             return 0
 
-        total_minutes = (now - datetime(now.year, now.month, now.day, 13, 30)).total_seconds() / 60
-        minutes_passed = max(total_minutes, 1)
+        minutes_passed = max((now - market_open_time).total_seconds() / 60, 1)
         volume_so_far = data["Volume"].sum()
-
         projected_volume = volume_so_far / minutes_passed * 390
         return projected_volume
     except Exception as e:
