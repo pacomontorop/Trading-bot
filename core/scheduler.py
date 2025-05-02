@@ -19,11 +19,11 @@ from core.monitor import monitor_open_positions
 def pre_market_scan():
     print("🌀 pre_market_scan iniciado.", flush=True)
     while True:
-        now = datetime.utcnow()
-        current_hour = now.hour
+        now_ny = get_ny_time()
+        current_hour = now_ny.hour
 
         if is_market_open():
-            if datetime.utcnow() < datetime.utcnow().replace(hour=13, minute=30):
+            if now_ny < now_ny.replace(hour=9, minute=30, second=0, microsecond=0):
                 print("⏳ Mercado abrirá pronto. Esperando volumen...", flush=True)
             elif is_market_volatile_or_low_volume():
                 log_event("⚠️ Día demasiado volátil o con volumen bajo. No se operan acciones.")
@@ -39,12 +39,13 @@ def pre_market_scan():
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
 
-        if current_hour in range(13, 15) or current_hour in range(19, 22):
+        if current_hour in range(9, 11) or current_hour in range(15, 18):  # hora NY
             time.sleep(300)
-        elif current_hour in range(15, 19):
+        elif current_hour in range(11, 15):
             time.sleep(600)
         else:
             time.sleep(1800)
+
 
 def crypto_scan():
     print("🌀 crypto_scan iniciado.", flush=True)
