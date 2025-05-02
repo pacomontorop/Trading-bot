@@ -1,7 +1,8 @@
 import os
 import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
-from utils/logger import log_event
+from utils.logger import log_event  
+
 
 load_dotenv()
 api = tradeapi.REST(
