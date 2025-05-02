@@ -2,6 +2,8 @@ import pandas as pd
 import yfinance as yf
 from broker.coingecko import fetch_coingecko_crypto_data
 from signals.filters import is_position_open, is_approved_by_finnhub
+from broker.alpaca import api
+
 
 local_sp500_symbols = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "BRK.B", "UNH", "JNJ",
