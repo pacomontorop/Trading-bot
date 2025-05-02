@@ -1,6 +1,11 @@
 import threading
 import time
 from datetime import datetime
+from pytz import timezone
+from datetime import datetime
+
+def get_ny_time():
+    return datetime.now(timezone('America/New_York'))
 
 from core.executor import (
     place_order_with_trailing_stop,
