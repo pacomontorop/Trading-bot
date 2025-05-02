@@ -1,3 +1,6 @@
+
+import requests
+
 # Convert Alpaca crypto symbol to CoinGecko ID
 def get_coingecko_id_from_symbol(symbol):
     known = {
