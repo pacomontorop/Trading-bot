@@ -23,7 +23,9 @@ def pre_market_scan():
         current_hour = now.hour
 
         if is_market_open():
-            if is_market_volatile_or_low_volume():
+            if datetime.utcnow() < datetime.utcnow().replace(hour=13, minute=30):
+                print("⏳ Mercado abrirá pronto. Esperando volumen...", flush=True)
+            elif is_market_volatile_or_low_volume():
                 log_event("⚠️ Día demasiado volátil o con volumen bajo. No se operan acciones.")
                 print("😴 No operamos en acciones hoy.", flush=True)
             else:
