@@ -49,11 +49,14 @@ def get_projected_volume_spy():
 
         projected_volume = volume_so_far / minutes_passed * 390
 
+        projected_volume = float(projected_volume)  # ✅ Conversión explícita
+
         if projected_volume == 0:
             print("⚠️ Volumen proyectado SPY es 0. Se devuelve volumen por defecto.")
             return 30_000_000
 
         return projected_volume
+
     except Exception as e:
         print(f"❌ Error calculando volumen proyectado SPY: {e}")
         return 30_000_000
