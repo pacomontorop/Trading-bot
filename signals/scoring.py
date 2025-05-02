@@ -1,6 +1,6 @@
 import yfinance as yf
 
-def fetch_yfinance_stock_data(symbol):
+def fetch_yfinance_stock_data(symbol, verbose=False):
     try:
         ticker = yf.Ticker(symbol)
         info = ticker.info
@@ -17,7 +17,8 @@ def fetch_yfinance_stock_data(symbol):
         price_change_24h = abs((hist['Close'].iloc[-1] - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100 if len(hist) >= 2 else None
         volume_7d_avg = hist['Volume'].mean() if not hist['Volume'].isna().all() else None
 
-        print(f"📊 {symbol} | MC: {market_cap}, V: {volume}, Δ7d: {weekly_change}, Trend: {trend_positive}, Δ24h: {price_change_24h}, V_avg: {volume_7d_avg}")
+        if verbose:
+            print(f"📊 {symbol} | MC: {market_cap}, V: {volume}, Δ7d: {weekly_change}, Trend: {trend_positive}, Δ24h: {price_change_24h}, V_avg: {volume_7d_avg}")
 
         return market_cap, volume, weekly_change, trend_positive, price_change_24h, volume_7d_avg
     except Exception as e:
