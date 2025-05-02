@@ -39,24 +39,25 @@ def get_projected_volume_spy():
 
         data = yf.download("SPY", period="1d", interval="5m", progress=False)
 
-        if data is None or data.empty or "Volume" not in data.columns:
-            print("⚠️ No hay datos de SPY disponibles.")
-            return 0
-
-        volume_series = data["Volume"].dropna()
-        if volume_series.empty:
-            print("⚠️ Serie de volumen vacía.")
-            return 0
+        if data is None or data.empty or "Volume" not in data:
+            print("⚠️ Datos vacíos o malformados para SPY. Se devuelve volumen por defecto.")
+            return 30_000_000
 
         total_minutes = (now - datetime(now.year, now.month, now.day, 13, 30)).total_seconds() / 60
         minutes_passed = max(total_minutes, 1)
-        volume_so_far = volume_series.sum()
+        volume_so_far = data["Volume"].sum()
 
         projected_volume = volume_so_far / minutes_passed * 390
+
+        if projected_volume == 0:
+            print("⚠️ Volumen proyectado SPY es 0. Se devuelve volumen por defecto.")
+            return 30_000_000
+
         return projected_volume
     except Exception as e:
-        print(f"❌ Error calculando volumen proyectado: {e}")
-        return 0
+        print(f"❌ Error calculando volumen proyectado SPY: {e}")
+        return 30_000_000
+
 
 
 def is_market_volatile_or_low_volume():
