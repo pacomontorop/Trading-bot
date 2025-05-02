@@ -1,4 +1,4 @@
-
+import os
 import smtplib
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
