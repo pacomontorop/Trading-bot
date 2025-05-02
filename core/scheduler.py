@@ -62,7 +62,7 @@ def crypto_scan():
                 pending_opportunities.add(symbol)
 
             log_event(f"🟡 Total invertido en este ciclo cripto: {invested_today_usd:.2f} USD")
-        time.sleep(1200)
+        time.sleep(300)
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
@@ -78,7 +78,7 @@ def short_scan():
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
-        time.sleep(1800)
+        time.sleep(300)
 
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
