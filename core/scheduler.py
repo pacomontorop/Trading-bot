@@ -58,8 +58,7 @@ def crypto_scan():
                 price = get_current_price(symbol)
                 if not price:
                     print(f"❌ Precio no disponible para {symbol}")
-                    continue  # saltar este símbolo y seguir con los demás
-
+                    continue
                 place_order_with_trailing_stop(symbol, 1000, 2.0)
                 pending_opportunities.add(symbol)
 
@@ -78,7 +77,6 @@ def short_scan():
                         place_short_order_with_trailing_buy(symbol, 1000, 2.0)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}")
-
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
         time.sleep(1800)
 
@@ -109,7 +107,9 @@ def daily_summary():
         time.sleep(3600)
 
 def start_schedulers():
-    threading.Thread(target=monitor_open_positions, daemon=True).start()
+    # Hilo principal NO daemon (el primero)
+    threading.Thread(target=monitor_open_positions).start()
+    # Los demás pueden ser daemon si quieres
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=crypto_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
@@ -117,4 +117,3 @@ def start_schedulers():
 
     while True:
         time.sleep(3600)
-
