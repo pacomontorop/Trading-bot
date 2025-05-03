@@ -1,14 +1,9 @@
-
 import pandas as pd
-import yfinance as yf
-from broker.coingecko import fetch_coingecko_crypto_data
 from signals.filters import is_position_open, is_approved_by_finnhub
 from broker.alpaca import api
-from signals.scoring import fetch_yfinance_stock_data 
+from signals.scoring import fetch_yfinance_stock_data
+
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
-# ejemplo
-
-
 
 local_sp500_symbols = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "BRK.B", "UNH", "JNJ",
@@ -37,38 +32,17 @@ def fetch_sp500_symbols():
 
 stock_assets = fetch_sp500_symbols()
 
-def get_tradable_crypto_assets():
-    try:
-        assets = api.list_assets(asset_class='crypto')
-        tradable_symbols = [
-            asset.symbol for asset in assets
-            if asset.tradable and asset.status == "active"
-        ]
-        return tradable_symbols
-    except Exception as e:
-        print(f"❌ Error fetching tradable crypto assets: {e}")
-        return []
-
-# fetch_yfinance_stock_data está ahora en scoring.py
-# fetch_coingecko_crypto_data está en broker/coingecko.py
-
-def get_top_signals(asset_type="stocks", min_criteria=5, verbose=False):
+def get_top_signals(min_criteria=5, verbose=False):
     opportunities = []
     already_considered = set()
-    target_assets = stock_assets if asset_type == "stocks" else get_tradable_crypto_assets()
 
-    for symbol in target_assets:
-        if symbol in already_considered:
-            continue
-        if is_position_open(symbol):
+    for symbol in stock_assets:
+        if symbol in already_considered or is_position_open(symbol):
             continue
         already_considered.add(symbol)
 
         try:
-            if asset_type == "stocks":
-                market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
-            else:
-                market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_coingecko_crypto_data(symbol)
+            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
 
             score = 0
             if market_cap and market_cap > 500_000_000:
@@ -87,7 +61,7 @@ def get_top_signals(asset_type="stocks", min_criteria=5, verbose=False):
             if verbose:
                 print(f"🔍 {symbol}: score={score}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
 
-            if score >= min_criteria and (asset_type == "crypto" or is_approved_by_finnhub(symbol)):
+            if score >= min_criteria and is_approved_by_finnhub(symbol):
                 opportunities.append((symbol, score))
 
         except Exception as e:
@@ -98,6 +72,7 @@ def get_top_signals(asset_type="stocks", min_criteria=5, verbose=False):
 
     opportunities.sort(key=lambda x: x[1], reverse=True)
     top_score = opportunities[0][1]
+
     seen = set()
     top_symbols = []
     for s, sc in opportunities:
@@ -115,10 +90,11 @@ def get_top_shorts(min_criteria=5, verbose=False):
     shorts = []
     for symbol in stock_assets:
         try:
-            if is_position_open(symbol):  # ⛔ Saltar si ya hay posición abierta
+            if is_position_open(symbol):
                 continue
 
             market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
+
             score = 0
             if market_cap and market_cap > 500_000_000:
                 score += CRITERIA_WEIGHTS["market_cap"]
@@ -158,3 +134,4 @@ def get_top_shorts(min_criteria=5, verbose=False):
             break
 
     return top_symbols
+
