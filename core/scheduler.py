@@ -1,8 +1,9 @@
 import threading
-import time
 from datetime import datetime
 from pytz import timezone
-from datetime import datetime
+from datetime import time
+import time as pytime
+
 
 
 from core.executor import (
