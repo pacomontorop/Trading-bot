@@ -61,7 +61,7 @@ def get_top_signals(min_criteria=5, verbose=False):
             if verbose:
                 print(f"🔍 {symbol}: score={score}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
 
-            if score >= min_criteria and is_approved_by_finnhub(symbol):
+            if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 opportunities.append((symbol, score))
 
         except Exception as e:
@@ -109,7 +109,7 @@ def get_top_shorts(min_criteria=5, verbose=False):
             if volume and volume_7d_avg and volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
-            if score >= min_criteria and is_approved_by_finnhub(symbol):
+            if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 if verbose:
                     print(f"🔻 {symbol}: {score} puntos (SHORT)")
                 shorts.append((symbol, score))
