@@ -49,17 +49,12 @@ def pre_market_scan():
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
 
-        # Frecuencia dinámica según hora NY
         if 9 <= current_hour < 11 or 15 <= current_hour < 18:
-            time.sleep(300)  # cada 5 minutos
+            pytime.sleep(300)
         elif 11 <= current_hour < 15:
-            time.sleep(600)  # cada 10 minutos
+            pytime.sleep(600)
         else:
-            time.sleep(1800)  # cada 30 minutos fuera de horas relevantes
-
-# 🚫 FUNCIONALIDAD DESACTIVADA TEMPORALMENTE SEGÚN DECISIÓN DEL 3 DE MAYO DE 2025
-# def crypto_scan():
-#     ...
+            pytime.sleep(1800)
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
@@ -75,7 +70,7 @@ def short_scan():
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
-        time.sleep(300)
+        pytime.sleep(300)
 
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
@@ -102,13 +97,14 @@ def daily_summary():
             send_email(subject, body, attach_log=True)
             pending_opportunities.clear()
             pending_trades.clear()
-        time.sleep(3600)
+        pytime.sleep(3600)
 
 def start_schedulers():
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
-    # threading.Thread(target=crypto_scan, daemon=True).start()  # ← temporalmente desactivado
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
+  
 
