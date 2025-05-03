@@ -1,7 +1,9 @@
 from datetime import datetime
+import time
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open
 from utils.logger import log_event
+
 # Control open positions and daily logs
 open_positions = set()
 pending_opportunities = set()
@@ -18,6 +20,22 @@ def reset_daily_investment():
         invested_today_usd = 0
         last_investment_day = today
         executed_symbols_today.clear()
+
+def wait_for_order_fill(order_id, timeout=30):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            order = api.get_order(order_id)
+            if order.status == 'filled':
+                return True
+            elif order.status in ['canceled', 'rejected']:
+                log_event(f"❌ Orden {order_id} cancelada o rechazada: {order.status}")
+                return False
+        except Exception as e:
+            log_event(f"❌ Error verificando estado de orden {order_id}: {e}")
+        time.sleep(1)
+    log_event(f"❌ Timeout esperando ejecución de orden {order_id}")
+    return False
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
     reset_daily_investment()
@@ -49,7 +67,6 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
             print(f"⚠️ Fondos insuficientes para comprar {symbol}")
             return
 
-        # Enviar orden de compra
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -57,20 +74,13 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
             type='market',
             time_in_force='gtc'
         )
-
         print(f"🛒 Orden de compra enviada para {symbol}. Esperando ejecución...")
 
-        # Esperar ejecución
-        while True:
-            order_status = api.get_order(order.id).status
-            if order_status == 'filled':
-                break
-            time.sleep(1)
+        if not wait_for_order_fill(order.id):
+            return
 
-        # Calcular trailing stop
         trail_price = round(current_price * (trail_percent / 100), 2)
 
-        # Enviar orden trailing stop
         api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -88,8 +98,6 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
         log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades")
     except Exception as e:
         log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
-
-
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
     reset_daily_investment()
@@ -121,7 +129,6 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
             print(f"⚠️ Fondos insuficientes para short en {symbol}")
             return
 
-        # Enviar orden de venta en corto
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -129,19 +136,13 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
             type='market',
             time_in_force='gtc'
         )
-
         print(f"📉 Orden short enviada para {symbol}. Esperando ejecución...")
 
-        # Esperar ejecución
-        while True:
-            order_status = api.get_order(order.id).status
-            if order_status == 'filled':
-                break
-            time.sleep(1)
+        if not wait_for_order_fill(order.id):
+            return
 
         trail_price = round(current_price * (trail_percent / 100), 2)
 
-        # Enviar orden de recompra con trailing stop
         api.submit_order(
             symbol=symbol,
             qty=qty,
