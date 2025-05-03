@@ -4,8 +4,6 @@ from pytz import timezone
 from datetime import time
 import time as pytime
 
-
-
 from core.executor import (
     place_order_with_trailing_stop,
     place_short_order_with_trailing_buy,
@@ -64,25 +62,25 @@ def pre_market_scan():
             time.sleep(1800)  # cada 30 minutos fuera de horas relevantes
 
 
-def crypto_scan():
-    print("🌀 crypto_scan iniciado.", flush=True)
-    while True:
-        if is_market_volatile_or_low_volume():
-            log_event("⚠️ Día demasiado volátil o volumen bajo. No se operan criptos.")
-            print("😴 No operamos en cripto hoy.", flush=True)
-        else:
-            print("🔍 Buscando oportunidades en cripto...", flush=True)
-            opportunities = get_top_signals(asset_type="crypto", min_criteria=5)
-            for symbol in opportunities:
-                price = get_current_price(symbol)
-                if not price:
-                    print(f"❌ Precio no disponible para {symbol}", flush=True)
-                    continue
-                place_order_with_trailing_stop(symbol, 1000, 2.0)
-                pending_opportunities.add(symbol)
-
-            log_event(f"🟡 Total invertido en este ciclo cripto: {invested_today_usd:.2f} USD")
-        time.sleep(300)
+# 🚫 FUNCIONALIDAD DESACTIVADA TEMPORALMENTE SEGÚN DECISIÓN DEL 3 DE MAYO DE 2025
+# def crypto_scan():
+#     print("🌀 crypto_scan iniciado.", flush=True)
+#     while True:
+#         if is_market_volatile_or_low_volume():
+#             log_event("⚠️ Día demasiado volátil o volumen bajo. No se operan criptos.")
+#             print("😴 No operamos en cripto hoy.", flush=True)
+#         else:
+#             print("🔍 Buscando oportunidades en cripto...", flush=True)
+#             opportunities = get_top_signals(asset_type="crypto", min_criteria=5)
+#             for symbol in opportunities:
+#                 price = get_current_price(symbol)
+#                 if not price:
+#                     print(f"❌ Precio no disponible para {symbol}", flush=True)
+#                     continue
+#                 place_order_with_trailing_stop(symbol, 1000, 2.0)
+#                 pending_opportunities.add(symbol)
+#             log_event(f"🟡 Total invertido en este ciclo cripto: {invested_today_usd:.2f} USD")
+#         time.sleep(300)
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
@@ -131,7 +129,9 @@ def start_schedulers():
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
-    threading.Thread(target=crypto_scan, daemon=True).start()
+    # threading.Thread(target=crypto_scan, daemon=True).start()  # ← temporalmente desactivado
     threading.Thread(target=daily_summary, daemon=True).start()
+    threading.Thread(target=short_scan, daemon=True).start()
+
     threading.Thread(target=short_scan, daemon=True).start()
 
