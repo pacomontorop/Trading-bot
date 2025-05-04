@@ -74,15 +74,30 @@ def is_approved_by_alphavantage(symbol):
         return False
 
 def is_approved_by_finnhub_and_alphavantage(symbol):
-    try:
-        finnhub_ok = is_approved_by_finnhub(symbol)
-        alpha_ok = is_approved_by_alphavantage(symbol)
+    approved_finnhub = is_approved_by_finnhub(symbol)
+    approved_alpha = True  # ← lo asumimos positivo por defecto
 
-        if finnhub_ok and alpha_ok:
-            return True
-        print(f"⛔ {symbol} no aprobado: Finnhub={finnhub_ok}, AlphaVantage={alpha_ok}")
-        return False
+    try:
+        ALPHA_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={ALPHA_KEY}"
+        r = requests.get(url, timeout=5).json()
+        feed = r.get("feed", [])
+
+        if feed:
+            sentiment_scores = [item.get("overall_sentiment_score", 0) for item in feed if "overall_sentiment_score" in item]
+            avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
+            approved_alpha = avg_sentiment >= 0
+        else:
+            print(f"⚠️ Alpha Vantage: no hay feed de noticias para {symbol}")
+            approved_alpha = True  # ← asumimos aprobación si no hay feed
+
     except Exception as e:
-        print(f"❌ Error general aprobando {symbol}: {e}")
-        return False
+        print(f"⚠️ Alpha Vantage error para {symbol}: {e}")
+        approved_alpha = True  # ← también aprobamos en caso de error
+
+    if not approved_alpha or not approved_finnhub:
+        print(f"⛔ {symbol} no aprobado: Finnhub={approved_finnhub}, AlphaVantage={approved_alpha}")
+
+    return approved_finnhub and approved_alpha
+
 
