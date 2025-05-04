@@ -75,7 +75,7 @@ def is_approved_by_alphavantage(symbol):
 
 def is_approved_by_finnhub_and_alphavantage(symbol):
     approved_finnhub = is_approved_by_finnhub(symbol)
-    approved_alpha = True  # ← lo asumimos positivo por defecto
+    approved_alpha = True  # Por defecto asumimos aprobación
 
     try:
         ALPHA_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
@@ -84,20 +84,23 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
         feed = r.get("feed", [])
 
         if feed:
-            sentiment_scores = [item.get("overall_sentiment_score", 0) for item in feed if "overall_sentiment_score" in item]
+            sentiment_scores = [
+                item.get("overall_sentiment_score", 0)
+                for item in feed if "overall_sentiment_score" in item
+            ]
             avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
             approved_alpha = avg_sentiment >= 0
         else:
-            print(f"⚠️ Alpha Vantage: no hay feed de noticias para {symbol}")
-            approved_alpha = True  # ← asumimos aprobación si no hay feed
+            print(f"⚠️ Alpha Vantage: no hay feed de noticias para {symbol} (lo consideramos aprobado)")
+            approved_alpha = True  # ✅ ← Esto es lo importante
 
     except Exception as e:
-        print(f"⚠️ Alpha Vantage error para {symbol}: {e}")
-        approved_alpha = True  # ← también aprobamos en caso de error
+        print(f"⚠️ Alpha Vantage error para {symbol}: {e} (lo consideramos aprobado)")
+        approved_alpha = True  # También aprobamos en caso de error
 
-    if not approved_alpha or not approved_finnhub:
+    if not (approved_alpha and approved_finnhub):
         print(f"⛔ {symbol} no aprobado: Finnhub={approved_finnhub}, AlphaVantage={approved_alpha}")
 
-    return approved_finnhub and approved_alpha
+    return approved_alpha and approved_finnhub
 
 
