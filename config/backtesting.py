@@ -95,4 +95,3 @@ def backtest(verbose=False):
 
 if __name__ == "__main__":
     backtest(verbose=False)
-
