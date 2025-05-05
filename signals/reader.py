@@ -1,5 +1,5 @@
 import pandas as pd
-from signals.filters import is_position_open, is_approved_by_finnhub
+from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 
