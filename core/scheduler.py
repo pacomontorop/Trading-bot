@@ -47,7 +47,7 @@ def pre_market_scan():
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
 
-        log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd:.2f} USD")
+        log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd():.2f} USD")
 
         if 9 <= current_hour < 11 or 15 <= current_hour < 18:
             pytime.sleep(300)
@@ -69,7 +69,7 @@ def short_scan():
                         place_short_order_with_trailing_buy(symbol, 1000, 2.0)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
-            log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd:.2f} USD")
+            log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD")
         pytime.sleep(300)
 
 def daily_summary():
@@ -84,7 +84,7 @@ def daily_summary():
                 f"Resumen del día 📊:\n"
                 f"• Oportunidades detectadas: {len(pending_opportunities)}\n"
                 f"• Órdenes ejecutadas: {len(pending_trades)}\n"
-                f"• Total invertido hoy: {invested_today_usd:.2f} USD\n"
+                f"• Total invertido hoy: {invested_today_usd():.2f} USD\n"
             )
 
             # Detalles
