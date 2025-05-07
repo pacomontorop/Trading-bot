@@ -10,16 +10,23 @@ pending_opportunities = set()
 pending_trades = set()
 executed_symbols_today = set()
 DAILY_INVESTMENT_LIMIT_PCT = 0.30
-invested_today_usd = 0
-last_investment_day = datetime.utcnow().date()
+_last_investment_day = datetime.utcnow().date()
+_total_invested_today = 0.0
 
 def reset_daily_investment():
-    global invested_today_usd, last_investment_day, executed_symbols_today
+    global _total_invested_today, _last_investment_day, executed_symbols_today
     today = datetime.utcnow().date()
-    if today != last_investment_day:
-        invested_today_usd = 0
-        last_investment_day = today
+    if today != _last_investment_day:
+        _total_invested_today = 0.0
+        _last_investment_day = today
         executed_symbols_today.clear()
+
+def add_to_invested(amount):
+    global _total_invested_today
+    _total_invested_today += amount
+
+def invested_today_usd():
+    return _total_invested_today
 
 def wait_for_order_fill(order_id, timeout=30):
     start = time.time()
@@ -39,13 +46,12 @@ def wait_for_order_fill(order_id, timeout=30):
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
     reset_daily_investment()
-    global invested_today_usd
 
     try:
         account = api.get_account()
         equity = float(account.equity)
 
-        if invested_today_usd + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
+        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print("⛔ Límite de inversión alcanzado para hoy.")
             return
 
@@ -91,7 +97,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
         )
 
         open_positions.add(symbol)
-        invested_today_usd += qty * current_price
+        add_to_invested(qty * current_price)
         executed_symbols_today.add(symbol)
         pending_trades.add(f"{symbol}: {qty} unidades")
 
@@ -101,13 +107,12 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
     reset_daily_investment()
-    global invested_today_usd
 
     try:
         account = api.get_account()
         equity = float(account.equity)
 
-        if invested_today_usd + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
+        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print("⛔ Límite de inversión alcanzado para hoy.")
             return
 
@@ -153,7 +158,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
         )
 
         open_positions.add(symbol)
-        invested_today_usd += qty * current_price
+        add_to_invested(qty * current_price)
         executed_symbols_today.add(symbol)
         pending_trades.add(f"{symbol} SHORT: {qty} unidades")
 
