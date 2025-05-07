@@ -40,7 +40,7 @@ def pre_market_scan():
                 print("⏳ Mercado abrirá pronto...", flush=True)
             else:
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
-                opportunities = get_top_signals(asset_type="stocks", min_criteria=5)
+                opportunities = get_top_signals(min_criteria=5, verbose=True)
                 for symbol in opportunities:
                     place_order_with_trailing_stop(symbol, 1000, 2.0)
                     pending_opportunities.add(symbol)
