@@ -59,10 +59,13 @@ def get_top_signals(min_criteria=5, verbose=False):
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔍 {symbol}: score={score}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
+                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 opportunities.append((symbol, score))
+            else:
+                if verbose:
+                    print(f"⛔ {symbol} descartado: score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
 
         except Exception as e:
             print(f"❌ Error checking {symbol}: {e}")
@@ -109,10 +112,15 @@ def get_top_shorts(min_criteria=5, verbose=False):
             if volume and volume_7d_avg and volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
+            if verbose:
+                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
+
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
-                if verbose:
-                    print(f"🔻 {symbol}: {score} puntos (SHORT)")
                 shorts.append((symbol, score))
+            else:
+                if verbose:
+                    print(f"⛔ {symbol} descartado (short): score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
+
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
 
@@ -134,4 +142,3 @@ def get_top_shorts(min_criteria=5, verbose=False):
             break
 
     return top_symbols
-
