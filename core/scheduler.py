@@ -78,7 +78,18 @@ def daily_summary():
         now = datetime.utcnow()
         if now.hour == 20:
             subject = "Resumen diario de trading 📈"
-            body = "Oportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
+
+            # Resumen numérico inicial
+            summary_stats = (
+                f"Resumen del día 📊:\n"
+                f"• Oportunidades detectadas: {len(pending_opportunities)}\n"
+                f"• Órdenes ejecutadas: {len(pending_trades)}\n"
+                f"• Total invertido hoy: {invested_today_usd:.2f} USD\n"
+            )
+
+            # Detalles
+            body = summary_stats
+            body += "\nOportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
             body += "\n\nÓrdenes ejecutadas hoy:\n" + "\n".join(sorted(pending_trades))
 
             try:
@@ -98,6 +109,7 @@ def daily_summary():
             pending_opportunities.clear()
             pending_trades.clear()
         pytime.sleep(3600)
+
 
 def start_schedulers():
     print("🟢 Lanzando schedulers...", flush=True)
