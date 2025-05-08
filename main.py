@@ -1,13 +1,15 @@
-from core.scheduler import start_schedulers
+from core.scheduler import start_schedulers, is_market_open
 import time
 from broker.alpaca import api, get_current_price
 from utils.logger import log_event
+from utils.emailer import send_email
 
 def add_missing_trailing_stops(trail_percent=2.0):
     print("🔧 Buscando posiciones abiertas sin trailing stop...")
+    resumen = []
     try:
         open_orders = api.list_orders(status='open')
-        open_order_symbols = {o.symbol for o in open_orders if o.order_type == 'trailing_stop'}
+        open_trailing_stop_symbols = {o.symbol for o in open_orders if o.order_type == 'trailing_stop'}
 
         positions = api.list_positions()
         for p in positions:
@@ -17,7 +19,7 @@ def add_missing_trailing_stops(trail_percent=2.0):
             current_price = float(p.current_price)
             trail_price = round(current_price * (trail_percent / 100), 2)
 
-            if symbol in open_order_symbols:
+            if symbol in open_trailing_stop_symbols:
                 print(f"✅ {symbol} ya tiene trailing stop.")
                 continue
 
@@ -33,17 +35,32 @@ def add_missing_trailing_stops(trail_percent=2.0):
             )
 
             log_event(f"🔧 Trailing stop añadido manualmente para {symbol}: {qty} unidades ({side})")
+            resumen.append(f"{symbol}: {qty} unidades ({side}) a precio actual {current_price:.2f} con trail de {trail_price:.2f} USD")
+
+        if resumen:
+            subject = "📌 Trailing stops añadidos automáticamente"
+            body = "Se han añadido los siguientes trailing stops manualmente tras detectar que estaban ausentes:\n\n"
+            body += "\n".join(resumen)
+            send_email(subject, body)
+        else:
+            print("✅ No se encontraron posiciones sin trailing stop.")
     except Exception as e:
-        print(f"❌ Error añadiendo trailing stops: {e}")
-        log_event(f"❌ Error añadiendo trailing stops: {e}")
+        error_msg = f"❌ Error añadiendo trailing stops: {e}"
+        print(error_msg)
+        log_event(error_msg)
+        send_email("❌ Error en trailing stops iniciales", error_msg)
 
 if __name__ == "__main__":
-    print("🟢 Lanzando schedulers...", flush=True)
-    start_schedulers()
+    print("🟢 Iniciando sistema de trading...", flush=True)
 
-    # 🛠 Ejecuta esta corrección UNA VEZ al arrancar
-    add_missing_trailing_stops()
+    while not is_market_open():
+        print("⏳ Mercado cerrado. Esperando apertura para añadir trailing stops...", flush=True)
+        time.sleep(60)
 
-    # 🔁 Mantener vivo el proceso aunque todos los hilos sean daemon
+    add_missing_trailing_stops()  # ✅ Solo una vez al arrancar tras apertura del mercado
+
+    start_schedulers()  # 🟢 Lanza los hilos
+
     while True:
-        time.sleep(3600)
+        time.sleep(3600)  # Mantener vivo el proceso
+
