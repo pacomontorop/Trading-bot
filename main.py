@@ -9,19 +9,19 @@ def add_missing_trailing_stops(trail_percent=2.0):
     resumen = []
     try:
         open_orders = api.list_orders(status='open')
-        open_trailing_stop_symbols = {o.symbol for o in open_orders if o.order_type == 'trailing_stop'}
+        symbols_with_any_order = {o.symbol for o in open_orders if o.order_type in ['trailing_stop', 'stop', 'limit']}
 
         positions = api.list_positions()
         for p in positions:
             symbol = p.symbol
+            if symbol in symbols_with_any_order:
+                print(f"✅ {symbol} ya tiene una orden activa (trailing/stop/limit).")
+                continue
+
             side = 'sell' if float(p.qty) > 0 else 'buy'
             qty = abs(int(float(p.qty)))
             current_price = float(p.current_price)
             trail_price = round(current_price * (trail_percent / 100), 2)
-
-            if symbol in open_trailing_stop_symbols:
-                print(f"✅ {symbol} ya tiene trailing stop.")
-                continue
 
             print(f"➕ Añadiendo trailing stop a {symbol}: {side} {qty} unidades")
 
@@ -53,14 +53,17 @@ def add_missing_trailing_stops(trail_percent=2.0):
 if __name__ == "__main__":
     print("🟢 Iniciando sistema de trading...", flush=True)
 
+    # Esperar a que abra el mercado
     while not is_market_open():
         print("⏳ Mercado cerrado. Esperando apertura para añadir trailing stops...", flush=True)
         time.sleep(60)
 
-    add_missing_trailing_stops()  # ✅ Solo una vez al arrancar tras apertura del mercado
+    # Ejecutar una única vez al abrir mercado
+    add_missing_trailing_stops()
 
-    start_schedulers()  # 🟢 Lanza los hilos
+    # Lanzar schedulers
+    start_schedulers()
 
+    # Mantener vivo el proceso
     while True:
-        time.sleep(3600)  # Mantener vivo el proceso
-
+        time.sleep(3600)
