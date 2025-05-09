@@ -10,6 +10,7 @@ pending_opportunities = set()
 pending_trades = set()
 executed_symbols_today = set()
 DAILY_INVESTMENT_LIMIT_PCT = 0.30
+ORDER_AMOUNT_USD = 500  # 🔧 Monto fijo por orden
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
 
@@ -44,9 +45,8 @@ def wait_for_order_fill(order_id, timeout=30):
     log_event(f"❌ Timeout esperando ejecución de orden {order_id}")
     return False
 
-def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
+def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
     reset_daily_investment()
-
     try:
         account = api.get_account()
         equity = float(account.equity)
@@ -86,7 +86,6 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
             return
 
         trail_price = round(current_price * (trail_percent / 100), 2)
-
         api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -105,9 +104,8 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=2.0):
     except Exception as e:
         log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
 
-def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
+def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
     reset_daily_investment()
-
     try:
         account = api.get_account()
         equity = float(account.equity)
@@ -147,7 +145,6 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=2.0):
             return
 
         trail_price = round(current_price * (trail_percent / 100), 2)
-
         api.submit_order(
             symbol=symbol,
             qty=qty,
