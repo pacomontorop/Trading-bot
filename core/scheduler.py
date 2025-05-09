@@ -40,9 +40,9 @@ def pre_market_scan():
                 print("⏳ Mercado abrirá pronto...", flush=True)
             else:
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
-                opportunities = get_top_signals(min_criteria=5, verbose=True)
+                opportunities = get_top_signals(min_criteria=6, verbose=True)
                 for symbol in opportunities:
-                    place_order_with_trailing_stop(symbol, 1000, 2.0)
+                    place_order_with_trailing_stop(symbol, 500, 1.5)
                     pending_opportunities.add(symbol)
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
@@ -61,12 +61,12 @@ def short_scan():
     while True:
         if is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
-            shorts = get_top_shorts(min_criteria=5)
+            shorts = get_top_shorts(min_criteria=6)
             for symbol in shorts:
                 try:
                     asset = api.get_asset(symbol)
                     if asset.shortable:
-                        place_short_order_with_trailing_buy(symbol, 1000, 2.0)
+                        place_short_order_with_trailing_buy(symbol, 500, 1.5)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD")
