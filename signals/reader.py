@@ -22,6 +22,10 @@ CRITERIA_WEIGHTS = {
     "volume_growth": 1
 }
 
+STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
+STRICTER_VOLUME_THRESHOLD = 70_000_000
+
+
 def fetch_sp500_symbols():
     try:
         sp500_url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
@@ -30,9 +34,11 @@ def fetch_sp500_symbols():
     except:
         return local_sp500_symbols
 
+
 stock_assets = fetch_sp500_symbols()
 
-def get_top_signals(min_criteria=5, verbose=False):
+
+def get_top_signals(min_criteria=6, verbose=False):
     opportunities = []
     already_considered = set()
 
@@ -47,13 +53,13 @@ def get_top_signals(min_criteria=5, verbose=False):
             score = 0
             if market_cap and market_cap > 500_000_000:
                 score += CRITERIA_WEIGHTS["market_cap"]
-            if volume and volume > 50_000_000:
+            if volume and volume > STRICTER_VOLUME_THRESHOLD:
                 score += CRITERIA_WEIGHTS["volume"]
-            if weekly_change is not None and weekly_change > 5:
+            if weekly_change is not None and weekly_change > STRICTER_WEEKLY_CHANGE_THRESHOLD:
                 score += CRITERIA_WEIGHTS["weekly_change_positive"]
             if trend:
                 score += CRITERIA_WEIGHTS["trend_positive"]
-            if price_change_24h is not None and price_change_24h < 15:
+            if price_change_24h is not None and 0 < price_change_24h < 10:
                 score += CRITERIA_WEIGHTS["volatility_ok"]
             if volume and volume_7d_avg and volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
@@ -89,7 +95,8 @@ def get_top_signals(min_criteria=5, verbose=False):
 
     return top_symbols
 
-def get_top_shorts(min_criteria=5, verbose=False):
+
+def get_top_shorts(min_criteria=6, verbose=False):
     shorts = []
     for symbol in stock_assets:
         try:
@@ -101,13 +108,13 @@ def get_top_shorts(min_criteria=5, verbose=False):
             score = 0
             if market_cap and market_cap > 500_000_000:
                 score += CRITERIA_WEIGHTS["market_cap"]
-            if volume and volume > 50_000_000:
+            if volume and volume > STRICTER_VOLUME_THRESHOLD:
                 score += CRITERIA_WEIGHTS["volume"]
-            if weekly_change is not None and weekly_change < -5:
+            if weekly_change is not None and weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
                 score += CRITERIA_WEIGHTS["weekly_change_positive"]
             if trend is False:
                 score += CRITERIA_WEIGHTS["trend_positive"]
-            if price_change_24h is not None and price_change_24h < 15:
+            if price_change_24h is not None and 0 < price_change_24h < 10:
                 score += CRITERIA_WEIGHTS["volatility_ok"]
             if volume and volume_7d_avg and volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
