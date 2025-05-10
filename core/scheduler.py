@@ -123,3 +123,6 @@ def start_schedulers():
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+    # 🔁 Hilo dedicado
+    threading.Thread(target=monitor_option_risk, daemon=True).start()
+
