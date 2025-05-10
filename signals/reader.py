@@ -25,7 +25,6 @@ CRITERIA_WEIGHTS = {
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
 
-
 def fetch_sp500_symbols():
     try:
         sp500_url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
@@ -34,9 +33,14 @@ def fetch_sp500_symbols():
     except:
         return local_sp500_symbols
 
+def is_options_enabled(symbol):
+    try:
+        asset = api.get_asset(symbol)
+        return getattr(asset, 'options_enabled', False)
+    except:
+        return False
 
 stock_assets = fetch_sp500_symbols()
-
 
 def get_top_signals(min_criteria=6, verbose=False):
     opportunities = []
@@ -65,7 +69,7 @@ def get_top_signals(min_criteria=6, verbose=False):
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}")
+                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}, options_enabled={is_options_enabled(symbol)}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 opportunities.append((symbol, score))
@@ -90,19 +94,21 @@ def get_top_signals(min_criteria=6, verbose=False):
         if s not in seen:
             top_symbols.append(s)
             seen.add(s)
-        if len(top_symbols) >= 3:
+        if len(top_symbols) >= 1:
             break
 
     return top_symbols
 
-
 def get_top_shorts(min_criteria=6, verbose=False):
     shorts = []
-    for symbol in stock_assets:
-        try:
-            if is_position_open(symbol):
-                continue
+    already_considered = set()
 
+    for symbol in stock_assets:
+        if symbol in already_considered or is_position_open(symbol):
+            continue
+        already_considered.add(symbol)
+
+        try:
             market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
 
             score = 0
@@ -120,7 +126,7 @@ def get_top_shorts(min_criteria=6, verbose=False):
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
+                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, options_enabled={is_options_enabled(symbol)}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 shorts.append((symbol, score))
@@ -145,7 +151,7 @@ def get_top_shorts(min_criteria=6, verbose=False):
         if s not in seen:
             top_symbols.append(s)
             seen.add(s)
-        if len(top_symbols) >= 3:
+        if len(top_symbols) >= 1:
             break
 
     return top_symbols
