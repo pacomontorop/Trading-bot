@@ -11,6 +11,7 @@ from core.executor import (
     pending_trades,
     invested_today_usd
 )
+from core.options_trader import run_options_strategy, get_options_log_and_reset
 from broker.alpaca import api, get_current_price, is_market_open
 from signals.reader import get_top_signals, get_top_shorts
 from utils.emailer import send_email
@@ -44,6 +45,9 @@ def pre_market_scan():
                 for symbol in opportunities:
                     place_order_with_trailing_stop(symbol, 500, 1.5)
                     pending_opportunities.add(symbol)
+
+                print("📊 Ejecutando estrategia de opciones...", flush=True)
+                run_options_strategy()
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
 
@@ -79,7 +83,6 @@ def daily_summary():
         if now.hour == 20:
             subject = "Resumen diario de trading 📈"
 
-            # Resumen numérico inicial
             summary_stats = (
                 f"Resumen del día 📊:\n"
                 f"• Oportunidades detectadas: {len(pending_opportunities)}\n"
@@ -87,7 +90,6 @@ def daily_summary():
                 f"• Total invertido hoy: {invested_today_usd():.2f} USD\n"
             )
 
-            # Detalles
             body = summary_stats
             body += "\nOportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
             body += "\n\nÓrdenes ejecutadas hoy:\n" + "\n".join(sorted(pending_trades))
@@ -105,11 +107,15 @@ def daily_summary():
             except Exception as e:
                 body += f"\n\n❌ Error obteniendo PnL: {e}"
 
+            # Agregar resumen de opciones
+            options_log = get_options_log_and_reset()
+            if options_log:
+                body += "\n\n📘 Operaciones de opciones hoy:\n" + "\n".join(options_log)
+
             send_email(subject, body, attach_log=True)
             pending_opportunities.clear()
             pending_trades.clear()
         pytime.sleep(3600)
-
 
 def start_schedulers():
     print("🟢 Lanzando schedulers...", flush=True)
@@ -117,6 +123,3 @@ def start_schedulers():
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
-
-  
-
