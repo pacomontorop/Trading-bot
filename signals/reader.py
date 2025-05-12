@@ -17,7 +17,7 @@ CRITERIA_WEIGHTS = {
     "market_cap": 2,
     "volume": 2,
     "weekly_change_positive": 1,
-    "trend_positive": 1,
+    "trend_positive": 2,
     "volatility_ok": 1,
     "volume_growth": 1
 }
