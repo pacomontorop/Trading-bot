@@ -59,11 +59,10 @@ def buy_simple_call_option(symbol, strike_price, expiration_date, contracts=1):
         log_event(f"❌ Error comprando opción {symbol}: {e}")
 
 def run_options_strategy():
-    # Aquí defines una lógica básica de ejemplo (puedes cambiar los símbolos)
-    from datetime import datetime, timedelta
-    today = datetime.utcnow()
-    next_friday = today + timedelta((4 - today.weekday()) % 7)  # el viernes más próximo
-    expiration_date = next_friday.strftime("%y%m%d")  # formato YYMMDD
+    for symbol, offset in [("AAPL", 0), ("MSFT", 0)]:
+        contract = fetch_valid_option_contract(symbol, strike_offset=offset)
+        if contract:
+            buy_option_contract(contract)
+        else:
+            log_event(f"⚠️ No se encontró contrato válido para {symbol}")
 
-    for symbol, strike in [("AAPL", 150), ("MSFT", 330)]:
-        buy_simple_call_option(symbol, strike_price=strike, expiration_date=expiration_date)
