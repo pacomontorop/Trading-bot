@@ -92,13 +92,55 @@ def is_approved_by_alphavantage(symbol):
         return True  # ← en caso de error, consideramos aprobado
 
 # Evaluación combinada (Finnhub + Alpha Vantage)
-def is_approved_by_finnhub_and_alphavantage(symbol):
-    approved_finnhub = is_approved_by_finnhub(symbol)
-    approved_alpha = is_approved_by_alphavantage(symbol)
+def is_approved_by_finnhub_or_alphavantage(symbol):
+    approved_finnhub = False
+    approved_alpha = False
 
-    if not (approved_finnhub and approved_alpha):
-        print(f"⛔ {symbol} no aprobado: Finnhub={approved_finnhub}, AlphaVantage={approved_alpha}")
+    # ---------- FINNHUB ----------
+    try:
+        FINNHUB_KEY = os.getenv("FINNHUB_API_KEY")
+        url_rating = f"https://finnhub.io/api/v1/stock/recommendation?symbol={symbol}&token={FINNHUB_KEY}"
+        url_news = f"https://finnhub.io/api/v1/news-sentiment?symbol={symbol}&token={FINNHUB_KEY}"
 
-    return approved_finnhub and approved_alpha
+        r_rating = requests.get(url_rating, timeout=5).json()
+        time.sleep(1)
+        r_news = requests.get(url_news, timeout=5).json()
+        time.sleep(1)
+
+        if r_rating and r_rating[0]['strongBuy'] + r_rating[0]['buy'] >= r_rating[0]['sell'] + r_rating[0]['strongSell']:
+            sentiment_score = r_news.get("sentiment", {}).get("companyNewsScore", 0)
+            if sentiment_score >= 0:
+                approved_finnhub = True
+    except Exception as e:
+        print(f"⚠️ Finnhub error para {symbol}: {e} → se ignora")
+
+    # ---------- ALPHA VANTAGE ----------
+    try:
+        AV_KEY = os.getenv("ALPHA_VANTAGE_API_KEY", "")
+        if AV_KEY:
+            url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={AV_KEY}"
+            r = requests.get(url, timeout=5).json()
+            feed = r.get("feed", [])
+
+            if not feed:
+                print(f"⚠️ Alpha Vantage sin noticias para {symbol} → se ignora")
+            else:
+                sentiment_sum = sum([
+                    1 if article.get("overall_sentiment_label", "").lower() == "positive" else
+                    -1 if article.get("overall_sentiment_label", "").lower() == "negative" else 0
+                    for article in feed
+                ])
+                if sentiment_sum >= 0:
+                    approved_alpha = True
+    except Exception as e:
+        print(f"⚠️ Alpha Vantage error para {symbol}: {e} → se ignora")
+
+    # ---------- DECISIÓN FINAL ----------
+    if approved_finnhub or approved_alpha:
+        return True
+    else:
+        print(f"⛔ {symbol} rechazado: ninguna fuente lo aprueba (Finnhub={approved_finnhub}, AlphaVantage={approved_alpha})")
+        return False
+
 
 
