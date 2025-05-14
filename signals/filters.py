@@ -92,7 +92,7 @@ def is_approved_by_alphavantage(symbol):
         return True  # ← en caso de error, consideramos aprobado
 
 # Evaluación combinada (Finnhub + Alpha Vantage)
-def is_approved_by_finnhub_or_alphavantage(symbol):
+def is_approved_by_finnhub_and_alphavantage(symbol):
     approved_finnhub = False
     approved_alpha = False
 
