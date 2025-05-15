@@ -1,4 +1,4 @@
-from broker.alpaca import api
+from broker.alpaca import api, get_current_price
 from utils.logger import log_event
 from datetime import datetime
 
@@ -58,6 +58,33 @@ def buy_simple_call_option(symbol, strike_price, expiration_date, contracts=1):
         print(f"❌ Error comprando opción: {e}")
         log_event(f"❌ Error comprando opción {symbol}: {e}")
 
+def fetch_valid_option_contract(symbol, strike_offset=0):
+    try:
+        current_price = get_current_price(symbol)
+        if not current_price:
+            return None
+
+        strike_price = round(current_price * (1 + 0.02 * strike_offset), 2)
+        expiration_date = (datetime.utcnow().date()).strftime("%y%m%d")
+        return {
+            "symbol": symbol,
+            "strike": strike_price,
+            "expiry": expiration_date,
+            "type": "call",
+            "contracts": 1
+        }
+    except Exception as e:
+        log_event(f"❌ Error generando contrato simulado: {e}")
+        return None
+
+def buy_option_contract(contract):
+    buy_simple_call_option(
+        symbol=contract["symbol"],
+        strike_price=contract["strike"],
+        expiration_date=contract["expiry"],
+        contracts=contract.get("contracts", 1)
+    )
+
 def run_options_strategy():
     for symbol, offset in [("AAPL", 0), ("MSFT", 0)]:
         contract = fetch_valid_option_contract(symbol, strike_offset=offset)
@@ -65,4 +92,3 @@ def run_options_strategy():
             buy_option_contract(contract)
         else:
             log_event(f"⚠️ No se encontró contrato válido para {symbol}")
-
