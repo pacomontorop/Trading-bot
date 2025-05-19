@@ -1,5 +1,3 @@
-pip install fastapi uvicorn
-
 from fastapi import FastAPI
 import threading
 import time
@@ -23,9 +21,3 @@ def launch_all():
     print("🟢 Lanzando schedulers...", flush=True)
     start_schedulers()
     threading.Thread(target=heartbeat, daemon=True).start()
-
-
-if __name__ == "__main__":
-    launch_all()
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000)
