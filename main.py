@@ -1,7 +1,16 @@
-from core.scheduler import start_schedulers
-import time
+pip install fastapi uvicorn
+
+from fastapi import FastAPI
 import threading
+import time
+from core.scheduler import start_schedulers
 from datetime import datetime
+
+app = FastAPI()
+
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "time": datetime.utcnow().isoformat()}
 
 
 def heartbeat():
@@ -9,13 +18,14 @@ def heartbeat():
         print(f"💓 Alive at {datetime.utcnow().isoformat()} UTC", flush=True)
         time.sleep(900)  # Cada 15 minutos
 
-if __name__ == "__main__":
+
+def launch_all():
     print("🟢 Lanzando schedulers...", flush=True)
     start_schedulers()
-
-    # 🫀 Hilo de latido para verificar que el proceso sigue vivo
     threading.Thread(target=heartbeat, daemon=True).start()
 
-    # 🔁 Mantener vivo el proceso aunque todos los hilos sean daemon
-    while True:
-        time.sleep(3600)
+
+if __name__ == "__main__":
+    launch_all()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000)
