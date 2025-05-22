@@ -80,14 +80,12 @@ def get_top_signals(min_criteria=6, verbose=False):
         except Exception as e:
             print(f"❌ Error checking {symbol}: {e}")
 
-        if not opportunities:
-            return []
+    if not opportunities:
+        return []
 
-        opportunities.sort(key=lambda x: x[1], reverse=True)
-
-    # Devuelve todos los símbolos válidos (ordenados)
-        top_symbols = [symbol for symbol, score in opportunities]
-        return top_symbols
+    opportunities.sort(key=lambda x: x[1], reverse=True)
+    top_symbols = [symbol for symbol, score in opportunities]
+    return top_symbols
 
 
 def get_top_shorts(min_criteria=6, verbose=False):
@@ -128,12 +126,11 @@ def get_top_shorts(min_criteria=6, verbose=False):
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
 
-       if not shorts:
-           return []
+    if not shorts:
+        return []
 
-       shorts.sort(key=lambda x: x[1], reverse=True)
+    shorts.sort(key=lambda x: x[1], reverse=True)
+    top_symbols = [symbol for symbol, score in shorts]
+    return top_symbols
 
-    # Devuelve todos los símbolos válidos (ordenados)
-       top_symbols = [symbol for symbol, score in shorts]
-       return top_symbols
 
