@@ -42,7 +42,7 @@ def is_options_enabled(symbol):
 
 stock_assets = fetch_sp500_symbols()
 
-def get_top_signals(min_criteria=6, verbose=False):
+def get_top_signals(min_criteria=5, verbose=False):
     opportunities = []
     already_considered = set()
 
@@ -88,7 +88,7 @@ def get_top_signals(min_criteria=6, verbose=False):
     return top_symbols
 
 
-def get_top_shorts(min_criteria=6, verbose=False):
+def get_top_shorts(min_criteria=5, verbose=False):
     shorts = []
     already_considered = set()
 
