@@ -41,10 +41,12 @@ def pre_market_scan():
                 print("⏳ Mercado abrirá pronto...", flush=True)
             else:
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
-                opportunities = get_top_signals(min_criteria=6, verbose=True)
-                for symbol in opportunities:
+                opportunities = get_top_signals(min_criteria=5, verbose=True)
+                MAX_BUYS_PER_CYCLE = 5
+                for symbol in opportunities[:MAX_BUYS_PER_CYCLE]:
                     place_order_with_trailing_stop(symbol, 500, 1.5)
                     pending_opportunities.add(symbol)
+
 
                 print("📊 Ejecutando estrategia de opciones...", flush=True)
                 run_options_strategy()
@@ -66,7 +68,8 @@ def short_scan():
         if is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
             shorts = get_top_shorts(min_criteria=6)
-            for symbol in shorts:
+            MAX_SHORTS_PER_CYCLE = 5
+            for symbol in shorts[:MAX_SHORTS_PER_CYCLE]:
                 try:
                     asset = api.get_asset(symbol)
                     if asset.shortable:
