@@ -43,10 +43,13 @@ def pre_market_scan():
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
                 opportunities = get_top_signals(min_criteria=5, verbose=True)
                 MAX_BUYS_PER_CYCLE = 5
+
+                if len(opportunities) > MAX_BUYS_PER_CYCLE:
+                    print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.")
+
                 for symbol in opportunities[:MAX_BUYS_PER_CYCLE]:
                     place_order_with_trailing_stop(symbol, 500, 1.5)
                     pending_opportunities.add(symbol)
-
 
                 print("📊 Ejecutando estrategia de opciones...", flush=True)
                 run_options_strategy()
@@ -62,13 +65,18 @@ def pre_market_scan():
         else:
             pytime.sleep(1800)
 
+
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
         if is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
-            shorts = get_top_shorts(min_criteria=6)
+            shorts = get_top_shorts(min_criteria=5)
             MAX_SHORTS_PER_CYCLE = 5
+
+            if len(shorts) > MAX_SHORTS_PER_CYCLE:
+                print(f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo los primeros.")
+
             for symbol in shorts[:MAX_SHORTS_PER_CYCLE]:
                 try:
                     asset = api.get_asset(symbol)
@@ -76,8 +84,10 @@ def short_scan():
                         place_short_order_with_trailing_buy(symbol, 500, 1.5)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
+
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD")
         pytime.sleep(300)
+
 
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
