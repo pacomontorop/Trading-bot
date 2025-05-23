@@ -1,7 +1,9 @@
+#executor.py
+
 from datetime import datetime
 import time
 from broker.alpaca import api, get_current_price
-from signals.filters import is_position_open
+from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event
 
 # Control open positions and daily logs
@@ -13,6 +15,8 @@ DAILY_INVESTMENT_LIMIT_PCT = 0.50
 ORDER_AMOUNT_USD = 500  # 🔧 Monto fijo por orden
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
+
+quiver_signals_log = {}
 
 def reset_daily_investment():
     global _total_invested_today, _last_investment_day, executed_symbols_today
@@ -48,6 +52,15 @@ def wait_for_order_fill(order_id, timeout=30):
 def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
     reset_daily_investment()
     try:
+        if not is_symbol_approved(symbol):
+            print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
+            return
+
+        from signals.quiver_approval import get_all_quiver_signals
+        quiver_signals_log[symbol] = [
+            k for k, v in get_all_quiver_signals(symbol).items() if v
+        ]
+
         account = api.get_account()
         equity = float(account.equity)
 
@@ -107,6 +120,16 @@ def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_pe
 def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
     reset_daily_investment()
     try:
+        if not is_symbol_approved(symbol):
+            print(f"❌ {symbol} no aprobado para short según criterios de análisis.")
+            return
+
+        from signals.quiver_approval import get_all_quiver_signals
+        quiver_signals_log[symbol] = [
+            k for k, v in get_all_quiver_signals(symbol).items() if v
+        ]
+
+
         account = api.get_account()
         equity = float(account.equity)
 
@@ -162,4 +185,3 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
         log_event(f"✅ Short y recompra trailing colocadas para {symbol}: {qty} unidades")
     except Exception as e:
         log_event(f"❌ Error placing short order for {symbol}: {str(e)}")
-
