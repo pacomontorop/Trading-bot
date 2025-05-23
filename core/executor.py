@@ -1,4 +1,4 @@
-#executor.py
+# executor.py
 
 from datetime import datetime
 import time
@@ -6,20 +6,19 @@ from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event
 
-# Control open positions and daily logs
+# Control de estado
 open_positions = set()
 pending_opportunities = set()
 pending_trades = set()
 executed_symbols_today = set()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
-ORDER_AMOUNT_USD = 500  # 🔧 Monto fijo por orden
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
 
 quiver_signals_log = {}
 
 def reset_daily_investment():
-    global _total_invested_today, _last_investment_day, executed_symbols_today
+    global _total_investment_day, _last_investment_day, executed_symbols_today
     today = datetime.utcnow().date()
     if today != _last_investment_day:
         _total_invested_today = 0.0
@@ -49,7 +48,7 @@ def wait_for_order_fill(order_id, timeout=30):
     log_event(f"❌ Timeout esperando ejecución de orden {order_id}")
     return False
 
-def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
+def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
     try:
         if not is_symbol_approved(symbol):
@@ -86,6 +85,7 @@ def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_pe
             print(f"⚠️ Fondos insuficientes para comprar {symbol}")
             return
 
+        print(f"🛒 Enviando orden de compra para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -93,7 +93,6 @@ def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_pe
             type='market',
             time_in_force='gtc'
         )
-        print(f"🛒 Orden de compra enviada para {symbol}. Esperando ejecución...")
 
         if not wait_for_order_fill(order.id):
             return
@@ -111,13 +110,14 @@ def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_pe
         open_positions.add(symbol)
         add_to_invested(qty * current_price)
         executed_symbols_today.add(symbol)
-        pending_trades.add(f"{symbol}: {qty} unidades")
+        pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
 
-        log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades")
+        log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
+
     except Exception as e:
         log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
 
-def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, trail_percent=1.5):
+def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
     try:
         if not is_symbol_approved(symbol):
@@ -128,7 +128,6 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
         quiver_signals_log[symbol] = [
             k for k, v in get_all_quiver_signals(symbol).items() if v
         ]
-
 
         account = api.get_account()
         equity = float(account.equity)
@@ -155,6 +154,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
             print(f"⚠️ Fondos insuficientes para short en {symbol}")
             return
 
+        print(f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -162,7 +162,6 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
             type='market',
             time_in_force='gtc'
         )
-        print(f"📉 Orden short enviada para {symbol}. Esperando ejecución...")
 
         if not wait_for_order_fill(order.id):
             return
@@ -180,8 +179,9 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
         open_positions.add(symbol)
         add_to_invested(qty * current_price)
         executed_symbols_today.add(symbol)
-        pending_trades.add(f"{symbol} SHORT: {qty} unidades")
+        pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${qty * current_price:.2f}")
 
-        log_event(f"✅ Short y recompra trailing colocadas para {symbol}: {qty} unidades")
+        log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
+
     except Exception as e:
         log_event(f"❌ Error placing short order for {symbol}: {str(e)}")
