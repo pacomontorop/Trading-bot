@@ -1,14 +1,11 @@
+#reader.py
+
+
 import pandas as pd
 from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
+from signals.quiver_approval import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-print("🚀 reader.py iniciado desde __main__")
-
-
 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
 
@@ -44,7 +41,6 @@ def fetch_symbols_from_csv(path="data/symbols.csv"):
         print(f"❌ Error leyendo CSV de símbolos: {e}")
         return local_sp500_symbols
 
-
 def is_options_enabled(symbol):
     try:
         asset = api.get_asset(symbol)
@@ -63,31 +59,49 @@ def get_top_signals(min_criteria=5, verbose=False):
             continue
         already_considered.add(symbol)
 
+        # Evaluar Quiver primero
         try:
-            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
+            signals = get_all_quiver_signals(symbol)
+            quiver_score = score_quiver_signals(signals)
+            if quiver_score >= QUIVER_APPROVAL_THRESHOLD:
+                if verbose:
+                    print(f"✅ {symbol} aprobado por Quiver (score={quiver_score}) → señales activas: {[k for k, v in signals.items() if v]}")
+                opportunities.append((symbol, 90 + quiver_score, "Quiver"))
+                continue
+        except Exception as e:
+            print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
+
+        # Evaluación técnica si no lo aprueba Quiver
+        try:
+            data = fetch_yfinance_stock_data(symbol)
+            if not data or len(data) != 6 or any(d is None for d in data):
+                if verbose:
+                    print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+                continue
+
+            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = data
 
             score = 0
-            if market_cap and market_cap > 500_000_000:
+            if market_cap > 500_000_000:
                 score += CRITERIA_WEIGHTS["market_cap"]
-            if volume and volume > STRICTER_VOLUME_THRESHOLD:
+            if volume > STRICTER_VOLUME_THRESHOLD:
                 score += CRITERIA_WEIGHTS["volume"]
-            if weekly_change is not None and weekly_change > STRICTER_WEEKLY_CHANGE_THRESHOLD:
+            if weekly_change > STRICTER_WEEKLY_CHANGE_THRESHOLD:
                 score += CRITERIA_WEIGHTS["weekly_change_positive"]
             if trend:
                 score += CRITERIA_WEIGHTS["trend_positive"]
-            if price_change_24h is not None and 0 < price_change_24h < 10:
+            if 0 < price_change_24h < 10:
                 score += CRITERIA_WEIGHTS["volatility_ok"]
-            if volume and volume_7d_avg and volume > volume_7d_avg:
+            if volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}, options_enabled={is_options_enabled(symbol)}")
+                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
-                opportunities.append((symbol, score))
-            else:
-                if verbose:
-                    print(f"⛔ {symbol} descartado: score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
+                opportunities.append((symbol, score, "Técnico"))
+            elif verbose:
+                print(f"⛔ {symbol} descartado: score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
 
         except Exception as e:
             print(f"❌ Error checking {symbol}: {e}")
@@ -96,9 +110,7 @@ def get_top_signals(min_criteria=5, verbose=False):
         return []
 
     opportunities.sort(key=lambda x: x[1], reverse=True)
-    top_symbols = [symbol for symbol, score in opportunities]
-    return top_symbols
-
+    return opportunities[:5]
 
 def get_top_shorts(min_criteria=5, verbose=False):
     shorts = []
@@ -109,31 +121,48 @@ def get_top_shorts(min_criteria=5, verbose=False):
             continue
         already_considered.add(symbol)
 
+        # Evaluar Quiver primero
         try:
-            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = fetch_yfinance_stock_data(symbol)
+            signals = get_all_quiver_signals(symbol)
+            quiver_score = score_quiver_signals(signals)
+            if quiver_score >= QUIVER_APPROVAL_THRESHOLD:
+                if verbose:
+                    print(f"✅ {symbol} aprobado para SHORT por Quiver (score={quiver_score}) → señales activas: {[k for k, v in signals.items() if v]}")
+                shorts.append((symbol, 90 + quiver_score, "Quiver"))
+                continue
+        except Exception as e:
+            print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
+
+        try:
+            data = fetch_yfinance_stock_data(symbol)
+            if not data or len(data) != 6 or any(d is None for d in data):
+                if verbose:
+                    print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+                continue
+
+            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = data
 
             score = 0
-            if market_cap and market_cap > 500_000_000:
+            if market_cap > 500_000_000:
                 score += CRITERIA_WEIGHTS["market_cap"]
-            if volume and volume > STRICTER_VOLUME_THRESHOLD:
+            if volume > STRICTER_VOLUME_THRESHOLD:
                 score += CRITERIA_WEIGHTS["volume"]
-            if weekly_change is not None and weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
+            if weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
                 score += CRITERIA_WEIGHTS["weekly_change_positive"]
             if trend is False:
                 score += CRITERIA_WEIGHTS["trend_positive"]
-            if price_change_24h is not None and 0 < price_change_24h < 10:
+            if 0 < price_change_24h < 10:
                 score += CRITERIA_WEIGHTS["volatility_ok"]
-            if volume and volume_7d_avg and volume > volume_7d_avg:
+            if volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, options_enabled={is_options_enabled(symbol)}")
+                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
-                shorts.append((symbol, score))
-            else:
-                if verbose:
-                    print(f"⛔ {symbol} descartado (short): score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
+                shorts.append((symbol, score, "Técnico"))
+            elif verbose:
+                print(f"⛔ {symbol} descartado (short): score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
 
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
@@ -142,14 +171,4 @@ def get_top_shorts(min_criteria=5, verbose=False):
         return []
 
     shorts.sort(key=lambda x: x[1], reverse=True)
-    top_symbols = [symbol for symbol, score in shorts]
-    return top_symbols
-
-print("✅ Esto es una prueba de ejecución mínima en reader.py")
-
-if __name__ == "__main__":
-    print("✅ Ejecutado directamente como script")
-
-
-
-
+    return shorts[:5]
