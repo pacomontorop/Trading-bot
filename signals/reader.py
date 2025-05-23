@@ -143,9 +143,19 @@ def get_top_shorts(min_criteria=5, verbose=False):
     return top_symbols
 
 if __name__ == "__main__":
-    top_signals = get_top_signals(min_criteria=6, verbose=True)
-    print("\n📈 Resultados finales:")
-    for symbol in top_signals:
-        print(symbol)
+    print("🔍 Ejecutando test local de señales...\n")
+    
+    print("📈 Top oportunidades LONG:")
+    top_longs = get_top_signals(min_criteria=6, verbose=True)
+    print("\n✅ Resultados long:")
+    for symbol in top_longs:
+        print(f"→ {symbol}")
+
+    print("\n📉 Top oportunidades SHORT:")
+    top_shorts = get_top_shorts(min_criteria=6, verbose=True)
+    print("\n✅ Resultados short:")
+    for symbol in top_shorts:
+        print(f"→ {symbol}")
+
 
 
