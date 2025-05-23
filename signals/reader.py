@@ -2,6 +2,10 @@ import pandas as pd
 from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
 
