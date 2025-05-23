@@ -1,7 +1,7 @@
 # quiver_approval.py
 import os
 import requests
-from signals.filters import is_approved_by_finnhub_and_alphavantage
+from signals.approvals_fallback import is_approved_by_finnhub_and_alphavantage
 from dotenv import load_dotenv
 from utils.logger import log_event  
 from signals.quiver_endpoints import get_extended_quiver_signals
