@@ -3,7 +3,7 @@
 
 import pandas as pd
 from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
-from signals.quiver_approval import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
+from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 
