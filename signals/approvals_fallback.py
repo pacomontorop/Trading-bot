@@ -1,1 +1,0 @@
-from signals.filters import is_approved_by_finnhub_and_alphavantage
