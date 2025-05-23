@@ -151,21 +151,40 @@ def daily_summary():
             pending_trades.clear()
         pytime.sleep(3600)
         
+import os
+import pandas as pd
 from utils.generate_symbols_csv import generate_symbols_csv
 
 def start_schedulers():
-    print("🟢 Iniciando generación de symbols.csv...", flush=True)
+    print("🟢 Iniciando verificación de symbols.csv...", flush=True)
+    regenerate = True
+
     try:
-        generate_symbols_csv()
-        print("✅ symbols.csv generado correctamente.", flush=True)
+        if os.path.exists("data/symbols.csv"):
+            df = pd.read_csv("data/symbols.csv")
+            if not df.empty and "Symbol" in df.columns:
+                regenerate = False
+                print(f"✅ symbols.csv ya existe con {len(df)} símbolos. No se regenera.", flush=True)
+            else:
+                print("⚠️ symbols.csv está vacío o incompleto. Se regenerará.", flush=True)
+        else:
+            print("📂 symbols.csv no existe. Se generará.", flush=True)
     except Exception as e:
-        print(f"❌ Error al generar symbols.csv: {e}", flush=True)
+        print(f"❌ Error al verificar symbols.csv: {e}. Se generará igualmente.", flush=True)
+
+    if regenerate:
+        try:
+            generate_symbols_csv()
+            print("✅ symbols.csv generado correctamente.", flush=True)
+        except Exception as e:
+            print(f"❌ Error al generar symbols.csv: {e}", flush=True)
 
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
 
 
 # Exportar para pruebas o logs manuales
