@@ -1,3 +1,5 @@
+#quiver_utils.py
+
 def get_quiver_signals(symbol):
     """
     Devuelve un diccionario con las señales de Quiver para un símbolo.
