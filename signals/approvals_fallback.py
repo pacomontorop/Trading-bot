@@ -1,17 +1,10 @@
-from signals.finnhub import get_finnhub_recommendation, get_finnhub_sentiment
-from signals.alphavantage import get_alphavantage_recommendation
+from filters import is_approved_by_finnhub, is_approved_by_alphavantage
 
 def is_approved_by_finnhub_and_alphavantage(symbol):
-    try:
-        finnhub_rec = get_finnhub_recommendation(symbol)
-        finnhub_sent = get_finnhub_sentiment(symbol)
-        alpha_rec = get_alphavantage_recommendation(symbol)
+    approved_finnhub = is_approved_by_finnhub(symbol)
+    approved_alpha = is_approved_by_alphavantage(symbol)
 
-        return (
-            finnhub_rec in {"buy", "strong_buy"} and
-            finnhub_sent != "bearish" and
-            alpha_rec in {"buy", "strong_buy"}
-        )
-    except Exception as e:
-        print(f"⚠️ Error en fallback Finnhub + Alpha para {symbol}: {e}")
-        return False
+    if not (approved_alpha and approved_finnhub):
+        print(f"⛔ {symbol} no aprobado: Finnhub={approved_finnhub}, AlphaVantage={approved_alpha}")
+
+    return approved_alpha and approved_finnhub
