@@ -64,15 +64,29 @@ def get_all_quiver_signals(symbol):
     return all_signals
 
 def evaluate_quiver_signals(signals, symbol=""):
+    print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
+
+    # Mostrar todas las señales con su valor booleano
+    for key, value in signals.items():
+        status = "✅" if value else "❌"
+        print(f"   {status} {key}: {value}")
+
+    # Calcular puntuación
     score = score_quiver_signals(signals)
     active_signals = [k for k, v in signals.items() if v]
 
+    # Mostrar puntuación total
+    print(f"🧠 {symbol} → score total: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD})")
+    print(f"   Señales activas: {active_signals}")
+
+    # Evaluación final
     if score >= QUIVER_APPROVAL_THRESHOLD:
         log_event(f"✅ {symbol} aprobado por Quiver con score {score}. Señales activas: {', '.join(active_signals)}")
         return True
     else:
         print(f"⛔ {symbol} no aprobado por Quiver. Score: {score}. Señales activas: {', '.join(active_signals)}")
         return False
+
 
 def score_quiver_signals(signals):
     score = 0
