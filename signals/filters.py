@@ -5,7 +5,8 @@ import time
 import requests
 import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
-from signals.quiver_approval import is_approved_by_quiver
+from signals.quiver_utils import is_approved_by_quiver
+
 
 load_dotenv()
 api = tradeapi.REST(
