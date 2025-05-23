@@ -25,13 +25,18 @@ CRITERIA_WEIGHTS = {
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
 
-def fetch_sp500_symbols():
+import csv
+
+def fetch_symbols_from_csv(path="data/symbols.csv"):
     try:
-        sp500_url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
-        tables = pd.read_html(sp500_url)
-        return tables[0]['Symbol'].tolist()
-    except:
+        with open(path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
+            return symbols
+    except Exception as e:
+        print(f"❌ Error leyendo CSV de símbolos: {e}")
         return local_sp500_symbols
+
 
 def is_options_enabled(symbol):
     try:
@@ -40,7 +45,7 @@ def is_options_enabled(symbol):
     except:
         return False
 
-stock_assets = fetch_sp500_symbols()
+stock_assets = fetch_symbols_from_csv()
 
 def get_top_signals(min_criteria=5, verbose=False):
     opportunities = []
