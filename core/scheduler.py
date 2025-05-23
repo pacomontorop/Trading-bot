@@ -60,15 +60,17 @@ def pre_market_scan():
                 MAX_BUYS_PER_CYCLE = 5
 
                 if not opportunities:
-                    print("⚠️ No hay oportunidades. Probando evaluación directa con AAPL")
+                    print("⚠️ No hay oportunidades. Probando evaluación directa con múltiples tickers...", flush=True)
                     from signals.quiver_utils import get_all_quiver_signals, evaluate_quiver_signals
-                    test_symbol = "AAPL"
-                    signals = get_all_quiver_signals(test_symbol)
-                    print("🧪 Señales obtenidas para AAPL:", signals)
-                    evaluate_quiver_signals(signals, test_symbol)
+                    test_symbols = ["AAPL", "NVDA", "MSFT", "TSLA", "AMD", "GOOG", "AMZN"]
+                    for test_symbol in test_symbols:
+                        print(f"🔍 Evaluando {test_symbol}...", flush=True)
+                        signals = get_all_quiver_signals(test_symbol)
+                        print(f"🧪 Señales obtenidas para {test_symbol}:", signals, flush=True)
+                        evaluate_quiver_signals(signals, test_symbol)
 
                 if len(opportunities) > MAX_BUYS_PER_CYCLE:
-                    print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.")
+                    print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.", flush=True)
 
                 for symbol, score, origin in opportunities[:MAX_BUYS_PER_CYCLE]:
                     amount_usd = calculate_investment_amount(score)
