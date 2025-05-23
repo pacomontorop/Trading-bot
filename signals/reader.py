@@ -51,6 +51,7 @@ def is_options_enabled(symbol):
 stock_assets = fetch_symbols_from_csv()
 
 def get_top_signals(min_criteria=5, verbose=False):
+    print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
     opportunities = []
     already_considered = set()
 
