@@ -142,6 +142,7 @@ def get_top_shorts(min_criteria=5, verbose=False):
     top_symbols = [symbol for symbol, score in shorts]
     return top_symbols
 
+print("✅ reader.py ha sido cargado")
 if __name__ == "__main__":
     print("🔍 Ejecutando test local de señales...\n")
     
