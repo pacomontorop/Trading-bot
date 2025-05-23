@@ -145,21 +145,11 @@ def get_top_shorts(min_criteria=5, verbose=False):
     top_symbols = [symbol for symbol, score in shorts]
     return top_symbols
 
-print("✅ reader.py ha sido cargado")
-if __name__ == "__main__":
-    print("🔍 Ejecutando test local de señales...\n")
-    
-    print("📈 Top oportunidades LONG:")
-    top_longs = get_top_signals(min_criteria=6, verbose=True)
-    print("\n✅ Resultados long:")
-    for symbol in top_longs:
-        print(f"→ {symbol}")
+print("✅ Esto es una prueba de ejecución mínima en reader.py")
 
-    print("\n📉 Top oportunidades SHORT:")
-    top_shorts = get_top_shorts(min_criteria=6, verbose=True)
-    print("\n✅ Resultados short:")
-    for symbol in top_shorts:
-        print(f"→ {symbol}")
+if __name__ == "__main__":
+    print("✅ Ejecutado directamente como script")
+
 
 
 
