@@ -110,27 +110,38 @@ def daily_summary():
     while True:
         now = datetime.utcnow()
         if now.hour == 20:
-            subject = "Resumen diario de trading 📈"
+            subject = "📈 Resumen diario de trading"
 
+            # Cabecera numérica
             summary_stats = (
-                f"Resumen del día 📊:\n"
+                "📊 *Estadísticas del día:*\n"
                 f"• Oportunidades detectadas: {len(pending_opportunities)}\n"
                 f"• Órdenes ejecutadas: {len(pending_trades)}\n"
                 f"• Total invertido hoy: {invested_today_usd():.2f} USD\n"
+                "\n" + "-" * 40 + "\n"
             )
 
+            # Oportunidades detectadas
             body = summary_stats
-            body += "\nOportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
-            body += "\n\nÓrdenes ejecutadas hoy:\n"
+            body += "🟡 *Oportunidades detectadas:*\n"
+            for sym in sorted(pending_opportunities):
+                body += f"→ {sym}\n"
+
+            # Órdenes ejecutadas
+            body += "\n🟢 *Órdenes ejecutadas:*\n"
             for trade in sorted(pending_trades):
                 symbol = trade.split()[0].replace("SHORT:", "").strip(":")
                 signals = quiver_signals_log.get(symbol, [])
                 amount_usd = trade.split("$")[-1] if "$" in trade else ""
+
+                # Composición elegante de la línea de salida
+                tipo = "SHORT" if "SHORT" in trade else "LONG"
+                line = f"{symbol} [{tipo}] — {amount_usd} USD"
                 if signals:
-                    signals_str = ", ".join(signals)
-                    body += f"{trade} — {amount_usd} — Señales Quiver: {signals_str}\n"
-                else:
-                    body += f"{trade} — {amount_usd}\n"
+                    line += f" — 🧠 Señales: {', '.join(signals)}"
+                body += f"→ {line}\n"
+
+            # PnL y estado de cartera
             try:
                 positions = api.list_positions()
                 total_pnl = 0
@@ -139,20 +150,25 @@ def daily_summary():
                     current_price = float(p.current_price)
                     qty = float(p.qty)
                     total_pnl += (current_price - avg_entry) * qty
-                body += f"\n\nGanancia/Pérdida no realizada actual: {total_pnl:.2f} USD"
-                body += f"\nNúmero de posiciones abiertas: {len(positions)}"
+                body += "\n" + "-" * 40 + "\n"
+                body += f"💰 PnL no realizado actual: {total_pnl:.2f} USD\n"
+                body += f"📌 Posiciones abiertas: {len(positions)}"
             except Exception as e:
                 body += f"\n\n❌ Error obteniendo PnL: {e}"
 
-            # Agregar resumen de opciones
+            # Opciones
             options_log = get_options_log_and_reset()
             if options_log:
-                body += "\n\n📘 Operaciones de opciones hoy:\n" + "\n".join(options_log)
+                body += "\n\n📘 *Operaciones con opciones:*\n"
+                body += "\n".join(f"→ {line}" for line in options_log)
 
+            # Envío y limpieza
             send_email(subject, body, attach_log=True)
             pending_opportunities.clear()
             pending_trades.clear()
+
         pytime.sleep(3600)
+
         
 
 def start_schedulers():
