@@ -1,5 +1,6 @@
 import requests
 import os
+from signals.quiver_utils import is_approved_by_quiver, get_all_quiver_signals
 
 API_KEY = os.getenv("QUIVER_API_KEY")  # o directamente: API_KEY = "TU_API_KEY"
 headers = {"x-api-key": API_KEY}
