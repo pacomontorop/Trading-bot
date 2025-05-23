@@ -138,4 +138,12 @@ def get_top_shorts(min_criteria=5, verbose=False):
     top_symbols = [symbol for symbol, score in shorts]
     return top_symbols
 
+if __name__ == "__main__":
+    print("🧪 Test: TOP oportunidades de compra")
+    top_buys = get_top_signals(verbose=True)
+    print("✅ Resultados:", top_buys[:10])
+
+    print("\n🧪 Test: TOP oportunidades de short")
+    top_shorts = get_top_shorts(verbose=True)
+    print("✅ Resultados:", top_shorts[:10])
 
