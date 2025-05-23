@@ -43,7 +43,7 @@ def calculate_investment_amount(score, min_score=6, max_score=19, min_investment
     proportion = (normalized_score - min_score) / (max_score - min_score)
     return int(min_investment + proportion * (max_investment - min_investment))
 
-def pre_market_scan():
+def pre_market_scan(): 
     print("🌀 pre_market_scan iniciado.", flush=True)
 
     while True:
@@ -58,6 +58,14 @@ def pre_market_scan():
                 opportunities = get_top_signals(min_criteria=6, verbose=True)
                 log_event(f"🔍 {len(opportunities)} oportunidades encontradas para compra (máx 5 por ciclo)")
                 MAX_BUYS_PER_CYCLE = 5
+
+                if not opportunities:
+                    print("⚠️ No hay oportunidades. Probando evaluación directa con AAPL")
+                    from signals.quiver_utils import get_all_quiver_signals, evaluate_quiver_signals
+                    test_symbol = "AAPL"
+                    signals = get_all_quiver_signals(test_symbol)
+                    print("🧪 Señales obtenidas para AAPL:", signals)
+                    evaluate_quiver_signals(signals, test_symbol)
 
                 if len(opportunities) > MAX_BUYS_PER_CYCLE:
                     print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.")
