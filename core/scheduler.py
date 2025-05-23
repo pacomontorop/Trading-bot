@@ -21,6 +21,9 @@ from signals.reader import get_top_signals, get_top_shorts
 from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
+import os
+import pandas as pd
+from utils.generate_symbols_csv import generate_symbols_csv
 
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
@@ -151,9 +154,6 @@ def daily_summary():
             pending_trades.clear()
         pytime.sleep(3600)
         
-import os
-import pandas as pd
-from utils.generate_symbols_csv import generate_symbols_csv
 
 def start_schedulers():
     print("🟢 Iniciando verificación de symbols.csv...", flush=True)
