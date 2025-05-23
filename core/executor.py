@@ -56,7 +56,7 @@ def place_order_with_trailing_stop(symbol, amount_usd=ORDER_AMOUNT_USD, trail_pe
             print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
             return
 
-        from signals.quiver_approval import get_all_quiver_signals
+        from signals.quiver_utils import get_all_quiver_signals
         quiver_signals_log[symbol] = [
             k for k, v in get_all_quiver_signals(symbol).items() if v
         ]
@@ -124,7 +124,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd=ORDER_AMOUNT_USD, tra
             print(f"❌ {symbol} no aprobado para short según criterios de análisis.")
             return
 
-        from signals.quiver_approval import get_all_quiver_signals
+        from signals.quiver_utils import get_all_quiver_signals
         quiver_signals_log[symbol] = [
             k for k, v in get_all_quiver_signals(symbol).items() if v
         ]
