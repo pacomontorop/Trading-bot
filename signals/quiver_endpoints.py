@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
-QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
+QUIVER_BASE_URL = "https://api.quiverquant.com"
 HEADERS = {"x-api-key": QUIVER_API_KEY}
 
 def safe_quiver_request(url, retries=3, delay=2):
