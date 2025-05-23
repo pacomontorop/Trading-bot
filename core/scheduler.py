@@ -150,13 +150,23 @@ def daily_summary():
             pending_opportunities.clear()
             pending_trades.clear()
         pytime.sleep(3600)
+        
+from utils.generate_symbols_csv import generate_symbols_csv
 
 def start_schedulers():
+    print("🟢 Iniciando generación de symbols.csv...", flush=True)
+    try:
+        generate_symbols_csv()
+        print("✅ symbols.csv generado correctamente.", flush=True)
+    except Exception as e:
+        print(f"❌ Error al generar symbols.csv: {e}", flush=True)
+
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
 
 # Exportar para pruebas o logs manuales
 if __name__ == "__main__":
