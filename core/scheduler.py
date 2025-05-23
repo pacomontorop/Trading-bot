@@ -1,3 +1,5 @@
+#schedulers.py
+
 import threading
 from datetime import datetime
 from pytz import timezone
@@ -9,8 +11,10 @@ from core.executor import (
     place_short_order_with_trailing_buy,
     pending_opportunities,
     pending_trades,
-    invested_today_usd
+    invested_today_usd,
+    quiver_signals_log  # ← Añadido aquí
 )
+
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from broker.alpaca import api, get_current_price, is_market_open
 from signals.reader import get_top_signals, get_top_shorts
@@ -29,6 +33,13 @@ def is_market_open(now_ny=None):
         time(9, 30) <= now_ny.time() <= time(16, 0)
     )
 
+def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=200, max_investment=3000):
+    if score < min_score:
+        return min_investment
+    normalized_score = min(max(score, min_score), max_score)
+    proportion = (normalized_score - min_score) / (max_score - min_score)
+    return int(min_investment + proportion * (max_investment - min_investment))
+
 def pre_market_scan():
     print("🌀 pre_market_scan iniciado.", flush=True)
 
@@ -41,14 +52,16 @@ def pre_market_scan():
                 print("⏳ Mercado abrirá pronto...", flush=True)
             else:
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
-                opportunities = get_top_signals(min_criteria=5, verbose=True)
+                opportunities = get_top_signals(min_criteria=6, verbose=True)
+                log_event(f"🔍 {len(opportunities)} oportunidades encontradas para compra (máx 5 por ciclo)")
                 MAX_BUYS_PER_CYCLE = 5
 
                 if len(opportunities) > MAX_BUYS_PER_CYCLE:
                     print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.")
 
-                for symbol in opportunities[:MAX_BUYS_PER_CYCLE]:
-                    place_order_with_trailing_stop(symbol, 500, 1.5)
+                for symbol, score, origin in opportunities[:MAX_BUYS_PER_CYCLE]:
+                    amount_usd = calculate_investment_amount(score)
+                    place_order_with_trailing_stop(symbol, amount_usd, 1.5)
                     pending_opportunities.add(symbol)
 
                 print("📊 Ejecutando estrategia de opciones...", flush=True)
@@ -65,29 +78,29 @@ def pre_market_scan():
         else:
             pytime.sleep(1800)
 
-
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
         if is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
-            shorts = get_top_shorts(min_criteria=5)
+            shorts = get_top_shorts(min_criteria=6, verbose=True)
+            log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
             MAX_SHORTS_PER_CYCLE = 5
 
             if len(shorts) > MAX_SHORTS_PER_CYCLE:
-                print(f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo los primeros.")
+                print(f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.")
 
-            for symbol in shorts[:MAX_SHORTS_PER_CYCLE]:
+            for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
                 try:
                     asset = api.get_asset(symbol)
                     if asset.shortable:
-                        place_short_order_with_trailing_buy(symbol, 500, 1.5)
+                        amount_usd = calculate_investment_amount(score)
+                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.5)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
 
             log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD")
         pytime.sleep(300)
-
 
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
@@ -105,8 +118,16 @@ def daily_summary():
 
             body = summary_stats
             body += "\nOportunidades detectadas hoy:\n" + "\n".join(sorted(pending_opportunities))
-            body += "\n\nÓrdenes ejecutadas hoy:\n" + "\n".join(sorted(pending_trades))
-
+            body += "\n\nÓrdenes ejecutadas hoy:\n"
+            for trade in sorted(pending_trades):
+                symbol = trade.split()[0].replace("SHORT:", "").strip(":")
+                signals = quiver_signals_log.get(symbol, [])
+                amount_usd = trade.split("$")[-1] if "$" in trade else ""
+                if signals:
+                    signals_str = ", ".join(signals)
+                    body += f"{trade} — {amount_usd} — Señales Quiver: {signals_str}\n"
+                else:
+                    body += f"{trade} — {amount_usd}\n"
             try:
                 positions = api.list_positions()
                 total_pnl = 0
@@ -136,4 +157,10 @@ def start_schedulers():
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=short_scan, daemon=True).start()
+
+# Exportar para pruebas o logs manuales
+if __name__ == "__main__":
+    daily_summary()
+
+
 
