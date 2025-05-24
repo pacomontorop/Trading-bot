@@ -7,7 +7,7 @@ from utils.logger import log_event
 load_dotenv()
 
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
-QUIVER_BASE_URL = "https://api.quiverquant.com"
+QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"x-api-key": QUIVER_API_KEY}
 
 QUIVER_SIGNAL_WEIGHTS = {
