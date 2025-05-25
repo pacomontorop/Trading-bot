@@ -27,7 +27,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     "has_positive_app_ratings": 2
 }
 
-QUIVER_APPROVAL_THRESHOLD = 6
+QUIVER_APPROVAL_THRESHOLD = 7
 
 
 # --- Función principal ---
@@ -129,7 +129,7 @@ def get_insider_signal(symbol):
     symbol_data = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
     buys = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "P")
     sells = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "S")
-    return buys > sells
+    return buys > sells * 1.5  # Exige más compras con cierto margen
 
 
 def get_gov_contract_signal(symbol):
@@ -137,7 +137,9 @@ def get_gov_contract_signal(symbol):
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
-    return any(tx.get("Ticker") == symbol.upper() for tx in data)
+    contracts = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    return len(contracts) >= 2  # Al menos dos contratos activos
+
 
 def get_patent_momentum_signal(symbol):
     url = f"{QUIVER_BASE_URL}/live/patentmomentum"
@@ -145,7 +147,8 @@ def get_patent_momentum_signal(symbol):
     if not isinstance(data, list):
         return False
     matches = [tx for tx in data if tx.get("ticker") == symbol.upper()]
-    return any(tx.get("momentum", 0) > 0 for tx in matches)
+    return any(tx.get("momentum", 0) >= 1.5 for tx in matches)  # Requiere innovación fuerte
+
     
 def get_wsb_signal(symbol):
     url = f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}"
@@ -153,7 +156,7 @@ def get_wsb_signal(symbol):
     if not isinstance(data, list):
         return False
     recent_mentions = [tx for tx in data if tx.get("Mentions", 0) > 10]
-    return len(recent_mentions) > 0
+    return len(recent_mentions) >= 3  # No basta con una mención puntual
 
 def get_etf_flow_signal(symbol):
     url = f"{QUIVER_BASE_URL}/live/etfholdings"
@@ -161,7 +164,9 @@ def get_etf_flow_signal(symbol):
     if not isinstance(data, list):
         return False
     matches = [tx for tx in data if tx.get("Holding Symbol") == symbol.upper()]
-    return any(tx.get("Value ($)", 0) > 0 for tx in matches)
+    total_exposure = sum(tx.get("Value ($)", 0) for tx in matches)
+    return total_exposure > 1_000_000  # Exige interés institucional claro
+
 
 
 # --- Señales extendidas Tier 1 y 2 ---
@@ -177,29 +182,38 @@ def get_extended_quiver_signals(symbol):
 
 def has_recent_sec13f_activity(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
-    return isinstance(data, list) and any(tx.get("Ticker") == symbol.upper() for tx in data)
+    if not isinstance(data, list):
+        return False
+    return any(tx.get("Ticker") == symbol.upper() for tx in data)
+
+
 
 def has_recent_sec13f_changes(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
-    return isinstance(data, list) and any(tx.get("Ticker") == symbol.upper() for tx in data)
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    return any(abs(tx.get("Change_Pct", 0)) >= 10 for tx in matches)
 
 def is_high_political_beta(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/politicalbeta")
-    if isinstance(data, list):
-        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-        return any(tx.get("TrumpBeta", 0) > 0.25 for tx in matches)
-    return False
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    return any(tx.get("TrumpBeta", 0) >= 0.75 for tx in matches)
 
 def is_trending_on_twitter(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
-    if isinstance(data, list):
-        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-        return any(tx.get("Followers", 0) > 0 for tx in matches)
-    return False
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    return any(tx.get("Followers", 0) > 5000 for tx in matches)
+
 
 def has_positive_app_ratings(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
-    if isinstance(data, list):
-        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-        return any(tx.get("Rating", 0) >= 3.5 for tx in matches)
-    return False
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    return any(tx.get("Rating", 0) >= 4.0 for tx in matches)
+
