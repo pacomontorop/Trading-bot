@@ -101,7 +101,7 @@ def score_quiver_signals(signals):
 def safe_quiver_request(url, retries=3, delay=2):
     for i in range(retries):
         try:
-            r = requests.get(url, headers=HEADERS, timeout=5)
+            r = requests.get(url, headers=HEADERS, timeout=15)
             if r.ok:
                 return r.json()
         except Exception as e:
