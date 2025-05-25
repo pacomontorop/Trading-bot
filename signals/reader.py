@@ -122,18 +122,6 @@ def get_top_shorts(min_criteria=5, verbose=False):
             continue
         already_considered.add(symbol)
 
-        # Evaluar Quiver primero
-        try:
-            signals = get_all_quiver_signals(symbol)
-            quiver_score = score_quiver_signals(signals)
-            if quiver_score >= QUIVER_APPROVAL_THRESHOLD:
-                if verbose:
-                    print(f"✅ {symbol} aprobado para SHORT por Quiver (score={quiver_score}) → señales activas: {[k for k, v in signals.items() if v]}")
-                shorts.append((symbol, 90 + quiver_score, "Quiver"))
-                continue
-        except Exception as e:
-            print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
-
         try:
             data = fetch_yfinance_stock_data(symbol)
             if not data or len(data) != 6 or any(d is None for d in data):
@@ -158,12 +146,12 @@ def get_top_shorts(min_criteria=5, verbose=False):
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
             if verbose:
-                print(f"🔻 {symbol}: {score} puntos (SHORT) weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}")
+                print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 shorts.append((symbol, score, "Técnico"))
             elif verbose:
-                print(f"⛔ {symbol} descartado (short): score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
+                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
 
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
