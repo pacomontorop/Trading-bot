@@ -113,50 +113,55 @@ def safe_quiver_request(url, retries=3, delay=2):
 # --- Señales básicas ---
 
 def get_quiver_signals(symbol):
-    signals = {
-        "insider_buy_more_than_sell": False,
-        "has_gov_contract": False,
-        "positive_patent_momentum": False,
-        "trending_wsb": False,
-        "bullish_etf_flow": False
+    return {
+        "insider_buy_more_than_sell": get_insider_signal(symbol),
+        "has_gov_contract": get_gov_contract_signal(symbol),
+        "positive_patent_momentum": get_patent_momentum_signal(symbol),
+        "trending_wsb": get_wsb_signal(symbol),
+        "bullish_etf_flow": get_etf_flow_signal(symbol)
     }
+    
+def get_insider_signal(symbol):
+    url = f"{QUIVER_BASE_URL}/live/insiders"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    symbol_data = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+    buys = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "P")
+    sells = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "S")
+    return buys > sells
 
-    try:
-        # Insider trading
-        url = f"{QUIVER_BASE_URL}/live/insidertrading/{symbol}"
-        data = safe_quiver_request(url)
-        if isinstance(data, list):
-            total_buy = sum(1 for tx in data if tx.get("Transaction") == "Purchase")
-            total_sell = sum(1 for tx in data if tx.get("Transaction") == "Sale")
-            signals["insider_buy_more_than_sell"] = total_buy > total_sell
 
-        # Gov contracts
-        url = f"{QUIVER_BASE_URL}/live/govcontracts/{symbol}"
-        data = safe_quiver_request(url)
-        signals["has_gov_contract"] = isinstance(data, list) and len(data) > 0
+def get_gov_contract_signal(symbol):
+    url = f"{QUIVER_BASE_URL}/live/govcontracts"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    return any(tx.get("Ticker") == symbol.upper() for tx in data)
 
-        # Patent momentum
-        url = f"{QUIVER_BASE_URL}/live/patentmomentum/{symbol}"
-        data = safe_quiver_request(url)
-        if isinstance(data, list) and len(data) > 0:
-            signals["positive_patent_momentum"] = data[0].get("Momentum", 0) > 0
+def get_patent_momentum_signal(symbol):
+    url = f"{QUIVER_BASE_URL}/live/patentmomentum"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("ticker") == symbol.upper()]
+    return any(tx.get("momentum", 0) > 0 for tx in matches)
+    
+def get_wsb_signal(symbol):
+    url = f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    recent_mentions = [tx for tx in data if tx.get("Mentions", 0) > 10]
+    return len(recent_mentions) > 0
 
-        # WSB mentions
-        url = f"{QUIVER_BASE_URL}/live/wsb/{symbol}"
-        data = safe_quiver_request(url)
-        if isinstance(data, list) and len(data) > 0:
-            signals["trending_wsb"] = data[0].get("Mentions", 0) > 10
-
-        # ETF flow
-        url = f"{QUIVER_BASE_URL}/live/etf/{symbol}"
-        data = safe_quiver_request(url)
-        if isinstance(data, list) and len(data) > 0:
-            signals["bullish_etf_flow"] = data[0].get("NetFlow", 0) > 0
-
-    except Exception as e:
-        print(f"⚠️ Error obteniendo señales Quiver para {symbol}: {e}")
-
-    return signals
+def get_etf_flow_signal(symbol):
+    url = f"{QUIVER_BASE_URL}/live/etfholdings"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    matches = [tx for tx in data if tx.get("Holding Symbol") == symbol.upper()]
+    return any(tx.get("Value ($)", 0) > 0 for tx in matches)
 
 
 # --- Señales extendidas Tier 1 y 2 ---
@@ -165,45 +170,36 @@ def get_extended_quiver_signals(symbol):
     return {
         "has_recent_sec13f_activity": has_recent_sec13f_activity(symbol),
         "has_recent_sec13f_changes": has_recent_sec13f_changes(symbol),
-        "has_recent_dark_pool_activity": has_recent_dark_pool_activity(symbol),
         "is_high_political_beta": is_high_political_beta(symbol),
         "is_trending_on_twitter": is_trending_on_twitter(symbol),
         "has_positive_app_ratings": has_positive_app_ratings(symbol)
     }
 
 def has_recent_sec13f_activity(symbol):
-    url = f"{QUIVER_BASE_URL}/live/sec13f/{symbol}"
-    data = safe_quiver_request(url)
-    return isinstance(data, list) and len(data) > 0
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
+    return isinstance(data, list) and any(tx.get("Ticker") == symbol.upper() for tx in data)
 
 def has_recent_sec13f_changes(symbol):
-    url = f"{QUIVER_BASE_URL}/live/sec13fchanges/{symbol}"
-    data = safe_quiver_request(url)
-    return isinstance(data, list) and len(data) > 0
-
-def has_recent_dark_pool_activity(symbol):
-    url = f"{QUIVER_BASE_URL}/live/offexchange/{symbol}"
-    data = safe_quiver_request(url)
-    return isinstance(data, list) and len(data) > 0
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
+    return isinstance(data, list) and any(tx.get("Ticker") == symbol.upper() for tx in data)
 
 def is_high_political_beta(symbol):
-    url = f"{QUIVER_BASE_URL}/live/politicalbeta/{symbol}"
-    data = safe_quiver_request(url)
-    if isinstance(data, list) and len(data) > 0:
-        return data[0].get("Beta", 0) > 1.0
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/politicalbeta")
+    if isinstance(data, list):
+        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+        return any(tx.get("TrumpBeta", 0) > 0.25 for tx in matches)
     return False
 
 def is_trending_on_twitter(symbol):
-    url = f"{QUIVER_BASE_URL}/live/twitter/{symbol}"
-    data = safe_quiver_request(url)
-    if isinstance(data, list) and len(data) > 0:
-        return data[0].get("Mentions", 0) > 10
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
+    if isinstance(data, list):
+        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+        return any(tx.get("Followers", 0) > 0 for tx in matches)
     return False
 
 def has_positive_app_ratings(symbol):
-    url = f"{QUIVER_BASE_URL}/live/appratings/{symbol}"
-    data = safe_quiver_request(url)
-    if isinstance(data, list) and len(data) > 0:
-        return data[0].get("AverageRating", 0) >= 4.0
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
+    if isinstance(data, list):
+        matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+        return any(tx.get("Rating", 0) >= 3.5 for tx in matches)
     return False
-
