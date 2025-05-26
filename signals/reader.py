@@ -36,10 +36,12 @@ def fetch_symbols_from_csv(path="data/symbols.csv"):
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
+            print(f"📄 Se cargaron {len(symbols)} símbolos desde {path}")
             return symbols
     except Exception as e:
-        print(f"❌ Error leyendo CSV de símbolos: {e}")
+        print(f"❌ Error leyendo CSV de símbolos desde '{path}': {e}")
         return local_sp500_symbols
+
 
 def is_options_enabled(symbol):
     try:
