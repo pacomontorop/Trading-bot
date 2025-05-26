@@ -3,6 +3,7 @@ import time
 import requests
 from dotenv import load_dotenv
 from utils.logger import log_event
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -126,10 +127,30 @@ def get_insider_signal(symbol):
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
-    symbol_data = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-    buys = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "P")
-    sells = sum(1 for tx in symbol_data if tx.get("TransactionCode") == "S")
-    return buys > sells * 1.5  # Exige más compras con cierto margen
+
+    cutoff_date = datetime.utcnow() - timedelta(days=7)
+
+    symbol_data = [
+        tx for tx in data
+        if tx.get("Ticker") == symbol.upper() and
+           tx.get("TransactionCode") in {"P", "S"} and
+           tx.get("Date")
+    ]
+
+    # Filtramos por fecha reciente
+    recent_data = []
+    for tx in symbol_data:
+        try:
+            tx_date = datetime.fromisoformat(tx["Date"].replace("Z", ""))
+            if tx_date > cutoff_date:
+                recent_data.append(tx)
+        except Exception as e:
+            continue
+
+    buys = sum(1 for tx in recent_data if tx["TransactionCode"] == "P")
+    sells = sum(1 for tx in recent_data if tx["TransactionCode"] == "S")
+
+    return buys > sells * 1.5
 
 
 def get_gov_contract_signal(symbol):
