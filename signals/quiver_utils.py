@@ -22,7 +22,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     # Señales extendidas Tier 1 y 2
     "has_recent_sec13f_activity": 2,
     "has_recent_sec13f_changes": 2,
-    "has_recent_house_purchase": 3
+    "has_recent_house_purchase": 3,
     "is_trending_on_twitter": 1,
     "has_positive_app_ratings": 2
 }
