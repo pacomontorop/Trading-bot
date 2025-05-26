@@ -22,8 +22,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     # Señales extendidas Tier 1 y 2
     "has_recent_sec13f_activity": 2,
     "has_recent_sec13f_changes": 2,
-    "has_recent_dark_pool_activity": 3,
-    "is_high_political_beta": 1,
+    "has_recent_house_purchase": 3
     "is_trending_on_twitter": 1,
     "has_positive_app_ratings": 2
 }
@@ -153,13 +152,31 @@ def get_insider_signal(symbol):
     return buys > sells * 1.5
 
 
+from datetime import datetime
+
 def get_gov_contract_signal(symbol):
     url = f"{QUIVER_BASE_URL}/live/govcontracts"
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
-    contracts = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-    return len(contracts) >= 2  # Al menos dos contratos activos
+
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    current_quarter = (current_month - 1) // 3 + 1  # Trimestre actual (1–4)
+
+    symbol_contracts = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
+
+    for tx in symbol_contracts:
+        try:
+            amount = float(tx.get("Amount", "0").replace(",", "").replace("$", ""))
+            year = int(tx.get("Year", 0))
+            quarter = int(tx.get("Qtr", 0))
+            if amount >= 500_000 and year == current_year and quarter == current_quarter:
+                return True
+        except:
+            continue
+
+    return False
 
 
 def get_patent_momentum_signal(symbol):
@@ -167,8 +184,12 @@ def get_patent_momentum_signal(symbol):
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
-    matches = [tx for tx in data if tx.get("ticker") == symbol.upper()]
-    return any(tx.get("momentum", 0) >= 1.5 for tx in matches)  # Requiere innovación fuerte
+
+    recent_entries = [tx for tx in data if tx.get("ticker") == symbol.upper()]
+    
+    # Solo cuenta como positivo si el valor momentum supera claramente 1.5
+    return any(tx.get("momentum", 0) >= 1.5 for tx in recent_entries)
+
 
     
 def get_wsb_signal(symbol):
@@ -176,17 +197,31 @@ def get_wsb_signal(symbol):
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
-    recent_mentions = [tx for tx in data if tx.get("Mentions", 0) > 10]
-    return len(recent_mentions) >= 3  # No basta con una mención puntual
+
+    # Consideramos "recientes" los últimos 5 días
+    recent_data = data[-5:] if len(data) >= 5 else data
+
+    # Contamos los días con más de 10 menciones (indicativo de verdadero interés social)
+    high_mention_days = [tx for tx in recent_data if tx.get("Mentions", 0) > 10]
+
+    return len(high_mention_days) >= 3
+
 
 def get_etf_flow_signal(symbol):
     url = f"{QUIVER_BASE_URL}/live/etfholdings"
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
+
+    # Buscar participaciones en ETF que contengan el símbolo como "Holding Symbol"
     matches = [tx for tx in data if tx.get("Holding Symbol") == symbol.upper()]
+
+    # Sumar la exposición total (en USD)
     total_exposure = sum(tx.get("Value ($)", 0) for tx in matches)
-    return total_exposure > 1_000_000  # Exige interés institucional claro
+
+    # Consideramos fuerte presencia institucional si supera 1 millón de USD
+    return total_exposure > 1_000_000
+
 
 
 
@@ -196,7 +231,7 @@ def get_extended_quiver_signals(symbol):
     return {
         "has_recent_sec13f_activity": has_recent_sec13f_activity(symbol),
         "has_recent_sec13f_changes": has_recent_sec13f_changes(symbol),
-        "is_high_political_beta": is_high_political_beta(symbol),
+        "has_recent_house_purchase": has_recent_house_purchase(symbol),
         "is_trending_on_twitter": is_trending_on_twitter(symbol),
         "has_positive_app_ratings": has_positive_app_ratings(symbol)
     }
@@ -205,7 +240,10 @@ def has_recent_sec13f_activity(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
     if not isinstance(data, list):
         return False
+
+    # Buscamos si existe alguna transacción del símbolo en el último lote
     return any(tx.get("Ticker") == symbol.upper() for tx in data)
+
 
 
 
@@ -216,25 +254,65 @@ def has_recent_sec13f_changes(symbol):
     matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
     return any(abs(tx.get("Change_Pct", 0)) >= 10 for tx in matches)
 
-def is_high_political_beta(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/politicalbeta")
+from datetime import datetime, timedelta
+
+def has_recent_house_purchase(symbol):
+    url = f"{QUIVER_BASE_URL}/live/housetrading"
+    data = safe_quiver_request(url)
+
     if not isinstance(data, list):
         return False
-    matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-    return any(tx.get("TrumpBeta", 0) >= 0.75 for tx in matches)
+
+    cutoff_date = datetime.utcnow() - timedelta(days=30)
+
+    for tx in data:
+        if tx.get("Ticker") != symbol.upper():
+            continue
+        if tx.get("Transaction") != "Purchase":
+            continue
+
+        try:
+            tx_date = datetime.fromisoformat(tx.get("Date").replace("Z", ""))
+            if tx_date >= cutoff_date:
+                return True
+        except Exception as e:
+            print(f"⚠️ Error interpretando fecha en House Trading: {e}")
+            continue
+
+    return False
+
+
 
 def is_trending_on_twitter(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
+    """
+    Evalúa si el símbolo tiene una presencia significativa en Twitter.
+    Umbral ajustado: al menos 5000 seguidores.
+    """
+    url = f"{QUIVER_BASE_URL}/live/twitter"
+    data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
+    
     matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-    return any(tx.get("Followers", 0) > 5000 for tx in matches)
+    
+    # Condición: al menos una entrada con >5000 seguidores
+    return any(tx.get("Followers", 0) >= 5000 for tx in matches)
+
 
 
 def has_positive_app_ratings(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
+    """
+    Evalúa si la empresa tiene alguna app con valoración igual o superior a 4.0.
+    No se requiere conteo mínimo de reviews para esta versión.
+    """
+    url = f"{QUIVER_BASE_URL}/live/appratings"
+    data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
+
     matches = [tx for tx in data if tx.get("Ticker") == symbol.upper()]
-    return any(tx.get("Rating", 0) >= 4.0 for tx in matches)
+    
+    return any(tx.get("Rating", 0) >= 4.0 and tx.get("Count", 0) >= 20 for tx in matches)
+
+
 
