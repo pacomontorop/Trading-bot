@@ -55,13 +55,13 @@ def pre_market_scan():
         current_time = now_ny.time()
 
         if is_market_open(now_ny):
-            # Nueva evaluación diaria solo a las 15:31 NY
-            if today != last_evaluation_day and current_time >= time(15, 31):
+            # Nueva evaluación diaria solo a las 12:31 NY
+            if today != last_evaluation_day and current_time >= time(12, 31):
                 print("🧠 Ejecutando evaluación diaria con get_top_signals()", flush=True)
                 evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
                 evaluated_symbols = set(symbol for symbol, _, _ in evaluated_opportunities)
                 last_evaluation_day = today
-                log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas a las 15:31 NY")
+                log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas a las 12:31 NY")
 
             if evaluated_opportunities:
                 print("📈 Procesando oportunidades ya evaluadas...", flush=True)
