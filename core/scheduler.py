@@ -95,7 +95,7 @@ def short_scan():
             print("🔍 Buscando oportunidades en corto...", flush=True)
             shorts = get_top_shorts(min_criteria=6, verbose=True)
             log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
-            MAX_SHORTS_PER_CYCLE = 5
+            MAX_SHORTS_PER_CYCLE = 1
 
             if len(shorts) > MAX_SHORTS_PER_CYCLE:
                 print(f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.")
