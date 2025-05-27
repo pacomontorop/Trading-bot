@@ -43,58 +43,50 @@ def calculate_investment_amount(score, min_score=6, max_score=19, min_investment
     proportion = (normalized_score - min_score) / (max_score - min_score)
     return int(min_investment + proportion * (max_investment - min_investment))
 
-def pre_market_scan(): 
+def pre_market_scan():
     print("🌀 pre_market_scan iniciado.", flush=True)
+    evaluated_opportunities = []
+    evaluated_symbols = set()
+    last_evaluation_day = None
 
     while True:
         now_ny = get_ny_time()
-        current_hour = now_ny.hour
+        today = now_ny.date()
+        current_time = now_ny.time()
 
         if is_market_open(now_ny):
-            if now_ny.time() < time(9, 30):
-                print("⏳ Mercado abrirá pronto...", flush=True)
-            else:
-                print("🔍 Buscando oportunidades en acciones...", flush=True)
-                opportunities = get_top_signals(min_criteria=6, verbose=True)
-                log_event(f"🔍 {len(opportunities)} oportunidades encontradas para compra (evaluando por tiempo)")
+            # Nueva evaluación diaria solo a las 15:31 NY
+            if today != last_evaluation_day and current_time >= time(15, 31):
+                print("🧠 Ejecutando evaluación diaria con get_top_signals()", flush=True)
+                evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
+                evaluated_symbols = set(symbol for symbol, _, _ in evaluated_opportunities)
+                last_evaluation_day = today
+                log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas a las 15:31 NY")
 
-                if not opportunities:
-                    print("⚠️ No hay oportunidades. Probando evaluación directa con múltiples tickers...", flush=True)
-                    from signals.quiver_utils import get_all_quiver_signals, evaluate_quiver_signals
-                    test_symbols = ["AAPL", "NVDA", "MSFT", "TSLA", "AMD", "GOOG", "AMZN"]
-                    for test_symbol in test_symbols:
-                        print(f"🔍 Evaluando {test_symbol}...", flush=True)
-                        signals = get_all_quiver_signals(test_symbol)
-                        print(f"🧪 Señales obtenidas para {test_symbol}:", signals, flush=True)
-                        evaluate_quiver_signals(signals, test_symbol)
+            if evaluated_opportunities:
+                print("📈 Procesando oportunidades ya evaluadas...", flush=True)
 
-                # Ejecutar compras con límite de tiempo
-                start_time = time.time()
-                time_limit_seconds = 1800  # 30 minutos
-
-                for symbol, score, origin in opportunities:
-                    if time.time() - start_time > time_limit_seconds:
-                        print("⏳ Tiempo máximo alcanzado. Fin del ciclo de compras.")
-                        break
+                for symbol, score, origin in evaluated_opportunities:
+                    if is_position_open(symbol) or symbol in pending_opportunities:
+                        continue
 
                     amount_usd = calculate_investment_amount(score)
                     place_order_with_trailing_stop(symbol, amount_usd, 1.5)
                     pending_opportunities.add(symbol)
 
-                print("📊 Ejecutando estrategia de opciones...", flush=True)
-                run_options_strategy()
+                    pytime.sleep(1.5)  # Espera mínima entre órdenes
+
+                print("✅ Oportunidades del día procesadas.")
+                evaluated_opportunities.clear()
+
+            else:
+                print("⌛ Esperando a las 15:31 NY para nueva evaluación.", flush=True)
+
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
 
-        log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd():.2f} USD")
+        pytime.sleep(300)  # Ciclo cada 5 min solo para ver si hay que lanzar evaluación
 
-        # Control del intervalo del ciclo
-        if 9 <= current_hour < 11 or 15 <= current_hour < 18:
-            pytime.sleep(300)  # 5 minutos
-        elif 11 <= current_hour < 15:
-            pytime.sleep(600)  # 10 minutos
-        else:
-            pytime.sleep(1800)  # 30 minutos
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
