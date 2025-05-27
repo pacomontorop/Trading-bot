@@ -56,8 +56,7 @@ def pre_market_scan():
             else:
                 print("🔍 Buscando oportunidades en acciones...", flush=True)
                 opportunities = get_top_signals(min_criteria=6, verbose=True)
-                log_event(f"🔍 {len(opportunities)} oportunidades encontradas para compra (máx 5 por ciclo)")
-                MAX_BUYS_PER_CYCLE = 5
+                log_event(f"🔍 {len(opportunities)} oportunidades encontradas para compra (evaluando por tiempo)")
 
                 if not opportunities:
                     print("⚠️ No hay oportunidades. Probando evaluación directa con múltiples tickers...", flush=True)
@@ -69,10 +68,15 @@ def pre_market_scan():
                         print(f"🧪 Señales obtenidas para {test_symbol}:", signals, flush=True)
                         evaluate_quiver_signals(signals, test_symbol)
 
-                if len(opportunities) > MAX_BUYS_PER_CYCLE:
-                    print(f"⚠️ Hay más de {MAX_BUYS_PER_CYCLE} oportunidades válidas. Se ejecutan solo las primeras.", flush=True)
+                # Ejecutar compras con límite de tiempo
+                start_time = time.time()
+                time_limit_seconds = 1800  # 30 minutos
 
-                for symbol, score, origin in opportunities[:MAX_BUYS_PER_CYCLE]:
+                for symbol, score, origin in opportunities:
+                    if time.time() - start_time > time_limit_seconds:
+                        print("⏳ Tiempo máximo alcanzado. Fin del ciclo de compras.")
+                        break
+
                     amount_usd = calculate_investment_amount(score)
                     place_order_with_trailing_stop(symbol, amount_usd, 1.5)
                     pending_opportunities.add(symbol)
@@ -84,12 +88,13 @@ def pre_market_scan():
 
         log_event(f"🟢 Total invertido en este ciclo de compra long: {invested_today_usd():.2f} USD")
 
+        # Control del intervalo del ciclo
         if 9 <= current_hour < 11 or 15 <= current_hour < 18:
-            pytime.sleep(300)
+            pytime.sleep(300)  # 5 minutos
         elif 11 <= current_hour < 15:
-            pytime.sleep(600)
+            pytime.sleep(600)  # 10 minutos
         else:
-            pytime.sleep(1800)
+            pytime.sleep(1800)  # 30 minutos
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
