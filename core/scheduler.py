@@ -184,7 +184,7 @@ def start_schedulers():
 
     try:
         if os.path.exists("data/symbols.csv"):
-            df = pd.read_csv("data/symbols.csv")
+            df = pd.read_csv("data/symbols.csv", on_bad_lines='skip')
             if not df.empty and "Symbol" in df.columns:
                 regenerate = False
                 print(f"✅ symbols.csv ya existe con {len(df)} símbolos. No se regenera.", flush=True)
