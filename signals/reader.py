@@ -8,7 +8,7 @@ from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
 
-already_considered_symbols = set()
+
 last_reset_date = datetime.now().date()
 
 
@@ -33,8 +33,6 @@ CRITERIA_WEIGHTS = {
 
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
-
-import csv
 
 import csv
 import random  # <--- AÑADE ESTO
