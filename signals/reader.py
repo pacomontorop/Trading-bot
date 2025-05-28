@@ -9,7 +9,6 @@ from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
 
 
-last_reset_date = datetime.now().date()
 
 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
