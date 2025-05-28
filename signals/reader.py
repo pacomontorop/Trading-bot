@@ -6,7 +6,7 @@ from signals.filters import is_position_open, is_approved_by_finnhub_and_alphava
 from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
-import random
+
 
 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
@@ -33,19 +33,21 @@ STRICTER_VOLUME_THRESHOLD = 70_000_000
 
 import csv
 
+import csv
+import random  # <--- AÑADE ESTO
+
 def fetch_symbols_from_csv(path="data/symbols.csv"):
     try:
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
-            random.shuffle(symbols)  # << Esta línea los baraja aleatoriamente
+            random.shuffle(symbols)  # <--- AÑADE ESTA LÍNEA PARA BARAJARLOS CADA VEZ
             print(f"📄 Se cargaron {len(symbols)} símbolos desde {path}")
             return symbols
     except Exception as e:
         print(f"❌ Error leyendo CSV de símbolos desde '{path}': {e}")
         return local_sp500_symbols
 
-evaluated_symbols_today = set()
 
 
 def is_options_enabled(symbol):
