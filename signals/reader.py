@@ -6,7 +6,10 @@ from signals.filters import is_position_open, is_approved_by_finnhub_and_alphava
 from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
+from datetime import datetime
 
+already_considered_symbols = set()
+last_reset_date = datetime.now().date()
 
 
 assert callable(fetch_yfinance_stock_data), "❌ fetch_yfinance_stock_data no está correctamente definida o importada"
@@ -59,16 +62,26 @@ def is_options_enabled(symbol):
 
 stock_assets = fetch_symbols_from_csv()
 
+
+evaluated_symbols_today = set()
+last_reset_date = datetime.now().date()
+
 def get_top_signals(min_criteria=5, verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
+    global evaluated_symbols_today, last_reset_date
+
+    today = datetime.now().date()
+    if today != last_reset_date:
+        evaluated_symbols_today.clear()
+        last_reset_date = today
+        print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
+
     opportunities = []
-    global evaluated_symbols_today
 
     for symbol in stock_assets:
         if symbol in evaluated_symbols_today or is_position_open(symbol):
-            evaluated_symbols_today.add(symbol)
             continue
-        already_considered.add(symbol)
+        evaluated_symbols_today.add(symbol)
 
         # Evaluar Quiver primero
         try:
@@ -122,6 +135,7 @@ def get_top_signals(min_criteria=5, verbose=False):
 
     opportunities.sort(key=lambda x: x[1], reverse=True)
     return opportunities[:5]
+
 
 def get_top_shorts(min_criteria=5, verbose=False):
     shorts = []
