@@ -27,7 +27,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     "has_positive_app_ratings": 2
 }
 
-QUIVER_APPROVAL_THRESHOLD = 7
+QUIVER_APPROVAL_THRESHOLD = 3
 
 
 # --- Función principal ---
@@ -149,7 +149,7 @@ def get_insider_signal(symbol):
     buys = sum(1 for tx in recent_data if tx["TransactionCode"] == "P")
     sells = sum(1 for tx in recent_data if tx["TransactionCode"] == "S")
 
-    return buys > sells * 1.5
+    return buys > sells 
 
 
 from datetime import datetime
@@ -171,7 +171,7 @@ def get_gov_contract_signal(symbol):
             amount = float(tx.get("Amount", "0").replace(",", "").replace("$", ""))
             year = int(tx.get("Year", 0))
             quarter = int(tx.get("Qtr", 0))
-            if amount >= 500_000 and year == current_year and quarter == current_quarter:
+            if amount >= 100_000 and year >= current_year - 1:
                 return True
         except:
             continue
@@ -188,7 +188,7 @@ def get_patent_momentum_signal(symbol):
     recent_entries = [tx for tx in data if tx.get("ticker") == symbol.upper()]
     
     # Solo cuenta como positivo si el valor momentum supera claramente 1.5
-    return any(tx.get("momentum", 0) >= 1.5 for tx in recent_entries)
+    return any(tx.get("momentum", 0) >= 1.2 for tx in recent_entries)
 
 
     
@@ -204,7 +204,7 @@ def get_wsb_signal(symbol):
     # Contamos los días con más de 10 menciones (indicativo de verdadero interés social)
     high_mention_days = [tx for tx in recent_data if tx.get("Mentions", 0) > 10]
 
-    return len(high_mention_days) >= 3
+    return len(high_mention_days) >= 1
 
 
 def get_etf_flow_signal(symbol):
@@ -220,7 +220,7 @@ def get_etf_flow_signal(symbol):
     total_exposure = sum(tx.get("Value ($)", 0) for tx in matches)
 
     # Consideramos fuerte presencia institucional si supera 1 millón de USD
-    return total_exposure > 1_000_000
+    return total_exposure > 250_000
 
 
 
