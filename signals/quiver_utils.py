@@ -131,7 +131,7 @@ def get_insider_signal(symbol):
 
     symbol_data = [
         tx for tx in data
-        if tx.get("Ticker") == symbol.upper() and
+        if (tx.get("Ticker") or "").upper() == symbol.upper() and
            tx.get("TransactionCode") in {"P", "S"} and
            tx.get("Date")
     ]
@@ -149,7 +149,8 @@ def get_insider_signal(symbol):
     buys = sum(1 for tx in recent_data if tx["TransactionCode"] == "P")
     sells = sum(1 for tx in recent_data if tx["TransactionCode"] == "S")
 
-    return buys > sells 
+    return buys > sells
+
 
 
 from datetime import datetime
@@ -208,19 +209,15 @@ def get_wsb_signal(symbol):
 
 
 def get_etf_flow_signal(symbol):
-    url = f"{QUIVER_BASE_URL}/live/etfholdings"
+    url = f"{QUIVER_BASE_URL}/live/etfholdings?ticker={symbol.upper()}"  # ahora sí, con el ticker
     data = safe_quiver_request(url)
     if not isinstance(data, list):
         return False
 
-    # Buscar participaciones en ETF que contengan el símbolo como "Holding Symbol"
-    matches = [tx for tx in data if tx.get("Holding Symbol") == symbol.upper()]
+    total_exposure = sum(tx.get("Value ($)", 0) for tx in data)
 
-    # Sumar la exposición total (en USD)
-    total_exposure = sum(tx.get("Value ($)", 0) for tx in matches)
-
-    # Consideramos fuerte presencia institucional si supera 1 millón de USD
     return total_exposure > 250_000
+
 
 
 
@@ -241,8 +238,7 @@ def has_recent_sec13f_activity(symbol):
     if not isinstance(data, list):
         return False
 
-    # Buscamos si existe alguna transacción del símbolo en el último lote
-    return any(tx.get("Ticker") == symbol.upper() for tx in data)
+    return any((tx.get("Ticker") or "").upper() == symbol.upper() for tx in data)
 
 
 
