@@ -56,6 +56,13 @@ def get_all_quiver_signals(symbol):
     log_event(f"🧠 {symbol} señales combinadas: {combined_signals}")
     return combined_signals
 
+def score_quiver_signals(signals):
+    score = 0
+    for key, active in signals.items():
+        if active:
+            score += QUIVER_SIGNAL_WEIGHTS.get(key, 0)
+    return score
+
 def evaluate_quiver_signals(signals, symbol=""):
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
     for key, value in signals.items():
