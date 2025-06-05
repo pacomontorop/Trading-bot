@@ -87,6 +87,7 @@ def evaluate_quiver_signals(signals, symbol=""):
         return False
 
 def safe_quiver_request(url, retries=3, delay=2):
+    print(f"🔑 Usando clave Quiver: {repr(QUIVER_API_KEY)}")  # 👈 LOG DE LA CLAVE
     for i in range(retries):
         try:
             r = requests.get(url, headers=HEADERS, timeout=15)
@@ -96,11 +97,12 @@ def safe_quiver_request(url, retries=3, delay=2):
                 print(f"⚠️ Respuesta inesperada en {url}: código {r.status_code}")
         except Exception as e:
             print(f"⚠️ Error en {url}: {e}")
-        wait = delay * (2 ** i)  # backoff exponencial
+        wait = delay * (2 ** i)
         print(f"🔄 Reintentando en {wait}s...")
         time.sleep(wait)
     print(f"❌ Fallo final en {url}. Se devuelve None.")
     return None
+
 
 
 def get_quiver_signals(symbol):
