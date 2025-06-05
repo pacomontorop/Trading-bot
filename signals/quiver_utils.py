@@ -200,4 +200,19 @@ def has_political_pressure(symbol):
 def has_social_demand(symbol):
     return get_wsb_signal(symbol) or is_trending_on_twitter(symbol)
 
+def initialize_quiver_caches():
+    """
+    Inicializa los datos pesados de Quiver para ser usados localmente.
+    Evita llamadas repetidas a la API para datos grandes.
+    """
+    global INSIDERS_DATA, GOVCONTRACTS_DATA
+    if INSIDERS_DATA is None:
+        print("🔄 Descargando datos de insiders...")
+        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
+        print(f"✅ INSIDERS_DATA cargado: {len(INSIDERS_DATA) if isinstance(INSIDERS_DATA, list) else 'Error'}")
+    if GOVCONTRACTS_DATA is None:
+        print("🔄 Descargando datos de contratos gubernamentales...")
+        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
+        print(f"✅ GOVCONTRACTS_DATA cargado: {len(GOVCONTRACTS_DATA) if isinstance(GOVCONTRACTS_DATA, list) else 'Error'}")
+
 
