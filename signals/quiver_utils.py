@@ -7,6 +7,11 @@ from datetime import datetime, timedelta
 
 load_dotenv()
 
+# Variables globales para caché de endpoints grandes
+INSIDERS_DATA = None
+GOVCONTRACTS_DATA = None
+
+
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"x-api-key": QUIVER_API_KEY}
