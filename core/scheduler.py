@@ -25,6 +25,13 @@ import os
 import pandas as pd
 from utils.generate_symbols_csv import generate_symbols_csv
 
+
+from signals.quiver_utils import initialize_quiver_caches
+
+# Inicializar caché de endpoints pesados
+initialize_quiver_caches()
+
+
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
 
