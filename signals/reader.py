@@ -30,6 +30,15 @@ CRITERIA_WEIGHTS = {
     "volume_growth": 1
 }
 
+priority_symbols = [
+    "NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "META", "BRK.B", "TSLA", "AVGO", "LLY",
+    "V", "JNJ", "UNH", "JPM", "WMT", "PG", "MA", "XOM", "CVX", "HD",
+    "PFE", "BAC", "KO", "PEP", "ADBE", "CMCSA", "NFLX", "INTC", "CSCO", "VZ",
+    "T", "MRK", "ABT", "ORCL", "CRM", "MCD", "COST", "DHR", "MDT", "TXN",
+    "NEE", "PM", "BMY", "UNP", "LIN", "UPS", "QCOM", "HON", "NKE", "DIS"
+]
+
+
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
 
@@ -57,7 +66,9 @@ def is_options_enabled(symbol):
     except:
         return False
 
-stock_assets = fetch_symbols_from_csv()
+# Primero la lista de prioridad, luego el resto (sin duplicados)
+stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not in priority_symbols]
+
 
 
 evaluated_symbols_today = set()
