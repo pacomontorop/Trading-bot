@@ -1,18 +1,12 @@
 #schedulers.py
 
-import threading
-from datetime import datetime
-from pytz import timezone
-from datetime import time
-import time as pytime
-
 from core.executor import (
     place_order_with_trailing_stop,
     place_short_order_with_trailing_buy,
     pending_opportunities,
     pending_trades,
     invested_today_usd,
-    quiver_signals_log  # ← Añadido aquí
+    quiver_signals_log
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
@@ -21,15 +15,18 @@ from signals.reader import get_top_signals, get_top_shorts
 from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
-import os
-import pandas as pd
 from utils.generate_symbols_csv import generate_symbols_csv
 
+from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
+initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
 
-from signals.quiver_utils import initialize_quiver_caches
+import threading
+from datetime import datetime, time
+from pytz import timezone
+import os
+import pandas as pd
+import time as pytime
 
-# Inicializar caché de endpoints pesados
-initialize_quiver_caches()
 
 
 def get_ny_time():
