@@ -74,6 +74,68 @@ stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not 
 evaluated_symbols_today = set()
 last_reset_date = datetime.now().date()
 
+def get_top_signals(min_criteria=5, verbose=False):
+    print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
+    global evaluated_symbols_today, last_reset_date
+
+    today = datetime.now().date()
+    if today != last_reset_date:
+        evaluated_symbols_today.clear()
+        last_reset_date = today
+        print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
+
+    for symbol in stock_assets:
+        if symbol in evaluated_symbols_today or is_position_open(symbol):
+            continue
+        evaluated_symbols_today.add(symbol)
+
+        # Evaluar Quiver primero
+        try:
+            signals = get_all_quiver_signals(symbol)
+            quiver_score = score_quiver_signals(signals)
+            if quiver_score >= QUIVER_APPROVAL_THRESHOLD:
+                if verbose:
+                    print(f"✅ {symbol} aprobado por Quiver (score={quiver_score}) → señales activas: {[k for k, v in signals.items() if v]}")
+                return [(symbol, 90 + quiver_score, "Quiver")]
+        except Exception as e:
+            print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
+
+        # Evaluación técnica si no lo aprueba Quiver
+        try:
+            data = fetch_yfinance_stock_data(symbol)
+            if not data or len(data) != 6 or any(d is None for d in data):
+                if verbose:
+                    print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+                continue
+
+            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = data
+
+            score = 0
+            if market_cap > 500_000_000:
+                score += CRITERIA_WEIGHTS["market_cap"]
+            if volume > STRICTER_VOLUME_THRESHOLD:
+                score += CRITERIA_WEIGHTS["volume"]
+            if weekly_change > STRICTER_WEEKLY_CHANGE_THRESHOLD:
+                score += CRITERIA_WEIGHTS["weekly_change_positive"]
+            if trend:
+                score += CRITERIA_WEIGHTS["trend_positive"]
+            if 0 < price_change_24h < 10:
+                score += CRITERIA_WEIGHTS["volatility_ok"]
+            if volume > volume_7d_avg:
+                score += CRITERIA_WEIGHTS["volume_growth"]
+
+            if verbose:
+                print(f"🔍 {symbol}: score={score}, reasons: market_cap={market_cap}, volume={volume}, weekly_change={weekly_change}, trend={trend}, price_change_24h={price_change_24h}, volume_7d_avg={volume_7d_avg}")
+
+            if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
+                return [(symbol, score, "Técnico")]
+            elif verbose:
+                print(f"⛔ {symbol} descartado: score={score} (min requerido: {min_criteria}) o no aprobado por Finnhub/AlphaVantage")
+
+        except Exception as e:
+            print(f"❌ Error checking {symbol}: {e}")
+
+    return []
 
 
 def get_top_shorts(min_criteria=5, verbose=False):
