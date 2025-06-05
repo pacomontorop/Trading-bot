@@ -110,7 +110,10 @@ def get_quiver_signals(symbol):
     }
 
 def get_insider_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
+    global INSIDERS_DATA  # <- usar la caché global
+    if INSIDERS_DATA is None:
+        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
+    data = INSIDERS_DATA
     if not isinstance(data, list):
         return False
     cutoff = datetime.utcnow() - timedelta(days=7)
@@ -119,8 +122,12 @@ def get_insider_signal(symbol):
     sells = sum(1 for d in entries if d["TransactionCode"] == "S")
     return buys >= sells
 
+
 def get_gov_contract_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
+    global GOVCONTRACTS_DATA
+    if GOVCONTRACTS_DATA is None:
+        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
+    data = GOVCONTRACTS_DATA
     if not isinstance(data, list):
         return False
     current_year = datetime.now().year
@@ -133,6 +140,7 @@ def get_gov_contract_signal(symbol):
             except:
                 continue
     return False
+
 
 def get_patent_momentum_signal(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/patentmomentum")
