@@ -50,32 +50,52 @@ def calculate_investment_amount(score, min_score=6, max_score=19, min_investment
     return int(min_investment + proportion * (max_investment - min_investment))
 
 def pre_market_scan():
-    print("🌀 pre_market_scan iniciado.", flush=True)
+    print("🌀 pre_market_scan continuo iniciado.", flush=True)
+
+    from signals.reader import stock_assets  # <- Lista de símbolos ya barajada y con prioridad
+
+    evaluated_symbols_today = set()
+    last_reset_date = datetime.utcnow().date()
 
     while True:
         now_ny = get_ny_time()
 
         if is_market_open(now_ny):
-            print("🔍 Buscando oportunidades...", flush=True)
-            evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
-            log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas en este ciclo")
+            # Reinicia lista si es un nuevo día
+            today = now_ny.date()
+            if today != last_reset_date:
+                evaluated_symbols_today.clear()
+                last_reset_date = today
+                print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
-            if evaluated_opportunities:
-                print("📈 Procesando oportunidades evaluadas...", flush=True)
-                for symbol, score, origin in evaluated_opportunities:
-                    if is_position_open(symbol) or symbol in pending_opportunities:
-                        continue
-                    amount_usd = calculate_investment_amount(score)
-                    place_order_with_trailing_stop(symbol, amount_usd, 1.5)
-                    pending_opportunities.add(symbol)
-                    pytime.sleep(1.5)  # Pequeña espera entre órdenes
-                print("✅ Oportunidades del ciclo procesadas.")
-            else:
-                print("⌛ Sin oportunidades este ciclo.", flush=True)
+            # Buscar el siguiente símbolo a evaluar
+            for symbol in stock_assets:
+                if symbol in evaluated_symbols_today or is_position_open(symbol):
+                    continue
+
+                evaluated_symbols_today.add(symbol)
+
+                # ⚡️ Evaluación completa
+                print(f"🔍 Evaluando {symbol}...", flush=True)
+                evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
+
+                if evaluated_opportunities:
+                    for symb, score, origin in evaluated_opportunities:
+                        if is_position_open(symb) or symb in pending_opportunities:
+                            continue
+                        amount_usd = calculate_investment_amount(score)
+                        place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                        pending_opportunities.add(symb)
+                        pytime.sleep(1.5)  # Pequeña espera entre órdenes
+
+                break  # ⬅️ Sal de for para que vuelva a empezar el while sin terminar toda la lista
+
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
+            pytime.sleep(60)  # Espera 1 min cuando está cerrado
 
-        pytime.sleep(300)  # 5 min entre ciclos
+        pytime.sleep(1)  # Espera mínima para no saturar el sistema
+
 
 
 
