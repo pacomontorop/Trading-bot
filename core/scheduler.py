@@ -51,47 +51,32 @@ def calculate_investment_amount(score, min_score=6, max_score=19, min_investment
 
 def pre_market_scan():
     print("🌀 pre_market_scan iniciado.", flush=True)
-    evaluated_opportunities = []
-    evaluated_symbols = set()
-    last_evaluation_day = None
 
     while True:
         now_ny = get_ny_time()
-        today = now_ny.date()
-        current_time = now_ny.time()
 
         if is_market_open(now_ny):
-            # Nueva evaluación diaria solo a las 12:31 NY
-            if today != last_evaluation_day and current_time >= time(12, 31):
-                print("🧠 Ejecutando evaluación diaria con get_top_signals()", flush=True)
-                evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
-                evaluated_symbols = set(symbol for symbol, _, _ in evaluated_opportunities)
-                last_evaluation_day = today
-                log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas a las 12:31 NY")
+            print("🔍 Buscando oportunidades...", flush=True)
+            evaluated_opportunities = get_top_signals(min_criteria=6, verbose=True)
+            log_event(f"🧠 {len(evaluated_opportunities)} oportunidades cargadas en este ciclo")
 
             if evaluated_opportunities:
-                print("📈 Procesando oportunidades ya evaluadas...", flush=True)
-
+                print("📈 Procesando oportunidades evaluadas...", flush=True)
                 for symbol, score, origin in evaluated_opportunities:
                     if is_position_open(symbol) or symbol in pending_opportunities:
                         continue
-
                     amount_usd = calculate_investment_amount(score)
                     place_order_with_trailing_stop(symbol, amount_usd, 1.5)
                     pending_opportunities.add(symbol)
-
-                    pytime.sleep(1.5)  # Espera mínima entre órdenes
-
-                print("✅ Oportunidades del día procesadas.")
-                evaluated_opportunities.clear()
-
+                    pytime.sleep(1.5)  # Pequeña espera entre órdenes
+                print("✅ Oportunidades del ciclo procesadas.")
             else:
-                print("⌛ Esperando a las 15:31 NY para nueva evaluación.", flush=True)
-
+                print("⌛ Sin oportunidades este ciclo.", flush=True)
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
 
-        pytime.sleep(300)  # Ciclo cada 5 min solo para ver si hay que lanzar evaluación
+        pytime.sleep(300)  # 5 min entre ciclos
+
 
 
 def short_scan():
