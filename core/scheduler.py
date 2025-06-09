@@ -16,6 +16,8 @@ from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
 from utils.generate_symbols_csv import generate_symbols_csv
+from signals.filters import is_position_open
+
 
 from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
