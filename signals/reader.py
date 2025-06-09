@@ -170,16 +170,11 @@ def get_top_shorts(min_criteria=20, verbose=False):
             if volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
 
-            if verbose:
-                print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
+        
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 shorts.append((symbol, score, "Técnico"))
-            elif verbose:
-                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
-
-        except Exception as e:
-            print(f"❌ Error en short scan {symbol}: {e}")
+        
 
     if not shorts:
         return []
