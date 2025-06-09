@@ -17,7 +17,8 @@ GOVCONTRACTS_DATA = None
 
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
-HEADERS = {"x-api-key": QUIVER_API_KEY}
+HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
+
 
 # Pesos por señal para score final
 QUIVER_SIGNAL_WEIGHTS = {
