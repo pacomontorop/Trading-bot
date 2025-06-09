@@ -138,7 +138,7 @@ def get_top_signals(min_criteria=5, verbose=False):
     return []
 
 
-def get_top_shorts(min_criteria=5, verbose=False):
+def get_top_shorts(min_criteria=20, verbose=False):
     shorts = []
     already_considered = set()
 
