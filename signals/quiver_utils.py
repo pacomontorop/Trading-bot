@@ -36,7 +36,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     "has_positive_app_ratings": 2
 }
 
-QUIVER_APPROVAL_THRESHOLD = 2
+QUIVER_APPROVAL_THRESHOLD = 5
 
 def is_approved_by_quiver(symbol):
     try:
