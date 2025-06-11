@@ -22,21 +22,19 @@ HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
 
 # Pesos por señal para score final
 QUIVER_SIGNAL_WEIGHTS = {
-    # Tier 1
-    "insider_buy_more_than_sell": 3,
-    "has_gov_contract": 3,
-    "positive_patent_momentum": 2,
-    "trending_wsb": 2,
-    "bullish_etf_flow": 2,
-    "has_recent_sec13f_activity": 2,
-    "has_recent_sec13f_changes": 2,
-    "has_recent_house_purchase": 2,
+    "insider_buy_more_than_sell": 5,
+    "has_gov_contract": 4,
+    "positive_patent_momentum": 3,
+    "has_recent_sec13f_activity": 3,
+    "has_recent_sec13f_changes": 3,
+    "trending_wsb": 1,
+    "bullish_etf_flow": 1,
+    "has_recent_house_purchase": 1,
     "is_trending_on_twitter": 1,
-    # Tier 2
-    "has_positive_app_ratings": 2
+    "has_positive_app_ratings": 1
 }
+QUIVER_APPROVAL_THRESHOLD = 6  # o 7
 
-QUIVER_APPROVAL_THRESHOLD = 5
 
 def is_approved_by_quiver(symbol):
     try:
@@ -83,17 +81,28 @@ def score_quiver_signals(signals):
 
 def evaluate_quiver_signals(signals, symbol=""):
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
+    
+    # Mostrar todas las señales con su estado
     for key, value in signals.items():
         status = "✅" if value else "❌"
         print(f"   {status} {key}: {value}")
+    
+    # Calcular el score final sumando los pesos de las señales activas
     score = sum(QUIVER_SIGNAL_WEIGHTS.get(k, 0) for k, v in signals.items() if v)
+    
+    # Contar cuántas señales activas tiene
     active_signals = [k for k, v in signals.items() if v]
-    print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD})")
-    if score >= QUIVER_APPROVAL_THRESHOLD:
+    active_signals_count = len(active_signals)
+    
+    # Mostrar resumen
+    print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
+    
+    # Verificar si aprueba por score y número de señales mínimas (ej. mínimo 3 señales)
+    if score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3:
         log_event(f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}")
         return True
     else:
-        print(f"⛔ {symbol} no aprobado. Score: {score}. Activas: {', '.join(active_signals)}")
+        print(f"⛔ {symbol} no aprobado. Score: {score}, señales activas: {active_signals_count}")
         return False
 
 def safe_quiver_request(url, retries=3, delay=2):
@@ -125,17 +134,26 @@ def get_quiver_signals(symbol):
     }
 
 def get_insider_signal(symbol):
-    global INSIDERS_DATA  # <- usar la caché global
+    global INSIDERS_DATA
     if INSIDERS_DATA is None:
         INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
     data = INSIDERS_DATA
     if not isinstance(data, list):
         return False
+    
+    # Filtrar operaciones del símbolo en los últimos 7 días
     cutoff = datetime.utcnow() - timedelta(days=7)
     entries = [d for d in data if d.get("Ticker") == symbol.upper()]
-    buys = sum(1 for d in entries if d["TransactionCode"] == "P" and datetime.fromisoformat(d["Date"].replace("Z", "")) > cutoff)
-    sells = sum(1 for d in entries if d["TransactionCode"] == "S")
-    return buys >= sells
+    
+    # Contar compras y ventas recientes
+    recent_buys = sum(1 for d in entries if d["TransactionCode"] == "P" and datetime.fromisoformat(d["Date"].replace("Z", "")) > cutoff)
+    recent_sells = sum(1 for d in entries if d["TransactionCode"] == "S" and datetime.fromisoformat(d["Date"].replace("Z", "")) > cutoff)
+    
+    # Más estricto: al menos 2 compras recientes y que superen en el doble las ventas
+    if recent_buys >= 2 and recent_buys >= 2 * recent_sells:
+        return True
+    return False
+
 
 
 def get_gov_contract_signal(symbol):
