@@ -42,7 +42,7 @@ def is_market_open(now_ny=None):
         time(9, 30) <= now_ny.time() <= time(16, 0)
     )
 
-def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=200, max_investment=3000):
+def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=2000, max_investment=3000):
     if score < min_score:
         return min_investment
     normalized_score = min(max(score, min_score), max_score)
