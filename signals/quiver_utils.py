@@ -39,29 +39,12 @@ QUIVER_APPROVAL_THRESHOLD = 6  # o 7
 def is_approved_by_quiver(symbol):
     try:
         signals = get_all_quiver_signals(symbol)
-        if evaluate_quiver_signals(signals, symbol):
-            return True
-        else:
-            print(f"⛔ {symbol} no aprobado por Quiver. Se evalúa con Finnhub + Alpha.")
-            # Llamada al fallback también aquí dentro
-            from signals.filters import is_approved_by_finnhub_and_alphavantage
-            if is_approved_by_finnhub_and_alphavantage(symbol):
-                log_event(f"✅ {symbol} aprobado por fallback: Finnhub + Alpha.")
-                return True
-            else:
-                print(f"⛔ {symbol} no aprobado ni por Quiver ni por fallback.")
-                return False
+        return evaluate_quiver_signals(signals, symbol)
     except Exception as e:
-        message = f"⚠️ ERROR Quiver para {symbol}: {e}. Se recurre a fallback Finnhub+Alpha."
-        print(message)
-        log_event(message)
-        from signals.filters import is_approved_by_finnhub_and_alphavantage
-        if is_approved_by_finnhub_and_alphavantage(symbol):
-            log_event(f"✅ {symbol} aprobado por fallback: Finnhub + Alpha.")
-            return True
-        else:
-            print(f"⛔ {symbol} no aprobado ni por Quiver ni por fallback (error).")
-            return False
+        print(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
+        log_event(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
+        return False
+
 
 def get_all_quiver_signals(symbol):
     basic_signals = get_quiver_signals(symbol)
