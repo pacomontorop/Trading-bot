@@ -55,17 +55,20 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
             return
 
-        from signals.quiver_utils import get_all_quiver_signals
-        quiver_signals_log[symbol] = [
-            k for k, v in get_all_quiver_signals(symbol).items() if v
-        ]
+        from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
+        quiver_signals = get_all_quiver_signals(symbol)
+        quiver_score = score_quiver_signals(quiver_signals)
+        quiver_signals_log[symbol] = [k for k, v in quiver_signals.items() if v]
 
         account = api.get_account()
         equity = float(account.equity)
 
-        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
-            print("⛔ Límite de inversión alcanzado para hoy.")
+        # Nueva excepción: si Quiver score es muy alto (> 13), ignorar límite
+        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT and quiver_score < 13:
+            print("⛔ Límite de inversión alcanzado para hoy y Quiver score < 13.")
             return
+        elif invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
+            print(f"⚠️ {symbol} excede límite pero Quiver score = {quiver_score} ➜ Se permite excepcionalmente.")
 
         if symbol in open_positions or symbol in executed_symbols_today:
             print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
@@ -112,10 +115,11 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         executed_symbols_today.add(symbol)
         pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
 
-        log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
+        log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD (Quiver score: {quiver_score})")
 
     except Exception as e:
         log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
+
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
