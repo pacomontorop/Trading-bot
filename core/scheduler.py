@@ -77,7 +77,7 @@ def pre_market_scan():
 
                 # ⚡️ Evaluación completa
                 print(f"🔍 Evaluando {symbol}...", flush=True)
-                evaluated_opportunities = get_top_signals (verbose=True)
+                evaluated_opportunities = get_top_signals(verbose=True)
 
                 if evaluated_opportunities:
                     for symb, score, origin in evaluated_opportunities:
