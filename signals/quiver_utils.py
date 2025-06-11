@@ -162,7 +162,11 @@ def get_patent_momentum_signal(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/patentmomentum")
     if not isinstance(data, list):
         return False
-    return any(d["ticker"] == symbol.upper() and d.get("momentum", 0) >= 1 for d in data)
+    return any(
+        d.get("ticker") == symbol.upper() and isinstance(d.get("momentum"), (int, float)) and d["momentum"] >= 1
+        for d in data
+    )
+
 
 def get_wsb_signal(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}")
@@ -199,10 +203,14 @@ def has_recent_sec13f_changes(symbol):
 
     for d in data:
         if d.get("Ticker") == symbol.upper():
-            pct = d.get("Change_Pct")
-            if pct is not None and abs(pct) >= 5:
-                return True
+            try:
+                pct = d.get("Change_Pct")
+                if isinstance(pct, (int, float)) and abs(pct) >= 5:
+                    return True
+            except Exception as e:
+                print(f"⚠️ Error procesando sec13fchanges para {symbol}: {e}")
     return False
+
 
 
 def has_recent_house_purchase(symbol):
@@ -216,13 +224,22 @@ def is_trending_on_twitter(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
     if not isinstance(data, list):
         return False
-    return any(d.get("Ticker") == symbol.upper() and d.get("Followers", 0) >= 5000 for d in data)
+    return any(
+        d.get("Ticker") == symbol.upper() and isinstance(d.get("Followers"), (int, float)) and d["Followers"] >= 5000
+        for d in data
+    )
 
 def has_positive_app_ratings(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
     if not isinstance(data, list):
         return False
-    return any(d.get("Ticker") == symbol.upper() and d.get("Rating", 0) >= 4.0 and d.get("Count", 0) >= 10 for d in data)
+    return any(
+        d.get("Ticker") == symbol.upper() and
+        isinstance(d.get("Rating"), (int, float)) and d["Rating"] >= 4.0 and
+        isinstance(d.get("Count"), (int, float)) and d["Count"] >= 10
+        for d in data
+    )
+
 
 # Indicadores compuestos
 def has_political_pressure(symbol):
