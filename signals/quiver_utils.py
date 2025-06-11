@@ -196,7 +196,14 @@ def has_recent_sec13f_changes(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
     if not isinstance(data, list):
         return False
-    return any(abs(d.get("Change_Pct", 0)) >= 5 for d in data if d.get("Ticker") == symbol.upper())
+
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            pct = d.get("Change_Pct")
+            if pct is not None and abs(pct) >= 5:
+                return True
+    return False
+
 
 def has_recent_house_purchase(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
