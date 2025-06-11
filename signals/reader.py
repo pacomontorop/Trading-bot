@@ -106,4 +106,51 @@ def get_top_signals(verbose=False):
 
     return []
 
+def get_top_shorts(min_criteria=20, verbose=False):
+    shorts = []
+    already_considered = set()
 
+    for symbol in stock_assets:
+        if symbol in already_considered or is_position_open(symbol):
+            continue
+        already_considered.add(symbol)
+
+        try:
+            data = fetch_yfinance_stock_data(symbol)
+            if not data or len(data) != 6 or any(d is None for d in data):
+                if verbose:
+                    print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+                continue
+
+            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = data
+
+            score = 0
+            if market_cap > 500_000_000:
+                score += CRITERIA_WEIGHTS["market_cap"]
+            if volume > STRICTER_VOLUME_THRESHOLD:
+                score += CRITERIA_WEIGHTS["volume"]
+            if weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
+                score += CRITERIA_WEIGHTS["weekly_change_positive"]
+            if trend is False:
+                score += CRITERIA_WEIGHTS["trend_positive"]
+            if 0 < price_change_24h < 10:
+                score += CRITERIA_WEIGHTS["volatility_ok"]
+            if volume > volume_7d_avg:
+                score += CRITERIA_WEIGHTS["volume_growth"]
+
+            if verbose:
+                print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
+
+            if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
+                shorts.append((symbol, score, "Técnico"))
+            elif verbose:
+                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
+
+        except Exception as e:
+            print(f"❌ Error en short scan {symbol}: {e}")
+
+    if not shorts:
+        return []
+
+    shorts.sort(key=lambda x: x[1], reverse=True)
+    return shorts[:5]
