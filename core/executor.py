@@ -63,9 +63,9 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         account = api.get_account()
         equity = float(account.equity)
 
-        # Nueva excepción: si Quiver score es muy alto (> 13), ignorar límite
-        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT and quiver_score < 13:
-            print("⛔ Límite de inversión alcanzado para hoy y Quiver score < 13.")
+        # Nueva excepción: si Quiver score es muy alto (> 10), ignorar límite
+        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT and quiver_score < 10:
+            print("⛔ Límite de inversión alcanzado para hoy y Quiver score < 10.")
             return
         elif invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print(f"⚠️ {symbol} excede límite pero Quiver score = {quiver_score} ➜ Se permite excepcionalmente.")
