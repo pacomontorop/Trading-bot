@@ -94,7 +94,7 @@ def safe_quiver_request(url, retries=3, delay=2):
     print(f"🔑 Usando clave Quiver: {repr(QUIVER_API_KEY)}")  # 👈 LOG DE LA CLAVE
     for i in range(retries):
         try:
-            r = requests.get(url, headers=HEADERS, timeout=15)
+            r = throttled_request(requests.get, url, headers=HEADERS, timeout=15)
             if r.ok:
                 return r.json()
             else:
@@ -106,6 +106,7 @@ def safe_quiver_request(url, retries=3, delay=2):
         time.sleep(wait)
     print(f"❌ Fallo final en {url}. Se devuelve None.")
     return None
+
 
 
 
