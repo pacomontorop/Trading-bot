@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from utils.logger import log_event
 from datetime import datetime, timedelta
 from signals.quiver_throttler import throttled_request
+from signals.scoring import fetch_yfinance_stock_data
+
 
 
 load_dotenv()
@@ -64,36 +66,50 @@ def score_quiver_signals(signals):
             score += QUIVER_SIGNAL_WEIGHTS.get(key, 0)
     return score
 
+
 def evaluate_quiver_signals(signals, symbol=""):
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
-    
+
     # Mostrar todas las señales con su estado
     for key, value in signals.items():
         status = "✅" if value else "❌"
         print(f"   {status} {key}: {value}")
-    
-    # Calcular el score final sumando los pesos de las señales activas
+
+    # Calcular el score final
     score = sum(QUIVER_SIGNAL_WEIGHTS.get(k, 0) for k, v in signals.items() if v)
-    
-    # Contar cuántas señales activas tiene
     active_signals = [k for k, v in signals.items() if v]
     active_signals_count = len(active_signals)
-    
-    # Mostrar resumen
+
     print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
-    
-    # Señales de alta convicción
+
     HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
-    
-    # Verificar si aprueba por score+activas o por señales clave
-    if (
-        score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3
-    ) or any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS):
-        log_event(f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}")
-        return True
-    else:
-        print(f"⛔ {symbol} no aprobado. Score: {score}, señales activas: {active_signals_count}")
+
+    aprobado_por_señales = (
+        (score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3)
+        or any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS)
+    )
+
+    if not aprobado_por_señales:
+        print(f"⛔ {symbol} no aprobado por señales.")
         return False
+
+    # ✅ Filtro de liquidez
+    try:
+        market_cap, volume, *_ = fetch_yfinance_stock_data(symbol)
+        if not market_cap or not volume:
+            print(f"⚠️ Datos de mercado incompletos para {symbol}. Se descarta.")
+            return False
+        if market_cap < 200_000_000 or volume < 100_000:
+            print(f"⛔ {symbol} descartado por falta de liquidez: market_cap={market_cap}, volume={volume}")
+            return False
+        else:
+            print(f"✅ {symbol} pasa filtro de liquidez: market_cap={market_cap}, volume={volume}")
+    except Exception as e:
+        print(f"⚠️ Error al evaluar liquidez para {symbol}: {e}")
+        return False
+
+    log_event(f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}. Liquidez OK.")
+    return True
 
 
 def safe_quiver_request(url, retries=3, delay=2):
