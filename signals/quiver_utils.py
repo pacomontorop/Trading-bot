@@ -7,6 +7,8 @@ import requests
 from dotenv import load_dotenv
 from utils.logger import log_event
 from datetime import datetime, timedelta
+from signals.quiver_throttler import throttled_request
+
 
 load_dotenv()
 
