@@ -29,13 +29,13 @@ QUIVER_SIGNAL_WEIGHTS = {
     "positive_patent_momentum": 3,
     "has_recent_sec13f_activity": 3,
     "has_recent_sec13f_changes": 3,
-    "trending_wsb": 1,
-    "bullish_etf_flow": 1,
+    "trending_wsb": 0.5,
+    "bullish_etf_flow": 0.5,
     "has_recent_house_purchase": 1,
-    "is_trending_on_twitter": 1,
-    "has_positive_app_ratings": 1
+    "is_trending_on_twitter": 0.5,
+    "has_positive_app_ratings": 0.5
 }
-QUIVER_APPROVAL_THRESHOLD = 6  # o 7
+QUIVER_APPROVAL_THRESHOLD = 7
 
 
 def is_approved_by_quiver(symbol):
@@ -82,13 +82,19 @@ def evaluate_quiver_signals(signals, symbol=""):
     # Mostrar resumen
     print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
     
-    # Verificar si aprueba por score y número de señales mínimas (ej. mínimo 3 señales)
-    if score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3:
+    # Señales de alta convicción
+    HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
+    
+    # Verificar si aprueba por score+activas o por señales clave
+    if (
+        score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3
+    ) or any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS):
         log_event(f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}")
         return True
     else:
         print(f"⛔ {symbol} no aprobado. Score: {score}, señales activas: {active_signals_count}")
         return False
+
 
 def safe_quiver_request(url, retries=3, delay=2):
     print(f"🔑 Usando clave Quiver: {repr(QUIVER_API_KEY)}")  # 👈 LOG DE LA CLAVE
