@@ -18,7 +18,7 @@ _total_invested_today = 0.0
 quiver_signals_log = {}
 
 def reset_daily_investment():
-    global _total_investment_day, _last_investment_day, executed_symbols_today
+    global _total_invested_today, _last_investment_day, executed_symbols_today
     today = datetime.utcnow().date()
     if today != _last_investment_day:
         _total_invested_today = 0.0
