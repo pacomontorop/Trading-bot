@@ -113,7 +113,11 @@ def evaluate_quiver_signals(signals, symbol=""):
 
 
 def safe_quiver_request(url, retries=3, delay=2):
-    print(f"🔑 Usando clave Quiver: {repr(QUIVER_API_KEY)}")  # 👈 LOG DE LA CLAVE
+    # Log only that the key is present without revealing it
+    if QUIVER_API_KEY:
+        print("🔑 Usando clave Quiver: [REDACTED]")
+    else:
+        print("🔑 Advertencia: QUIVER_API_KEY no configurada")
     for i in range(retries):
         try:
             r = throttled_request(requests.get, url, headers=HEADERS, timeout=15)
