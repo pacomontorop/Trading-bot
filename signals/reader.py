@@ -4,6 +4,7 @@
 import pandas as pd
 from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
 from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
@@ -78,18 +79,7 @@ def get_top_signals(verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
     global evaluated_symbols_today, last_reset_date
 
-    today = datetime.now().date()
-    if today != last_reset_date:
-        evaluated_symbols_today.clear()
-        last_reset_date = today
-        print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
-
-    for symbol in stock_assets:
-        if symbol in evaluated_symbols_today or is_position_open(symbol):
-            continue
-        evaluated_symbols_today.add(symbol)
-
-        # Evaluar Quiver
+    def evaluate_symbol(symbol):
         try:
             signals = get_all_quiver_signals(symbol)
             quiver_score = score_quiver_signals(signals)
@@ -97,12 +87,50 @@ def get_top_signals(verbose=False):
 
             if quiver_score >= QUIVER_APPROVAL_THRESHOLD and len(active_signals) >= 3:
                 if verbose:
-                    print(f"✅ {symbol} aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}) → señales: {active_signals}")
-                return [(symbol, 90 + quiver_score, "Quiver")]
+                    print(
+                        f"✅ {symbol} aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}) → señales: {active_signals}"
+                    )
+                return (symbol, 90 + quiver_score, "Quiver")
             elif verbose:
-                print(f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}), mínimo 3 activas.")
+                print(
+                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}), mínimo 3 activas."
+                )
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
+        return None
+
+    while True:
+        today = datetime.now().date()
+        if today != last_reset_date:
+            evaluated_symbols_today.clear()
+            last_reset_date = today
+            print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
+
+        symbols_to_evaluate = [
+            s for s in stock_assets
+            if s not in evaluated_symbols_today and not is_position_open(s)
+        ]
+
+        # Si no hay símbolos restantes, comienza una nueva ronda
+        if not symbols_to_evaluate:
+            evaluated_symbols_today.clear()
+            print("🔄 Todos los símbolos analizados. Iniciando nueva ronda.")
+            continue
+
+        for s in symbols_to_evaluate:
+            evaluated_symbols_today.add(s)
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {executor.submit(evaluate_symbol, sym): sym for sym in symbols_to_evaluate}
+            for future in as_completed(futures):
+                try:
+                    result = future.result()
+                except Exception as e:
+                    sym = futures.get(future)
+                    print(f"⚠️ Error en hilo para {sym}: {e}")
+                    continue
+                if result:
+                    return [result]
 
     return []
 
