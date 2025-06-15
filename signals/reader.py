@@ -50,7 +50,7 @@ def fetch_symbols_from_csv(path="data/symbols.csv"):
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
-            random.shuffle(symbols)  # <--- AÑADE ESTA LÍNEA PARA BARAJARLOS CADA VEZ
+            random.shuffle(symbols)  
             print(f"📄 Se cargaron {len(symbols)} símbolos desde {path}")
             return symbols
     except Exception as e:
