@@ -17,8 +17,8 @@ def test_quiver_score_above_threshold():
     signals = {
         "insider_buy_more_than_sell": True,
         "has_gov_contract": True,
-        "positive_patent_momentum": False,
-        "trending_wsb": False,
+        "positive_patent_momentum": True,
+        "trending_wsb": True,
         "bullish_etf_flow": False,
         "has_recent_sec13f_activity": False,
         "has_recent_sec13f_changes": False,

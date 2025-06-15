@@ -37,7 +37,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     "is_trending_on_twitter": 0.5,
     "has_positive_app_ratings": 0.5
 }
-QUIVER_APPROVAL_THRESHOLD = 7
+QUIVER_APPROVAL_THRESHOLD = 8
 
 
 def is_approved_by_quiver(symbol):
@@ -67,6 +67,38 @@ def score_quiver_signals(signals):
     return score
 
 
+def has_recent_quiver_event(symbol, days=3):
+    """Comprueba si existe un evento reciente de insiders o house trading"""
+    cutoff = datetime.utcnow() - timedelta(days=days)
+
+    global INSIDERS_DATA
+    if INSIDERS_DATA is None:
+        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
+    data = INSIDERS_DATA
+    if isinstance(data, list):
+        for d in data:
+            if d.get("Ticker") == symbol.upper():
+                try:
+                    event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                    if event_date >= cutoff:
+                        return True
+                except Exception:
+                    continue
+
+    house_data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
+    if isinstance(house_data, list):
+        for d in house_data:
+            if d.get("Ticker") == symbol.upper() and d.get("Transaction") == "Purchase":
+                try:
+                    event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                    if event_date >= cutoff:
+                        return True
+                except Exception:
+                    continue
+
+    return False
+
+
 def evaluate_quiver_signals(signals, symbol=""):
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
 
@@ -84,13 +116,20 @@ def evaluate_quiver_signals(signals, symbol=""):
 
     HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
 
+    high_conviction_active = any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS)
+
     aprobado_por_señales = (
-        (score >= QUIVER_APPROVAL_THRESHOLD and active_signals_count >= 3)
-        or any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS)
+        score >= QUIVER_APPROVAL_THRESHOLD
+        and active_signals_count >= 4
+        and high_conviction_active
     )
 
     if not aprobado_por_señales:
         print(f"⛔ {symbol} no aprobado por señales.")
+        return False
+
+    if not has_recent_quiver_event(symbol):
+        print(f"⛔ {symbol} descartado por falta de eventos recientes")
         return False
 
     # ✅ Filtro de liquidez
@@ -99,7 +138,7 @@ def evaluate_quiver_signals(signals, symbol=""):
         if not market_cap or not volume:
             print(f"⚠️ Datos de mercado incompletos para {symbol}. Se descarta.")
             return False
-        if market_cap < 200_000_000 or volume < 100_000:
+        if market_cap < 200_000_000 or volume < 200_000:
             print(f"⛔ {symbol} descartado por falta de liquidez: market_cap={market_cap}, volume={volume}")
             return False
         else:
