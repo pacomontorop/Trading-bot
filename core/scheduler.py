@@ -5,6 +5,8 @@ from core.executor import (
     place_short_order_with_trailing_buy,
     pending_opportunities,
     pending_trades,
+    pending_opportunities_lock,
+    pending_trades_lock,
     invested_today_usd,
     quiver_signals_log
 )
@@ -87,11 +89,14 @@ def pre_market_scan():
 
                 if evaluated_opportunities:
                     for symb, score, origin in evaluated_opportunities:
-                        if is_position_open(symb) or symb in pending_opportunities:
+                        with pending_opportunities_lock:
+                            already_pending = symb in pending_opportunities
+                        if is_position_open(symb) or already_pending:
                             continue
                         amount_usd = calculate_investment_amount(score)
                         place_order_with_trailing_stop(symb, amount_usd, 1.5)
-                        pending_opportunities.add(symb)
+                        with pending_opportunities_lock:
+                            pending_opportunities.add(symb)
                         pytime.sleep(1.5)  # Pequeña espera entre órdenes
 
                 break  # ⬅️ Sal de for para que vuelva a empezar el while sin terminar toda la lista
@@ -137,10 +142,14 @@ def daily_summary():
             subject = "📈 Resumen diario de trading"
 
             # Cabecera numérica
+            with pending_opportunities_lock:
+                pending_count = len(pending_opportunities)
+            with pending_trades_lock:
+                trades_count = len(pending_trades)
             summary_stats = (
                 "📊 *Estadísticas del día:*\n"
-                f"• Oportunidades detectadas: {len(pending_opportunities)}\n"
-                f"• Órdenes ejecutadas: {len(pending_trades)}\n"
+                f"• Oportunidades detectadas: {pending_count}\n"
+                f"• Órdenes ejecutadas: {trades_count}\n"
                 f"• Total invertido hoy: {invested_today_usd():.2f} USD\n"
                 "\n" + "-" * 40 + "\n"
             )
@@ -148,12 +157,15 @@ def daily_summary():
             # Oportunidades detectadas
             body = summary_stats
             body += "🟡 *Oportunidades detectadas:*\n"
-            for sym in sorted(pending_opportunities):
-                body += f"→ {sym}\n"
+            with pending_opportunities_lock:
+                for sym in sorted(pending_opportunities):
+                    body += f"→ {sym}\n"
 
             # Órdenes ejecutadas
             body += "\n🟢 *Órdenes ejecutadas:*\n"
-            for trade in sorted(pending_trades):
+            with pending_trades_lock:
+                trades_snapshot = list(sorted(pending_trades))
+            for trade in trades_snapshot:
                 symbol = trade.split()[0].replace("SHORT:", "").strip(":")
                 signals = quiver_signals_log.get(symbol, [])
                 amount_usd = trade.split("$")[-1] if "$" in trade else ""
@@ -188,8 +200,10 @@ def daily_summary():
 
             # Envío y limpieza
             send_email(subject, body, attach_log=True)
-            pending_opportunities.clear()
-            pending_trades.clear()
+            with pending_opportunities_lock:
+                pending_opportunities.clear()
+            with pending_trades_lock:
+                pending_trades.clear()
 
         pytime.sleep(3600)
 
