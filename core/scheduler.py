@@ -10,7 +10,7 @@ from core.executor import (
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
-from broker.alpaca import api, get_current_price
+from broker.alpaca import api
 import broker.alpaca
 from signals.reader import get_top_signals, get_top_shorts
 from utils.emailer import send_email
