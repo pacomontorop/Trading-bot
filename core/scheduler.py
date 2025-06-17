@@ -20,15 +20,18 @@ from utils.generate_symbols_csv import generate_symbols_csv
 from signals.filters import is_position_open
 
 
-from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
-initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
-
 import threading
 from datetime import datetime
 from pytz import timezone
 import os
 import pandas as pd
 import time as pytime
+
+from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
+initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
+
+# Flag to control short-selling features via environment variable
+ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
 
 
 
@@ -223,7 +226,10 @@ def start_schedulers():
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
-    threading.Thread(target=short_scan, daemon=True).start()
+    if ENABLE_SHORTS:
+        threading.Thread(target=short_scan, daemon=True).start()
+    else:
+        print("🔕 Short scanning disabled (ENABLE_SHORTS=False)", flush=True)
 
 
 
