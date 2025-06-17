@@ -1,4 +1,4 @@
-#schedulers.py
+"""Background tasks for scanning signals and monitoring market status."""
 
 from core.executor import (
     place_order_with_trailing_stop,
@@ -12,7 +12,6 @@ from core.executor import (
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
-from broker.alpaca import api, get_current_price
 from signals.reader import get_top_signals, get_top_shorts
 from utils.emailer import send_email
 from utils.logger import log_event
@@ -25,7 +24,7 @@ from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
 
 import threading
-from datetime import datetime, time
+from datetime import datetime
 from pytz import timezone
 import os
 import pandas as pd
@@ -36,19 +35,6 @@ import time as pytime
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
 
-def is_market_open(now_ny=None):
-    """Check market status using Alpaca clock as primary source."""
-    try:
-        clock = api.get_clock()
-        return clock.is_open
-    except Exception:
-        # Fallback to time-based check if API is unavailable
-        if not now_ny:
-            now_ny = get_ny_time()
-        return (
-            now_ny.weekday() < 5
-            and time(9, 30) <= now_ny.time() <= time(16, 0)
-        )
 
 def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=2000, max_investment=3000):
     if score < min_score:
@@ -68,7 +54,7 @@ def pre_market_scan():
     while True:
         now_ny = get_ny_time()
 
-        if is_market_open(now_ny):
+        if broker.alpaca.is_market_open():
             # Reinicia lista si es un nuevo día
             today = now_ny.date()
             if today != last_reset_date:
@@ -113,7 +99,7 @@ def pre_market_scan():
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
-        if is_market_open():
+        if broker.alpaca.is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
             shorts = get_top_shorts(min_criteria=6, verbose=True)
             log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
