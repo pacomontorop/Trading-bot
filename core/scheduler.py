@@ -13,6 +13,7 @@ from core.executor import (
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, get_top_shorts
+from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
@@ -57,7 +58,7 @@ def pre_market_scan():
     while True:
         now_ny = get_ny_time()
 
-        if broker.alpaca.is_market_open():
+        if is_market_open():
             # Reinicia lista si es un nuevo día
             today = now_ny.date()
             if today != last_reset_date:
@@ -102,7 +103,7 @@ def pre_market_scan():
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
-        if broker.alpaca.is_market_open():
+        if is_market_open():
             print("🔍 Buscando oportunidades en corto...", flush=True)
             shorts = get_top_shorts(min_criteria=6, verbose=True)
             log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
