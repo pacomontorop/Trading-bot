@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import time
+import threading
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event
@@ -11,6 +12,12 @@ open_positions = set()
 pending_opportunities = set()
 pending_trades = set()
 executed_symbols_today = set()
+
+# Locks for thread-safe access to the above sets
+open_positions_lock = threading.Lock()
+pending_opportunities_lock = threading.Lock()
+pending_trades_lock = threading.Lock()
+executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
@@ -23,7 +30,8 @@ def reset_daily_investment():
     if today != _last_investment_day:
         _total_invested_today = 0.0
         _last_investment_day = today
-        executed_symbols_today.clear()
+        with executed_symbols_today_lock:
+            executed_symbols_today.clear()
 
 def add_to_invested(amount):
     global _total_invested_today
@@ -70,9 +78,10 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         elif invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print(f"⚠️ {symbol} excede límite pero Quiver score = {quiver_score} ➜ Se permite excepcionalmente.")
 
-        if symbol in open_positions or symbol in executed_symbols_today:
-            print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
-            return
+        with open_positions_lock, executed_symbols_today_lock:
+            if symbol in open_positions or symbol in executed_symbols_today:
+                print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
+                return
 
         if is_position_open(symbol):
             print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nueva compra.")
@@ -110,10 +119,13 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             trail_price=trail_price
         )
 
-        open_positions.add(symbol)
+        with open_positions_lock:
+            open_positions.add(symbol)
         add_to_invested(qty * current_price)
-        executed_symbols_today.add(symbol)
-        pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
+        with executed_symbols_today_lock:
+            executed_symbols_today.add(symbol)
+        with pending_trades_lock:
+            pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
 
         log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD (Quiver score: {quiver_score})")
 
@@ -140,9 +152,10 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             print("⛔ Límite de inversión alcanzado para hoy.")
             return
 
-        if symbol in open_positions or symbol in executed_symbols_today:
-            print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
-            return
+        with open_positions_lock, executed_symbols_today_lock:
+            if symbol in open_positions or symbol in executed_symbols_today:
+                print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
+                return
 
         if is_position_open(symbol):
             print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nuevo short.")
@@ -180,10 +193,13 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             trail_price=trail_price
         )
 
-        open_positions.add(symbol)
+        with open_positions_lock:
+            open_positions.add(symbol)
         add_to_invested(qty * current_price)
-        executed_symbols_today.add(symbol)
-        pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${qty * current_price:.2f}")
+        with executed_symbols_today_lock:
+            executed_symbols_today.add(symbol)
+        with pending_trades_lock:
+            pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${qty * current_price:.2f}")
 
         log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
 

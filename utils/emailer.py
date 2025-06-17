@@ -30,6 +30,6 @@ def send_email(subject, body, attach_log=False):
             server.login(EMAIL_SENDER, EMAIL_PASSWORD)
             server.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, message.as_string())
 
-        print("📩 Correo enviado correctamente!")
+        log_event("📩 Correo enviado correctamente!")
     except Exception as e:
-        print(f"❌ Error enviando correo: {e}")
+        log_event(f"❌ Error enviando correo: {e}")
