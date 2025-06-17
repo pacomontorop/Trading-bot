@@ -1,4 +1,4 @@
-#schedulers.py
+"""Background tasks for scanning signals and monitoring market status."""
 
 from core.executor import (
     place_order_with_trailing_stop,
