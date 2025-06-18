@@ -37,7 +37,8 @@ QUIVER_SIGNAL_WEIGHTS = {
     "is_trending_on_twitter": 0.5,
     "has_positive_app_ratings": 0.5
 }
-QUIVER_APPROVAL_THRESHOLD = 8
+# Lowered threshold to allow more opportunities while maintaining some rigor
+QUIVER_APPROVAL_THRESHOLD = 5
 
 
 def is_approved_by_quiver(symbol):
@@ -67,7 +68,8 @@ def score_quiver_signals(signals):
     return score
 
 
-def has_recent_quiver_event(symbol, days=3):
+# Slightly longer lookback to catch more recent activity
+def has_recent_quiver_event(symbol, days=5):
     """Comprueba si existe un evento reciente de insiders o house trading"""
     cutoff = datetime.utcnow() - timedelta(days=days)
 
@@ -114,21 +116,22 @@ def evaluate_quiver_signals(signals, symbol=""):
 
     print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
 
+    # High conviction signals are still computed but no longer mandatory
     HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
-
     high_conviction_active = any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS)
 
+    # Less strict: require at least two active signals and a lower score
     aprobado_por_señales = (
         score >= QUIVER_APPROVAL_THRESHOLD
-        and active_signals_count >= 4
-        and high_conviction_active
+        and active_signals_count >= 2
     )
 
     if not aprobado_por_señales:
         print(f"⛔ {symbol} no aprobado por señales.")
         return False
 
-    if not has_recent_quiver_event(symbol):
+    # Use a 5-day window to capture recent events
+    if not has_recent_quiver_event(symbol, days=5):
         print(f"⛔ {symbol} descartado por falta de eventos recientes")
         return False
 

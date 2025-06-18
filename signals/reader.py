@@ -85,7 +85,7 @@ def get_top_signals(verbose=False):
             quiver_score = score_quiver_signals(signals)
             active_signals = [k for k, v in signals.items() if v]
 
-            if quiver_score >= QUIVER_APPROVAL_THRESHOLD and len(active_signals) >= 3:
+            if quiver_score >= QUIVER_APPROVAL_THRESHOLD and len(active_signals) >= 2:
                 if verbose:
                     print(
                         f"✅ {symbol} aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}) → señales: {active_signals}"
@@ -93,7 +93,7 @@ def get_top_signals(verbose=False):
                 return (symbol, 90 + quiver_score, "Quiver")
             elif verbose:
                 print(
-                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}), mínimo 3 activas."
+                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}), mínimo 2 activas."
                 )
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
