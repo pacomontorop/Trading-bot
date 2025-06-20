@@ -1,5 +1,6 @@
 import os
 import alpaca_trade_api as tradeapi
+from urllib3.util.retry import Retry
 from dotenv import load_dotenv
 from utils.logger import log_event  
 
@@ -9,7 +10,8 @@ api = tradeapi.REST(
     os.getenv("APCA_API_KEY_ID"),
     os.getenv("APCA_API_SECRET_KEY"),
     "https://paper-api.alpaca.markets",
-    api_version='v2'
+    api_version='v2',
+    retry_options=Retry(total=3, backoff_factor=3)
 )
 
 def is_market_open():

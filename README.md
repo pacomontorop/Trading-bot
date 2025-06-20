@@ -13,3 +13,8 @@ can be executed in isolated environments (e.g. CI) without real credentials.
 Short-selling features can be toggled via the `ENABLE_SHORTS` environment
 variable.  When unset or set to `false`, the scheduler will skip running the
 short scan and only log long opportunities driven by Quiver signals.
+
+Alpaca requests are made using a basic retry policy defined in
+`broker/alpaca.py`.  By default the client retries failed calls up to three
+times with an exponential backoff of three seconds.  You can modify the
+`Retry` options in that module if a different strategy is required.
