@@ -1,7 +1,6 @@
 #reader.py
 
 
-import pandas as pd
 from signals.filters import (
     is_position_open,
     is_approved_by_finnhub_and_alphavantage,
