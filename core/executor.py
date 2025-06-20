@@ -58,10 +58,13 @@ def wait_for_order_fill(order_id, timeout=30):
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    print(f"\n🚀 Iniciando proceso de compra para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol):
             print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
             return
+
+        print(f"✅ {symbol} pasó todos los filtros iniciales. Obteniendo señales finales...")
 
         from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
         quiver_signals = get_all_quiver_signals(symbol)
@@ -135,10 +138,13 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    print(f"\n🚀 Iniciando proceso de short para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol):
             print(f"❌ {symbol} no aprobado para short según criterios de análisis.")
             return
+
+        print(f"✅ {symbol} pasó filtros iniciales para short. Obteniendo señales finales...")
 
         from signals.quiver_utils import get_all_quiver_signals
         quiver_signals_log[symbol] = [

@@ -130,10 +130,13 @@ def evaluate_quiver_signals(signals, symbol=""):
         print(f"⛔ {symbol} no aprobado por señales.")
         return False
 
-    # Use a 5-day window to capture recent events
-    if not has_recent_quiver_event(symbol, days=5):
+    # Use a wider 14-day window to capture more recent events
+    days_window = 14
+    if not has_recent_quiver_event(symbol, days=days_window):
         print(f"⛔ {symbol} descartado por falta de eventos recientes")
         return False
+    else:
+        print(f"✅ {symbol} tiene eventos recientes dentro de {days_window} días")
 
     # ✅ Filtro de liquidez
     try:
@@ -141,7 +144,7 @@ def evaluate_quiver_signals(signals, symbol=""):
         if not market_cap or not volume:
             print(f"⚠️ Datos de mercado incompletos para {symbol}. Se descarta.")
             return False
-        if market_cap < 200_000_000 or volume < 200_000:
+        if market_cap < 50_000_000 or volume < 100_000:
             print(f"⛔ {symbol} descartado por falta de liquidez: market_cap={market_cap}, volume={volume}")
             return False
         else:
