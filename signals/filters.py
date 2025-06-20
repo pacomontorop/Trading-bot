@@ -15,9 +15,25 @@ api = tradeapi.REST(
     api_version='v2'
 )
 
+# Cache for list_positions results to reduce API calls
+_POSITIONS_CACHE = {"timestamp": 0.0, "data": []}
+
+
+def get_cached_positions(ttl=60, refresh=False):
+    """Return cached positions, refreshing if stale or on demand."""
+    now = time.time()
+    if refresh or now - _POSITIONS_CACHE["timestamp"] > ttl:
+        try:
+            _POSITIONS_CACHE["data"] = api.list_positions()
+        except Exception as e:
+            print(f"❌ Error obteniendo posiciones: {e}")
+            _POSITIONS_CACHE["data"] = []
+        _POSITIONS_CACHE["timestamp"] = now
+    return _POSITIONS_CACHE["data"]
+
 def is_position_open(symbol):
     try:
-        positions = api.list_positions()
+        positions = get_cached_positions()
         return any(p.symbol == symbol for p in positions)
     except Exception as e:
         print(f"❌ Error verificando posición abierta para {symbol}: {e}")

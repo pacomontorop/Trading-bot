@@ -18,7 +18,7 @@ from utils.emailer import send_email
 from utils.logger import log_event
 from core.monitor import monitor_open_positions
 from utils.generate_symbols_csv import generate_symbols_csv
-from signals.filters import is_position_open
+from signals.filters import is_position_open, get_cached_positions
 
 
 import threading
@@ -67,6 +67,7 @@ def pre_market_scan():
                 print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
             # Buscar el siguiente símbolo a evaluar
+            get_cached_positions(refresh=True)
             for symbol in stock_assets:
                 if symbol in evaluated_symbols_today or is_position_open(symbol):
                     continue

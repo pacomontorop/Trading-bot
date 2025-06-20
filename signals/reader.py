@@ -2,7 +2,11 @@
 
 
 import pandas as pd
-from signals.filters import is_position_open, is_approved_by_finnhub_and_alphavantage
+from signals.filters import (
+    is_position_open,
+    is_approved_by_finnhub_and_alphavantage,
+    get_cached_positions,
+)
 from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from broker.alpaca import api
@@ -106,6 +110,9 @@ def get_top_signals(verbose=False):
             last_reset_date = today
             print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
 
+        # Refresh positions cache once per cycle
+        get_cached_positions(refresh=True)
+
         symbols_to_evaluate = [
             s for s in stock_assets
             if s not in evaluated_symbols_today and not is_position_open(s)
@@ -137,6 +144,9 @@ def get_top_signals(verbose=False):
 def get_top_shorts(min_criteria=20, verbose=False):
     shorts = []
     already_considered = set()
+
+    # Refresh positions cache once before scanning
+    get_cached_positions(refresh=True)
 
     for symbol in stock_assets:
         if symbol in already_considered or is_position_open(symbol):
