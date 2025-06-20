@@ -72,7 +72,14 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
     return finnhub and alpha
 
 def is_symbol_approved(symbol):
+    print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
+
     if is_approved_by_quiver(symbol):
         print(f"✅ {symbol} aprobado por Quiver")
         return True
-    return is_approved_by_finnhub_and_alphavantage(symbol)
+
+    print(f"➡️ {symbol} no pasó filtro Quiver. Evaluando Finnhub y AlphaVantage...")
+    approved = is_approved_by_finnhub_and_alphavantage(symbol)
+    if approved:
+        print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
+    return approved
