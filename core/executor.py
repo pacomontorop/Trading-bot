@@ -3,6 +3,8 @@
 from datetime import datetime
 import time
 import threading
+import pandas as pd
+import yfinance as yf
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event
@@ -39,6 +41,24 @@ def add_to_invested(amount):
 
 def invested_today_usd():
     return _total_invested_today
+
+
+def get_adaptive_trail_price(symbol):
+    """Calcula un trail_price dinámico basado en la volatilidad reciente."""
+    try:
+        hist = yf.download(symbol, period="5d", interval="1d", progress=False)
+        if hist.empty or "Close" not in hist.columns:
+            raise ValueError("No hay datos")
+        current_price = hist["Close"].iloc[-1]
+        std_pct = hist["Close"].pct_change().dropna().std()
+        if pd.isna(std_pct) or std_pct <= 0:
+            raise ValueError("Desviación inválida")
+        std_pct = min(max(std_pct, 0.005), 0.05)
+        return round(current_price * std_pct, 2)
+    except Exception as e:
+        print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
+        fallback_price = get_current_price(symbol)
+        return round(fallback_price * 0.015, 2)
 
 def wait_for_order_fill(order_id, timeout=30):
     start = time.time()
@@ -112,7 +132,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         if not wait_for_order_fill(order.id):
             return
 
-        trail_price = round(current_price * (trail_percent / 100), 2)
+        trail_price = get_adaptive_trail_price(symbol)
         api.submit_order(
             symbol=symbol,
             qty=qty,
