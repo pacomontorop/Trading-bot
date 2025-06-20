@@ -1,12 +1,18 @@
 import time
 from broker.alpaca import api
 from utils.logger import log_event
+from core.executor import open_positions, open_positions_lock
 
 def monitor_open_positions():
     print("🟢 Monitor de posiciones iniciado.")
     while True:
         try:
             positions = api.list_positions()
+            symbols = {p.symbol for p in positions} if positions else set()
+            with open_positions_lock:
+                open_positions.intersection_update(symbols)
+                open_positions.update(symbols)
+
             if not positions:
                 print("⚠️ No hay posiciones abiertas actualmente.")
                 time.sleep(900)
