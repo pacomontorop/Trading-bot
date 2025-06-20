@@ -116,9 +116,8 @@ def evaluate_quiver_signals(signals, symbol=""):
 
     print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
 
-    # High conviction signals are still computed but no longer mandatory
+    # High conviction signals maintained for reference
     HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
-    high_conviction_active = any(signals.get(sig, False) for sig in HIGH_CONVICTION_SIGNALS)
 
     # Less strict: require at least two active signals and a lower score
     aprobado_por_señales = (
