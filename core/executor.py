@@ -61,6 +61,7 @@ def get_adaptive_trail_price(symbol):
         return round(fallback_price * 0.015, 2)
 
 def wait_for_order_fill(order_id, timeout=30):
+    print(f"⌛ Empezando espera para orden {order_id}", flush=True)
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -73,6 +74,7 @@ def wait_for_order_fill(order_id, timeout=30):
         except Exception as e:
             log_event(f"❌ Error verificando estado de orden {order_id}: {e}")
         time.sleep(1)
+    print(f"❌ Timeout esperando ejecución de orden {order_id}", flush=True)
     log_event(f"❌ Timeout esperando ejecución de orden {order_id}")
     return False
 
@@ -120,7 +122,10 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             print(f"⚠️ Fondos insuficientes para comprar {symbol}")
             return
 
-        print(f"🛒 Enviando orden de compra para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
+        print(f"🛒 Enviando orden de compra para {symbol} por ${amount_usd}", flush=True)
+        print(
+            f"🛒 Enviando orden de compra para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una."
+        )
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -129,6 +134,10 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc'
         )
 
+        print(
+            f"⏳ Esperando a que se ejecute la orden {order.id} para {symbol}...",
+            flush=True,
+        )
         if not wait_for_order_fill(order.id):
             return
 
