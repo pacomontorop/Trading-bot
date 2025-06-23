@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
+from utils.logger import log_event
 
 
 
@@ -89,15 +90,22 @@ def get_top_signals(verbose=False):
             active_signals = [k for k, v in signals.items() if v]
 
             if quiver_score >= QUIVER_APPROVAL_THRESHOLD and len(active_signals) >= 2:
-                if verbose:
-                    print(
-                        f"✅ {symbol} aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}) → señales: {active_signals}"
-                    )
-                return (symbol, 90 + quiver_score, "Quiver")
-            elif verbose:
-                print(
-                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, activas={len(active_signals)}), mínimo 2 activas."
+                msg = (
+                    f"✅ {symbol} aprobado por Quiver (score={quiver_score}, "
+                    f"activas={len(active_signals)}) → señales: {active_signals}"
                 )
+                if verbose:
+                    print(msg)
+                log_event(msg)
+                return (symbol, 90 + quiver_score, "Quiver")
+            else:
+                msg = (
+                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, "
+                    f"activas={len(active_signals)}), mínimo 2 activas."
+                )
+                if verbose:
+                    print(msg)
+                log_event(msg)
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
