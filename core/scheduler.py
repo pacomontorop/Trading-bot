@@ -8,7 +8,9 @@ from core.executor import (
     pending_opportunities_lock,
     pending_trades_lock,
     invested_today_usd,
-    quiver_signals_log
+    quiver_signals_log,
+    executed_symbols_today,
+    executed_symbols_today_lock
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
@@ -82,15 +84,17 @@ def pre_market_scan():
                     for symb, score, origin in evaluated_opportunities:
                         with pending_opportunities_lock:
                             already_pending = symb in pending_opportunities
-                        if is_position_open(symb) or already_pending:
+                        with executed_symbols_today_lock:
+                            already_executed = symb in executed_symbols_today
+                        if is_position_open(symb) or already_pending or already_executed:
                             continue
                         amount_usd = calculate_investment_amount(score)
+                        log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
                         place_order_with_trailing_stop(symb, amount_usd, 1.5)
                         with pending_opportunities_lock:
                             pending_opportunities.add(symb)
                         pytime.sleep(1.5)  # Pequeña espera entre órdenes
 
-                break  # ⬅️ Sal de for para que vuelva a empezar el while sin terminar toda la lista
 
         else:
             print("⏳ Mercado cerrado para acciones.", flush=True)
