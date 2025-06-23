@@ -126,6 +126,7 @@ def get_top_signals(verbose=False):
         for s in symbols_to_evaluate:
             evaluated_symbols_today.add(s)
 
+        approved = []
         with ThreadPoolExecutor(max_workers=8) as executor:
             futures = {executor.submit(evaluate_symbol, sym): sym for sym in symbols_to_evaluate}
             for future in as_completed(futures):
@@ -136,7 +137,12 @@ def get_top_signals(verbose=False):
                     print(f"⚠️ Error en hilo para {sym}: {e}")
                     continue
                 if result:
-                    return [result]
+                    approved.append(result)
+                if len(approved) >= 5:
+                    break
+        if approved:
+            return approved
+
 
     return []
 
