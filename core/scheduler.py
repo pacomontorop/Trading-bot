@@ -57,8 +57,13 @@ def pre_market_scan():
 
     while True:
         now_ny = get_ny_time()
+        market_open = is_market_open()
+        print(
+            f"\u23F0 {now_ny.strftime('%Y-%m-%d %H:%M:%S')} NY | is_market_open={market_open}",
+            flush=True,
+        )
 
-        if is_market_open():
+        if market_open:
             # Reinicia lista si es un nuevo día
             today = now_ny.date()
             if today != last_reset_date:
