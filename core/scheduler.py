@@ -52,8 +52,6 @@ def calculate_investment_amount(score, min_score=6, max_score=19, min_investment
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
 
-    from signals.reader import stock_assets  # <- Lista de símbolos ya barajada y con prioridad
-
     evaluated_symbols_today = set()
     last_reset_date = datetime.utcnow().date()
 
@@ -68,33 +66,42 @@ def pre_market_scan():
                 last_reset_date = today
                 print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
-            # Buscar el siguiente símbolo a evaluar
+            # Obtener señales solo una vez por ciclo
             get_cached_positions(refresh=True)
-            for symbol in stock_assets:
-                if symbol in evaluated_symbols_today or is_position_open(symbol):
-                    continue
+            evaluated_opportunities = get_top_signals(verbose=True)
 
-                evaluated_symbols_today.add(symbol)
+            if evaluated_opportunities:
+                print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
+                for symb, score, origin in evaluated_opportunities:
+                    if symb in evaluated_symbols_today:
+                        print(f"⏩ {symb} ya evaluado hoy. Se omite.", flush=True)
+                        continue
+                    if is_position_open(symb):
+                        print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
+                        evaluated_symbols_today.add(symb)
+                        continue
 
-                # ⚡️ Evaluación completa
-                print(f"🔍 Evaluando {symbol}...", flush=True)
-                evaluated_opportunities = get_top_signals(verbose=True)
+                    with pending_opportunities_lock:
+                        already_pending = symb in pending_opportunities
+                    with executed_symbols_today_lock:
+                        already_executed = symb in executed_symbols_today
 
-                if evaluated_opportunities:
-                    for symb, score, origin in evaluated_opportunities:
+                    if already_pending or already_executed:
+                        motivo = "pendiente" if already_pending else "ejecutado"
+                        print(f"⏩ {symb} ya {motivo}. No se envía orden.", flush=True)
+                        evaluated_symbols_today.add(symb)
+                        continue
+
+                    amount_usd = calculate_investment_amount(score)
+                    log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
+                    success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                    evaluated_symbols_today.add(symb)
+                    if success:
                         with pending_opportunities_lock:
-                            already_pending = symb in pending_opportunities
-                        with executed_symbols_today_lock:
-                            already_executed = symb in executed_symbols_today
-                        if is_position_open(symb) or already_pending or already_executed:
-                            continue
-                        amount_usd = calculate_investment_amount(score)
-                        log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
-                        success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
-                        if success:
-                            with pending_opportunities_lock:
-                                pending_opportunities.add(symb)
-                        pytime.sleep(1.5)  # Pequeña espera entre órdenes
+                            pending_opportunities.add(symb)
+                    pytime.sleep(1.5)  # Pequeña espera entre órdenes
+            else:
+                print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
 
 
         else:
