@@ -7,7 +7,7 @@ from signals.filters import (
     get_cached_positions,
 )
 from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import asyncio
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
@@ -78,14 +78,23 @@ stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not 
 
 evaluated_symbols_today = set()
 last_reset_date = datetime.now().date()
+quiver_semaphore = asyncio.Semaphore(3)
 
 def get_top_signals(verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
+    return asyncio.run(_get_top_signals_async(verbose))
+
+
+async def _get_top_signals_async(verbose=False):
     global evaluated_symbols_today, last_reset_date
 
-    def evaluate_symbol(symbol):
+    async def evaluate_symbol(symbol):
         try:
-            signals = get_all_quiver_signals(symbol)
+            async with quiver_semaphore:
+                print(f"📡 [{symbol}] Consultando señales Quiver...", flush=True)
+                signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
+                print(f"✅ [{symbol}] Señales Quiver obtenidas.", flush=True)
+
             quiver_score = score_quiver_signals(signals)
             active_signals = [k for k, v in signals.items() if v]
 
@@ -100,7 +109,7 @@ def get_top_signals(verbose=False):
                 return (symbol, 90 + quiver_score, "Quiver")
             else:
                 msg = (
-                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score}, "
+                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score},"
                     f"activas={len(active_signals)}), mínimo 2 activas."
                 )
                 if verbose:
@@ -134,21 +143,10 @@ def get_top_signals(verbose=False):
         for s in symbols_to_evaluate:
             evaluated_symbols_today.add(s)
 
-        approved = []
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            futures = {executor.submit(evaluate_symbol, sym): sym for sym in symbols_to_evaluate}
-            for future in as_completed(futures):
-                try:
-                    result = future.result()
-                except Exception as e:
-                    sym = futures.get(future)
-                    print(f"⚠️ Error en hilo para {sym}: {e}")
-                    continue
-                if result:
-                    approved.append(result)
-        if approved:
-            return approved[:5]
-
+        tasks = [evaluate_symbol(sym) for sym in symbols_to_evaluate]
+        results = [r for r in await asyncio.gather(*tasks) if r]
+        if results:
+            return results[:5]
 
     return []
 
