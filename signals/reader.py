@@ -146,10 +146,8 @@ def get_top_signals(verbose=False):
                     continue
                 if result:
                     approved.append(result)
-                if len(approved) >= 5:
-                    break
         if approved:
-            return approved
+            return approved[:5]
 
 
     return []

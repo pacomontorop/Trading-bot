@@ -90,9 +90,10 @@ def pre_market_scan():
                             continue
                         amount_usd = calculate_investment_amount(score)
                         log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
-                        place_order_with_trailing_stop(symb, amount_usd, 1.5)
-                        with pending_opportunities_lock:
-                            pending_opportunities.add(symb)
+                        success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                        if success:
+                            with pending_opportunities_lock:
+                                pending_opportunities.add(symb)
                         pytime.sleep(1.5)  # Pequeña espera entre órdenes
 
 

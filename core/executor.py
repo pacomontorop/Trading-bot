@@ -60,16 +60,24 @@ def get_adaptive_trail_price(symbol):
         fallback_price = get_current_price(symbol)
         return round(fallback_price * 0.015, 2)
 
-def wait_for_order_fill(order_id, timeout=30):
+def wait_for_order_fill(order_id, timeout=60):
     print(f"⌛ Empezando espera para orden {order_id}", flush=True)
     start = time.time()
     while time.time() - start < timeout:
         try:
             order = api.get_order(order_id)
+            print(f"⌛ Orden {order_id} estado actual: {order.status}", flush=True)
             if order.status == 'filled':
                 return True
             elif order.status in ['canceled', 'rejected']:
-                log_event(f"❌ Orden {order_id} cancelada o rechazada: {order.status}")
+                reason = getattr(order, 'reject_reason', 'Sin motivo')
+                print(
+                    f"❌ Orden {order_id} cancelada o rechazada: {order.status} - {reason}",
+                    flush=True,
+                )
+                log_event(
+                    f"❌ Orden {order_id} cancelada o rechazada: {order.status} - {reason}"
+                )
                 return False
         except Exception as e:
             log_event(f"❌ Error verificando estado de orden {order_id}: {e}")
@@ -84,7 +92,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
     try:
         if not is_symbol_approved(symbol):
             print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
-            return
+            return False
 
         print(f"✅ {symbol} pasó todos los filtros iniciales. Obteniendo señales finales...")
 
@@ -95,36 +103,53 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
         account = api.get_account()
         equity = float(account.equity)
+        buying_power = float(getattr(account, "buying_power", account.cash))
+
+        try:
+            asset = api.get_asset(symbol)
+            if not getattr(asset, "tradable", True):
+                print(f"⛔ {symbol} no es tradable en Alpaca.", flush=True)
+                return False
+        except Exception as e:
+            print(f"❌ Error obteniendo información de {symbol}: {e}", flush=True)
+            return False
 
         # Nueva excepción: si Quiver score es muy alto (> 10), ignorar límite
         if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT and quiver_score < 10:
             print("⛔ Límite de inversión alcanzado para hoy y Quiver score < 10.")
-            return
+            return False
         elif invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print(f"⚠️ {symbol} excede límite pero Quiver score = {quiver_score} ➜ Se permite excepcionalmente.")
 
         with open_positions_lock, executed_symbols_today_lock:
             if symbol in open_positions or symbol in executed_symbols_today:
                 print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
-                return
+                return False
 
         if is_position_open(symbol):
             print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nueva compra.")
-            return
+            return False
 
         current_price = get_current_price(symbol)
         if not current_price:
             print(f"❌ Precio no disponible para {symbol}")
-            return
+            return False
+
+        if amount_usd > buying_power:
+            print(
+                f"⛔ Fondos insuficientes para comprar {symbol}: requieren {amount_usd}, disponible {buying_power}",
+                flush=True,
+            )
+            return False
 
         qty = int(amount_usd // current_price)
         if qty == 0:
-            print(f"⚠️ Fondos insuficientes para comprar {symbol}")
-            return
+            print(f"⚠️ Fondos insuficientes para comprar {symbol}", flush=True)
+            return False
 
-        print(f"🛒 Enviando orden de compra para {symbol} por ${amount_usd}", flush=True)
         print(
-            f"🛒 Enviando orden de compra para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una."
+            f"🛒 Orden de compra -> {symbol} {qty}×${current_price:.2f}",
+            flush=True,
         )
         order = api.submit_order(
             symbol=symbol,
@@ -133,13 +158,16 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             type='market',
             time_in_force='gtc'
         )
-
         print(
-            f"⏳ Esperando a que se ejecute la orden {order.id} para {symbol}...",
+            f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
+            flush=True,
+        )
+        print(
+            "⌛ Esperando a que se rellene la orden...",
             flush=True,
         )
         if not wait_for_order_fill(order.id):
-            return
+            return False
 
         trail_price = get_adaptive_trail_price(symbol)
         api.submit_order(
@@ -159,10 +187,14 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         with pending_trades_lock:
             pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
 
-        log_event(f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD (Quiver score: {quiver_score})")
+        log_event(
+            f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD (Quiver score: {quiver_score})"
+        )
+        return True
 
     except Exception as e:
         log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
+        return False
 
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
