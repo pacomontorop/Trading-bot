@@ -79,6 +79,7 @@ stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not 
 evaluated_symbols_today = set()
 last_reset_date = datetime.now().date()
 quiver_semaphore = asyncio.Semaphore(3)
+quiver_approval_cache = {}
 
 def get_top_signals(verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
@@ -89,6 +90,13 @@ async def _get_top_signals_async(verbose=False):
     global evaluated_symbols_today, last_reset_date
 
     async def evaluate_symbol(symbol):
+        if symbol in quiver_approval_cache:
+            approved, cached_score = quiver_approval_cache[symbol]
+            print(f"↩️ [{symbol}] Resultado en caché", flush=True)
+            if approved:
+                return (symbol, 90 + cached_score, "Quiver")
+            return None
+
         try:
             async with quiver_semaphore:
                 print(f"📡 [{symbol}] Consultando señales Quiver...", flush=True)
@@ -97,8 +105,10 @@ async def _get_top_signals_async(verbose=False):
 
             quiver_score = score_quiver_signals(signals)
             active_signals = [k for k, v in signals.items() if v]
+            approved = quiver_score >= 2 and len(active_signals) >= 2
+            quiver_approval_cache[symbol] = (approved, quiver_score)
 
-            if quiver_score >= QUIVER_APPROVAL_THRESHOLD and len(active_signals) >= 2:
+            if approved:
                 msg = (
                     f"✅ {symbol} aprobado por Quiver (score={quiver_score}, "
                     f"activas={len(active_signals)}) → señales: {active_signals}"
@@ -123,6 +133,7 @@ async def _get_top_signals_async(verbose=False):
         today = datetime.now().date()
         if today != last_reset_date:
             evaluated_symbols_today.clear()
+            quiver_approval_cache.clear()
             last_reset_date = today
             print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
 
@@ -133,6 +144,7 @@ async def _get_top_signals_async(verbose=False):
             s for s in stock_assets
             if s not in evaluated_symbols_today and not is_position_open(s)
         ]
+        symbols_to_evaluate = symbols_to_evaluate[:100]
 
         # Si no hay símbolos restantes, comienza una nueva ronda
         if not symbols_to_evaluate:
@@ -143,8 +155,21 @@ async def _get_top_signals_async(verbose=False):
         for s in symbols_to_evaluate:
             evaluated_symbols_today.add(s)
 
-        tasks = [evaluate_symbol(sym) for sym in symbols_to_evaluate]
-        results = [r for r in await asyncio.gather(*tasks) if r]
+        tasks = [asyncio.create_task(evaluate_symbol(sym)) for sym in symbols_to_evaluate]
+        results = []
+        for coro in asyncio.as_completed(tasks):
+            try:
+                r = await coro
+            except Exception as e:
+                print(f"⚠️ Tarea fallida: {e}")
+                continue
+            if r:
+                results.append(r)
+                if len(results) >= 5:
+                    for t in tasks:
+                        if not t.done():
+                            t.cancel()
+                    break
         if results:
             return results[:5]
 

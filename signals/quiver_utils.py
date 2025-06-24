@@ -4,6 +4,7 @@
 import os
 import time
 import requests
+import asyncio
 from dotenv import load_dotenv
 from utils.logger import log_event
 from datetime import datetime, timedelta
@@ -41,14 +42,21 @@ QUIVER_SIGNAL_WEIGHTS = {
 QUIVER_APPROVAL_THRESHOLD = 5
 
 
-def is_approved_by_quiver(symbol):
+async def _async_is_approved_by_quiver(symbol):
+    """Asynchronous helper that fetches and evaluates Quiver signals."""
+    print(f"🔎 Checking {symbol}...", flush=True)
     try:
-        signals = get_all_quiver_signals(symbol)
+        signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
         return evaluate_quiver_signals(signals, symbol)
     except Exception as e:
         print(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
         log_event(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
         return False
+
+
+def is_approved_by_quiver(symbol):
+    """Synchronous wrapper for :func:`_async_is_approved_by_quiver`."""
+    return asyncio.run(_async_is_approved_by_quiver(symbol))
 
 
 def get_all_quiver_signals(symbol):
