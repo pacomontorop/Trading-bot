@@ -30,6 +30,7 @@ sys.modules.setdefault("urllib3.util", SimpleNamespace(retry=SimpleNamespace(Ret
 sys.modules.setdefault("urllib3.util.retry", SimpleNamespace(Retry=lambda *a, **k: None))
 
 from signals import reader
+from unittest.mock import AsyncMock
 
 
 def make_signals(active=True):
@@ -43,8 +44,7 @@ def dummy_score(signals):
 def test_get_top_signals_returns_max_five():
     symbols = ["A", "B", "C", "D", "E", "F"]
     with patch.object(reader, "stock_assets", symbols), \
-         patch.object(reader, "get_all_quiver_signals", side_effect=lambda s: make_signals(True)), \
-         patch.object(reader, "score_quiver_signals", side_effect=dummy_score), \
+         patch("signals.reader._async_is_approved_by_quiver", new=AsyncMock(return_value=True)), \
          patch.object(reader, "is_position_open", return_value=False), \
          patch.object(reader, "get_cached_positions"), \
          patch.object(reader, "evaluated_symbols_today", set()), \

@@ -6,12 +6,12 @@ from signals.filters import (
     is_approved_by_finnhub_and_alphavantage,
     get_cached_positions,
 )
-from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
+from signals.quiver_utils import _async_is_approved_by_quiver
 import asyncio
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
-from utils.logger import log_event
+
 
 
 
@@ -91,40 +91,21 @@ async def _get_top_signals_async(verbose=False):
 
     async def evaluate_symbol(symbol):
         if symbol in quiver_approval_cache:
-            approved, cached_score = quiver_approval_cache[symbol]
+            approved = quiver_approval_cache[symbol]
             print(f"↩️ [{symbol}] Resultado en caché", flush=True)
             if approved:
-                return (symbol, 90 + cached_score, "Quiver")
+                print(f"✅ {symbol} approved.", flush=True)
+                return (symbol, 90, "Quiver")
             return None
 
+        print(f"🔎 Checking {symbol}...", flush=True)
         try:
             async with quiver_semaphore:
-                print(f"📡 [{symbol}] Consultando señales Quiver...", flush=True)
-                signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
-                print(f"✅ [{symbol}] Señales Quiver obtenidas.", flush=True)
-
-            quiver_score = score_quiver_signals(signals)
-            active_signals = [k for k, v in signals.items() if v]
-            approved = quiver_score >= 2 and len(active_signals) >= 2
-            quiver_approval_cache[symbol] = (approved, quiver_score)
-
+                approved = await _async_is_approved_by_quiver(symbol)
+            quiver_approval_cache[symbol] = approved
             if approved:
-                msg = (
-                    f"✅ {symbol} aprobado por Quiver (score={quiver_score}, "
-                    f"activas={len(active_signals)}) → señales: {active_signals}"
-                )
-                if verbose:
-                    print(msg)
-                log_event(msg)
-                return (symbol, 90 + quiver_score, "Quiver")
-            else:
-                msg = (
-                    f"⛔ {symbol} no aprobado por Quiver (score={quiver_score},"
-                    f"activas={len(active_signals)}), mínimo 2 activas."
-                )
-                if verbose:
-                    print(msg)
-                log_event(msg)
+                print(f"✅ {symbol} approved.", flush=True)
+                return (symbol, 90, "Quiver")
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
