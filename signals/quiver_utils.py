@@ -5,6 +5,7 @@ import os
 import time
 import requests
 import asyncio
+from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event
 from datetime import datetime, timedelta
@@ -56,7 +57,7 @@ async def _async_is_approved_by_quiver(symbol):
 
 def is_approved_by_quiver(symbol):
     """Synchronous wrapper for :func:`_async_is_approved_by_quiver`."""
-    return asyncio.run(_async_is_approved_by_quiver(symbol))
+    return run_in_quiver_loop(_async_is_approved_by_quiver(symbol))
 
 
 def get_all_quiver_signals(symbol):
