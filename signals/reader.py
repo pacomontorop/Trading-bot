@@ -7,6 +7,7 @@ from signals.filters import (
     get_cached_positions,
 )
 from signals.quiver_utils import _async_is_approved_by_quiver
+from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
@@ -78,16 +79,18 @@ stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not 
 
 evaluated_symbols_today = set()
 last_reset_date = datetime.now().date()
-quiver_semaphore = asyncio.Semaphore(3)
+quiver_semaphore = None
 quiver_approval_cache = {}
 
 def get_top_signals(verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
-    return asyncio.run(_get_top_signals_async(verbose))
+    return run_in_quiver_loop(_get_top_signals_async(verbose))
 
 
 async def _get_top_signals_async(verbose=False):
-    global evaluated_symbols_today, last_reset_date
+    global evaluated_symbols_today, last_reset_date, quiver_semaphore
+    if quiver_semaphore is None:
+        quiver_semaphore = asyncio.Semaphore(3)
 
     async def evaluate_symbol(symbol):
         if symbol in quiver_approval_cache:

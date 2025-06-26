@@ -18,3 +18,13 @@ Alpaca requests are made using a basic retry policy defined in
 `broker/alpaca.py`. The underlying `requests` session retries failed calls up
 to three times with an exponential backoff of three seconds. You can modify the
 `Retry` settings in that module if a different strategy is required.
+
+## Examples
+
+The `examples` folder contains small scripts illustrating how to use
+`asyncio` with threads.  `examples/threaded_asyncio.py` demonstrates two
+approaches for running coroutines from worker threads:
+
+1. Scheduling the coroutine on the main loop using
+   `asyncio.run_coroutine_threadsafe`.
+2. Creating an independent event loop inside each thread.
