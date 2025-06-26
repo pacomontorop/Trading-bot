@@ -60,30 +60,25 @@ def get_adaptive_trail_price(symbol):
         fallback_price = get_current_price(symbol)
         return round(fallback_price * 0.015, 2)
 
-def wait_for_order_fill(order_id, timeout=60):
-    print(f"⌛ Empezando espera para orden {order_id}", flush=True)
+def wait_for_order_fill(order_id, symbol, timeout=60):
+    print(f"⌛ Empezando espera para orden {order_id} de {symbol}", flush=True)
     start = time.time()
     while time.time() - start < timeout:
         try:
             order = api.get_order(order_id)
-            print(f"⌛ Orden {order_id} estado actual: {order.status}", flush=True)
+            print(f"⌛ Orden {order_id} para {symbol} estado actual: {order.status}", flush=True)
             if order.status == 'filled':
                 return True
             elif order.status in ['canceled', 'rejected']:
                 reason = getattr(order, 'reject_reason', 'Sin motivo')
-                print(
-                    f"❌ Orden {order_id} cancelada o rechazada: {order.status} - {reason}",
-                    flush=True,
-                )
-                log_event(
-                    f"❌ Orden {order_id} cancelada o rechazada: {order.status} - {reason}"
-                )
+                print(f"❌ Orden {order_id} para {symbol} cancelada o rechazada: {order.status} - {reason}", flush=True)
+                log_event(f"❌ Falló la orden para {symbol}: {order.status} - {reason}")
                 return False
         except Exception as e:
-            log_event(f"❌ Error verificando estado de orden {order_id}: {e}")
+            log_event(f"❌ Error verificando estado de orden {order_id} para {symbol}: {e}")
         time.sleep(1)
-    print(f"❌ Timeout esperando ejecución de orden {order_id}", flush=True)
-    log_event(f"❌ Timeout esperando ejecución de orden {order_id}")
+    print(f"⚠️ Timeout esperando ejecución de orden {order_id} para {symbol}", flush=True)
+    log_event(f"⚠️ Timeout esperando fill para {symbol}")
     return False
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
@@ -162,11 +157,12 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
             flush=True,
         )
+        log_event(f"✅ Orden enviada para {symbol}")
         print(
             "⌛ Esperando a que se rellene la orden...",
             flush=True,
         )
-        if not wait_for_order_fill(order.id):
+        if not wait_for_order_fill(order.id, symbol):
             return False
 
         trail_price = get_adaptive_trail_price(symbol)
@@ -193,7 +189,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         return True
 
     except Exception as e:
-        log_event(f"❌ Error placing long order for {symbol}: {str(e)}")
+        log_event(f"❌ Falló la orden para {symbol}: {e}")
         return False
 
 
@@ -247,7 +243,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc'
         )
 
-        if not wait_for_order_fill(order.id):
+        if not wait_for_order_fill(order.id, symbol):
             return
 
         trail_price = round(current_price * (trail_percent / 100), 2)
@@ -271,4 +267,4 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
         log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
 
     except Exception as e:
-        log_event(f"❌ Error placing short order for {symbol}: {str(e)}")
+        log_event(f"❌ Falló la orden para {symbol}: {e}")
