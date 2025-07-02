@@ -28,3 +28,18 @@ approaches for running coroutines from worker threads:
 1. Scheduling the coroutine on the main loop using
    `asyncio.run_coroutine_threadsafe`.
 2. Creating an independent event loop inside each thread.
+
+## Utilities
+
+`utils/log_summary.py` provides a small CLI to inspect `logs/events.log` for a given date.
+It prints how many orders succeeded, failed, shorts were executed and any errors logged.
+
+```bash
+$ python utils/log_summary.py --date 2024-06-01
+```
+
+Without arguments it defaults to the current day:
+
+```bash
+$ python utils/log_summary.py
+```
