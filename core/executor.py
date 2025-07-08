@@ -7,7 +7,8 @@ import pandas as pd
 import yfinance as yf
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
-from utils.logger import log_event
+from utils.logger import log_event, log_dir
+import os
 
 # Control de estado
 open_positions = set()
@@ -25,6 +26,8 @@ _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
 
 quiver_signals_log = {}
+# Store entry price and qty for open positions to calculate PnL when they close
+entry_data = {}
 
 def reset_daily_investment():
     global _total_invested_today, _last_investment_day, executed_symbols_today
@@ -66,18 +69,55 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
     while time.time() - start < timeout:
         try:
             order = api.get_order(order_id)
-            print(f"⌛ Orden {order_id} para {symbol} estado actual: {order.status}", flush=True)
-            if order.status == 'filled':
+            print(
+                f"⌛ Orden {order_id} para {symbol} estado actual: {order.status}",
+                flush=True,
+            )
+            if order.status == "filled":
+                # Register entry price when the initial market order is filled
+                if order.type == "market" and order.side == "buy":
+                    try:
+                        entry_data[symbol] = (
+                            float(order.filled_avg_price),
+                            float(order.qty),
+                        )
+                    except Exception:
+                        pass
+
+                # Calculate realized PnL when a trailing-stop sell completes
+                if order.type == "trailing_stop" and order.side == "sell":
+                    sell_price = float(getattr(order, "filled_avg_price", 0))
+                    qty = float(order.qty)
+                    avg_entry, _ = entry_data.get(symbol, (None, None))
+                    if avg_entry is not None:
+                        pnl = (sell_price - avg_entry) * qty
+                        log_event(f"💰 PnL realized for {symbol}: {pnl:.2f} USD")
+                        pnl_file = os.path.join(log_dir, "pnl.log")
+                        os.makedirs(log_dir, exist_ok=True)
+                        timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                        with open(pnl_file, "a", encoding="utf-8") as pf:
+                            pf.write(f"[{timestamp}] {symbol} {pnl:.2f}\n")
+                        entry_data.pop(symbol, None)
                 return True
-            elif order.status in ['canceled', 'rejected']:
-                reason = getattr(order, 'reject_reason', 'Sin motivo')
-                print(f"❌ Orden {order_id} para {symbol} cancelada o rechazada: {order.status} - {reason}", flush=True)
-                log_event(f"❌ Falló la orden para {symbol}: {order.status} - {reason}")
+            elif order.status in ["canceled", "rejected"]:
+                reason = getattr(order, "reject_reason", "Sin motivo")
+                print(
+                    f"❌ Orden {order_id} para {symbol} cancelada o rechazada: {order.status} - {reason}",
+                    flush=True,
+                )
+                log_event(
+                    f"❌ Falló la orden para {symbol}: {order.status} - {reason}"
+                )
                 return False
         except Exception as e:
-            log_event(f"❌ Error verificando estado de orden {order_id} para {symbol}: {e}")
+            log_event(
+                f"❌ Error verificando estado de orden {order_id} para {symbol}: {e}"
+            )
         time.sleep(1)
-    print(f"⚠️ Timeout esperando ejecución de orden {order_id} para {symbol}", flush=True)
+    print(
+        f"⚠️ Timeout esperando ejecución de orden {order_id} para {symbol}",
+        flush=True,
+    )
     log_event(f"⚠️ Timeout esperando fill para {symbol}")
     return False
 
