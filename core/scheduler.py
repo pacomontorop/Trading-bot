@@ -30,7 +30,7 @@ import os
 import pandas as pd
 import time as pytime
 
-from signals.quiver_utils import initialize_quiver_caches  # 👈 Añadido aquí
+from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
 
 # Flag to control short-selling features via environment variable
@@ -68,6 +68,7 @@ def pre_market_scan():
             today = now_ny.date()
             if today != last_reset_date:
                 evaluated_symbols_today.clear()
+                reset_daily_approvals()
                 last_reset_date = today
                 print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
