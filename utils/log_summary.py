@@ -7,6 +7,7 @@ import os
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_FILE = os.path.join(PROJECT_ROOT, "logs", "events.log")
+PNL_FILE = os.path.join(PROJECT_ROOT, "logs", "pnl.log")
 
 
 def parse_args():
@@ -20,11 +21,12 @@ def parse_args():
     return parser.parse_args()
 
 
-def summarize(log_path: str, target_date: str) -> None:
+def summarize(log_path: str, pnl_path: str, target_date: str) -> None:
     success = 0
     failures = 0
     shorts = 0
     errors = 0
+    realized_pnl = 0.0
 
     if not os.path.exists(log_path):
         print(f"No log file found at {log_path}")
@@ -57,16 +59,36 @@ def summarize(log_path: str, target_date: str) -> None:
             if any(k in msg for k in ["❌", "⚠️", "⛔", "Error"]):
                 errors += 1
 
+    if os.path.exists(pnl_path):
+        with open(pnl_path, encoding="utf-8") as f:
+            for line in f:
+                if not line.startswith("["):
+                    continue
+                try:
+                    ts_str, rest = line.strip().split("]", 1)
+                    ts_str = ts_str.lstrip("[")
+                    ts_date = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S").date()
+                except Exception:
+                    continue
+                if ts_date.isoformat() != target_date:
+                    continue
+                try:
+                    pnl_value = float(rest.strip().split()[-1])
+                    realized_pnl += pnl_value
+                except Exception:
+                    continue
+
     print(f"📅 Summary for {target_date}")
     print(f"✅ Successful orders: {success}")
     print(f"❌ Failed orders: {failures}")
     print(f"📉 Shorts executed: {shorts}")
     print(f"⚠️ Errors: {errors}")
+    print(f"💰 Realized PnL: {realized_pnl:.2f} USD")
 
 
 def main() -> None:
     args = parse_args()
-    summarize(LOG_FILE, args.date)
+    summarize(LOG_FILE, PNL_FILE, args.date)
 
 
 if __name__ == "__main__":
