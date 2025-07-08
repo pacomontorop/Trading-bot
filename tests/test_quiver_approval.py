@@ -20,6 +20,7 @@ from signals.quiver_approval import (
     get_all_quiver_signals,
     QUIVER_APPROVAL_THRESHOLD,
 )
+import signals.quiver_utils as quiver_utils
 
 def test_quiver_integrity_response():
     with patch("signals.quiver_utils.get_all_quiver_signals", return_value={}):
@@ -97,3 +98,36 @@ def test_quiver_signals_structure():
     expected_keys = list(dummy.keys())
     for key in expected_keys:
         assert key in signals, f"Falta la clave '{key}' en las señales"
+
+
+def test_approval_logged_once_per_day():
+    signals = {
+        "insider_buy_more_than_sell": True,
+        "has_gov_contract": True,
+        "positive_patent_momentum": True,
+        "trending_wsb": True,
+        "bullish_etf_flow": False,
+        "has_recent_sec13f_activity": False,
+        "has_recent_sec13f_changes": False,
+        "has_recent_dark_pool_activity": False,
+        "is_high_political_beta": False,
+        "is_trending_on_twitter": False,
+        "has_positive_app_ratings": False,
+    }
+
+    quiver_utils.approved_today.clear()
+
+    with patch("signals.quiver_utils.has_recent_quiver_event", return_value=True), \
+         patch("signals.quiver_utils.fetch_yfinance_stock_data", return_value=(300_000_000, 500_000, None, None, None, None)), \
+         patch("signals.quiver_utils.log_event") as log_mock:
+        evaluate_quiver_signals(signals, symbol="TEST")
+        evaluate_quiver_signals(signals, symbol="TEST")
+        assert log_mock.call_count == 1
+
+    quiver_utils.reset_daily_approvals()
+
+    with patch("signals.quiver_utils.has_recent_quiver_event", return_value=True), \
+         patch("signals.quiver_utils.fetch_yfinance_stock_data", return_value=(300_000_000, 500_000, None, None, None, None)), \
+         patch("signals.quiver_utils.log_event") as log_mock:
+        evaluate_quiver_signals(signals, symbol="TEST")
+        assert log_mock.call_count == 1

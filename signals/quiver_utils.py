@@ -25,6 +25,13 @@ QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
 
+# Track which symbols have been approved and logged today
+approved_today = set()
+
+def reset_daily_approvals():
+    """Clear daily approval log."""
+    approved_today.clear()
+
 
 # Pesos por señal para score final
 QUIVER_SIGNAL_WEIGHTS = {
@@ -161,7 +168,11 @@ def evaluate_quiver_signals(signals, symbol=""):
         print(f"⚠️ Error al evaluar liquidez para {symbol}: {e}")
         return False
 
-    log_event(f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}. Liquidez OK.")
+    if symbol not in approved_today:
+        log_event(
+            f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}. Liquidez OK."
+        )
+        approved_today.add(symbol)
     return True
 
 
