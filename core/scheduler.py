@@ -20,6 +20,7 @@ from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, get_top_shorts
 from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
+from utils.backtest_report import generate_paper_summary
 from utils.logger import log_event, log_dir
 from core.monitor import monitor_open_positions
 from utils.generate_symbols_csv import generate_symbols_csv
@@ -193,6 +194,12 @@ def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
         now = datetime.utcnow()
+        if now.weekday() == 6 and now.hour == 18:
+            try:
+                generate_paper_summary()
+            except Exception as e:
+                log_event(f"❌ Error al generar resumen semanal: {e}")
+
         if now.hour == 20:
             subject = "📈 Resumen diario de trading"
 
