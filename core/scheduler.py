@@ -19,6 +19,7 @@ from core.executor import (
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, get_top_shorts
 from broker.alpaca import api, is_market_open
+from telegram_report import generate_cumulative_report
 from utils.emailer import send_email
 from utils.logger import log_event, log_dir
 from core.monitor import monitor_open_positions
@@ -39,6 +40,9 @@ initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada m
 
 # Flag to control short-selling features via environment variable
 ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
+
+# Track last date when the weekly Telegram report was sent
+last_report_date = None
 
 
 
@@ -193,6 +197,21 @@ def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
         now = datetime.utcnow()
+
+        global last_report_date
+        today = now.date()
+        if (
+            now.weekday() == 4
+            and now.hour == 20
+            and now.minute >= 30
+            and last_report_date != today
+        ):
+            try:
+                generate_cumulative_report()
+                last_report_date = today
+            except Exception as e:
+                log_event(f"❌ Error enviando reporte Telegram: {e}")
+
         if now.hour == 20:
             subject = "📈 Resumen diario de trading"
 
