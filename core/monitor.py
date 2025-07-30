@@ -3,7 +3,11 @@
 import time
 from broker.alpaca import api
 from utils.logger import log_event
-from core.executor import open_positions, open_positions_lock
+from core.executor import (
+    open_positions,
+    open_positions_lock,
+    get_adaptive_trail_price,
+)
 
 def monitor_open_positions():
     print("🟢 Monitor de posiciones iniciado.")
@@ -45,3 +49,44 @@ def monitor_open_positions():
             log_event(f"❌ Error monitorizando posiciones: {e}")
 
         time.sleep(900)
+
+
+def watchdog_trailing_stop():
+    """Reinstala trailing stops perdidos cada 10 minutos."""
+    print("🟢 Watchdog trailing stop iniciado.")
+    while True:
+        try:
+            positions = api.list_positions()
+            pos_map = {p.symbol: p for p in positions} if positions else {}
+
+            open_orders = api.list_orders(status="open")
+            trailing = {
+                (o.symbol, o.side)
+                for o in open_orders
+                if getattr(o, "type", "") == "trailing_stop"
+            }
+
+            for symbol, pos in pos_map.items():
+                side = "sell" if pos.side.lower() == "long" else "buy"
+                if (symbol, side) in trailing:
+                    continue
+
+                qty = int(float(pos.qty))
+                if qty <= 0:
+                    continue
+
+                trail_price = get_adaptive_trail_price(symbol)
+                api.submit_order(
+                    symbol=symbol,
+                    qty=qty,
+                    side=side,
+                    type="trailing_stop",
+                    time_in_force="gtc",
+                    trail_price=trail_price,
+                )
+                log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")
+
+        except Exception as e:
+            log_event(f"❌ Error en watchdog_trailing_stop: {e}")
+
+        time.sleep(600)
