@@ -9,6 +9,10 @@ from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event, log_dir
 import os
+import csv
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 
 # Control de estado
 open_positions = set()
@@ -26,7 +30,7 @@ _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
 
 quiver_signals_log = {}
-# Store entry price and qty for open positions to calculate PnL when they close
+# Store entry price, quantity and entry time for open positions to calculate PnL when they close
 entry_data = {}
 
 def reset_daily_investment():
@@ -77,9 +81,16 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                 # Register entry price when the initial market order is filled
                 if order.type == "market" and order.side == "buy":
                     try:
+                        entry_time = getattr(order, "filled_at", datetime.utcnow())
+                        if isinstance(entry_time, str):
+                            try:
+                                entry_time = datetime.fromisoformat(entry_time.replace("Z", "+00:00"))
+                            except Exception:
+                                entry_time = datetime.utcnow()
                         entry_data[symbol] = (
                             float(order.filled_avg_price),
                             float(order.qty),
+                            entry_time.strftime("%Y-%m-%d %H:%M:%S"),
                         )
                     except Exception:
                         pass
@@ -88,7 +99,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                 if order.type == "trailing_stop" and order.side == "sell":
                     sell_price = float(getattr(order, "filled_avg_price", 0))
                     qty = float(order.qty)
-                    avg_entry, _ = entry_data.get(symbol, (None, None))
+                    avg_entry, _, date_in = entry_data.get(symbol, (None, None, None))
                     if avg_entry is not None:
                         pnl = (sell_price - avg_entry) * qty
                         log_event(f"💰 PnL realized for {symbol}: {pnl:.2f} USD")
@@ -97,6 +108,44 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                         timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
                         with open(pnl_file, "a", encoding="utf-8") as pf:
                             pf.write(f"[{timestamp}] {symbol} {pnl:.2f}\n")
+
+                        # Save closed trade details
+                        exit_time = getattr(order, "filled_at", datetime.utcnow())
+                        if isinstance(exit_time, str):
+                            try:
+                                exit_time = datetime.fromisoformat(exit_time.replace("Z", "+00:00"))
+                            except Exception:
+                                exit_time = datetime.utcnow()
+                        exit_time_str = exit_time.strftime("%Y-%m-%d %H:%M:%S")
+
+                        os.makedirs(DATA_DIR, exist_ok=True)
+                        trades_path = os.path.join(DATA_DIR, "trades.csv")
+                        file_exists = os.path.exists(trades_path)
+                        signals = "|".join(quiver_signals_log.get(symbol, []))
+                        with open(trades_path, "a", newline="", encoding="utf-8") as tf:
+                            writer = csv.writer(tf)
+                            if not file_exists:
+                                writer.writerow([
+                                    "symbol",
+                                    "entry_price",
+                                    "exit_price",
+                                    "qty",
+                                    "pnl_usd",
+                                    "date_in",
+                                    "date_out",
+                                    "signals",
+                                ])
+                            writer.writerow([
+                                symbol,
+                                avg_entry,
+                                sell_price,
+                                qty,
+                                round(pnl, 2),
+                                date_in,
+                                exit_time_str,
+                                signals,
+                            ])
+
                         entry_data.pop(symbol, None)
                 return True
             elif order.status in ["canceled", "rejected"]:
