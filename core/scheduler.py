@@ -21,7 +21,7 @@ from signals.reader import get_top_signals, get_top_shorts
 from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
 from utils.logger import log_event, log_dir
-from core.monitor import monitor_open_positions
+from core.monitor import monitor_open_positions, watchdog_trailing_stop
 from utils.generate_symbols_csv import generate_symbols_csv
 from signals.filters import is_position_open, get_cached_positions
 
@@ -301,6 +301,7 @@ def start_schedulers():
 
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
+    threading.Thread(target=watchdog_trailing_stop, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     if ENABLE_SHORTS:
