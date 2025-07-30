@@ -22,18 +22,21 @@ pending_opportunities_lock = threading.Lock()
 pending_trades_lock = threading.Lock()
 executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
+DAILY_MAX_LOSS_USD = 300.0  # Límite de pérdidas diarias
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
+_realized_pnl_today = 0.0
 
 quiver_signals_log = {}
 # Store entry price and qty for open positions to calculate PnL when they close
 entry_data = {}
 
 def reset_daily_investment():
-    global _total_invested_today, _last_investment_day, executed_symbols_today
+    global _total_invested_today, _last_investment_day, executed_symbols_today, _realized_pnl_today
     today = datetime.utcnow().date()
     if today != _last_investment_day:
         _total_invested_today = 0.0
+        _realized_pnl_today = 0.0
         _last_investment_day = today
         with executed_symbols_today_lock:
             executed_symbols_today.clear()
@@ -98,6 +101,8 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                         with open(pnl_file, "a", encoding="utf-8") as pf:
                             pf.write(f"[{timestamp}] {symbol} {pnl:.2f}\n")
                         entry_data.pop(symbol, None)
+                        global _realized_pnl_today
+                        _realized_pnl_today += pnl
                 return True
             elif order.status in ["canceled", "rejected"]:
                 reason = getattr(order, "reject_reason", "Sin motivo")
@@ -123,6 +128,11 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    if _realized_pnl_today < -DAILY_MAX_LOSS_USD:
+        log_event(
+            f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
+        )
+        return False
     print(f"\n🚀 Iniciando proceso de compra para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol):
@@ -235,6 +245,11 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    if _realized_pnl_today < -DAILY_MAX_LOSS_USD:
+        log_event(
+            f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
+        )
+        return
     print(f"\n🚀 Iniciando proceso de short para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol):
