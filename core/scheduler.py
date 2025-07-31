@@ -32,8 +32,8 @@ import pandas as pd
 import time as pytime
 import re
 
-from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
-initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
+from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
+initialize_quiver_caches()
 
 # Flag to control short-selling features via environment variable
 ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
