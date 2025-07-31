@@ -1,6 +1,3 @@
-#scheduler.py
-
-
 """Background tasks for scanning signals and monitoring market status."""
 
 from core.executor import (
