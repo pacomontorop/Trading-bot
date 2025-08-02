@@ -324,11 +324,7 @@ def start_schedulers():
     else:
         print("🔕 Short scanning disabled (ENABLE_SHORTS=False)", flush=True)
 
-
-
 # Exportar para pruebas o logs manuales
 if __name__ == "__main__":
     daily_summary()
-
-
 
