@@ -22,6 +22,7 @@ from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary
 from utils.logger import log_event, log_dir
+from utils.telegram_report import generate_cumulative_report
 from core.monitor import monitor_open_positions, watchdog_trailing_stop
 from utils.generate_symbols_csv import generate_symbols_csv
 from signals.filters import is_position_open, get_cached_positions
@@ -269,6 +270,10 @@ def daily_summary():
 
             # Envío y limpieza
             send_email(subject, body, attach_log=True)
+            try:
+                generate_cumulative_report()
+            except Exception:
+                log_event("❌ Fallo Telegram, sistema sigue OK")
             with pending_opportunities_lock:
                 pending_opportunities.clear()
             with pending_trades_lock:
