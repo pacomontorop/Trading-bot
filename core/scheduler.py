@@ -20,6 +20,7 @@ from telegram_report import generate_cumulative_report
 from utils.emailer import send_email
 from utils.logger import log_event, log_dir
 from core.monitor import monitor_open_positions
+from utils.backtest_report import generate_paper_summary
 from utils.generate_symbols_csv import generate_symbols_csv
 from signals.filters import is_position_open, get_cached_positions
 
@@ -194,7 +195,6 @@ def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
         now = datetime.utcnow()
-
         global last_report_date
         today = now.date()
         if (
@@ -208,6 +208,12 @@ def daily_summary():
                 last_report_date = today
             except Exception as e:
                 log_event(f"❌ Error enviando reporte Telegram: {e}")
+
+        if now.weekday() == 6 and now.hour == 18:
+            try:
+                generate_paper_summary()
+            except Exception as e:
+                log_event(f"❌ Error al generar resumen semanal: {e}")
 
         if now.hour == 20:
             subject = "📈 Resumen diario de trading"
