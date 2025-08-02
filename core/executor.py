@@ -8,6 +8,7 @@ import yfinance as yf
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event, log_dir
+from utils.daily_risk import register_trade_pnl, is_risk_limit_exceeded
 import os
 import csv
 
@@ -82,7 +83,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
             )
             if order.status == "filled":
                 # Register entry price when the initial market order is filled
-                if order.type == "market" and order.side == "buy":
+                if order.type == "market":
                     try:
                         entry_time = getattr(order, "filled_at", datetime.utcnow())
                         if isinstance(entry_time, str):
@@ -98,13 +99,16 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                     except Exception:
                         pass
 
-                # Calculate realized PnL when a trailing-stop sell completes
-                if order.type == "trailing_stop" and order.side == "sell":
-                    sell_price = float(getattr(order, "filled_avg_price", 0))
+                # Calculate realized PnL when a trailing-stop order completes
+                if order.type == "trailing_stop":
+                    fill_price = float(getattr(order, "filled_avg_price", 0))
                     qty = float(order.qty)
                     avg_entry, _, date_in = entry_data.get(symbol, (None, None, None))
                     if avg_entry is not None:
-                        pnl = (sell_price - avg_entry) * qty
+                        if order.side == "sell":
+                            pnl = (fill_price - avg_entry) * qty
+                        else:
+                            pnl = (avg_entry - fill_price) * qty
                         log_event(f"💰 PnL realized for {symbol}: {pnl:.2f} USD")
                         pnl_file = os.path.join(log_dir, "pnl.log")
                         os.makedirs(log_dir, exist_ok=True)
@@ -141,7 +145,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                             writer.writerow([
                                 symbol,
                                 avg_entry,
-                                sell_price,
+                                fill_price,
                                 qty,
                                 round(pnl, 2),
                                 date_in,
@@ -152,6 +156,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                         entry_data.pop(symbol, None)
                         global _realized_pnl_today
                         _realized_pnl_today += pnl
+                        register_trade_pnl(symbol, pnl)
                 return True
             elif order.status in ["canceled", "rejected"]:
                 reason = getattr(order, "reject_reason", "Sin motivo")
@@ -177,6 +182,9 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    if is_risk_limit_exceeded():
+        log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
+        return False
     if _realized_pnl_today < -DAILY_MAX_LOSS_USD:
         log_event(
             f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
@@ -294,6 +302,9 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
     reset_daily_investment()
+    if is_risk_limit_exceeded():
+        log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
+        return
     if _realized_pnl_today < -DAILY_MAX_LOSS_USD:
         log_event(
             f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
