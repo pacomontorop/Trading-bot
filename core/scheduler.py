@@ -5,7 +5,6 @@
 
 from core.executor import (
     place_order_with_trailing_stop,
-    place_short_order_with_trailing_buy,
     pending_opportunities,
     pending_trades,
     pending_opportunities_lock,
@@ -13,11 +12,12 @@ from core.executor import (
     invested_today_usd,
     quiver_signals_log,
     executed_symbols_today,
-    executed_symbols_today_lock
+    executed_symbols_today_lock,
+    short_scan,
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
-from signals.reader import get_top_signals, get_top_shorts
+from signals.reader import get_top_signals
 from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
@@ -38,11 +38,6 @@ import re
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
-
-# Flag to control short-selling features via environment variable
-ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
-
-
 
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
@@ -126,33 +121,6 @@ def pre_market_scan():
             pytime.sleep(60)  # Espera 1 min cuando está cerrado
 
         pytime.sleep(1)  # Espera mínima para no saturar el sistema
-
-
-
-
-def short_scan():
-    print("🌀 short_scan iniciado.", flush=True)
-    while True:
-        if is_market_open():
-            print("🔍 Buscando oportunidades en corto...", flush=True)
-            shorts = get_top_shorts(min_criteria=6, verbose=True)
-            log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
-            MAX_SHORTS_PER_CYCLE = 1
-
-            if len(shorts) > MAX_SHORTS_PER_CYCLE:
-                print(f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.")
-
-            for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
-                try:
-                    asset = api.get_asset(symbol)
-                    if asset.shortable:
-                        amount_usd = calculate_investment_amount(score)
-                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.5)
-                except Exception as e:
-                    print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
-
-            log_event(f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD")
-        pytime.sleep(300)
 
 
 def _parse_today_pnl(log_path: str):
@@ -332,10 +300,14 @@ def start_schedulers():
     threading.Thread(target=watchdog_trailing_stop, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
+
+    ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
+
     if ENABLE_SHORTS:
+        print("🟢 ENABLE_SHORTS=True: Activando escaneo de oportunidades short...", flush=True)
         threading.Thread(target=short_scan, daemon=True).start()
     else:
-        print("🔕 Short scanning disabled (ENABLE_SHORTS=False)", flush=True)
+        print("🔕 Short scanning desactivado (ENABLE_SHORTS=False)", flush=True)
 
 
 
