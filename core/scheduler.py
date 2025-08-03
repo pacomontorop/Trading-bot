@@ -20,7 +20,7 @@ from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, get_top_shorts
 from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
-from utils.backtest_report import generate_paper_summary
+from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
 from utils.logger import log_event, log_dir
 from utils.telegram_report import generate_cumulative_report
 from core.monitor import monitor_open_positions, watchdog_trailing_stop
@@ -269,6 +269,22 @@ def daily_summary():
                 body += "\n".join(f"→ {line}" for line in options_log)
 
             # Envío y limpieza
+            try:
+                trades_path = os.path.join("data", "trades.csv")
+                if os.path.exists(trades_path):
+                    trades = []
+                    with open(trades_path, "r", encoding="utf-8") as f:
+                        import csv
+                        trades = list(csv.DictReader(f))
+                    stats = analyze_trades(trades)
+                    acumulado = format_summary(stats)
+                    body += "\n\n📘 *Resumen acumulado de rentabilidad:*\n"
+                    body += acumulado
+                else:
+                    body += "\n\n📘 *Resumen acumulado:* archivo de trades no encontrado."
+            except Exception as e:
+                body += f"\n\n❌ Error al calcular resumen acumulado: {e}"
+
             send_email(subject, body, attach_log=True)
             try:
                 generate_cumulative_report()
