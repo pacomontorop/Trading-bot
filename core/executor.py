@@ -198,7 +198,12 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
         print(f"✅ {symbol} pasó todos los filtros iniciales. Obteniendo señales finales...")
 
-        from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, QUIVER_APPROVAL_THRESHOLD
+        from signals.quiver_utils import (
+            get_all_quiver_signals,
+            score_quiver_signals,
+            QUIVER_APPROVAL_THRESHOLD,
+            get_adaptive_take_profit,
+        )
         quiver_signals = get_all_quiver_signals(symbol)
         quiver_score = score_quiver_signals(quiver_signals)
         quiver_signals_log[symbol] = [k for k, v in quiver_signals.items() if v]
@@ -271,6 +276,21 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         )
         if not wait_for_order_fill(order.id, symbol):
             return False
+        entry_price, _, _ = entry_data.get(symbol, (current_price, None, None))
+        take_profit = get_adaptive_take_profit(symbol, entry_price, quiver_score)
+        if take_profit:
+            print(
+                f"🎯 Colocando take profit para {symbol} en ${take_profit:.2f}",
+                flush=True,
+            )
+            api.submit_order(
+                symbol=symbol,
+                qty=qty,
+                side='sell',
+                type='limit',
+                time_in_force='gtc',
+                limit_price=take_profit,
+            )
 
         trail_price = get_adaptive_trail_price(symbol)
         api.submit_order(
