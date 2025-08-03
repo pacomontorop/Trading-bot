@@ -8,7 +8,12 @@ import yfinance as yf
 from broker.alpaca import api, get_current_price
 from signals.filters import is_position_open, is_symbol_approved
 from utils.logger import log_event, log_dir
-from utils.daily_risk import register_trade_pnl, is_risk_limit_exceeded
+from utils.daily_risk import (
+    register_trade_pnl,
+    is_risk_limit_exceeded,
+    save_equity_snapshot,
+    is_equity_drop_exceeded,
+)
 import os
 import csv
 
@@ -31,6 +36,7 @@ DAILY_MAX_LOSS_USD = 300.0  # Límite de pérdidas diarias
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
 _realized_pnl_today = 0.0
+_last_equity_snapshot = None
 
 quiver_signals_log = {}
 # Store entry price, quantity and entry time for open positions to calculate PnL when they close
@@ -181,7 +187,17 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
     return False
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
+    global _last_equity_snapshot
     reset_daily_investment()
+    today = datetime.utcnow().date()
+    if _last_equity_snapshot != today:
+        save_equity_snapshot()
+        _last_equity_snapshot = today
+    if is_equity_drop_exceeded(5.0):
+        log_event(
+            "🛑 STOP automático: equity cayó más de 5% respecto a ayer. No se operará hoy."
+        )
+        return False
     if is_risk_limit_exceeded():
         log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
         return False

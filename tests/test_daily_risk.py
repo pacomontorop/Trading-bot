@@ -1,5 +1,8 @@
 #test_daily_risk.py
 
+import csv
+from datetime import datetime, timedelta
+
 from utils import daily_risk
 
 
@@ -13,3 +16,36 @@ def test_register_and_limit(monkeypatch, tmp_path):
 
     assert daily_risk.get_today_pnl() == -110
     assert daily_risk.is_risk_limit_exceeded()
+
+
+def test_equity_snapshot_and_drop(monkeypatch, tmp_path):
+    log_file = tmp_path / "equity_log.csv"
+    monkeypatch.setattr(daily_risk, "EQUITY_LOG_FILE", log_file)
+
+    class DummyAPI:
+        def __init__(self, equity):
+            self._equity = equity
+
+        def get_account(self):
+            return type("A", (), {"equity": str(self._equity)})()
+
+    # Save snapshot for today
+    monkeypatch.setattr(daily_risk, "api", DummyAPI(1000))
+    daily_risk.save_equity_snapshot()
+    assert log_file.exists()
+    with open(log_file, newline="", encoding="utf-8") as f:
+        rows = list(csv.reader(f))
+    assert len(rows) == 2  # header + one entry
+
+    # Prepare log with yesterday's equity
+    yesterday = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
+    with open(log_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["date", "equity"])
+        writer.writerow([yesterday, "1000"])
+
+    monkeypatch.setattr(daily_risk, "api", DummyAPI(900))
+    assert daily_risk.is_equity_drop_exceeded(5.0)
+
+    monkeypatch.setattr(daily_risk, "api", DummyAPI(980))
+    assert not daily_risk.is_equity_drop_exceeded(5.0)
