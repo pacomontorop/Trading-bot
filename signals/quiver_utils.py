@@ -9,6 +9,7 @@ from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event
 from datetime import datetime, timedelta
+from typing import Optional
 from signals.quiver_throttler import throttled_request
 from signals.scoring import fetch_yfinance_stock_data
 
@@ -82,6 +83,26 @@ def score_quiver_signals(signals):
         if active:
             score += QUIVER_SIGNAL_WEIGHTS.get(key, 0)
     return score
+
+
+def get_adaptive_take_profit(
+    symbol: str, entry_price: float, quiver_score: float
+) -> Optional[float]:
+    """Calcula un take profit dinámico basado en el quiver_score."""
+    if quiver_score >= 10:
+        pct = 0.10
+    elif quiver_score >= 7:
+        pct = 0.07
+    elif quiver_score >= 5:
+        pct = 0.045
+    else:
+        return None
+
+    take_profit = round(entry_price * (1 + pct), 2)
+    print(
+        f"🎯 {symbol} take profit fijado en ${take_profit:.2f} (score {quiver_score})"
+    )
+    return take_profit
 
 
 # Slightly longer lookback to catch more recent activity
