@@ -5,8 +5,9 @@ import time
 import threading
 import pandas as pd
 import yfinance as yf
-from broker.alpaca import api, get_current_price
+from broker.alpaca import api, get_current_price, is_market_open
 from signals.filters import is_position_open, is_symbol_approved
+from signals.reader import get_top_shorts
 from utils.logger import log_event, log_dir
 from utils.daily_risk import (
     register_trade_pnl,
@@ -58,6 +59,14 @@ def add_to_invested(amount):
 
 def invested_today_usd():
     return _total_invested_today
+
+
+def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=2000, max_investment=3000):
+    if score < min_score:
+        return min_investment
+    normalized_score = min(max(score, min_score), max_score)
+    proportion = (normalized_score - min_score) / (max_score - min_score)
+    return int(min_investment + proportion * (max_investment - min_investment))
 
 
 def get_adaptive_trail_price(symbol):
@@ -333,7 +342,6 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
 
     except Exception as e:
         log_event(f"❌ Falló la orden para {symbol}: {e}")
-        return False
 
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
@@ -419,3 +427,33 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
 
     except Exception as e:
         log_event(f"❌ Falló la orden para {symbol}: {e}")
+
+def short_scan():
+    print("🌀 short_scan iniciado.", flush=True)
+    while True:
+        if is_market_open():
+            print("🔍 Buscando oportunidades en corto...", flush=True)
+            shorts = get_top_shorts(min_criteria=6, verbose=True)
+            log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
+            MAX_SHORTS_PER_CYCLE = 1
+            if len(shorts) > MAX_SHORTS_PER_CYCLE:
+                print(
+                    f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.",
+                    flush=True,
+                )
+            for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
+                with executed_symbols_today_lock:
+                    if symbol in executed_symbols_today:
+                        print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
+                        continue
+                try:
+                    asset = api.get_asset(symbol)
+                    if getattr(asset, "shortable", False):
+                        amount_usd = calculate_investment_amount(score)
+                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.5)
+                except Exception as e:
+                    print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
+            log_event(
+                f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD"
+            )
+        time.sleep(300)

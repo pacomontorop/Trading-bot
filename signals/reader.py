@@ -1,17 +1,19 @@
 #reader.py
 
-
 from signals.filters import (
     is_position_open,
     is_approved_by_finnhub_and_alphavantage,
     get_cached_positions,
+    is_approved_by_quiver,
 )
-from signals.quiver_utils import _async_is_approved_by_quiver
+from signals.quiver_utils import _async_is_approved_by_quiver, fetch_quiver_signals
 from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime
+from utils.logger import log_event
+import yfinance as yf
 
 
 
@@ -75,6 +77,16 @@ def is_options_enabled(symbol):
 # Primero la lista de prioridad, luego el resto (sin duplicados)
 stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not in priority_symbols]
 
+
+
+def has_downtrend(symbol: str, days: int = 4) -> bool:
+    try:
+        df = yf.download(symbol, period=f"{days}d", interval="1d", progress=False)
+        closes = df["Close"].dropna().tolist()
+        return len(closes) >= 3 and closes[-1] < closes[-2] < closes[-3]
+    except Exception as e:
+        log_event(f"⚠️ Error obteniendo precios de cierre para {symbol}: {e}")
+        return False
 
 
 evaluated_symbols_today = set()
@@ -170,6 +182,23 @@ def get_top_shorts(min_criteria=20, verbose=False):
         if symbol in already_considered or is_position_open(symbol):
             continue
         already_considered.add(symbol)
+
+        if is_approved_by_quiver(symbol):
+            log_event(f"⛔ {symbol} tiene señales alcistas en Quiver. Short descartado.")
+            continue
+
+        try:
+            quiver_signals = fetch_quiver_signals(symbol)
+            if quiver_signals.get("has_recent_sec13f_activity") or quiver_signals.get("has_recent_sec13f_changes"):
+                log_event(f"⛔ {symbol} con señales 13F positivas. Short descartado.")
+                continue
+        except Exception as e:
+            log_event(f"⚠️ Error obteniendo señales 13F para {symbol}: {e}")
+            continue
+
+        if not has_downtrend(symbol):
+            log_event(f"⛔ {symbol} no cumple patrón bajista de 3 días. Short descartado.")
+            continue
 
         try:
             data = fetch_yfinance_stock_data(symbol)
