@@ -1,3 +1,5 @@
+#backtest_from_trades.py
+
 #!/usr/bin/env python3
 """Analyze historical trades from a CSV file."""
 
