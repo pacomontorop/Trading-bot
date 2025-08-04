@@ -103,14 +103,13 @@ def pre_market_scan():
                     log_event(f"🟡 Ejecutando orden para {symb}")
                     log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
                     success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                    with pending_opportunities_lock:
+                        pending_opportunities.add(symb)
                     if success:
                         log_event(f"✅ Orden enviada para {symb}")
                     else:
                         log_event(f"❌ Falló la orden para {symb}")
                     evaluated_symbols_today.add(symb)
-                    if success:
-                        with pending_opportunities_lock:
-                            pending_opportunities.add(symb)
                     pytime.sleep(1.5)  # Pequeña espera entre órdenes
             else:
                 print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
@@ -162,14 +161,16 @@ def _parse_today_pnl(log_path: str):
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
-        now = datetime.utcnow()
+        # Utilizar hora de Nueva York para sincronizar con el cierre del mercado
+        now = get_ny_time()
         if now.weekday() == 6 and now.hour == 18:
             try:
                 generate_paper_summary()
             except Exception as e:
                 log_event(f"❌ Error al generar resumen semanal: {e}")
 
-        if now.hour == 20:
+        # Enviar el resumen diario al cierre regular del mercado (16:00 NY)
+        if now.hour == 16:
             subject = "📈 Resumen diario de trading"
 
             # Cabecera numérica
