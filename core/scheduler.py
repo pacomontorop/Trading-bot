@@ -103,14 +103,13 @@ def pre_market_scan():
                     log_event(f"🟡 Ejecutando orden para {symb}")
                     log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
                     success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                    with pending_opportunities_lock:
+                        pending_opportunities.add(symb)
                     if success:
                         log_event(f"✅ Orden enviada para {symb}")
                     else:
                         log_event(f"❌ Falló la orden para {symb}")
                     evaluated_symbols_today.add(symb)
-                    if success:
-                        with pending_opportunities_lock:
-                            pending_opportunities.add(symb)
                     pytime.sleep(1.5)  # Pequeña espera entre órdenes
             else:
                 print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
