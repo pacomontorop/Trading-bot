@@ -75,10 +75,22 @@ def watchdog_trailing_stop():
                 if qty <= 0:
                     continue
 
+                reserved_qty = sum(
+                    int(float(o.qty))
+                    for o in open_orders
+                    if o.symbol == symbol and o.side == side
+                )
+                available_qty = qty - reserved_qty
+                if available_qty <= 0:
+                    log_event(
+                        f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
+                    )
+                    continue
+
                 trail_price = get_adaptive_trail_price(symbol)
                 api.submit_order(
                     symbol=symbol,
-                    qty=qty,
+                    qty=available_qty,
                     side=side,
                     type="trailing_stop",
                     time_in_force="gtc",
