@@ -3,10 +3,10 @@ import re
 from datetime import datetime
 
 from utils.telegram_alert import send_telegram_alert
+from utils.order_tracker import compute_cumulative_stats
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_FILE = os.path.join(PROJECT_ROOT, "logs", "events.log")
-PNL_FILE = os.path.join(PROJECT_ROOT, "logs", "pnl.log")
 
 def _parse_today_events(log_path: str, target_date: datetime.date):
     success = failures = shorts = errors = 0
@@ -37,38 +37,10 @@ def _parse_today_events(log_path: str, target_date: datetime.date):
                 errors += 1
     return success, failures, shorts, errors
 
-def _parse_today_pnl(log_path: str, target_date: datetime.date):
-    wins = losses = 0
-    total = 0.0
-    if not os.path.exists(log_path):
-        return wins, losses, total
-    with open(log_path, encoding="utf-8") as f:
-        for line in f:
-            if not line.strip():
-                continue
-            if line.startswith("[") and "]" in line:
-                ts_str, remainder = line.split("]", 1)
-                try:
-                    ts_date = datetime.strptime(ts_str.lstrip("["), "%Y-%m-%d %H:%M:%S").date()
-                    if ts_date != target_date:
-                        continue
-                except Exception:
-                    remainder = line
-                line = remainder
-            match = re.search(r"(-?\d+(?:\.\d+)?)", line)
-            if match:
-                value = float(match.group(1))
-                total += value
-                if value >= 0:
-                    wins += 1
-                else:
-                    losses += 1
-    return wins, losses, total
-
 def generate_cumulative_report(verbose: bool = False) -> None:
     today = datetime.utcnow().date()
     success, failures, shorts, errors = _parse_today_events(LOG_FILE, today)
-    wins, losses, realized = _parse_today_pnl(PNL_FILE, today)
+    total_orders, wins, losses, realized = compute_cumulative_stats()
 
     message = (
         f"📊 Resumen del {today}\n"
@@ -76,8 +48,10 @@ def generate_cumulative_report(verbose: bool = False) -> None:
         f"❌ Órdenes fallidas: {failures}\n"
         f"📉 Shorts ejecutados: {shorts}\n"
         f"⚠️ Errores: {errors}\n"
-        f"💵 PnL realizado: {realized:.2f} USD\n"
-        f"🏆 Ganadoras: {wins} | 💔 Perdedoras: {losses}"
+        f"📦 Órdenes ejecutadas acumuladas: {total_orders}\n"
+        f"💵 PnL realizado acumulado: {realized:.2f} USD\n"
+        f"🏆 Operaciones ganadoras: {wins}\n"
+        f"💔 Operaciones perdedoras: {losses}"
     )
 
     send_telegram_alert(message, verbose=verbose)
