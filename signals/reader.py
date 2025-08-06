@@ -14,6 +14,7 @@ from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime, timedelta
 from utils.logger import log_event
 import yfinance as yf
+import os
 import pandas as pd
 
 
@@ -50,6 +51,13 @@ priority_symbols = [
 
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
+
+# Ruta del historial de órdenes para cálculos de bonificación
+ORDERS_HISTORY_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "logs",
+    "orders_history.csv",
+)
 
 import csv
 import random  # <--- AÑADE ESTO
@@ -109,6 +117,46 @@ def has_downtrend(symbol: str, days: int = 4) -> bool:
         return False
 
 
+def get_trade_history_score(symbol: str, min_trades: int = 2) -> int:
+    """Calcula un puntaje de bonificación basado en el historial de operaciones.
+
+    Se suma 1 punto si la tasa de aciertos es >= 60% y otro punto si la
+    rentabilidad media estimada es positiva. No penaliza historiales pobres
+    ni la falta de datos.
+    """
+    try:
+        if not os.path.exists(ORDERS_HISTORY_FILE):
+            return 0
+        df = pd.read_csv(ORDERS_HISTORY_FILE)
+        df = df[df["resultado"].isin(["ganadora", "perdedora"])]
+        symbol_history = df[df["symbol"] == symbol]
+
+        if len(symbol_history) < min_trades:
+            return 0
+
+        win_rate = (symbol_history["resultado"] == "ganadora").mean()
+        score = 0
+        if win_rate >= 0.6:
+            score += 1
+
+        def calc_pnl(row):
+            if row["tipo"] == "long":
+                return (row["precio_salida"] - row["precio_entrada"]) * row["shares"]
+            elif row["tipo"] == "short":
+                return (row["precio_entrada"] - row["precio_salida"]) * row["shares"]
+            return 0
+
+        symbol_history = symbol_history.copy()
+        symbol_history["pnl_estimado"] = symbol_history.apply(calc_pnl, axis=1)
+        if symbol_history["pnl_estimado"].mean() > 0:
+            score += 1
+
+        return score
+    except Exception as e:
+        print(f"⚠️ Error evaluando historial de {symbol}: {e}")
+        return 0
+
+
 evaluated_symbols_today = set()
 last_reset_date = datetime.now().date()
 quiver_semaphore = None
@@ -130,7 +178,12 @@ async def _get_top_signals_async(verbose=False):
             print(f"↩️ [{symbol}] Resultado en caché", flush=True)
             if approved:
                 print(f"✅ {symbol} approved.", flush=True)
-                return (symbol, 90, "Quiver")
+                bonus = get_trade_history_score(symbol)
+                if bonus > 0:
+                    print(
+                        f"✅ {symbol} bonificado con {bonus} puntos por buen historial"
+                    )
+                return (symbol, 90 + bonus, "Quiver")
             return None
 
         print(f"🔎 Checking {symbol}...", flush=True)
@@ -140,7 +193,12 @@ async def _get_top_signals_async(verbose=False):
             quiver_approval_cache[symbol] = approved
             if approved:
                 print(f"✅ {symbol} approved.", flush=True)
-                return (symbol, 90, "Quiver")
+                bonus = get_trade_history_score(symbol)
+                if bonus > 0:
+                    print(
+                        f"✅ {symbol} bonificado con {bonus} puntos por buen historial"
+                    )
+                return (symbol, 90 + bonus, "Quiver")
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
@@ -256,6 +314,13 @@ def get_top_shorts(min_criteria=20, verbose=False):
                 score += CRITERIA_WEIGHTS["volatility_ok"]
             if volume > volume_7d_avg:
                 score += CRITERIA_WEIGHTS["volume_growth"]
+
+            symbol_score = get_trade_history_score(symbol)
+            if symbol_score > 0:
+                print(
+                    f"✅ {symbol} bonificado con {symbol_score} puntos por buen historial"
+                )
+            score += symbol_score
 
             if verbose:
                 print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
