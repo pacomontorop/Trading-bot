@@ -13,6 +13,7 @@ from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime, timedelta
 from utils.logger import log_event
+from signals.adaptive_bonus import apply_adaptive_bonus
 import yfinance as yf
 import os
 import pandas as pd
@@ -183,7 +184,10 @@ async def _get_top_signals_async(verbose=False):
                     print(
                         f"✅ {symbol} bonificado con {bonus} puntos por buen historial"
                     )
-                return (symbol, 90 + bonus, "Quiver")
+                final_score = 90 + bonus
+                adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
+                final_score += adaptive_bonus
+                return (symbol, final_score, "Quiver")
             return None
 
         print(f"🔎 Checking {symbol}...", flush=True)
@@ -198,7 +202,10 @@ async def _get_top_signals_async(verbose=False):
                     print(
                         f"✅ {symbol} bonificado con {bonus} puntos por buen historial"
                     )
-                return (symbol, 90 + bonus, "Quiver")
+                final_score = 90 + bonus
+                adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
+                final_score += adaptive_bonus
+                return (symbol, final_score, "Quiver")
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
@@ -326,6 +333,8 @@ def get_top_shorts(min_criteria=20, verbose=False):
                 print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
 
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
+                adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
+                score += adaptive_bonus
                 shorts.append((symbol, score, "Técnico"))
             elif verbose:
                 print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
