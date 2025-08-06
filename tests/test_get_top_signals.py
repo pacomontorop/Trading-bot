@@ -50,9 +50,25 @@ def test_get_top_signals_returns_max_five():
          patch.object(reader, "is_position_open", return_value=False), \
          patch.object(reader, "get_cached_positions"), \
          patch.object(reader, "evaluated_symbols_today", set()), \
-         patch.object(reader, "last_reset_date", reader.datetime.now().date()):
+         patch.object(reader, "last_reset_date", reader.datetime.now().date()), \
+         patch.object(reader, "is_blacklisted_recent_loser", return_value=False):
         results = reader.get_top_signals()
 
     assert len(results) == 5
     returned_symbols = {r[0] for r in results}
     assert returned_symbols.issubset(set(symbols))
+
+
+def test_get_top_signals_excludes_blacklisted_symbols():
+    symbols = ["A", "B", "C"]
+    with patch.object(reader, "stock_assets", symbols), \
+         patch("signals.reader._async_is_approved_by_quiver", new=AsyncMock(return_value=True)), \
+         patch.object(reader, "is_position_open", return_value=False), \
+         patch.object(reader, "get_cached_positions"), \
+         patch.object(reader, "evaluated_symbols_today", set()), \
+         patch.object(reader, "last_reset_date", reader.datetime.now().date()), \
+         patch.object(reader, "is_blacklisted_recent_loser", side_effect=lambda s: s == "B"):
+        results = reader.get_top_signals()
+
+    returned_symbols = {r[0] for r in results}
+    assert "B" not in returned_symbols
