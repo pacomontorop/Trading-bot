@@ -93,7 +93,9 @@ BLACKLIST_DAYS = 5  # Puede ponerse en config/env si se desea
 
 def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAYS) -> bool:
     try:
-        df = pd.read_csv("orders_history.csv")
+        if not os.path.exists(ORDERS_HISTORY_FILE):
+            return False
+        df = pd.read_csv(ORDERS_HISTORY_FILE)
         df = df[df["resultado"] == "perdedora"]
         df["fecha_entrada"] = pd.to_datetime(df["fecha_entrada"], errors="coerce")
 
