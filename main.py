@@ -16,7 +16,7 @@ def ping():
 def heartbeat():
     while True:
         print(f"💓 Alive at {datetime.utcnow().isoformat()} UTC", flush=True)
-        time.sleep(900)  # Cada 15 minutos
+        time.sleep(300)  # Cada 5 minutos para evitar inactividad prolongada
 
 
 def launch_all():
