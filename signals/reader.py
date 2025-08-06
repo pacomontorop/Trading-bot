@@ -11,9 +11,10 @@ from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils.logger import log_event
 import yfinance as yf
+import pandas as pd
 
 
 
@@ -78,6 +79,25 @@ def is_options_enabled(symbol):
 stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not in priority_symbols]
 
 
+BLACKLIST_DAYS = 5  # Puede ponerse en config/env si se desea
+
+
+def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAYS) -> bool:
+    try:
+        df = pd.read_csv("orders_history.csv")
+        df = df[df["resultado"] == "perdedora"]
+        df["fecha_entrada"] = pd.to_datetime(df["fecha_entrada"], errors="coerce")
+
+        cutoff = datetime.now() - timedelta(days=blacklist_days)
+        recent_losses = df[
+            (df["symbol"] == symbol) & (df["fecha_entrada"] >= cutoff)
+        ]
+
+        return not recent_losses.empty  # True = símbolo penalizado
+    except Exception as e:
+        print(f"⚠️ Error evaluando lista negra de {symbol}: {e}")
+        return False  # Permitir si hay error
+
 
 def has_downtrend(symbol: str, days: int = 4) -> bool:
     try:
@@ -140,7 +160,16 @@ async def _get_top_signals_async(verbose=False):
             s for s in stock_assets
             if s not in evaluated_symbols_today and not is_position_open(s)
         ]
-        symbols_to_evaluate = symbols_to_evaluate[:100]
+
+        filtered_symbols = []
+        for s in symbols_to_evaluate:
+            if is_blacklisted_recent_loser(s):
+                print(
+                    f"🚫 {s} descartado por pérdida reciente (lista negra temporal)"
+                )
+                continue
+            filtered_symbols.append(s)
+        symbols_to_evaluate = filtered_symbols[:100]
 
         # Si no hay símbolos restantes, comienza una nueva ronda
         if not symbols_to_evaluate:
@@ -180,6 +209,11 @@ def get_top_shorts(min_criteria=20, verbose=False):
 
     for symbol in stock_assets:
         if symbol in already_considered or is_position_open(symbol):
+            continue
+        if is_blacklisted_recent_loser(symbol):
+            log_event(
+                f"🚫 {symbol} descartado por pérdida reciente (lista negra temporal)"
+            )
             continue
         already_considered.add(symbol)
 
