@@ -17,6 +17,10 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
         if current_price is None or entry_price is None or qty is None:
             return
 
+        qty = int(abs(float(qty)))
+        if qty <= 0:
+            return
+
         if position_side.lower() == "long":
             gain_pct = (current_price - entry_price) / entry_price * 100
             close_side = "sell"
@@ -24,26 +28,36 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
             gain_pct = (entry_price - current_price) / entry_price * 100
             close_side = "buy"
 
-        if gain_pct >= 7:
-            api.submit_order(
-                symbol=symbol,
-                qty=qty,
-                side=close_side,
-                type="market",
-                time_in_force="gtc",
+        if gain_pct >= 7 or gain_pct <= -5:
+            open_orders = api.list_orders(status="open")
+            reserved_qty = sum(
+                int(float(o.qty))
+                for o in open_orders
+                if o.symbol == symbol and o.side == close_side
             )
-            log_event(f"📈 Take profit virtual ejecutado en {symbol} con +{gain_pct:.2f}%")
-            return
+            available_qty = qty - reserved_qty
+            if available_qty <= 0:
+                log_event(
+                    f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
+                )
+                return
 
-        if gain_pct <= -5:
             api.submit_order(
                 symbol=symbol,
-                qty=qty,
+                qty=available_qty,
                 side=close_side,
                 type="market",
                 time_in_force="gtc",
             )
-            log_event(f"📉 Stop loss virtual ejecutado en {symbol} con {gain_pct:.2f}%")
+
+            if gain_pct >= 7:
+                log_event(
+                    f"📈 Take profit virtual ejecutado en {symbol} con +{gain_pct:.2f}%"
+                )
+            else:
+                log_event(
+                    f"📉 Stop loss virtual ejecutado en {symbol} con {gain_pct:.2f}%"
+                )
             return
 
     except Exception as e:
