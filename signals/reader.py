@@ -113,7 +113,15 @@ def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAY
 def has_downtrend(symbol: str, days: int = 4) -> bool:
     try:
         df = yf.download(symbol, period=f"{days}d", interval="1d", progress=False)
-        closes = df["Close"].dropna().tolist()
+        close_data = df["Close"]
+        if isinstance(close_data, pd.DataFrame):
+            if symbol in close_data.columns:
+                close_series = close_data[symbol]
+            else:
+                close_series = close_data.iloc[:, 0]
+        else:
+            close_series = close_data
+        closes = close_series.dropna().tolist()
         return len(closes) >= 3 and closes[-1] < closes[-2] < closes[-3]
     except Exception as e:
         log_event(f"⚠️ Error obteniendo precios de cierre para {symbol}: {e}")
