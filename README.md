@@ -43,3 +43,10 @@ Without arguments it defaults to the current day:
 ```bash
 $ python utils/log_summary.py
 ```
+
+## FMP Backup
+
+Set `FMP_API_KEY` to enable optional fallbacks to the Financial Modeling Prep API.
+The bot will use FMP's stock screener when basic price data is missing and will
+monitor analyst grade news to place small $10 trades when ratings switch between
+buy/hold/sell.
