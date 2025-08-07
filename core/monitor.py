@@ -1,13 +1,53 @@
 #monitor.py
 
 import time
-from broker.alpaca import api
+from broker.alpaca import api, get_current_price
 from utils.logger import log_event
 from core.executor import (
     open_positions,
     open_positions_lock,
     get_adaptive_trail_price,
 )
+
+
+def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
+    """Cierra la posición si alcanza un take profit virtual (+7%) o stop loss virtual (-5%)."""
+    try:
+        current_price = get_current_price(symbol)
+        if current_price is None or entry_price is None or qty is None:
+            return
+
+        if position_side.lower() == "long":
+            gain_pct = (current_price - entry_price) / entry_price * 100
+            close_side = "sell"
+        else:
+            gain_pct = (entry_price - current_price) / entry_price * 100
+            close_side = "buy"
+
+        if gain_pct >= 7:
+            api.submit_order(
+                symbol=symbol,
+                qty=qty,
+                side=close_side,
+                type="market",
+                time_in_force="gtc",
+            )
+            log_event(f"📈 Take profit virtual ejecutado en {symbol} con +{gain_pct:.2f}%")
+            return
+
+        if gain_pct <= -5:
+            api.submit_order(
+                symbol=symbol,
+                qty=qty,
+                side=close_side,
+                type="market",
+                time_in_force="gtc",
+            )
+            log_event(f"📉 Stop loss virtual ejecutado en {symbol} con {gain_pct:.2f}%")
+            return
+
+    except Exception as e:
+        log_event(f"⚠️ Error en check_virtual_take_profit_and_stop para {symbol}: {e}")
 
 def monitor_open_positions():
     print("🟢 Monitor de posiciones iniciado.")
@@ -31,7 +71,15 @@ def monitor_open_positions():
                 avg_entry_price = float(p.avg_entry_price)
                 current_price = float(p.current_price)
                 change_percent = (current_price - avg_entry_price) / avg_entry_price * 100
-                positions_data.append((symbol, qty, avg_entry_price, current_price, change_percent))
+
+                if symbol in open_positions:
+                    check_virtual_take_profit_and_stop(
+                        symbol, avg_entry_price, qty, getattr(p, "side", "long")
+                    )
+
+                positions_data.append(
+                    (symbol, qty, avg_entry_price, current_price, change_percent)
+                )
 
             top_positions = sorted(positions_data, key=lambda x: abs(x[4]), reverse=True)[:5]
 
