@@ -83,9 +83,14 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
     except Exception as e:
         print(f"⚠️ Alpha fallback error for {symbol}: {e}")
         alpha = True
-    if not (finnhub and alpha):
-        print(f"⛔ {symbol} no aprobado: Finnhub={finnhub}, AlphaVantage={alpha}")
-    return finnhub and alpha
+    if finnhub and alpha:
+        return True
+    fmp = is_approved_by_fmp(symbol)
+    if fmp:
+        print(f"✅ {symbol} aprobado por FMP")
+    else:
+        print(f"⛔ {symbol} no aprobado: Finnhub={finnhub}, AlphaVantage={alpha}, FMP={fmp}")
+    return fmp
 
 def is_symbol_approved(symbol):
     print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
@@ -99,3 +104,15 @@ def is_symbol_approved(symbol):
     if approved:
         print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
     return approved
+
+
+def is_approved_by_fmp(symbol):
+    try:
+        from signals.fmp_utils import grades_news
+        data = grades_news(symbol, limit=1)
+        if data:
+            grade = data[0].get("newGrade", "").lower()
+            return grade in ("buy", "outperform", "overweight", "strong buy")
+    except Exception as e:
+        print(f"⚠️ FMP error for {symbol}: {e}")
+    return False
