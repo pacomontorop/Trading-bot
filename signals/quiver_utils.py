@@ -25,6 +25,7 @@ GOVCONTRACTS_DATA = None
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
+QUIVER_TIMEOUT = int(os.getenv("QUIVER_TIMEOUT", "30"))
 
 # Track which symbols have been approved and logged today
 approved_today = set()
@@ -209,11 +210,13 @@ def safe_quiver_request(url, retries=3, delay=2):
         print("🔑 Advertencia: QUIVER_API_KEY no configurada")
     for i in range(retries):
         try:
-            r = throttled_request(requests.get, url, headers=HEADERS, timeout=15)
+            r = throttled_request(requests.get, url, headers=HEADERS, timeout=QUIVER_TIMEOUT)
             if r.ok:
                 return r.json()
             else:
                 print(f"⚠️ Respuesta inesperada en {url}: código {r.status_code}")
+        except requests.exceptions.Timeout:
+            print(f"⏱️ Timeout en {url} tras {QUIVER_TIMEOUT}s")
         except Exception as e:
             print(f"⚠️ Error en {url}: {e}")
         wait = delay * (2 ** i)
