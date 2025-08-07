@@ -8,6 +8,10 @@ from signals.quiver_throttler import throttled_request
 
 BASE_URL = "https://financialmodelingprep.com/stable"
 
+# Minimum seconds between grade-news requests to avoid hitting FMP limits.
+GRADES_NEWS_MIN_INTERVAL = float(os.getenv("FMP_GRADES_NEWS_DELAY", 15))
+_last_grades_news_call = 0.0
+
 def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
     key = os.getenv("FMP_API_KEY")
     if params is None:
@@ -59,5 +63,12 @@ def cot_analysis(symbol: str, from_date: str | None = None, to_date: str | None 
     return _get("commitment-of-traders-analysis", params)
 
 def grades_news(symbol: str, page: int = 0, limit: int = 1):
+    """Fetch latest analyst grade news with throttling to respect rate limits."""
+    global _last_grades_news_call
+    now = time.time()
+    elapsed = now - _last_grades_news_call
+    if elapsed < GRADES_NEWS_MIN_INTERVAL:
+        time.sleep(GRADES_NEWS_MIN_INTERVAL - elapsed)
+    _last_grades_news_call = time.time()
     params = {"symbol": symbol, "page": page, "limit": limit}
     return _get("grades-news", params)
