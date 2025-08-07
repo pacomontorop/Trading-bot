@@ -2,23 +2,37 @@
 """Helper functions for Financial Modeling Prep (FMP) API.
 These functions serve as backups when primary data sources fail."""
 import os
+import time
 import requests
+from signals.quiver_throttler import throttled_request
 
 BASE_URL = "https://financialmodelingprep.com/stable"
 
-def _get(endpoint: str, params: dict | None = None):
+def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
     key = os.getenv("FMP_API_KEY")
     if params is None:
         params = {}
     if key:
         params["apikey"] = key
-    try:
-        resp = requests.get(f"{BASE_URL}/{endpoint}", params=params, timeout=10)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as e:
-        print(f"⚠️ FMP request failed ({endpoint}): {e}")
-        return None
+    for attempt in range(max_retries):
+        try:
+            resp = throttled_request(
+                requests.get, f"{BASE_URL}/{endpoint}", params=params, timeout=10
+            )
+            if resp.status_code == 429:
+                wait = 2 ** attempt
+                print(
+                    f"⚠️ FMP rate limit hit ({endpoint}). "
+                    f"Retrying in {wait}s..."
+                )
+                time.sleep(wait)
+                continue
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as e:
+            print(f"⚠️ FMP request failed ({endpoint}): {e}")
+            return None
+    return None
 
 def stock_screener(**params):
     """Wrapper for the Stock Screener API."""
