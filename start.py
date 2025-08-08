@@ -1,3 +1,4 @@
+
 """Application entry point for Render background worker.
 
 This script launches scheduler tasks via ``launch_all`` and then runs the
@@ -57,4 +58,5 @@ if __name__ == "__main__":
         # Restart server if it exited unexpectedly.
         if not shutdown:
             time.sleep(1)
+
 
