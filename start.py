@@ -1,3 +1,4 @@
+
 """Application entry point for Render background worker.
 
 This script launches scheduler tasks via ``launch_all`` and then runs the
@@ -18,6 +19,7 @@ from main import app, launch_all
 
 shutdown = False
 _server: uvicorn.Server | None = None
+
 
 
 def _sigterm_handler(signum, frame):
@@ -49,8 +51,13 @@ def _run_server():
 
 if __name__ == "__main__":
     # Register custom handlers before starting anything else.
+
     signal.signal(signal.SIGTERM, _sigterm_handler)
     signal.signal(signal.SIGINT, _sigint_handler)
+
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(sig, _handle_signal)
+
 
     launch_all()  # Start schedulers and heartbeat
 
@@ -61,9 +68,13 @@ if __name__ == "__main__":
             # Sleep briefly before attempting a restart after a crash.
             if not shutdown:
                 time.sleep(1)
+
         # Restart server if it exited unexpectedly or after SIGTERM.
         if not shutdown:
             print("\U0001F501 Reiniciando servidor...", flush=True)
             time.sleep(1)
     print("\U0001F44B Servidor detenido", flush=True)
+
+    
+
 
