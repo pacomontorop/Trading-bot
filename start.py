@@ -21,16 +21,8 @@ shutdown = False
 _server: uvicorn.Server | None = None
 
 
-
-def _sigterm_handler(signum, frame):
-    """Request a server restart on SIGTERM without stopping the process."""
-    global _server
-    if _server is not None:
-        _server.should_exit = True
-
-
-def _sigint_handler(signum, frame):
-    """Handle Ctrl+C locally and shut down the loop."""
+def _handle_signal(signum, frame):
+    """Mark the process for shutdown and ask the server to exit."""
     global shutdown, _server
     shutdown = True
     if _server is not None:
@@ -51,13 +43,8 @@ def _run_server():
 
 if __name__ == "__main__":
     # Register custom handlers before starting anything else.
-
-    signal.signal(signal.SIGTERM, _sigterm_handler)
-    signal.signal(signal.SIGINT, _sigint_handler)
-
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, _handle_signal)
-
 
     launch_all()  # Start schedulers and heartbeat
 
@@ -68,13 +55,8 @@ if __name__ == "__main__":
             # Sleep briefly before attempting a restart after a crash.
             if not shutdown:
                 time.sleep(1)
-
-        # Restart server if it exited unexpectedly or after SIGTERM.
+        # Restart server if it exited unexpectedly.
         if not shutdown:
-            print("\U0001F501 Reiniciando servidor...", flush=True)
             time.sleep(1)
-    print("\U0001F44B Servidor detenido", flush=True)
-
-    
 
 
