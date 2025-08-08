@@ -51,6 +51,30 @@ QUIVER_SIGNAL_WEIGHTS = {
 # Lowered threshold to allow more opportunities while maintaining some rigor
 QUIVER_APPROVAL_THRESHOLD = 5
 
+# Weights for determining whether a ticker has sufficiently recent activity.
+# Each key represents a different Quiver endpoint used to detect "eventos recientes".
+RECENT_EVENT_WEIGHTS = {
+    "insider": 2,
+    "house_trade": 1,
+    "senate_trade": 1,
+    "congress_trade": 1,
+    "historical_congress": 0.5,
+    "historical_senate": 0.5,
+    "gov_contract": 1,
+    "gov_contract_all": 1,
+    "lobbying": 0.5,
+    "off_exchange": 0.5,
+    "sec13f": 0.5,
+    "sec13f_changes": 0.5,
+    "etf_holding": 0.25,
+    "patent_drift": 0.5,
+    "patent_momentum": 0.5,
+    "recent_patents": 0.5,
+}
+
+# Minimum score to consider that a symbol has recent activity.
+RECENT_EVENT_THRESHOLD = 1
+
 
 async def _async_is_approved_by_quiver(symbol):
     """Asynchronous helper that fetches and evaluates Quiver signals."""
@@ -110,37 +134,46 @@ def get_adaptive_take_profit(
     return take_profit
 
 
-# Slightly longer lookback to catch more recent activity
+# Slightly longer lookback to catch more recent activity across many endpoints
 def has_recent_quiver_event(symbol, days=5):
-    """Comprueba si existe un evento reciente de insiders o house trading"""
+    """Score recent activity for ``symbol`` across multiple Quiver endpoints."""
     cutoff = datetime.utcnow() - timedelta(days=days)
+    score = 0
 
-    global INSIDERS_DATA
-    if INSIDERS_DATA is None:
-        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
-    data = INSIDERS_DATA
-    if isinstance(data, list):
-        for d in data:
-            if d.get("Ticker") == symbol.upper():
-                try:
-                    event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
-                    if event_date >= cutoff:
-                        return True
-                except Exception:
-                    continue
+    if has_recent_insider_trade(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["insider"]
+    if has_recent_house_purchase(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["house_trade"]
+    if has_recent_senate_trade(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["senate_trade"]
+    if has_recent_congress_trade(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["congress_trade"]
+    if has_historical_congress_trade(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["historical_congress"]
+    if has_historical_senate_trade(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["historical_senate"]
+    if has_recent_gov_contract(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["gov_contract"]
+    if has_recent_gov_contract_all(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["gov_contract_all"]
+    if has_recent_lobbying(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["lobbying"]
+    if has_recent_off_exchange(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["off_exchange"]
+    if has_recent_sec13f_activity(symbol):
+        score += RECENT_EVENT_WEIGHTS["sec13f"]
+    if has_recent_sec13f_changes(symbol):
+        score += RECENT_EVENT_WEIGHTS["sec13f_changes"]
+    if has_recent_etf_holding(symbol):
+        score += RECENT_EVENT_WEIGHTS["etf_holding"]
+    if has_recent_patent_drift(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["patent_drift"]
+    if has_recent_patent_momentum(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["patent_momentum"]
+    if has_recent_patents(symbol, cutoff):
+        score += RECENT_EVENT_WEIGHTS["recent_patents"]
 
-    house_data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
-    if isinstance(house_data, list):
-        for d in house_data:
-            if d.get("Ticker") == symbol.upper() and d.get("Transaction") == "Purchase":
-                try:
-                    event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
-                    if event_date >= cutoff:
-                        return True
-                except Exception:
-                    continue
-
-    return False
+    return score >= RECENT_EVENT_THRESHOLD
 
 
 def evaluate_quiver_signals(signals, symbol=""):
@@ -334,12 +367,223 @@ def has_recent_sec13f_changes(symbol):
 
 
 
-def has_recent_house_purchase(symbol):
+def has_recent_house_purchase(symbol, cutoff=None):
+    """Check recent purchases from U.S. House representatives."""
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
     if not isinstance(data, list):
         return False
-    cutoff = datetime.utcnow() - timedelta(days=30)
-    return any(d.get("Ticker") == symbol.upper() and d.get("Transaction") == "Purchase" and datetime.fromisoformat(d["Date"].replace("Z", "")) >= cutoff for d in data)
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=30)
+    return any(
+        d.get("Ticker") == symbol.upper()
+        and d.get("Transaction") == "Purchase"
+        and datetime.fromisoformat(d["Date"].replace("Z", "")) >= cutoff
+        for d in data
+    )
+
+
+def has_recent_insider_trade(symbol, cutoff):
+    """Recent insider transactions for the given symbol."""
+    global INSIDERS_DATA
+    if INSIDERS_DATA is None:
+        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
+    data = INSIDERS_DATA
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            try:
+                event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_senate_trade(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/senatetrading")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            try:
+                event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_congress_trade(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/congresstrading")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            try:
+                event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_historical_congress_trade(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/congresstrading/{symbol.upper()}")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        date_str = d.get("TransactionDate") or d.get("Date")
+        if not date_str:
+            continue
+        try:
+            event_date = datetime.fromisoformat(date_str.replace("Z", ""))
+            if event_date >= cutoff:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def has_historical_senate_trade(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/senatetrading/{symbol.upper()}")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        date_str = d.get("TransactionDate") or d.get("Date")
+        if not date_str:
+            continue
+        try:
+            event_date = datetime.fromisoformat(date_str.replace("Z", ""))
+            if event_date >= cutoff:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def has_recent_gov_contract(symbol, cutoff):
+    global GOVCONTRACTS_DATA
+    if GOVCONTRACTS_DATA is None:
+        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
+    data = GOVCONTRACTS_DATA
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            try:
+                year = int(d.get("Year", 0))
+                if year >= cutoff.year:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_gov_contract_all(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontractsall")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            date_str = d.get("Date") or d.get("AnnouncementDate")
+            if not date_str:
+                return True  # assume recent if no date provided
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_lobbying(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/lobbying")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            date_str = d.get("Date") or d.get("ReportDate")
+            if not date_str:
+                return True
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_off_exchange(symbol, cutoff):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/offexchange")
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            date_str = d.get("Date") or d.get("TradeDate")
+            if not date_str:
+                return True
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                if event_date >= cutoff:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def has_recent_etf_holding(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/etfholdings?ticker={symbol.upper()}")
+    return isinstance(data, list) and len(data) > 0
+
+
+def has_recent_patent_drift(symbol, cutoff):
+    url = f"{QUIVER_BASE_URL}/live/patentdrift?ticker={symbol.upper()}&latest=true"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        date_str = d.get("date") or d.get("Date")
+        if not date_str:
+            continue
+        try:
+            event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            if event_date >= cutoff:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def has_recent_patent_momentum(symbol, cutoff):
+    url = f"{QUIVER_BASE_URL}/live/patentmomentum?ticker={symbol.upper()}&latest=true"
+    data = safe_quiver_request(url)
+    if not isinstance(data, list):
+        return False
+    for d in data:
+        date_str = d.get("date") or d.get("Date")
+        if not date_str:
+            continue
+        try:
+            event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            if event_date >= cutoff:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def has_recent_patents(symbol, cutoff):
+    date_from = cutoff.strftime("%Y%m%d")
+    date_to = datetime.utcnow().strftime("%Y%m%d")
+    url = f"{QUIVER_BASE_URL}/live/allpatents?ticker={symbol.upper()}&date_from={date_from}&date_to={date_to}"
+    data = safe_quiver_request(url)
+    return isinstance(data, list) and len(data) > 0
 
 def is_trending_on_twitter(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")

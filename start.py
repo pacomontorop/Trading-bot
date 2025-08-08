@@ -1,9 +1,4 @@
-"""Application entry point for Render background worker.
 
-Launches scheduler tasks via ``launch_all`` then runs Uvicorn. If the server
-crashes unexpectedly it is automatically restarted. Normal shutdown signals are
-handled by Uvicorn so the process exits cleanly when requested.
-"""
 
 from __future__ import annotations
 
@@ -12,6 +7,7 @@ import time
 import uvicorn
 
 from main import app, launch_all
+
 
 
 def run_server() -> None:
