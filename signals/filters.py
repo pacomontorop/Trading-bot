@@ -108,11 +108,10 @@ def is_symbol_approved(symbol):
 
 def is_approved_by_fmp(symbol):
     try:
-        from signals.fmp_utils import grades_news
-        data = grades_news(symbol, limit=1)
-        if data:
-            grade = data[0].get("newGrade", "").lower()
-            return grade in ("buy", "outperform", "overweight", "strong buy")
+        from signals.fmp_utils import get_fmp_grade_score
+        threshold = float(os.getenv("FMP_GRADE_THRESHOLD", 0))
+        score = get_fmp_grade_score(symbol)
+        return score is not None and score >= threshold
     except Exception as e:
         print(f"⚠️ FMP error for {symbol}: {e}")
     return False

@@ -14,6 +14,7 @@ from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime, timedelta
 from utils.logger import log_event
 from signals.adaptive_bonus import apply_adaptive_bonus
+from signals.fmp_utils import get_fmp_grade_score
 import yfinance as yf
 import os
 import pandas as pd
@@ -183,6 +184,19 @@ async def _get_top_signals_async(verbose=False):
     if quiver_semaphore is None:
         quiver_semaphore = asyncio.Semaphore(3)
 
+    async def apply_grade_bonus(symbol, base_score):
+        """Return score plus FMP grade weighting or ``None`` if below threshold."""
+        threshold = float(os.getenv("FMP_GRADE_THRESHOLD", 0))
+        weight = float(os.getenv("FMP_GRADE_WEIGHT", 5))
+        grade_score = await asyncio.to_thread(get_fmp_grade_score, symbol)
+        if grade_score is None or grade_score < threshold:
+            print(
+                f"⛔ {symbol} descartado por calificación FMP (score={grade_score})",
+                flush=True,
+            )
+            return None
+        return base_score + grade_score * weight
+
     async def evaluate_symbol(symbol):
         if symbol in quiver_approval_cache:
             approved = quiver_approval_cache[symbol]
@@ -197,7 +211,10 @@ async def _get_top_signals_async(verbose=False):
                 final_score = 90 + bonus
                 adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
                 final_score += adaptive_bonus
-                return (symbol, final_score, "Quiver")
+                graded = await apply_grade_bonus(symbol, final_score)
+                if graded is None:
+                    return None
+                return (symbol, graded, "Quiver")
             return None
 
         print(f"🔎 Checking {symbol}...", flush=True)
@@ -215,7 +232,10 @@ async def _get_top_signals_async(verbose=False):
                 final_score = 90 + bonus
                 adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
                 final_score += adaptive_bonus
-                return (symbol, final_score, "Quiver")
+                graded = await apply_grade_bonus(symbol, final_score)
+                if graded is None:
+                    return None
+                return (symbol, graded, "Quiver")
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
