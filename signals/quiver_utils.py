@@ -246,8 +246,23 @@ def safe_quiver_request(url, retries=3, delay=2):
             r = throttled_request(requests.get, url, headers=HEADERS, timeout=QUIVER_TIMEOUT)
             if r.ok:
                 return r.json()
-            else:
-                print(f"⚠️ Respuesta inesperada en {url}: código {r.status_code}")
+            # Retrys are only useful for rate limits; for other HTTP errors we
+            # stop early to avoid spamming the logs with exponential backoff
+            # messages.
+            if r.status_code == 429:
+                wait = delay * (2 ** i)
+                print(f"⚠️ Límite de velocidad alcanzado en {url}: código {r.status_code}")
+                print(f"🔄 Reintentando en {wait}s...")
+                time.sleep(wait)
+                continue
+            if r.status_code >= 500:
+                print(f"⚠️ Error del servidor en {url}: código {r.status_code}")
+                break
+            if r.status_code == 404:
+                print(f"ℹ️ Datos no encontrados en {url}")
+                return []
+            print(f"⚠️ Respuesta inesperada en {url}: código {r.status_code}")
+            break
         except requests.exceptions.Timeout:
             print(f"⏱️ Timeout en {url} tras {QUIVER_TIMEOUT}s")
         except Exception as e:
