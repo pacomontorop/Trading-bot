@@ -75,12 +75,17 @@ def get_adaptive_trail_price(symbol):
         hist = yf.download(symbol, period="5d", interval="1d", progress=False)
         if hist.empty or "Close" not in hist.columns:
             raise ValueError("No hay datos")
-        current_price = hist["Close"].iloc[-1]
-        std_pct = hist["Close"].pct_change().dropna().std()
+
+        close_prices = hist["Close"]
+        if isinstance(close_prices, pd.DataFrame):
+            close_prices = close_prices.iloc[:, 0]
+
+        current_price = close_prices.iloc[-1]
+        std_pct = close_prices.pct_change().dropna().std()
         if pd.isna(std_pct) or std_pct <= 0:
             raise ValueError("Desviación inválida")
-        std_pct = min(max(std_pct, 0.005), 0.05)
-        return round(current_price * std_pct, 2)
+        std_pct = min(max(float(std_pct), 0.005), 0.05)
+        return round(float(current_price) * std_pct, 2)
     except Exception as e:
         print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
         fallback_price = get_current_price(symbol)
