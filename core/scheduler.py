@@ -5,6 +5,7 @@
 
 from core.executor import (
     place_order_with_trailing_stop,
+    calculate_investment_amount,
     pending_opportunities,
     pending_trades,
     pending_opportunities_lock,
@@ -42,14 +43,6 @@ initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada m
 
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
-
-
-def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=2000, max_investment=3000):
-    if score < min_score:
-        return min_investment
-    normalized_score = min(max(score, min_score), max_score)
-    proportion = (normalized_score - min_score) / (max_score - min_score)
-    return int(min_investment + proportion * (max_investment - min_investment))
 
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
