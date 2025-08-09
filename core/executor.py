@@ -15,6 +15,7 @@ from utils.daily_risk import (
     save_equity_snapshot,
     is_equity_drop_exceeded,
 )
+from utils.order_tracker import record_trade_result
 import os
 import csv
 
@@ -196,6 +197,16 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                                 exit_time_str,
                                 signals,
                             ])
+
+                        record_trade_result(
+                            symbol,
+                            avg_entry,
+                            fill_price,
+                            qty,
+                            "long" if order.side == "sell" else "short",
+                            (date_in.split(" ")[0] if date_in else timestamp.split(" ")[0]),
+                            exit_time_str.split(" ")[0],
+                        )
 
                         entry_data.pop(symbol, None)
                         global _realized_pnl_today
