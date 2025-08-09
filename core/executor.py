@@ -33,6 +33,7 @@ pending_opportunities_lock = threading.Lock()
 pending_trades_lock = threading.Lock()
 executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
+MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 300.0  # Límite de pérdidas diarias
 _last_investment_day = datetime.utcnow().date()
 _total_invested_today = 0.0
@@ -61,31 +62,54 @@ def invested_today_usd():
     return _total_invested_today
 
 
-def calculate_investment_amount(score, min_score=6, max_score=19, min_investment=2000, max_investment=3000):
+def calculate_investment_amount(
+    score,
+    min_score=6,
+    max_score=19,
+    min_investment=2000,
+    max_investment=3000,
+):
+    """Devuelve un monto ajustado por score sin exceder límites de riesgo."""
     if score < min_score:
-        return min_investment
-    normalized_score = min(max(score, min_score), max_score)
-    proportion = (normalized_score - min_score) / (max_score - min_score)
-    return int(min_investment + proportion * (max_investment - min_investment))
+        base_amount = min_investment
+    else:
+        normalized_score = min(max(score, min_score), max_score)
+        proportion = (normalized_score - min_score) / (max_score - min_score)
+        base_amount = int(min_investment + proportion * (max_investment - min_investment))
+
+    try:
+        equity = float(api.get_account().equity)
+    except Exception:
+        equity = float(max_investment) / MAX_POSITION_PCT  # Fallback para pruebas
+
+    max_per_symbol = equity * MAX_POSITION_PCT
+    remaining_daily = max(0.0, equity * DAILY_INVESTMENT_LIMIT_PCT - invested_today_usd())
+    return int(min(base_amount, max_per_symbol, remaining_daily))
 
 
 def get_adaptive_trail_price(symbol):
-    """Calcula un trail_price dinámico basado en la volatilidad reciente."""
+    """Calcula un ``trail_price`` dinámico utilizando el ATR de 14 días."""
     try:
-        hist = yf.download(symbol, period="5d", interval="1d", progress=False)
-        if hist.empty or "Close" not in hist.columns:
-            raise ValueError("No hay datos")
+        hist = yf.download(symbol, period="21d", interval="1d", progress=False)
+        if hist.empty or not {"High", "Low", "Close"}.issubset(hist.columns):
+            raise ValueError("Datos insuficientes")
 
-        close_prices = hist["Close"]
-        if isinstance(close_prices, pd.DataFrame):
-            close_prices = close_prices.iloc[:, 0]
+        high = hist["High"]
+        low = hist["Low"]
+        close = hist["Close"]
 
-        current_price = close_prices.iloc[-1]
-        std_pct = close_prices.pct_change().dropna().std()
-        if pd.isna(std_pct) or std_pct <= 0:
-            raise ValueError("Desviación inválida")
-        std_pct = min(max(float(std_pct), 0.005), 0.05)
-        return round(float(current_price) * std_pct, 2)
+        prev_close = close.shift(1)
+        tr = pd.concat([
+            high - low,
+            (high - prev_close).abs(),
+            (low - prev_close).abs(),
+        ], axis=1).max(axis=1)
+        atr = tr.rolling(14).mean().iloc[-1]
+
+        current_price = close.iloc[-1]
+        atr_pct = atr / current_price if current_price else 0
+        atr_pct = min(max(float(atr_pct), 0.005), 0.05)
+        return round(float(current_price) * atr_pct, 2)
     except Exception as e:
         print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
         fallback_price = get_current_price(symbol)
@@ -410,7 +434,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
         if not wait_for_order_fill(order.id, symbol):
             return
 
-        trail_price = round(current_price * (trail_percent / 100), 2)
+        trail_price = get_adaptive_trail_price(symbol)
         api.submit_order(
             symbol=symbol,
             qty=qty,
