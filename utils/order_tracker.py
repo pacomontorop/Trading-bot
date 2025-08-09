@@ -85,6 +85,58 @@ def _fetch_close_price(symbol: str) -> float | None:
     return None
 
 
+def record_trade_result(
+    symbol: str,
+    entry_price: float,
+    exit_price: float,
+    shares: float,
+    side: str,
+    entry_date: str,
+    exit_date: str,
+) -> None:
+    """Update ``orders_history.csv`` with the result of a closed trade.
+
+    Args:
+        symbol: traded ticker symbol
+        entry_price: price at which the position was opened
+        exit_price: price at which the position was closed
+        shares: number of shares traded
+        side: "long" or "short"
+        entry_date: date of entry in ``YYYY-MM-DD`` format
+        exit_date: date of exit in ``YYYY-MM-DD`` format
+    """
+
+    df = _load_df()
+    mask = (df["symbol"] == symbol) & (df["fecha_entrada"] == entry_date)
+    if mask.any():
+        idx = df[mask].index[-1]
+    else:
+        row = {
+            "symbol": symbol,
+            "fecha_entrada": entry_date,
+            "tipo": side,
+            "precio_entrada": float(entry_price),
+            "shares": float(shares),
+            "fecha_salida": "",
+            "precio_salida": "",
+            "resultado": "",
+        }
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        idx = df.index[-1]
+
+    df.at[idx, "precio_entrada"] = float(entry_price)
+    df.at[idx, "shares"] = float(shares)
+    df.at[idx, "precio_salida"] = round(float(exit_price), 2)
+    df.at[idx, "fecha_salida"] = exit_date
+    df.at[idx, "tipo"] = side
+
+    if side == "long":
+        result = "ganadora" if exit_price > entry_price else "perdedora"
+    else:
+        result = "ganadora" if exit_price < entry_price else "perdedora"
+    df.at[idx, "resultado"] = result
+    _save_df(df)
+
 def verify_old_orders(df: pd.DataFrame | None = None) -> pd.DataFrame:
     """Check orders older than 3 days without result and mark them."""
     today = date.today()
