@@ -358,7 +358,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             )
 
         trail_price = get_adaptive_trail_price(symbol)
-        api.submit_order(
+        trail_order = api.submit_order(
             symbol=symbol,
             qty=qty,
             side='sell',
@@ -366,6 +366,11 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc',
             trail_price=trail_price
         )
+        threading.Thread(
+            target=wait_for_order_fill,
+            args=(trail_order.id, symbol, 7 * 24 * 3600),
+            daemon=True,
+        ).start()
 
         with open_positions_lock:
             open_positions.add(symbol)
@@ -446,7 +451,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             return
 
         trail_price = get_adaptive_trail_price(symbol)
-        api.submit_order(
+        trail_order = api.submit_order(
             symbol=symbol,
             qty=qty,
             side='buy',
@@ -454,6 +459,11 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc',
             trail_price=trail_price
         )
+        threading.Thread(
+            target=wait_for_order_fill,
+            args=(trail_order.id, symbol, 7 * 24 * 3600),
+            daemon=True,
+        ).start()
 
         with open_positions_lock:
             open_positions.add(symbol)
