@@ -14,6 +14,8 @@ from utils.daily_risk import (
     is_risk_limit_exceeded,
     save_equity_snapshot,
     is_equity_drop_exceeded,
+    calculate_var,
+    get_max_drawdown,
 )
 from utils.order_tracker import record_trade_result
 import os
@@ -45,6 +47,22 @@ quiver_signals_log = {}
 # Store entry price, quantity and entry time for open positions to calculate PnL when they close
 entry_data = {}
 
+def update_risk_limits():
+    """Adjust risk limits based on recent VaR and drawdown."""
+    global MAX_POSITION_PCT, DAILY_INVESTMENT_LIMIT_PCT
+    var = calculate_var(window=30, confidence=0.95)
+    drawdown = get_max_drawdown(window=30)
+    if var > 0.05 or drawdown < -10:
+        MAX_POSITION_PCT = 0.05
+        DAILY_INVESTMENT_LIMIT_PCT = 0.25
+    elif var > 0.03 or drawdown < -5:
+        MAX_POSITION_PCT = 0.08
+        DAILY_INVESTMENT_LIMIT_PCT = 0.40
+    else:
+        MAX_POSITION_PCT = 0.10
+        DAILY_INVESTMENT_LIMIT_PCT = 0.50
+
+
 def reset_daily_investment():
     global _total_invested_today, _last_investment_day, executed_symbols_today, _realized_pnl_today
     today = datetime.utcnow().date()
@@ -54,6 +72,7 @@ def reset_daily_investment():
         _last_investment_day = today
         with executed_symbols_today_lock:
             executed_symbols_today.clear()
+        update_risk_limits()
 
 def add_to_invested(amount):
     global _total_invested_today
@@ -88,8 +107,8 @@ def calculate_investment_amount(
     return int(min(base_amount, max_per_symbol, remaining_daily))
 
 
-def get_adaptive_trail_price(symbol):
-    """Calcula un ``trail_price`` dinámico utilizando el ATR de 14 días."""
+def get_adaptive_trail_price(symbol, window: int = 14):
+    """Calcula un ``trail_price`` dinámico utilizando el ATR de ``window`` días."""
     try:
         hist = yf.download(symbol, period="21d", interval="1d", progress=False)
         if hist.empty or not {"High", "Low", "Close"}.issubset(hist.columns):
@@ -105,7 +124,7 @@ def get_adaptive_trail_price(symbol):
             (high - prev_close).abs(),
             (low - prev_close).abs(),
         ], axis=1).max(axis=1)
-        atr = tr.rolling(14).mean().iloc[-1]
+        atr = tr.rolling(window).mean().iloc[-1]
 
         current_price = close.iloc[-1]
         atr_pct = atr / current_price if current_price else 0

@@ -2,10 +2,17 @@
 
 import os
 import time
+from datetime import datetime, timedelta
+
 import requests
+import pandas as pd
 import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
+
+from data.tiingo_client import get_daily_prices
+from data.fred_client import get_macro_snapshot
 from signals.quiver_utils import is_approved_by_quiver
+from signals.reddit_scraper import get_reddit_sentiment
 
 load_dotenv()
 api = tradeapi.REST(
@@ -44,6 +51,59 @@ def confirm_secondary_indicators(symbol):
 
 def has_negative_news(symbol):
     return False
+
+
+def macro_score() -> float:
+    """Return a macroeconomic score based on FRED data.
+
+    Positive values indicate a favorable environment, negative values a headwind.
+    """
+    score = 0.0
+    try:
+        snapshot = get_macro_snapshot()
+        inflation = snapshot.get("inflation")
+        unemployment = snapshot.get("unemployment")
+        if inflation is not None:
+            score += (2 - inflation) / 10  # reward low inflation, penalize high
+        if unemployment is not None:
+            score += (5 - unemployment) / 10  # reward low unemployment
+    except Exception as e:
+        print(f"⚠️ FRED macro check failed: {e}")
+    return score
+
+
+def reddit_score(symbol: str) -> float:
+    """Fetch Reddit sentiment score for ``symbol`` (-1 to 1)."""
+    try:
+        score = get_reddit_sentiment(symbol)
+        print(f"🧾 Reddit score {symbol}: {score:.2f}")
+        return score
+    except Exception as e:
+        print(f"⚠️ Reddit sentiment check failed for {symbol}: {e}")
+    return 0.0
+
+
+def volatility_penalty(symbol: str, lookback: int = 20, threshold: float = 0.05) -> float:
+    """Return a penalty for high volatility based on Tiingo data."""
+    try:
+        end = datetime.utcnow().date()
+        start = end - timedelta(days=lookback * 2)
+        prices = get_daily_prices(symbol, start_date=start.isoformat(), end_date=end.isoformat())
+        df = pd.DataFrame(prices)
+        if df.empty or "close" not in df:
+            return 0.0
+        df["close"] = pd.to_numeric(df["close"], errors="coerce")
+        df["return"] = df["close"].pct_change()
+        vol = df["return"].std()
+        if pd.isna(vol):
+            return 0.0
+        penalty = max(0.0, vol - threshold)
+        if penalty > 0:
+            print(f"⚠️ Volatilidad de {symbol}: {vol:.2%} (penalización {penalty:.2%})")
+        return penalty
+    except Exception as e:
+        print(f"⚠️ Tiingo volatility check failed for {symbol}: {e}")
+    return 0.0
 
 def is_approved_by_finnhub(symbol):
     try:
@@ -94,16 +154,24 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
 
 def is_symbol_approved(symbol):
     print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
+    score = 0.0
+    score += macro_score()
+    score -= volatility_penalty(symbol)
+    score += reddit_score(symbol)
 
     if is_approved_by_quiver(symbol):
         print(f"✅ {symbol} aprobado por Quiver")
-        return True
+        score += 1.0
+    else:
+        print(f"➡️ {symbol} no pasó filtro Quiver. Evaluando Finnhub y AlphaVantage...")
+        if is_approved_by_finnhub_and_alphavantage(symbol):
+            print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
+            score += 0.5
+        elif is_approved_by_fmp(symbol):
+            score += 0.25
 
-    print(f"➡️ {symbol} no pasó filtro Quiver. Evaluando Finnhub y AlphaVantage...")
-    approved = is_approved_by_finnhub_and_alphavantage(symbol)
-    if approved:
-        print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
-    return approved
+    print(f"📈 Score final {symbol}: {score:.2f}")
+    return score > 0
 
 
 def is_approved_by_fmp(symbol):
