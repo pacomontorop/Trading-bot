@@ -5,6 +5,8 @@ import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import numpy as np
+
 from dotenv import load_dotenv
 
 api = None  # Will be imported lazily to avoid requiring credentials during tests
@@ -145,3 +147,61 @@ def is_risk_limit_exceeded() -> bool:
     if limit >= 0:
         return False
     return get_today_pnl() <= limit
+
+
+def _get_equity_series(window: int | None = None) -> list[float]:
+    """Return equity values from ``equity_log.csv``.
+
+    Parameters
+    ----------
+    window:
+        Optional number of most recent observations to return.
+    """
+    if not EQUITY_LOG_FILE.exists():
+        return []
+    with open(EQUITY_LOG_FILE, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    rows.sort(key=lambda r: r.get("date", ""))
+    equities = [float(r.get("equity", 0)) for r in rows if r.get("equity")]
+    if window is not None:
+        equities = equities[-window:]
+    return equities
+
+
+def calculate_var(window: int = 30, confidence: float = 0.95) -> float:
+    """Historical Value-at-Risk for the account equity.
+
+    Returns the **positive** VaR percentage. For example, a result of ``0.05``
+    means a 5% one-day VaR at the given confidence level.
+    """
+    equities = _get_equity_series(window + 1)
+    if len(equities) < 2:
+        return 0.0
+    returns = []
+    for prev, curr in zip(equities, equities[1:]):
+        if prev:
+            returns.append((curr - prev) / prev)
+    if not returns:
+        return 0.0
+    percentile = np.percentile(returns, (1 - confidence) * 100)
+    return -float(percentile)
+
+
+def get_max_drawdown(window: int = 30) -> float:
+    """Return the maximum drawdown over the last ``window`` equity values.
+
+    The value is returned as a negative percentage. A result of ``-10`` means
+    a 10% drop from peak to trough within the window.
+    """
+    equities = _get_equity_series(window)
+    if not equities:
+        return 0.0
+    peak = equities[0]
+    max_dd = 0.0
+    for value in equities:
+        if value > peak:
+            peak = value
+        drawdown = (value - peak) / peak * 100
+        if drawdown < max_dd:
+            max_dd = drawdown
+    return max_dd

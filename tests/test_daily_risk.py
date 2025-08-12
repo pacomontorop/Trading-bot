@@ -49,3 +49,20 @@ def test_equity_snapshot_and_drop(monkeypatch, tmp_path):
 
     monkeypatch.setattr(daily_risk, "api", DummyAPI(980))
     assert not daily_risk.is_equity_drop_exceeded(5.0)
+
+
+def test_var_and_drawdown(monkeypatch, tmp_path):
+    equity_file = tmp_path / "equity_log.csv"
+    monkeypatch.setattr(daily_risk, "EQUITY_LOG_FILE", equity_file)
+
+    base = datetime.utcnow().date() - timedelta(days=4)
+    with open(equity_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["date", "equity"])
+        equities = [100, 95, 97, 96, 94]
+        for i, eq in enumerate(equities):
+            writer.writerow([(base + timedelta(days=i)).isoformat(), str(eq)])
+
+    assert round(daily_risk.get_max_drawdown(), 2) == -6.0
+    var = daily_risk.calculate_var(window=4, confidence=0.95)
+    assert round(var * 100, 2) == 4.56
