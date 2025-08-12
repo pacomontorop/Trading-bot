@@ -5,6 +5,7 @@ import threading
 import time
 from core.scheduler import start_schedulers
 from datetime import datetime
+from broker.alpaca import is_market_open
 
 app = FastAPI()
 
@@ -20,6 +21,9 @@ def heartbeat():
 
 
 def launch_all():
+    if not is_market_open():
+        print("⛔ Mercado cerrado. Schedulers no iniciados.", flush=True)
+        return
     print("🟢 Lanzando schedulers...", flush=True)
     start_schedulers()
     threading.Thread(target=heartbeat, daemon=True).start()
