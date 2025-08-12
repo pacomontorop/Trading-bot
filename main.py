@@ -6,6 +6,7 @@ import time
 from core.scheduler import start_schedulers
 from utils.monitoring import start_metrics_server
 from datetime import datetime
+from broker.alpaca import is_market_open
 
 app = FastAPI()
 
@@ -21,6 +22,9 @@ def heartbeat():
 
 
 def launch_all():
+    if not is_market_open():
+        print("⛔ Mercado cerrado. Schedulers no iniciados.", flush=True)
+        return
     print("🟢 Lanzando schedulers...", flush=True)
     start_schedulers()
     start_metrics_server()
