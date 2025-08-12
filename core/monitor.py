@@ -7,7 +7,9 @@ from core.executor import (
     open_positions,
     open_positions_lock,
     get_adaptive_trail_price,
+    state_manager,
 )
+from utils.monitoring import update_positions_metric
 
 
 def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
@@ -72,6 +74,8 @@ def monitor_open_positions():
             with open_positions_lock:
                 open_positions.intersection_update(symbols)
                 open_positions.update(symbols)
+                state_manager.replace_open_positions(open_positions)
+            update_positions_metric(len(open_positions))
 
             if not positions:
                 print("⚠️ No hay posiciones abiertas actualmente.")
