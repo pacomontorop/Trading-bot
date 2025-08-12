@@ -25,7 +25,13 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 
 # Control de estado
-open_positions = set()
+from utils.state import StateManager
+from utils.scaling import adjust_by_volatility
+from utils.monitoring import orders_placed, update_positions_metric
+
+state_manager = StateManager()
+open_positions = state_manager.load_open_positions()
+update_positions_metric(len(open_positions))
 pending_opportunities = set()
 pending_trades = set()
 executed_symbols_today = set()
@@ -46,6 +52,20 @@ _last_equity_snapshot = None
 quiver_signals_log = {}
 # Store entry price, quantity and entry time for open positions to calculate PnL when they close
 entry_data = {}
+
+
+def register_open_position(symbol: str) -> None:
+    with open_positions_lock:
+        open_positions.add(symbol)
+    state_manager.add_open_position(symbol)
+    update_positions_metric(len(open_positions))
+
+
+def unregister_open_position(symbol: str) -> None:
+    with open_positions_lock:
+        open_positions.discard(symbol)
+    state_manager.remove_open_position(symbol)
+    update_positions_metric(len(open_positions))
 
 def update_risk_limits():
     """Adjust risk limits based on recent VaR and drawdown."""
@@ -88,8 +108,9 @@ def calculate_investment_amount(
     max_score=19,
     min_investment=2000,
     max_investment=3000,
+    symbol=None,
 ):
-    """Devuelve un monto ajustado por score sin exceder límites de riesgo."""
+    """Devuelve un monto ajustado por score y volatilidad sin exceder límites de riesgo."""
     if score < min_score:
         base_amount = min_investment
     else:
@@ -104,7 +125,12 @@ def calculate_investment_amount(
 
     max_per_symbol = equity * MAX_POSITION_PCT
     remaining_daily = max(0.0, equity * DAILY_INVESTMENT_LIMIT_PCT - invested_today_usd())
-    return int(min(base_amount, max_per_symbol, remaining_daily))
+    base_amount = int(min(base_amount, max_per_symbol, remaining_daily))
+
+    if symbol:
+        base_amount = adjust_by_volatility(symbol, base_amount)
+
+    return base_amount
 
 
 def get_adaptive_trail_price(symbol, window: int = 14):
@@ -349,6 +375,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             type='market',
             time_in_force='gtc'
         )
+        orders_placed.inc()
         print(
             f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
             flush=True,
@@ -375,6 +402,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
                 time_in_force='gtc',
                 limit_price=take_profit,
             )
+            orders_placed.inc()
 
         trail_price = get_adaptive_trail_price(symbol)
         trail_order = api.submit_order(
@@ -385,14 +413,14 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc',
             trail_price=trail_price
         )
+        orders_placed.inc()
         threading.Thread(
             target=wait_for_order_fill,
             args=(trail_order.id, symbol, 7 * 24 * 3600),
             daemon=True,
         ).start()
 
-        with open_positions_lock:
-            open_positions.add(symbol)
+        register_open_position(symbol)
         add_to_invested(qty * current_price)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
@@ -465,6 +493,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             type='market',
             time_in_force='gtc'
         )
+        orders_placed.inc()
 
         if not wait_for_order_fill(order.id, symbol):
             return
@@ -478,14 +507,14 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             time_in_force='gtc',
             trail_price=trail_price
         )
+        orders_placed.inc()
         threading.Thread(
             target=wait_for_order_fill,
             args=(trail_order.id, symbol, 7 * 24 * 3600),
             daemon=True,
         ).start()
 
-        with open_positions_lock:
-            open_positions.add(symbol)
+        register_open_position(symbol)
         add_to_invested(qty * current_price)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
@@ -518,7 +547,7 @@ def short_scan():
                 try:
                     asset = api.get_asset(symbol)
                     if getattr(asset, "shortable", False):
-                        amount_usd = calculate_investment_amount(score)
+                        amount_usd = calculate_investment_amount(score, symbol=symbol)
                         place_short_order_with_trailing_buy(symbol, amount_usd, 1.5)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 import threading
 import time
 from core.scheduler import start_schedulers
+from utils.monitoring import start_metrics_server
 from datetime import datetime
 
 app = FastAPI()
@@ -22,4 +23,5 @@ def heartbeat():
 def launch_all():
     print("🟢 Lanzando schedulers...", flush=True)
     start_schedulers()
+    start_metrics_server()
     threading.Thread(target=heartbeat, daemon=True).start()

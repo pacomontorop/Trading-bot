@@ -18,6 +18,7 @@ from signals.fmp_utils import get_fmp_grade_score
 import yfinance as yf
 import os
 import pandas as pd
+from signals.aggregator import WeightedSignalAggregator
 
 
 
@@ -184,10 +185,11 @@ async def _get_top_signals_async(verbose=False):
     if quiver_semaphore is None:
         quiver_semaphore = asyncio.Semaphore(3)
 
+    aggregator = WeightedSignalAggregator({"base":1, "grade":float(os.getenv("FMP_GRADE_WEIGHT", 5))})
+
     async def apply_grade_bonus(symbol, base_score):
-        """Return score plus FMP grade weighting or ``None`` if below threshold."""
+        """Combina el score base con la calificación FMP mediante ponderación."""
         threshold = float(os.getenv("FMP_GRADE_THRESHOLD", 0))
-        weight = float(os.getenv("FMP_GRADE_WEIGHT", 5))
         grade_score = await asyncio.to_thread(get_fmp_grade_score, symbol)
         if grade_score is None or grade_score < threshold:
             print(
@@ -195,7 +197,7 @@ async def _get_top_signals_async(verbose=False):
                 flush=True,
             )
             return None
-        return base_score + grade_score * weight
+        return aggregator.combine({"base": base_score, "grade": grade_score})
 
     async def evaluate_symbol(symbol):
         if symbol in quiver_approval_cache:
