@@ -17,7 +17,10 @@ def get_rsi(symbol: str, period: int = 14) -> Optional[float]:
         avg_loss = loss.rolling(window=period).mean()
         rs = avg_gain / avg_loss
         rsi = 100 - (100 / (1 + rs))
-        return float(rsi.iloc[-1])
+        latest = rsi.iloc[-1]
+        if isinstance(latest, pd.Series):
+            latest = latest.iloc[0]
+        return float(latest)
     except Exception:
         return None
 
@@ -28,7 +31,10 @@ def get_moving_average(symbol: str, window: int = 7) -> Optional[float]:
         data = yf.download(symbol, period=f"{window * 3}d", interval="1d", progress=False)
         if data.empty or "Close" not in data:
             return None
-        return float(data["Close"].tail(window).mean())
+        ma = data["Close"].tail(window).mean()
+        if isinstance(ma, pd.Series):
+            ma = ma.iloc[0]
+        return float(ma)
     except Exception:
         return None
 
