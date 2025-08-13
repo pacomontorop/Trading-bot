@@ -51,7 +51,9 @@ def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
             return resp.json()
         except Exception as e:
             print(f"⚠️ FMP request failed ({endpoint}): {e}")
-            return None
+            if attempt == max_retries - 1:
+                return None
+            time.sleep(2 ** attempt)
     return None
 
 def stock_screener(**params):
@@ -61,6 +63,24 @@ def stock_screener(**params):
 def shares_float(symbol: str):
     """Get company share float and liquidity information."""
     return _get("shares-float", {"symbol": symbol})
+
+def company_profile(symbol: str):
+    """Fetch basic company profile information."""
+    return _get(f"profile/{symbol}")
+
+def quote(symbol: str):
+    """Return the latest market quote for ``symbol``."""
+    return _get(f"quote/{symbol}")
+
+def financial_ratios(symbol: str, period: str = "annual", limit: int = 5):
+    """Retrieve financial ratios such as PE and debt/equity."""
+    params = {"period": period, "limit": limit}
+    return _get(f"ratios/{symbol}", params)
+
+def key_metrics(symbol: str, period: str = "annual", limit: int = 5):
+    """Return key metrics like revenue per share."""
+    params = {"period": period, "limit": limit}
+    return _get(f"key-metrics/{symbol}", params)
 
 def cot_report(symbol: str, from_date: str | None = None, to_date: str | None = None):
     params = {"symbol": symbol}
