@@ -359,13 +359,13 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
             )
             return False
 
-        qty = int(amount_usd // current_price)
-        if qty == 0:
+        qty = round(amount_usd / current_price, 6)
+        if qty <= 0:
             print(f"⚠️ Fondos insuficientes para comprar {symbol}", flush=True)
             return False
 
         print(
-            f"🛒 Orden de compra -> {symbol} {qty}×${current_price:.2f}",
+            f"🛒 Orden de compra -> {symbol} {qty:.6f}×${current_price:.2f}",
             flush=True,
         )
         order = api.submit_order(
@@ -387,7 +387,8 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         )
         if not wait_for_order_fill(order.id, symbol):
             return False
-        entry_price, _, _ = entry_data.get(symbol, (current_price, None, None))
+        entry_price, filled_qty, _ = entry_data.get(symbol, (current_price, qty, None))
+        qty = float(filled_qty)
         take_profit = get_adaptive_take_profit(symbol, entry_price, quiver_score)
         if take_profit:
             print(
@@ -421,14 +422,14 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         ).start()
 
         register_open_position(symbol)
-        add_to_invested(qty * current_price)
+        add_to_invested(amount_usd)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
         with pending_trades_lock:
-            pending_trades.add(f"{symbol}: {qty} unidades — ${qty * current_price:.2f}")
+            pending_trades.add(f"{symbol}: {qty:.6f} unidades — ${amount_usd:.2f}")
 
         log_event(
-            f"✅ Compra y trailing stop colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD (Quiver score: {quiver_score})"
+            f"✅ Compra y trailing stop colocados para {symbol}: {qty:.6f} unidades por {amount_usd:.2f} USD (Quiver score: {quiver_score})"
         )
         return True
 
@@ -480,12 +481,12 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
             print(f"❌ Precio no disponible para {symbol}")
             return
 
-        qty = int(amount_usd // current_price)
-        if qty == 0:
+        qty = round(amount_usd / current_price, 6)
+        if qty <= 0:
             print(f"⚠️ Fondos insuficientes para short en {symbol}")
             return
 
-        print(f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
+        print(f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty:.6f} unidades a ${current_price:.2f} cada una.")
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -497,6 +498,8 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
 
         if not wait_for_order_fill(order.id, symbol):
             return
+        _, filled_qty, _ = entry_data.get(symbol, (current_price, qty, None))
+        qty = float(filled_qty)
 
         trail_price = get_adaptive_trail_price(symbol)
         trail_order = api.submit_order(
@@ -515,13 +518,13 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
         ).start()
 
         register_open_position(symbol)
-        add_to_invested(qty * current_price)
+        add_to_invested(amount_usd)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
         with pending_trades_lock:
-            pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${qty * current_price:.2f}")
+            pending_trades.add(f"{symbol} SHORT: {qty:.6f} unidades — ${amount_usd:.2f}")
 
-        log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {qty * current_price:.2f} USD")
+        log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty:.6f} unidades por {amount_usd:.2f} USD")
 
     except Exception as e:
         log_event(f"❌ Falló la orden para {symbol}: {e}")
