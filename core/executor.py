@@ -20,9 +20,12 @@ from utils.daily_risk import (
 from utils.order_tracker import record_trade_result
 import os
 import csv
+import json
+import gc
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+INVEST_STATE_FILE = os.path.join(DATA_DIR, "investment_state.json")
 
 # Control de estado
 from utils.state import StateManager
@@ -44,9 +47,42 @@ executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
 MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 300.0  # Límite de pérdidas diarias
-_last_investment_day = datetime.utcnow().date()
-_total_invested_today = 0.0
-_realized_pnl_today = 0.0
+
+
+def _load_investment_state():
+    """Load persisted daily investment state from disk."""
+    try:
+        with open(INVEST_STATE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        day = datetime.strptime(data.get("date", ""), "%Y-%m-%d").date()
+        invested = float(data.get("invested", 0.0))
+        pnl = float(data.get("pnl", 0.0))
+        today = datetime.utcnow().date()
+        if day != today:
+            day, invested, pnl = today, 0.0, 0.0
+    except Exception:
+        day, invested, pnl = datetime.utcnow().date(), 0.0, 0.0
+    return day, invested, pnl
+
+
+def _save_investment_state():
+    """Persist current daily investment state to disk."""
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(INVEST_STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "date": _last_investment_day.isoformat(),
+                    "invested": _total_invested_today,
+                    "pnl": _realized_pnl_today,
+                },
+                f,
+            )
+    except Exception:
+        pass
+
+
+_last_investment_day, _total_invested_today, _realized_pnl_today = _load_investment_state()
 _last_equity_snapshot = None
 
 quiver_signals_log = {}
@@ -92,11 +128,16 @@ def reset_daily_investment():
         _last_investment_day = today
         with executed_symbols_today_lock:
             executed_symbols_today.clear()
+        # Clear intraday caches to avoid unbounded growth
+        quiver_signals_log.clear()
+        gc.collect()
         update_risk_limits()
+        _save_investment_state()
 
 def add_to_invested(amount):
     global _total_invested_today
     _total_invested_today += amount
+    _save_investment_state()
 
 def invested_today_usd():
     return _total_invested_today
@@ -155,7 +196,10 @@ def get_adaptive_trail_price(symbol, window: int = 14):
         current_price = close.iloc[-1]
         atr_pct = atr / current_price if current_price else 0
         atr_pct = min(max(float(atr_pct), 0.005), 0.05)
-        return round(float(current_price) * atr_pct, 2)
+        result = round(float(current_price) * atr_pct, 2)
+        del hist
+        gc.collect()
+        return result
     except Exception as e:
         print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
         fallback_price = get_current_price(symbol)
@@ -253,10 +297,13 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                             exit_time_str.split(" ")[0],
                         )
 
+                        # Remove cached data to free memory once trade is closed
                         entry_data.pop(symbol, None)
+                        quiver_signals_log.pop(symbol, None)
                         global _realized_pnl_today
                         _realized_pnl_today += pnl
                         register_trade_pnl(symbol, pnl)
+                        _save_investment_state()
                 return True
             elif order.status in ["canceled", "rejected"]:
                 reason = getattr(order, "reject_reason", "Sin motivo")
