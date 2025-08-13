@@ -49,4 +49,6 @@ $ python utils/log_summary.py
 Set `FMP_API_KEY` to enable optional fallbacks to the Financial Modeling Prep API.
 The bot will use FMP's stock screener when basic price data is missing and will
 monitor analyst grade news to place small $10 trades when ratings switch between
-buy/hold/sell.
+buy/hold/sell.  Additional helpers expose company profiles, quotes and
+fundamental metrics like financial ratios and key metrics for strategies that
+need deeper fundamentals.
