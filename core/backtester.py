@@ -20,7 +20,7 @@ def run_backtest(prices: pd.Series, signals: List[Tuple[pd.Timestamp, str]], ini
         while current_signal and current_signal[0] <= date:
             action = current_signal[1]
             if action == 'buy' and cash >= price:
-                qty = cash // price
+                qty = cash / price
                 cash -= qty * price
                 position += qty
             elif action == 'sell' and position > 0:

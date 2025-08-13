@@ -19,7 +19,7 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
         if current_price is None or entry_price is None or qty is None:
             return
 
-        qty = int(abs(float(qty)))
+        qty = abs(float(qty))
         if qty <= 0:
             return
 
@@ -33,7 +33,7 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
         if gain_pct >= 7 or gain_pct <= -5:
             open_orders = api.list_orders(status="open")
             reserved_qty = sum(
-                int(float(o.qty))
+                float(o.qty)
                 for o in open_orders
                 if o.symbol == symbol and o.side == close_side
             )
@@ -137,12 +137,12 @@ def watchdog_trailing_stop():
                 if (symbol, side) in trailing:
                     continue
 
-                qty = int(float(pos.qty))
+                qty = float(pos.qty)
                 if qty <= 0:
                     continue
 
                 reserved_qty = sum(
-                    int(float(o.qty))
+                    float(o.qty)
                     for o in open_orders
                     if o.symbol == symbol and o.side == side
                 )
