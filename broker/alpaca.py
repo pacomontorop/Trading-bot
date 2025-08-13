@@ -1,11 +1,12 @@
 #alpaca.py
 
 import os
+from datetime import datetime, timedelta
 import alpaca_trade_api as tradeapi
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from dotenv import load_dotenv
-from utils.logger import log_event  
+from utils.logger import log_event
 
 
 load_dotenv()
@@ -22,19 +23,39 @@ adapter = HTTPAdapter(max_retries=retry)
 api._session.mount("https://", adapter)
 api._session.mount("http://", adapter)
 
-def is_market_open():
+# Simple TTL caches to avoid hitting the Alpaca API repeatedly
+_market_open_cache = {"ts": None, "value": False}
+_price_cache = {}
+
+
+def is_market_open(ttl: int = 60):
+    """Check if the market is open, caching the value for ``ttl`` seconds."""
+    now = datetime.utcnow()
+    ts = _market_open_cache["ts"]
+    if ts and (now - ts).total_seconds() < ttl:
+        return _market_open_cache["value"]
     try:
         clock = api.get_clock()
-        return clock.is_open
+        value = clock.is_open
+        _market_open_cache.update({"ts": now, "value": value})
+        return value
     except Exception as e:
         log_event(f"❌ Error checking market open: {e}")
-        return False
+        return _market_open_cache["value"]
 
-def get_current_price(symbol):
+
+def get_current_price(symbol, ttl: int = 30):
+    """Return the latest minute close for ``symbol`` with a short-lived cache."""
+    now = datetime.utcnow()
+    cached = _price_cache.get(symbol)
+    if cached and (now - cached["ts"]).total_seconds() < ttl:
+        return cached["price"]
     try:
         bars = api.get_bars(symbol, tradeapi.TimeFrame.Minute, limit=1)
         if not bars.df.empty:
-            return bars.df['close'].iloc[0]
+            price = bars.df['close'].iloc[0]
+            _price_cache[symbol] = {"price": price, "ts": now}
+            return price
     except Exception as e:
         log_event(f"❌ Error fetching price for {symbol}: {e}")
     return None

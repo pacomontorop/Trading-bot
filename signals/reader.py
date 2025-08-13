@@ -18,6 +18,7 @@ from signals.fmp_utils import get_fmp_grade_score
 import yfinance as yf
 import os
 import pandas as pd
+import json
 from signals.aggregator import WeightedSignalAggregator
 
 
@@ -175,6 +176,44 @@ last_reset_date = datetime.now().date()
 quiver_semaphore = None
 quiver_approval_cache = {}
 
+PROGRESS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data",
+    "evaluated_symbols.json",
+)
+
+
+def _load_evaluated_symbols():
+    global evaluated_symbols_today, last_reset_date
+    try:
+        with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        date_str = data.get("date")
+        symbols = data.get("symbols", [])
+        if date_str == datetime.now().date().isoformat():
+            evaluated_symbols_today = set(symbols)
+            last_reset_date = datetime.fromisoformat(date_str).date()
+    except Exception:
+        pass
+
+
+def _save_evaluated_symbols():
+    try:
+        os.makedirs(os.path.dirname(PROGRESS_FILE), exist_ok=True)
+        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "date": last_reset_date.isoformat(),
+                    "symbols": sorted(evaluated_symbols_today),
+                },
+                f,
+            )
+    except Exception as e:
+        print(f"⚠️ No se pudo guardar progreso de símbolos: {e}")
+
+
+_load_evaluated_symbols()
+
 def get_top_signals(verbose=False):
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
     return run_in_quiver_loop(_get_top_signals_async(verbose))
@@ -249,6 +288,7 @@ async def _get_top_signals_async(verbose=False):
             quiver_approval_cache.clear()
             last_reset_date = today
             print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
+            _save_evaluated_symbols()
 
         # Refresh positions cache once per cycle
         get_cached_positions(refresh=True)
@@ -271,11 +311,13 @@ async def _get_top_signals_async(verbose=False):
         # Si no hay símbolos restantes, comienza una nueva ronda
         if not symbols_to_evaluate:
             evaluated_symbols_today.clear()
+            _save_evaluated_symbols()
             print("🔄 Todos los símbolos analizados. Iniciando nueva ronda.")
             continue
 
         for s in symbols_to_evaluate:
             evaluated_symbols_today.add(s)
+        _save_evaluated_symbols()
 
         tasks = [asyncio.create_task(evaluate_symbol(sym)) for sym in symbols_to_evaluate]
         results = []
