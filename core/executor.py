@@ -233,8 +233,8 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                     except Exception:
                         pass
 
-                # Calculate realized PnL when a trailing-stop order completes
-                if order.type == "trailing_stop":
+                # Calculate realized PnL when a closing order completes
+                if order.type in ("trailing_stop", "limit"):
                     fill_price = float(getattr(order, "filled_avg_price", 0))
                     qty = float(order.qty)
                     avg_entry, _, date_in = entry_data.get(symbol, (None, None, None))
@@ -307,14 +307,24 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                 return True
             elif order.status in ["canceled", "rejected"]:
                 reason = getattr(order, "reject_reason", "Sin motivo")
-                print(
-                    f"❌ Orden {order_id} para {symbol} cancelada o rechazada: {order.status} - {reason}",
-                    flush=True,
-                )
-                log_event(
-                    f"❌ Falló la orden para {symbol}: {order.status} - {reason}"
-                )
-                return False
+                if order.status == "canceled":
+                    print(
+                        f"ℹ️ Orden {order_id} para {symbol} cancelada: {reason}",
+                        flush=True,
+                    )
+                    log_event(
+                        f"ℹ️ Orden cancelada para {symbol}: {reason}"
+                    )
+                    return True
+                else:
+                    print(
+                        f"❌ Orden {order_id} para {symbol} rechazada: {reason}",
+                        flush=True,
+                    )
+                    log_event(
+                        f"❌ Falló la orden para {symbol}: {order.status} - {reason}"
+                    )
+                    return False
         except Exception as e:
             log_event(
                 f"❌ Error verificando estado de orden {order_id} para {symbol}: {e}"
@@ -442,7 +452,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
                 f"🎯 Colocando take profit para {symbol} en ${take_profit:.2f}",
                 flush=True,
             )
-            api.submit_order(
+            tp_order = api.submit_order(
                 symbol=symbol,
                 qty=qty,
                 side='sell',
@@ -451,6 +461,11 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
                 limit_price=take_profit,
             )
             orders_placed.inc()
+            threading.Thread(
+                target=wait_for_order_fill,
+                args=(tp_order.id, symbol, 7 * 24 * 3600),
+                daemon=True,
+            ).start()
 
         trail_price = get_adaptive_trail_price(symbol)
         trail_order = api.submit_order(
