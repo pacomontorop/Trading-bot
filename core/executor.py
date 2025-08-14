@@ -205,6 +205,25 @@ def get_adaptive_trail_price(symbol, window: int = 14):
         fallback_price = get_current_price(symbol)
         return round(fallback_price * 0.015, 2)
 
+
+def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=None):
+    """Actualiza un trailing stop existente con nueva distancia."""
+    try:
+        if order_id is None:
+            orders = api.list_orders(status="open")
+            for o in orders:
+                if o.symbol == symbol and getattr(o, "type", "") == "trailing_stop":
+                    order_id = o.id
+                    break
+        if not order_id:
+            return False
+        api.replace_order(order_id, trail_price=trail_price, trail_percent=trail_percent)
+        log_event(f"🔁 Trailing stop actualizado para {symbol}")
+        return True
+    except Exception as e:
+        log_event(f"❌ Error actualizando trailing stop para {symbol}: {e}")
+        return False
+
 def wait_for_order_fill(order_id, symbol, timeout=60):
     print(f"⌛ Empezando espera para orden {order_id} de {symbol}", flush=True)
     start = time.time()

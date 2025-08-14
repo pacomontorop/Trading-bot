@@ -8,6 +8,8 @@ from core.executor import (
     open_positions_lock,
     get_adaptive_trail_price,
     state_manager,
+    entry_data,
+    update_trailing_stop,
 )
 from utils.monitoring import update_positions_metric
 
@@ -126,43 +128,64 @@ def watchdog_trailing_stop():
             pos_map = {p.symbol: p for p in positions} if positions else {}
 
             open_orders = api.list_orders(status="open")
-            trailing = {
-                (o.symbol, o.side)
+            trailing_orders = {
+                (o.symbol, o.side): o
                 for o in open_orders
                 if getattr(o, "type", "") == "trailing_stop"
             }
 
             for symbol, pos in pos_map.items():
                 side = "sell" if pos.side.lower() == "long" else "buy"
-                if (symbol, side) in trailing:
-                    continue
+                order = trailing_orders.get((symbol, side))
 
                 qty = float(pos.qty)
                 if qty <= 0:
                     continue
 
-                reserved_qty = sum(
-                    float(o.qty)
-                    for o in open_orders
-                    if o.symbol == symbol and o.side == side
-                )
-                available_qty = qty - reserved_qty
-                if available_qty <= 0:
-                    log_event(
-                        f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
+                if order is None:
+                    reserved_qty = sum(
+                        float(o.qty)
+                        for o in open_orders
+                        if o.symbol == symbol and o.side == side
                     )
+                    available_qty = qty - reserved_qty
+                    if available_qty <= 0:
+                        log_event(
+                            f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
+                        )
+                        continue
+
+                    trail_price = get_adaptive_trail_price(symbol)
+                    api.submit_order(
+                        symbol=symbol,
+                        qty=available_qty,
+                        side=side,
+                        type="trailing_stop",
+                        time_in_force="gtc",
+                        trail_price=trail_price,
+                    )
+                    log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")
                     continue
 
-                trail_price = get_adaptive_trail_price(symbol)
-                api.submit_order(
-                    symbol=symbol,
-                    qty=available_qty,
-                    side=side,
-                    type="trailing_stop",
-                    time_in_force="gtc",
-                    trail_price=trail_price,
-                )
-                log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")
+                # Actualizar trailing stop existente con valor dinámico
+                new_trail = get_adaptive_trail_price(symbol)
+                current_trail = float(getattr(order, "trail_price", new_trail))
+                if abs(new_trail - current_trail) > 0.01:
+                    update_trailing_stop(symbol, order_id=order.id, trail_price=new_trail)
+
+                # Mover a break-even si corresponde
+                entry_price, _, _ = entry_data.get(symbol, (None, None, None))
+                stop_price = float(getattr(order, "stop_price", 0))
+                current_price = get_current_price(symbol)
+                if (
+                    entry_price
+                    and current_price
+                    and current_price > entry_price
+                    and stop_price < entry_price
+                ):
+                    hwm = float(getattr(order, "hwm", current_price))
+                    be_trail = max(hwm - entry_price, 0.01)
+                    update_trailing_stop(symbol, order_id=order.id, trail_price=be_trail)
 
         except Exception as e:
             log_event(f"❌ Error en watchdog_trailing_stop: {e}")
