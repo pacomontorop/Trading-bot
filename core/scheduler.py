@@ -29,6 +29,8 @@ from utils.generate_symbols_csv import generate_symbols_csv
 from core.grade_news import scan_grade_changes
 from signals.filters import is_position_open, get_cached_positions
 
+from utils.daily_risk import get_today_pnl_breakdown
+
 
 import threading
 from datetime import datetime
@@ -36,7 +38,6 @@ from pytz import timezone
 import os
 import pandas as pd
 import time as pytime
-import re
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
@@ -116,42 +117,6 @@ def pre_market_scan():
         pytime.sleep(1)  # Espera mínima para no saturar el sistema
 
 
-def _parse_today_pnl(log_path: str):
-    """Parse today's realized PnL entries from ``pnl.log``."""
-    wins = 0
-    losses = 0
-    total = 0.0
-    today = datetime.utcnow().date()
-
-    if not os.path.exists(log_path):
-        return wins, losses, total
-
-    with open(log_path, "r", encoding="utf-8") as f:
-        for line in f:
-            if not line.strip():
-                continue
-            # Attempt to parse optional leading timestamp in [YYYY-MM-DD HH:MM:SS]
-            if line.startswith("[") and "]" in line:
-                ts_str, remainder = line.split("]", 1)
-                ts_str = ts_str.lstrip("[")
-                try:
-                    if datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S").date() != today:
-                        continue
-                except Exception:
-                    remainder = line
-                line = remainder
-
-            match = re.search(r"(-?\d+(?:\.\d+)?)", line)
-            if match:
-                value = float(match.group(1))
-                total += value
-                if value >= 0:
-                    wins += 1
-                else:
-                    losses += 1
-
-    return wins, losses, total
-
 def daily_summary():
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
@@ -219,8 +184,7 @@ def daily_summary():
                 body += f"\n\n❌ Error obteniendo PnL: {e}"
 
             # PnL realizado del día
-            pnl_path = os.path.join(log_dir, "pnl.log")
-            wins, losses, realized_total = _parse_today_pnl(pnl_path)
+            wins, losses, realized_total = get_today_pnl_breakdown()
             body += f"\n💵 PnL realizado: {realized_total:.2f} USD"
             body += f"\n🏆 Operaciones ganadoras: {wins}"
             body += f"\n💔 Operaciones perdedoras: {losses}"

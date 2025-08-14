@@ -54,6 +54,37 @@ def get_today_pnl() -> float:
     return total
 
 
+def get_today_pnl_breakdown() -> tuple[int, int, float]:
+    """Return today's wins, losses and total realized PnL.
+
+    Returns
+    -------
+    tuple[int, int, float]
+        A tuple of ``(wins, losses, total_pnl)`` for the current UTC date.
+    """
+    if not PNL_LOG_FILE.exists():
+        return 0, 0, 0.0
+    today_str = datetime.utcnow().date().isoformat()
+    wins = 0
+    losses = 0
+    total = 0.0
+    with open(PNL_LOG_FILE, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("date") != today_str:
+                continue
+            try:
+                pnl = float(row.get("pnl_usd", 0))
+            except ValueError:
+                continue
+            total += pnl
+            if pnl >= 0:
+                wins += 1
+            else:
+                losses += 1
+    return wins, losses, total
+
+
 def save_equity_snapshot() -> None:
     """Save the current equity value to ``equity_log.csv`` once per day.
 
