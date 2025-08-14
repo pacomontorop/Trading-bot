@@ -34,7 +34,7 @@ class CryptoLimit:
         """Recalculate limit and reset the spent tracker."""
         api = get_api()
         acct = api.get_account()
-        self.max_notional = float(acct.buying_power) * 0.10
+        self.max_notional = round(float(acct.buying_power) * 0.10, 2)
         self._spent = 0.0
         clock = api.get_clock()
         # ``next_open`` already accounts for weekends/holidays
@@ -51,9 +51,10 @@ class CryptoLimit:
         """Return ``True`` and deduct ``amount`` if within today's limit."""
         with self._lock:
             self.check_reset()
+            amount = round(amount, 2)
             if self._spent + amount > self.max_notional:
                 return False
-            self._spent += amount
+            self._spent = round(self._spent + amount, 2)
             return True
 
     # ------------------------------------------------------------------
@@ -61,7 +62,7 @@ class CryptoLimit:
         """Return remaining notional before hitting the daily cap."""
         with self._lock:
             self.check_reset()
-            return self.max_notional - self._spent
+            return round(self.max_notional - self._spent, 2)
 
     # ------------------------------------------------------------------
     @property
