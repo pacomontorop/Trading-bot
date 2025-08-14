@@ -43,7 +43,10 @@ def crypto_worker() -> None:
 
         signals = get_crypto_signals()
         for symbol, score in signals:
-            alloc = min(_calculate_allocation(score), crypto_limit.remaining())
+            raw_alloc = min(
+                _calculate_allocation(score), crypto_limit.remaining()
+            )
+            alloc = round(raw_alloc, 2)
             if alloc <= 0 or not crypto_limit.can_spend(alloc):
                 continue
             try:
