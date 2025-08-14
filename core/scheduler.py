@@ -42,6 +42,9 @@ import time as pytime
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
 initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
 
+from core.crypto_worker import crypto_trades, crypto_trades_lock, crypto_worker
+from utils.crypto_limit import get_crypto_limit
+
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
 
@@ -131,6 +134,7 @@ def daily_summary():
         # Enviar el resumen diario al cierre regular del mercado (16:00 NY)
         if now.hour == 16:
             subject = "📈 Resumen diario de trading"
+            limit = get_crypto_limit()
 
             # Cabecera numérica
             with pending_opportunities_lock:
@@ -168,18 +172,37 @@ def daily_summary():
                     line += f" — 🧠 Señales: {', '.join(signals)}"
                 body += f"→ {line}\n"
 
+            # Crypto trades executed
+            with crypto_trades_lock:
+                crypto_snapshot = list(crypto_trades)
+            if crypto_snapshot:
+                body += "\n🪙 *Órdenes cripto ejecutadas:*\n"
+                for line in crypto_snapshot:
+                    body += f"→ {line}\n"
+
             # PnL y estado de cartera
             try:
                 positions = api.list_positions()
-                total_pnl = 0
+                total_pnl_equity = 0
+                total_pnl_crypto = 0
+                equity_positions = 0
+                crypto_positions = 0
                 for p in positions:
                     avg_entry = float(p.avg_entry_price)
                     current_price = float(p.current_price)
                     qty = float(p.qty)
-                    total_pnl += (current_price - avg_entry) * qty
+                    pnl = (current_price - avg_entry) * qty
+                    if getattr(p, "asset_class", "") == "crypto":
+                        total_pnl_crypto += pnl
+                        crypto_positions += 1
+                    else:
+                        total_pnl_equity += pnl
+                        equity_positions += 1
                 body += "\n" + "-" * 40 + "\n"
-                body += f"💰 PnL no realizado actual: {total_pnl:.2f} USD\n"
-                body += f"📌 Posiciones abiertas: {len(positions)}"
+                body += f"💰 PnL no realizado acciones: {total_pnl_equity:.2f} USD\n"
+                body += f"💰 PnL no realizado crypto: {total_pnl_crypto:.2f} USD\n"
+                body += f"📌 Posiciones abiertas acciones: {equity_positions}\n"
+                body += f"📌 Posiciones abiertas crypto: {crypto_positions}"
             except Exception as e:
                 body += f"\n\n❌ Error obteniendo PnL: {e}"
 
@@ -188,6 +211,10 @@ def daily_summary():
             body += f"\n💵 PnL realizado: {realized_total:.2f} USD"
             body += f"\n🏆 Operaciones ganadoras: {wins}"
             body += f"\n💔 Operaciones perdedoras: {losses}"
+            body += (
+                f"\n🪙 Capital cripto usado hoy: {limit.spent:.2f} USD de "
+                f"{limit.max_notional:.2f} USD"
+            )
 
             # Opciones
             options_log = get_options_log_and_reset()
@@ -260,6 +287,7 @@ def start_schedulers():
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=scan_grade_changes, daemon=True).start()
+    threading.Thread(target=crypto_worker, daemon=True).start()
 
     ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
 
