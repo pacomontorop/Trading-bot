@@ -3,6 +3,7 @@
 import time
 from broker.alpaca import api, get_current_price
 from utils.logger import log_event
+from utils.orders import resolve_time_in_force
 from core.executor import (
     open_positions,
     open_positions_lock,
@@ -62,7 +63,7 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
                 qty=available_qty,
                 side=close_side,
                 type="market",
-                time_in_force="gtc",
+                time_in_force=resolve_time_in_force(available_qty),
             )
 
             if gain_pct >= TAKE_PROFIT_PCT:
@@ -176,7 +177,7 @@ def watchdog_trailing_stop():
                         qty=available_qty,
                         side=side,
                         type="trailing_stop",
-                        time_in_force="gtc",
+                        time_in_force=resolve_time_in_force(available_qty),
                         trail_price=trail_price,
                     )
                     log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")

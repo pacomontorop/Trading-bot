@@ -18,6 +18,7 @@ from utils.daily_risk import (
     get_max_drawdown,
 )
 from utils.order_tracker import record_trade_result
+from utils.orders import resolve_time_in_force
 import os
 import csv
 import json
@@ -449,7 +450,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             qty=qty,
             side='buy',
             type='market',
-            time_in_force='gtc'
+            time_in_force=resolve_time_in_force(qty)
         )
         orders_placed.inc()
         print(
@@ -476,7 +477,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
                 qty=qty,
                 side='sell',
                 type='limit',
-                time_in_force='gtc',
+                time_in_force=resolve_time_in_force(qty),
                 limit_price=take_profit,
             )
             orders_placed.inc()
@@ -492,7 +493,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             qty=qty,
             side='sell',
             type='trailing_stop',
-            time_in_force='gtc',
+            time_in_force=resolve_time_in_force(qty),
             trail_price=trail_price
         )
         orders_placed.inc()
@@ -573,7 +574,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             qty=qty,
             side='sell',
             type='market',
-            time_in_force='gtc'
+            time_in_force=resolve_time_in_force(qty)
         )
         orders_placed.inc()
 
@@ -588,7 +589,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             qty=qty,
             side='buy',
             type='trailing_stop',
-            time_in_force='gtc',
+            time_in_force=resolve_time_in_force(qty),
             trail_price=trail_price
         )
         orders_placed.inc()
