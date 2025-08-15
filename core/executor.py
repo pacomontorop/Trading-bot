@@ -46,7 +46,7 @@ pending_trades_lock = threading.Lock()
 executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
 MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
-DAILY_MAX_LOSS_USD = 300.0  # Límite de pérdidas diarias
+DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
 
 
 def _load_investment_state():
@@ -356,7 +356,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
     log_event(f"⚠️ Timeout esperando fill para {symbol}")
     return False
 
-def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
+def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
     global _last_equity_snapshot
     reset_daily_investment()
     today = datetime.utcnow().date()
@@ -518,7 +518,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.5):
         log_event(f"❌ Falló la orden para {symbol}: {e}")
 
 
-def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.5):
+def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
     reset_daily_investment()
     if is_risk_limit_exceeded():
         log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
@@ -632,7 +632,7 @@ def short_scan():
                     asset = api.get_asset(symbol)
                     if getattr(asset, "shortable", False):
                         amount_usd = calculate_investment_amount(score, symbol=symbol)
-                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.5)
+                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
                 except Exception as e:
                     print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
             log_event(

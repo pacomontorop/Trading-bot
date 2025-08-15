@@ -14,7 +14,7 @@ async def place_orders_concurrently(opportunities: Iterable[Tuple[str, int]]):
             amount = calculate_investment_amount(score, symbol=symbol)
             tasks.append(
                 loop.run_in_executor(
-                    pool, place_order_with_trailing_stop, symbol, amount, 1.5
+                    pool, place_order_with_trailing_stop, symbol, amount, 1.0
                 )
             )
         return await asyncio.gather(*tasks)
