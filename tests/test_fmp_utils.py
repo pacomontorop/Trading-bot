@@ -96,3 +96,11 @@ def test_grades_news_calls_grade_endpoint():
         fmp_utils.grades_news("AAPL", page=2, limit=3)
     get_mock.assert_called_once_with("grade/AAPL", {"page": 2, "limit": 3})
 
+
+def test_price_target_news_calls_endpoint():
+    with patch("signals.fmp_utils._get") as get_mock:
+        fmp_utils.price_target_news("AAPL", page=1, limit=2)
+    get_mock.assert_called_once_with(
+        "price-target-news", {"symbol": "AAPL", "page": 1, "limit": 2}
+    )
+
