@@ -14,8 +14,13 @@ from core.executor import (
 from utils.monitoring import update_positions_metric
 
 
+TAKE_PROFIT_PCT = 5
+STOP_LOSS_PCT = -3
+MAX_LOSS_USD = 50
+
+
 def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
-    """Cierra la posición si alcanza un take profit virtual (+7%) o stop loss virtual (-5%)."""
+    """Cierra la posición si alcanza un take profit virtual (+5%), stop loss (-3%) o pérdida monetaria (-50 USD)."""
     try:
         current_price = get_current_price(symbol)
         if current_price is None or entry_price is None or qty is None:
@@ -27,12 +32,18 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
 
         if position_side.lower() == "long":
             gain_pct = (current_price - entry_price) / entry_price * 100
+            unrealized = (current_price - entry_price) * qty
             close_side = "sell"
         else:
             gain_pct = (entry_price - current_price) / entry_price * 100
+            unrealized = (entry_price - current_price) * qty
             close_side = "buy"
 
-        if gain_pct >= 7 or gain_pct <= -5:
+        if (
+            gain_pct >= TAKE_PROFIT_PCT
+            or gain_pct <= STOP_LOSS_PCT
+            or unrealized <= -MAX_LOSS_USD
+        ):
             open_orders = api.list_orders(status="open")
             reserved_qty = sum(
                 float(o.qty)
@@ -54,13 +65,17 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
                 time_in_force="gtc",
             )
 
-            if gain_pct >= 7:
+            if gain_pct >= TAKE_PROFIT_PCT:
                 log_event(
                     f"📈 Take profit virtual ejecutado en {symbol} con +{gain_pct:.2f}%"
                 )
-            else:
+            elif gain_pct <= STOP_LOSS_PCT:
                 log_event(
                     f"📉 Stop loss virtual ejecutado en {symbol} con {gain_pct:.2f}%"
+                )
+            else:
+                log_event(
+                    f"📉 Stop monetario ejecutado en {symbol} con {unrealized:.2f} USD"
                 )
             return
 

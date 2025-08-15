@@ -100,7 +100,7 @@ def pre_market_scan():
                     amount_usd = calculate_investment_amount(score, symbol=symb)
                     log_event(f"🟡 Ejecutando orden para {symb}")
                     log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
-                    success = place_order_with_trailing_stop(symb, amount_usd, 1.5)
+                    success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
                     with pending_opportunities_lock:
                         pending_opportunities.add(symb)
                     if success:
