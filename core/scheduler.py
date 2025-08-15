@@ -39,7 +39,7 @@ import os
 import pandas as pd
 import time as pytime
 
-from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
+from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
 
 from core.crypto_worker import crypto_trades, crypto_trades_lock, crypto_worker
 from utils.crypto_limit import get_crypto_limit
