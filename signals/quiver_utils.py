@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from signals.quiver_throttler import throttled_request
 from signals.scoring import fetch_yfinance_stock_data
+from signals.fmp_utils import price_target_news
 
 
 
@@ -43,7 +44,7 @@ QUIVER_SIGNAL_WEIGHTS = {
     "has_recent_sec13f_activity": 3,
     "has_recent_sec13f_changes": 3,
     "trending_wsb": 0.5,
-    "bullish_etf_flow": 0.5,
+    "bullish_price_target": 0.5,
     "has_recent_house_purchase": 1,
     "is_trending_on_twitter": 0.5,
     "has_positive_app_ratings": 0.5
@@ -66,7 +67,7 @@ RECENT_EVENT_WEIGHTS = {
     "off_exchange": 0.5,
     "sec13f": 0.5,
     "sec13f_changes": 0.5,
-    "etf_holding": 0.25,
+    "price_target_news": 0.25,
     "patent_drift": 0.5,
     "patent_momentum": 0.5,
     "recent_patents": 0.5,
@@ -164,8 +165,8 @@ def has_recent_quiver_event(symbol, days=5):
         score += RECENT_EVENT_WEIGHTS["sec13f"]
     if has_recent_sec13f_changes(symbol):
         score += RECENT_EVENT_WEIGHTS["sec13f_changes"]
-    if has_recent_etf_holding(symbol):
-        score += RECENT_EVENT_WEIGHTS["etf_holding"]
+    if has_recent_price_target_news(symbol):
+        score += RECENT_EVENT_WEIGHTS["price_target_news"]
     if has_recent_patent_drift(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["patent_drift"]
     if has_recent_patent_momentum(symbol, cutoff):
@@ -282,7 +283,7 @@ def get_quiver_signals(symbol):
         "has_gov_contract": get_gov_contract_signal(symbol),
         "positive_patent_momentum": get_patent_momentum_signal(symbol),
         "trending_wsb": get_wsb_signal(symbol),
-        "bullish_etf_flow": get_etf_flow_signal(symbol)
+        "bullish_price_target": get_price_target_signal(symbol)
     }
 
 def get_insider_signal(symbol):
@@ -343,12 +344,24 @@ def get_wsb_signal(symbol):
         return False
     return any(d.get("Mentions", 0) >= 10 for d in data[-5:])
 
-def get_etf_flow_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/etfholdings?ticker={symbol.upper()}")
+def get_price_target_signal(symbol):
+    data = price_target_news(symbol, limit=5)
     if not isinstance(data, list):
         return False
-    total = sum(d.get("Value ($)", 0) for d in data)
-    return total > 250_000
+    cutoff = datetime.utcnow() - timedelta(days=30)
+    for item in data:
+        date_str = item.get("publishedDate")
+        target = item.get("priceTarget")
+        posted = item.get("priceWhenPosted")
+        if not date_str or not isinstance(target, (int, float)) or not isinstance(posted, (int, float)):
+            continue
+        try:
+            pub_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+        except Exception:
+            continue
+        if pub_date >= cutoff and target >= posted * 1.05:
+            return True
+    return False
 
 def get_extended_quiver_signals(symbol):
     return {
@@ -552,9 +565,23 @@ def has_recent_off_exchange(symbol, cutoff):
     return False
 
 
-def has_recent_etf_holding(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/etfholdings?ticker={symbol.upper()}")
-    return isinstance(data, list) and len(data) > 0
+def has_recent_price_target_news(symbol, cutoff=None):
+    data = price_target_news(symbol, limit=5)
+    if not isinstance(data, list):
+        return False
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=30)
+    for item in data:
+        date_str = item.get("publishedDate")
+        if not date_str:
+            continue
+        try:
+            pub_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+        except Exception:
+            continue
+        if pub_date >= cutoff:
+            return True
+    return False
 
 
 def has_recent_patent_drift(symbol, cutoff):
