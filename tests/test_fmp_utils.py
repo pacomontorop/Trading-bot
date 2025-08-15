@@ -89,3 +89,10 @@ def test_key_metrics_wrapper_calls_get():
         "key-metrics/AAPL", {"period": "annual", "limit": 5}
     )
 
+
+def test_grades_news_calls_grade_endpoint():
+    """grades_news should query the new `grade` endpoint with params."""
+    with patch("signals.fmp_utils._get") as get_mock:
+        fmp_utils.grades_news("AAPL", page=2, limit=3)
+    get_mock.assert_called_once_with("grade", {"symbol": "AAPL", "page": 2, "limit": 3})
+
