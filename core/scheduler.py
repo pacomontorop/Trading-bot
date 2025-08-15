@@ -40,7 +40,6 @@ import pandas as pd
 import time as pytime
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals  # 👈 Añadido aquí
-initialize_quiver_caches()  # 👈 Llamada a la función antes de iniciar nada más
 
 from core.crypto_worker import crypto_trades, crypto_trades_lock, crypto_worker
 from utils.crypto_limit import get_crypto_limit
@@ -260,6 +259,10 @@ def daily_summary():
 def start_schedulers():
     print("🟢 Iniciando verificación de symbols.csv...", flush=True)
     regenerate = True
+
+    # Inicializa cachés de Quiver solo cuando se lanzan los schedulers
+    # para evitar llamadas de red innecesarias durante las importaciones.
+    initialize_quiver_caches()
 
     try:
         if os.path.exists("data/symbols.csv"):
