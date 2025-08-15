@@ -98,6 +98,12 @@ def cot_analysis(symbol: str, from_date: str | None = None, to_date: str | None 
         params["to"] = to_date
     return _get("commitment-of-traders-analysis", params)
 
+
+def price_target_news(symbol: str, page: int = 0, limit: int = 10):
+    """Return recent analyst price target news for ``symbol``."""
+    params = {"symbol": symbol, "page": page, "limit": limit}
+    return _get("price-target-news", params)
+
 def grades_news(symbol: str, page: int = 0, limit: int = 1):
     """Fetch latest analyst grade news with throttling to respect rate limits."""
     global _last_grades_news_call
