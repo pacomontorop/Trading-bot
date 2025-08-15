@@ -5,6 +5,8 @@ import os
 import time
 import requests
 import asyncio
+import math
+from dataclasses import dataclass
 from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event
@@ -77,6 +79,28 @@ RECENT_EVENT_WEIGHTS = {
 RECENT_EVENT_THRESHOLD = 1
 
 
+@dataclass
+class SignalResult:
+    active: bool
+    days: Optional[float] = None
+
+    def __bool__(self):  # pragma: no cover - simple delegator
+        return self.active
+
+
+def recency_weight(days_since_event: Optional[float], k: float = 2.0, decay: float = 0.1) -> float:
+    """Return a multiplier giving extra weight to recent events.
+
+    Events in the last two days get a fixed boost ``k``.  Older events decay
+    exponentially so they still contribute, but progressively less.
+    """
+    if days_since_event is None:
+        return 1.0
+    if days_since_event <= 2:
+        return k
+    return math.exp(-decay * (days_since_event - 2))
+
+
 async def _async_is_approved_by_quiver(symbol):
     """Asynchronous helper that fetches and evaluates Quiver signals."""
     print(f"🔎 Checking {symbol}...", flush=True)
@@ -95,6 +119,7 @@ def is_approved_by_quiver(symbol):
 
 
 def get_all_quiver_signals(symbol):
+    """Retrieve all Quiver signals along with their recency information."""
     basic_signals = get_quiver_signals(symbol)
     extended_signals = get_extended_quiver_signals(symbol)
     combined_signals = {**basic_signals, **extended_signals}
@@ -108,10 +133,22 @@ def fetch_quiver_signals(symbol):
     return get_all_quiver_signals(symbol)
 
 def score_quiver_signals(signals):
-    score = 0
-    for key, active in signals.items():
+    """Calculate final score applying recency weighting to each active signal."""
+    score = 0.0
+    for key, value in signals.items():
+        if isinstance(value, SignalResult):
+            active = value.active
+            days = value.days
+        elif isinstance(value, dict):
+            active = value.get("active", False)
+            days = value.get("days")
+        else:
+            active = bool(value)
+            days = None
         if active:
-            score += QUIVER_SIGNAL_WEIGHTS.get(key, 0)
+            weight = QUIVER_SIGNAL_WEIGHTS.get(key, 0)
+            weight *= recency_weight(days)
+            score += weight
     return score
 
 
@@ -135,8 +172,8 @@ def get_adaptive_take_profit(
     return take_profit
 
 
-# Slightly longer lookback to catch more recent activity across many endpoints
-def has_recent_quiver_event(symbol, days=5):
+# Use a short two-day lookback to ensure only very fresh events are considered
+def has_recent_quiver_event(symbol, days=2):
     """Score recent activity for ``symbol`` across multiple Quiver endpoints."""
     cutoff = datetime.utcnow() - timedelta(days=days)
     score = 0
@@ -161,11 +198,11 @@ def has_recent_quiver_event(symbol, days=5):
         score += RECENT_EVENT_WEIGHTS["lobbying"]
     if has_recent_off_exchange(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["off_exchange"]
-    if has_recent_sec13f_activity(symbol):
+    if has_recent_sec13f_activity(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["sec13f"]
-    if has_recent_sec13f_changes(symbol):
+    if has_recent_sec13f_changes(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["sec13f_changes"]
-    if has_recent_price_target_news(symbol):
+    if has_recent_price_target_news(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["price_target_news"]
     if has_recent_patent_drift(symbol, cutoff):
         score += RECENT_EVENT_WEIGHTS["patent_drift"]
@@ -181,16 +218,30 @@ def evaluate_quiver_signals(signals, symbol=""):
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
 
     # Mostrar todas las señales con su estado
+    active_signals = []
     for key, value in signals.items():
-        status = "✅" if value else "❌"
-        print(f"   {status} {key}: {value}")
+        if isinstance(value, SignalResult):
+            active = value.active
+            days = value.days
+        elif isinstance(value, dict):
+            active = value.get("active", False)
+            days = value.get("days")
+        else:
+            active = bool(value)
+            days = None
+        status = "✅" if active else "❌"
+        age = f" ({days:.1f}d)" if days is not None else ""
+        print(f"   {status} {key}: {active}{age}")
+        if active:
+            active_signals.append(key)
 
-    # Calcular el score final
-    score = sum(QUIVER_SIGNAL_WEIGHTS.get(k, 0) for k, v in signals.items() if v)
-    active_signals = [k for k, v in signals.items() if v]
+    # Calcular el score final con ponderación por recencia
+    score = score_quiver_signals(signals)
     active_signals_count = len(active_signals)
 
-    print(f"🧠 {symbol} → score: {score} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}")
+    print(
+        f"🧠 {symbol} → score: {score:.2f} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}"
+    )
 
     # High conviction signals maintained for reference
     HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
@@ -205,8 +256,8 @@ def evaluate_quiver_signals(signals, symbol=""):
         print(f"⛔ {symbol} no aprobado por señales.")
         return False
 
-    # Use a wider 14-day window to capture more recent events
-    days_window = 14
+    # Restrict evaluation to very recent activity (last 2 days)
+    days_window = 2
     if not has_recent_quiver_event(symbol, days=days_window):
         print(f"⛔ {symbol} descartado por falta de eventos recientes")
         return False
@@ -283,7 +334,7 @@ def get_quiver_signals(symbol):
         "has_gov_contract": get_gov_contract_signal(symbol),
         "positive_patent_momentum": get_patent_momentum_signal(symbol),
         "trending_wsb": get_wsb_signal(symbol),
-        "bullish_price_target": get_price_target_signal(symbol)
+        "bullish_price_target": get_price_target_signal(symbol),
     }
 
 def get_insider_signal(symbol):
@@ -292,20 +343,29 @@ def get_insider_signal(symbol):
         INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
     data = INSIDERS_DATA
     if not isinstance(data, list):
-        return False
-    
-    # Filtrar operaciones del símbolo en los últimos 7 días
-    cutoff = datetime.utcnow() - timedelta(days=7)
+        return SignalResult(False, None)
+
     entries = [d for d in data if d.get("Ticker") == symbol.upper()]
-    
-    # Contar compras y ventas recientes
-    recent_buys = sum(1 for d in entries if d["TransactionCode"] == "P" and datetime.fromisoformat(d["Date"].replace("Z", "")) > cutoff)
-    recent_sells = sum(1 for d in entries if d["TransactionCode"] == "S" and datetime.fromisoformat(d["Date"].replace("Z", "")) > cutoff)
-    
-    # Más estricto: al menos 2 compras recientes y que superen en el doble las ventas
-    if recent_buys >= 2 and recent_buys >= 2 * recent_sells:
-        return True
-    return False
+
+    recent_buys = 0
+    recent_sells = 0
+    latest_buy = None
+    for d in entries:
+        try:
+            event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+        except Exception:
+            continue
+        if d["TransactionCode"] == "P":
+            recent_buys += 1
+            if latest_buy is None or event_date > latest_buy:
+                latest_buy = event_date
+        elif d["TransactionCode"] == "S":
+            recent_sells += 1
+
+    if recent_buys >= 2 and recent_buys >= 2 * recent_sells and latest_buy:
+        days = (datetime.utcnow() - latest_buy).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
 
 
 
@@ -315,40 +375,76 @@ def get_gov_contract_signal(symbol):
         GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
     data = GOVCONTRACTS_DATA
     if not isinstance(data, list):
-        return False
-    current_year = datetime.now().year
+        return SignalResult(False, None)
+    latest = None
     for d in data:
         if d.get("Ticker") == symbol.upper():
             try:
                 amt = float(d.get("Amount", "0").replace("$", "").replace(",", ""))
-                if amt >= 100_000 and int(d.get("Year", 0)) >= current_year - 1:
-                    return True
-            except:
+            except Exception:
                 continue
-    return False
+            date_str = d.get("Date") or d.get("AnnouncementDate")
+            if not date_str:
+                continue
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if amt >= 100_000 and (latest is None or event_date > latest):
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
 
 
 def get_patent_momentum_signal(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/patentmomentum")
     if not isinstance(data, list):
-        return False
-    return any(
-        d.get("ticker") == symbol.upper() and isinstance(d.get("momentum"), (int, float)) and d["momentum"] >= 1
-        for d in data
-    )
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("ticker") == symbol.upper() and isinstance(d.get("momentum"), (int, float)) and d["momentum"] >= 1:
+            date_str = d.get("date") or d.get("Date")
+            if not date_str:
+                continue
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if latest is None or event_date > latest:
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
 
 
 def get_wsb_signal(symbol):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}")
     if not isinstance(data, list):
-        return False
-    return any(d.get("Mentions", 0) >= 10 for d in data[-5:])
+        return SignalResult(False, None)
+    latest = None
+    for d in data[-5:]:
+        date_str = d.get("Date") or d.get("date")
+        if not date_str:
+            continue
+        try:
+            event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+        except Exception:
+            continue
+        if d.get("Mentions", 0) >= 10 and (latest is None or event_date > latest):
+            latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
 
 def get_price_target_signal(symbol):
     data = price_target_news(symbol, limit=5)
     if not isinstance(data, list):
-        return False
-    cutoff = datetime.utcnow() - timedelta(days=30)
+        return SignalResult(False, None)
+    latest = None
     for item in data:
         date_str = item.get("publishedDate")
         target = item.get("priceTarget")
@@ -359,35 +455,178 @@ def get_price_target_signal(symbol):
             pub_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
         except Exception:
             continue
-        if pub_date >= cutoff and target >= posted * 1.05:
-            return True
-    return False
+        if target >= posted * 1.05 and (latest is None or pub_date > latest):
+            latest = pub_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
 
 def get_extended_quiver_signals(symbol):
     return {
-        "has_recent_sec13f_activity": has_recent_sec13f_activity(symbol),
-        "has_recent_sec13f_changes": has_recent_sec13f_changes(symbol),
-        "has_recent_house_purchase": has_recent_house_purchase(symbol),
-        "is_trending_on_twitter": is_trending_on_twitter(symbol),
-        "has_positive_app_ratings": has_positive_app_ratings(symbol)
+        "has_recent_sec13f_activity": sec13f_activity_signal(symbol),
+        "has_recent_sec13f_changes": sec13f_changes_signal(symbol),
+        "has_recent_house_purchase": house_purchase_signal(symbol),
+        "is_trending_on_twitter": twitter_trending_signal(symbol),
+        "has_positive_app_ratings": app_ratings_signal(symbol),
     }
 
-def has_recent_sec13f_activity(symbol):
+
+def sec13f_activity_signal(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
+    if not isinstance(data, list):
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            date_str = d.get("ReportDate") or d.get("Date")
+            if not date_str:
+                continue
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if latest is None or event_date > latest:
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
+
+
+def sec13f_changes_signal(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
+    if not isinstance(data, list):
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            try:
+                pct = d.get("Change_Pct")
+                date_str = d.get("ReportDate") or d.get("Date")
+                if date_str:
+                    event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                else:
+                    event_date = None
+                if isinstance(pct, (int, float)) and abs(pct) >= 5:
+                    if event_date is not None and (latest is None or event_date > latest):
+                        latest = event_date
+            except Exception:
+                continue
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
+
+
+def house_purchase_signal(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
+    if not isinstance(data, list):
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("Ticker") == symbol.upper() and d.get("Transaction") == "Purchase":
+            try:
+                event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+            except Exception:
+                continue
+            if latest is None or event_date > latest:
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
+
+
+def twitter_trending_signal(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
+    if not isinstance(data, list):
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("Ticker") != symbol.upper():
+            continue
+        date_str = d.get("Date") or d.get("date")
+        if date_str:
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                event_date = None
+        else:
+            event_date = None
+        if isinstance(d.get("Followers"), (int, float)) and d["Followers"] >= 5000:
+            if event_date and (latest is None or event_date > latest):
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
+
+
+def app_ratings_signal(symbol):
+    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
+    if not isinstance(data, list):
+        return SignalResult(False, None)
+    latest = None
+    for d in data:
+        if d.get("Ticker") != symbol.upper():
+            continue
+        date_str = d.get("Date") or d.get("date")
+        if date_str:
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                event_date = None
+        else:
+            event_date = None
+        if (
+            isinstance(d.get("Rating"), (int, float))
+            and d["Rating"] >= 4.0
+            and isinstance(d.get("Count"), (int, float))
+            and d["Count"] >= 10
+        ):
+            if event_date and (latest is None or event_date > latest):
+                latest = event_date
+    if latest:
+        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        return SignalResult(True, days)
+    return SignalResult(False, None)
+
+def has_recent_sec13f_activity(symbol, cutoff=None):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
     if not isinstance(data, list):
         return False
-    return any(d.get("Ticker") == symbol.upper() for d in data)
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=2)
+    for d in data:
+        if d.get("Ticker") == symbol.upper():
+            date_str = d.get("ReportDate") or d.get("Date")
+            if not date_str:
+                continue
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if event_date >= cutoff:
+                return True
+    return False
 
-def has_recent_sec13f_changes(symbol):
+def has_recent_sec13f_changes(symbol, cutoff=None):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
     if not isinstance(data, list):
         return False
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=2)
 
     for d in data:
         if d.get("Ticker") == symbol.upper():
             try:
                 pct = d.get("Change_Pct")
-                if isinstance(pct, (int, float)) and abs(pct) >= 5:
+                date_str = d.get("ReportDate") or d.get("Date")
+                event_date = None
+                if date_str:
+                    event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                if isinstance(pct, (int, float)) and abs(pct) >= 5 and (event_date is None or event_date >= cutoff):
                     return True
             except Exception as e:
                 print(f"⚠️ Error procesando sec13fchanges para {symbol}: {e}")
@@ -401,7 +640,7 @@ def has_recent_house_purchase(symbol, cutoff=None):
     if not isinstance(data, list):
         return False
     if cutoff is None:
-        cutoff = datetime.utcnow() - timedelta(days=30)
+        cutoff = datetime.utcnow() - timedelta(days=2)
     return any(
         d.get("Ticker") == symbol.upper()
         and d.get("Transaction") == "Purchase"
@@ -502,12 +741,15 @@ def has_recent_gov_contract(symbol, cutoff):
         return False
     for d in data:
         if d.get("Ticker") == symbol.upper():
+            date_str = d.get("Date") or d.get("AnnouncementDate")
+            if not date_str:
+                continue
             try:
-                year = int(d.get("Year", 0))
-                if year >= cutoff.year:
-                    return True
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
             except Exception:
                 continue
+            if event_date >= cutoff:
+                return True
     return False
 
 
@@ -519,13 +761,13 @@ def has_recent_gov_contract_all(symbol, cutoff):
         if d.get("Ticker") == symbol.upper():
             date_str = d.get("Date") or d.get("AnnouncementDate")
             if not date_str:
-                return True  # assume recent if no date provided
+                continue
             try:
                 event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
-                if event_date >= cutoff:
-                    return True
             except Exception:
                 continue
+            if event_date >= cutoff:
+                return True
     return False
 
 
@@ -570,7 +812,7 @@ def has_recent_price_target_news(symbol, cutoff=None):
     if not isinstance(data, list):
         return False
     if cutoff is None:
-        cutoff = datetime.utcnow() - timedelta(days=30)
+        cutoff = datetime.utcnow() - timedelta(days=2)
     for item in data:
         date_str = item.get("publishedDate")
         if not date_str:
@@ -627,33 +869,61 @@ def has_recent_patents(symbol, cutoff):
     data = safe_quiver_request(url)
     return isinstance(data, list) and len(data) > 0
 
-def is_trending_on_twitter(symbol):
+def is_trending_on_twitter(symbol, cutoff=None):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
     if not isinstance(data, list):
         return False
-    return any(
-        d.get("Ticker") == symbol.upper() and isinstance(d.get("Followers"), (int, float)) and d["Followers"] >= 5000
-        for d in data
-    )
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=2)
+    for d in data:
+        if d.get("Ticker") != symbol.upper():
+            continue
+        date_str = d.get("Date") or d.get("date")
+        if date_str:
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if event_date < cutoff:
+                continue
+        if isinstance(d.get("Followers"), (int, float)) and d["Followers"] >= 5000:
+            return True
+    return False
 
-def has_positive_app_ratings(symbol):
+def has_positive_app_ratings(symbol, cutoff=None):
     data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
     if not isinstance(data, list):
         return False
-    return any(
-        d.get("Ticker") == symbol.upper() and
-        isinstance(d.get("Rating"), (int, float)) and d["Rating"] >= 4.0 and
-        isinstance(d.get("Count"), (int, float)) and d["Count"] >= 10
-        for d in data
-    )
+    if cutoff is None:
+        cutoff = datetime.utcnow() - timedelta(days=2)
+    for d in data:
+        if d.get("Ticker") != symbol.upper():
+            continue
+        date_str = d.get("Date") or d.get("date")
+        if date_str:
+            try:
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            except Exception:
+                continue
+            if event_date < cutoff:
+                continue
+        if (
+            isinstance(d.get("Rating"), (int, float))
+            and d["Rating"] >= 4.0
+            and isinstance(d.get("Count"), (int, float))
+            and d["Count"] >= 10
+        ):
+            return True
+    return False
 
 
 # Indicadores compuestos
-def has_political_pressure(symbol):
-    return get_gov_contract_signal(symbol) or has_recent_house_purchase(symbol)
+def has_political_pressure(symbol, cutoff=None):
+    return get_gov_contract_signal(symbol).active or house_purchase_signal(symbol).active
 
-def has_social_demand(symbol):
-    return get_wsb_signal(symbol) or is_trending_on_twitter(symbol)
+
+def has_social_demand(symbol, cutoff=None):
+    return get_wsb_signal(symbol).active or twitter_trending_signal(symbol).active
 
 def initialize_quiver_caches():
     """
