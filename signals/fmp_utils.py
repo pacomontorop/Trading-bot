@@ -106,10 +106,10 @@ def grades_news(symbol: str, page: int = 0, limit: int = 1):
     if elapsed < GRADES_NEWS_MIN_INTERVAL:
         time.sleep(GRADES_NEWS_MIN_INTERVAL - elapsed)
     _last_grades_news_call = time.time()
-    params = {"symbol": symbol, "page": page, "limit": limit}
-    # The FMP endpoint for analyst grade news is `grade`, which accepts symbol,
-    # page and limit parameters just like the older `grades-news` path.
-    return _get("grade", params)
+    params = {"page": page, "limit": limit}
+    # The FMP endpoint for analyst grade news expects the symbol in the path.
+    # Using query parameters results in a 404 from the API.
+    return _get(f"grade/{symbol}", params)
 
 
 def get_fmp_grade_score(symbol: str) -> float | None:
