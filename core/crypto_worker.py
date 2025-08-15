@@ -41,10 +41,26 @@ def crypto_worker() -> None:
             time.sleep(60)
             continue
 
+        account = api.get_account()
+        # Use non-marginable buying power if available; fall back to cash
+        available_cash = float(
+            getattr(
+                account,
+                "non_marginable_buying_power",
+                getattr(account, "cash", 0),
+            )
+        )
+        if available_cash <= 0:
+            log_event("⚠️ No USD available for crypto trades")
+            time.sleep(60)
+            continue
+
         signals = get_crypto_signals()
         for symbol, score in signals:
             raw_alloc = min(
-                _calculate_allocation(score), crypto_limit.remaining()
+                _calculate_allocation(score),
+                crypto_limit.remaining(),
+                available_cash,
             )
             alloc = round(raw_alloc, 2)
             if alloc <= 0 or not crypto_limit.can_spend(alloc):
@@ -57,6 +73,7 @@ def crypto_worker() -> None:
                     type="market",
                     time_in_force="ioc",
                 )
+                available_cash -= alloc
                 with crypto_trades_lock:
                     crypto_trades.append(f"{symbol} ${alloc:.2f}")
                 log_event(f"🪙 Executed {symbol} for {alloc:.2f} USD")
