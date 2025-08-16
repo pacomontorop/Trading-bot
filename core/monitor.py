@@ -20,7 +20,9 @@ STOP_LOSS_PCT = -3
 MAX_LOSS_USD = 50
 
 
-def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
+def check_virtual_take_profit_and_stop(
+    symbol, entry_price, qty, position_side, asset_class
+):
     """Cierra la posición si alcanza un take profit virtual (+5%), stop loss (-3%) o pérdida monetaria (-50 USD)."""
     try:
         current_price = get_current_price(symbol)
@@ -63,7 +65,9 @@ def check_virtual_take_profit_and_stop(symbol, entry_price, qty, position_side):
                 qty=available_qty,
                 side=close_side,
                 type="market",
-                time_in_force=resolve_time_in_force(available_qty),
+                time_in_force=resolve_time_in_force(
+                    available_qty, asset_class=asset_class
+                ),
             )
 
             if gain_pct >= TAKE_PROFIT_PCT:
@@ -110,7 +114,11 @@ def monitor_open_positions():
 
                 if symbol in open_positions:
                     check_virtual_take_profit_and_stop(
-                        symbol, avg_entry_price, qty, getattr(p, "side", "long")
+                        symbol,
+                        avg_entry_price,
+                        qty,
+                        getattr(p, "side", "long"),
+                        getattr(p, "asset_class", "us_equity"),
                     )
 
                 positions_data.append(
@@ -177,7 +185,9 @@ def watchdog_trailing_stop():
                         qty=available_qty,
                         side=side,
                         type="trailing_stop",
-                        time_in_force=resolve_time_in_force(available_qty),
+                        time_in_force=resolve_time_in_force(
+                            available_qty, asset_class=getattr(pos, "asset_class", "us_equity")
+                        ),
                         trail_price=trail_price,
                     )
                     log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")
