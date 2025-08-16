@@ -42,7 +42,6 @@ def crypto_worker() -> None:
             continue
 
         account = api.get_account()
-        # Consider both cash and margin buying power
         cash_available = float(
             getattr(
                 account,
@@ -53,7 +52,7 @@ def crypto_worker() -> None:
         margin_available = float(getattr(account, "buying_power", 0))
         available_funds = max(cash_available, margin_available)
         if available_funds <= 0:
-            log_event("⚠️ No USD available for crypto trades")
+            log_event("⚠️ No USD buying power for crypto trades")
             time.sleep(60)
             continue
 
