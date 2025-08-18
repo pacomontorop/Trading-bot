@@ -64,15 +64,16 @@ ORDERS_HISTORY_FILE = os.path.join(
 )
 
 import csv
-import random  # <--- AÑADE ESTO
 
 def fetch_symbols_from_csv(path="data/symbols.csv"):
     try:
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
-            random.shuffle(symbols)  
-            print(f"📄 Se cargaron {len(symbols)} símbolos desde {path}")
+            symbols.sort()
+            print(
+                f"📄 Se cargaron {len(symbols)} símbolos desde {path} en orden fijo"
+            )
             return symbols
     except Exception as e:
         print(f"❌ Error leyendo CSV de símbolos desde '{path}': {e}")

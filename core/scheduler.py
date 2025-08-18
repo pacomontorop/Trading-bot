@@ -38,6 +38,7 @@ from pytz import timezone
 import os
 import pandas as pd
 import time as pytime
+import json
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
 
@@ -47,11 +48,38 @@ from utils.crypto_limit import get_crypto_limit
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
 
+PROGRESS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data",
+    "pre_market_progress.json",
+)
+
+
+def _load_scan_progress():
+    try:
+        with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        date_str = data.get("date")
+        symbols = set(data.get("symbols", []))
+        if date_str:
+            return symbols, datetime.fromisoformat(date_str).date()
+    except Exception:
+        pass
+    return set(), datetime.utcnow().date()
+
+
+def _save_scan_progress(symbols, day):
+    try:
+        os.makedirs(os.path.dirname(PROGRESS_FILE), exist_ok=True)
+        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump({"date": day.isoformat(), "symbols": sorted(symbols)}, f)
+    except Exception:
+        pass
+
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
 
-    evaluated_symbols_today = set()
-    last_reset_date = datetime.utcnow().date()
+    evaluated_symbols_today, last_reset_date = _load_scan_progress()
 
     while True:
         now_ny = get_ny_time()
@@ -68,6 +96,7 @@ def pre_market_scan():
                 evaluated_symbols_today.clear()
                 reset_daily_approvals()
                 last_reset_date = today
+                _save_scan_progress(evaluated_symbols_today, last_reset_date)
                 print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
             # Obtener señales solo una vez por ciclo
@@ -83,6 +112,7 @@ def pre_market_scan():
                     if is_position_open(symb):
                         print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
                         evaluated_symbols_today.add(symb)
+                        _save_scan_progress(evaluated_symbols_today, last_reset_date)
                         continue
 
                     with pending_opportunities_lock:
@@ -94,6 +124,7 @@ def pre_market_scan():
                         motivo = "pendiente" if already_pending else "ejecutado"
                         print(f"⏩ {symb} ya {motivo}. No se envía orden.", flush=True)
                         evaluated_symbols_today.add(symb)
+                        _save_scan_progress(evaluated_symbols_today, last_reset_date)
                         continue
 
                     amount_usd = calculate_investment_amount(score, symbol=symb)
@@ -107,6 +138,7 @@ def pre_market_scan():
                     else:
                         log_event(f"❌ Falló la orden para {symb}")
                     evaluated_symbols_today.add(symb)
+                    _save_scan_progress(evaluated_symbols_today, last_reset_date)
                     pytime.sleep(1.5)  # Pequeña espera entre órdenes
             else:
                 print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
