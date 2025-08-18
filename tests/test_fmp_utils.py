@@ -91,10 +91,12 @@ def test_key_metrics_wrapper_calls_get():
 
 
 def test_grades_news_calls_grade_endpoint():
-    """grades_news should query the `grade` endpoint with the symbol in the path."""
+    """grades_news should query the `grades-news` endpoint with symbol param."""
     with patch("signals.fmp_utils._get") as get_mock:
         fmp_utils.grades_news("AAPL", page=2, limit=3)
-    get_mock.assert_called_once_with("grade/AAPL", {"page": 2, "limit": 3})
+    get_mock.assert_called_once_with(
+        "grades-news", {"symbol": "AAPL", "page": 2, "limit": 3}
+    )
 
 
 def test_price_target_news_calls_endpoint():
