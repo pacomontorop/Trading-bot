@@ -106,39 +106,39 @@ def pre_market_scan():
             if evaluated_opportunities:
                 print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
                 for symb, score, origin in evaluated_opportunities:
-                    if symb in evaluated_symbols_today:
-                        print(f"⏩ {symb} ya evaluado hoy. Se omite.", flush=True)
-                        continue
-                    if is_position_open(symb):
-                        print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
-                        evaluated_symbols_today.add(symb)
-                        _save_scan_progress(evaluated_symbols_today, last_reset_date)
-                        continue
-
-                    with pending_opportunities_lock:
-                        already_pending = symb in pending_opportunities
                     with executed_symbols_today_lock:
                         already_executed = symb in executed_symbols_today
+                    with pending_opportunities_lock:
+                        already_pending = symb in pending_opportunities
+                    if symb in evaluated_symbols_today or already_pending or already_executed:
+                        motivo = "evaluado" if symb in evaluated_symbols_today else (
+                            "pendiente" if already_pending else "ejecutado"
+                        )
+                        print(f"⏩ {symb} ya {motivo}. Se omite.", flush=True)
+                        if symb not in evaluated_symbols_today:
+                            evaluated_symbols_today.add(symb)
+                            _save_scan_progress(evaluated_symbols_today, last_reset_date)
+                        continue
 
-                    if already_pending or already_executed:
-                        motivo = "pendiente" if already_pending else "ejecutado"
-                        print(f"⏩ {symb} ya {motivo}. No se envía orden.", flush=True)
-                        evaluated_symbols_today.add(symb)
-                        _save_scan_progress(evaluated_symbols_today, last_reset_date)
+                    evaluated_symbols_today.add(symb)
+                    _save_scan_progress(evaluated_symbols_today, last_reset_date)
+
+                    if is_position_open(symb):
+                        print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
                         continue
 
                     amount_usd = calculate_investment_amount(score, symbol=symb)
                     log_event(f"🟡 Ejecutando orden para {symb}")
                     log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
-                    success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
                     with pending_opportunities_lock:
                         pending_opportunities.add(symb)
-                    if success:
-                        log_event(f"✅ Orden enviada para {symb}")
-                    else:
+                    success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
+                    if not success:
+                        with pending_opportunities_lock:
+                            pending_opportunities.discard(symb)
                         log_event(f"❌ Falló la orden para {symb}")
-                    evaluated_symbols_today.add(symb)
-                    _save_scan_progress(evaluated_symbols_today, last_reset_date)
+                    else:
+                        log_event(f"✅ Orden enviada para {symb}")
                     pytime.sleep(1.5)  # Pequeña espera entre órdenes
             else:
                 print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
