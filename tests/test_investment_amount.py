@@ -5,6 +5,7 @@ os.environ.setdefault("APCA_API_SECRET_KEY", "test")
 os.environ.setdefault("APCA_API_BASE_URL", "https://paper-api.alpaca.markets")
 
 from core import executor
+from datetime import timedelta
 
 class DummyAccount:
     def __init__(self, equity):
@@ -12,9 +13,17 @@ class DummyAccount:
 
 
 def test_calculate_investment_amount_limits(monkeypatch):
-    # Patch API to return fixed equity
-    monkeypatch.setattr(executor.api, "get_account", lambda: DummyAccount(10000))
+    # Patch API to return fixed equity, creating attribute if needed
+    from types import SimpleNamespace
+    monkeypatch.setattr(
+        executor,
+        "api",
+        SimpleNamespace(get_account=lambda: DummyAccount(10000)),
+        raising=False,
+    )
 
+    # Reset daily investment regardless of current date
+    executor._last_investment_day -= timedelta(days=1)
     executor.reset_daily_investment()
     amount = executor.calculate_investment_amount(19)
     # Máximo 10% del equity

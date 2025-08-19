@@ -31,6 +31,12 @@ def test_adaptive_trail_price_window(monkeypatch):
         "Low": [8, 9, 9],
         "Close": [9, 10, 11],
     })
-    monkeypatch.setattr(executor.yf, "download", lambda *args, **kwargs: data)
+    from types import SimpleNamespace
+    monkeypatch.setattr(
+        executor,
+        "yf",
+        SimpleNamespace(download=lambda *args, **kwargs: data),
+        raising=False,
+    )
     price = executor.get_adaptive_trail_price("TST", window=2)
     assert price == 0.55
