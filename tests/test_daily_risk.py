@@ -64,8 +64,26 @@ def test_pnl_breakdown(monkeypatch, tmp_path):
         writer.writerow([today, "CCC", "0"])
 
     wins, losses, total = daily_risk.get_today_pnl_breakdown()
-    assert wins == 2
+    assert wins == 1
     assert losses == 1
+    assert total == 5
+
+
+def test_pnl_details(monkeypatch, tmp_path):
+    log_file = tmp_path / "daily_pnl_log.csv"
+    monkeypatch.setattr(daily_risk, "PNL_LOG_FILE", log_file)
+
+    today = datetime.utcnow().date().isoformat()
+    with open(log_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["date", "symbol", "pnl_usd"])
+        writer.writerow([today, "AAA", "10"])
+        writer.writerow([today, "BBB", "-5"])
+        writer.writerow([today, "CCC", "0"])
+
+    wins, losses, total = daily_risk.get_today_pnl_details()
+    assert wins == ["AAA"]
+    assert losses == ["BBB"]
     assert total == 5
 
 

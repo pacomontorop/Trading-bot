@@ -29,7 +29,7 @@ from utils.generate_symbols_csv import generate_symbols_csv
 from core.grade_news import scan_grade_changes
 from signals.filters import is_position_open, get_cached_positions
 
-from utils.daily_risk import get_today_pnl_breakdown
+from utils.daily_risk import get_today_pnl_details
 
 
 import threading
@@ -44,6 +44,9 @@ from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
 
 from core.crypto_worker import crypto_trades, crypto_trades_lock, crypto_worker
 from utils.crypto_limit import get_crypto_limit
+
+summary_lock = threading.Lock()
+_last_summary_date = None
 
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
@@ -152,6 +155,7 @@ def pre_market_scan():
 
 
 def daily_summary():
+    global _last_summary_date
     print("🌀 daily_summary iniciado.", flush=True)
     while True:
         # Utilizar hora de Nueva York para sincronizar con el cierre del mercado
@@ -164,6 +168,12 @@ def daily_summary():
 
         # Enviar el resumen diario al cierre regular del mercado (16:00 NY)
         if now.hour == 16:
+            with summary_lock:
+                if _last_summary_date == now.date():
+                    pytime.sleep(60)
+                    continue
+                _last_summary_date = now.date()
+
             subject = "📈 Resumen diario de trading"
             limit = get_crypto_limit()
 
@@ -238,10 +248,14 @@ def daily_summary():
                 body += f"\n\n❌ Error obteniendo PnL: {e}"
 
             # PnL realizado del día
-            wins, losses, realized_total = get_today_pnl_breakdown()
+            win_syms, loss_syms, realized_total = get_today_pnl_details()
             body += f"\n💵 PnL realizado: {realized_total:.2f} USD"
-            body += f"\n🏆 Operaciones ganadoras: {wins}"
-            body += f"\n💔 Operaciones perdedoras: {losses}"
+            body += f"\n🏆 Operaciones ganadoras: {len(win_syms)}"
+            if win_syms:
+                body += f" ({', '.join(win_syms)})"
+            body += f"\n💔 Operaciones perdedoras: {len(loss_syms)}"
+            if loss_syms:
+                body += f" ({', '.join(loss_syms)})"
             body += (
                 f"\n🪙 Capital cripto usado hoy: {limit.spent:.2f} USD de "
                 f"{limit.max_notional:.2f} USD"
