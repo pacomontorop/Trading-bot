@@ -30,6 +30,7 @@ from core.grade_news import scan_grade_changes
 from signals.filters import is_position_open, get_cached_positions
 
 from utils.daily_risk import get_today_pnl_details
+from utils.daily_set import DailySet
 
 
 import threading
@@ -38,7 +39,6 @@ from pytz import timezone
 import os
 import pandas as pd
 import time as pytime
-import json
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
 
@@ -57,32 +57,10 @@ PROGRESS_FILE = os.path.join(
     "pre_market_progress.json",
 )
 
-
-def _load_scan_progress():
-    try:
-        with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        date_str = data.get("date")
-        symbols = set(data.get("symbols", []))
-        if date_str:
-            return symbols, datetime.fromisoformat(date_str).date()
-    except Exception:
-        pass
-    return set(), datetime.utcnow().date()
-
-
-def _save_scan_progress(symbols, day):
-    try:
-        os.makedirs(os.path.dirname(PROGRESS_FILE), exist_ok=True)
-        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
-            json.dump({"date": day.isoformat(), "symbols": sorted(symbols)}, f)
-    except Exception:
-        pass
-
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
 
-    evaluated_symbols_today, last_reset_date = _load_scan_progress()
+    evaluated_symbols_today = DailySet(PROGRESS_FILE)
 
     while True:
         now_ny = get_ny_time()
@@ -94,12 +72,8 @@ def pre_market_scan():
 
         if market_open:
             # Reinicia lista si es un nuevo día
-            today = now_ny.date()
-            if today != last_reset_date:
-                evaluated_symbols_today.clear()
+            if evaluated_symbols_today.reset_if_new_day():
                 reset_daily_approvals()
-                last_reset_date = today
-                _save_scan_progress(evaluated_symbols_today, last_reset_date)
                 print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
             # Obtener señales solo una vez por ciclo
@@ -109,22 +83,22 @@ def pre_market_scan():
             if evaluated_opportunities:
                 print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
                 for symb, score, origin in evaluated_opportunities:
+                    already_evaluated = symb in evaluated_symbols_today
                     with executed_symbols_today_lock:
                         already_executed = symb in executed_symbols_today
                     with pending_opportunities_lock:
                         already_pending = symb in pending_opportunities
-                    if symb in evaluated_symbols_today or already_pending or already_executed:
-                        motivo = "evaluado" if symb in evaluated_symbols_today else (
-                            "pendiente" if already_pending else "ejecutado"
+                    if already_evaluated or already_pending or already_executed:
+                        motivo = (
+                            "evaluado" if already_evaluated else (
+                                "pendiente" if already_pending else "ejecutado"
+                            )
                         )
                         print(f"⏩ {symb} ya {motivo}. Se omite.", flush=True)
-                        if symb not in evaluated_symbols_today:
-                            evaluated_symbols_today.add(symb)
-                            _save_scan_progress(evaluated_symbols_today, last_reset_date)
+                        evaluated_symbols_today.add(symb)
                         continue
 
                     evaluated_symbols_today.add(symb)
-                    _save_scan_progress(evaluated_symbols_today, last_reset_date)
 
                     if is_position_open(symb):
                         print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
