@@ -228,15 +228,18 @@ async def _get_top_signals_async(verbose=False):
     aggregator = WeightedSignalAggregator({"base":1, "grade":float(os.getenv("FMP_GRADE_WEIGHT", 5))})
 
     async def apply_grade_bonus(symbol, base_score):
-        """Combina el score base con la calificación FMP mediante ponderación."""
-        threshold = float(os.getenv("FMP_GRADE_THRESHOLD", 0))
+        """Combina el score base con la calificación FMP mediante ponderación.
+
+        Si la calificación de FMP no está disponible, se continúa con el score
+        base sin descartar el símbolo.
+        """
         grade_score = await asyncio.to_thread(get_fmp_grade_score, symbol)
-        if grade_score is None or grade_score < threshold:
+        if grade_score is None:
             print(
-                f"⛔ {symbol} descartado por calificación FMP (score={grade_score})",
+                f"⚠️ {symbol} sin calificación FMP, usando score base",
                 flush=True,
             )
-            return None
+            return base_score
         return aggregator.combine({"base": base_score, "grade": grade_score})
 
     async def evaluate_symbol(symbol):
