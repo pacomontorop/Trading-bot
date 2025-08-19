@@ -78,10 +78,43 @@ def get_today_pnl_breakdown() -> tuple[int, int, float]:
             except ValueError:
                 continue
             total += pnl
-            if pnl >= 0:
+            if pnl > 0:
                 wins += 1
-            else:
+            elif pnl < 0:
                 losses += 1
+    return wins, losses, total
+
+
+def get_today_pnl_details() -> tuple[list[str], list[str], float]:
+    """Return today's realized PnL with winning and losing symbols.
+
+    Returns
+    -------
+    tuple[list[str], list[str], float]
+        A tuple ``(winning_symbols, losing_symbols, total_pnl)`` for the current UTC date.
+    """
+    if not PNL_LOG_FILE.exists():
+        return [], [], 0.0
+
+    today_str = datetime.utcnow().date().isoformat()
+    wins: list[str] = []
+    losses: list[str] = []
+    total = 0.0
+    with open(PNL_LOG_FILE, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("date") != today_str:
+                continue
+            try:
+                pnl = float(row.get("pnl_usd", 0))
+            except ValueError:
+                continue
+            total += pnl
+            symbol = row.get("symbol", "")
+            if pnl > 0:
+                wins.append(symbol)
+            elif pnl < 0:
+                losses.append(symbol)
     return wins, losses, total
 
 
