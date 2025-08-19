@@ -21,16 +21,25 @@ MAX_LOSS_USD = 50
 
 
 def check_virtual_take_profit_and_stop(
-    symbol, entry_price, qty, position_side, asset_class
+    symbol, entry_price, qty, qty_available, position_side, asset_class
 ):
-    """Cierra la posición si alcanza un take profit virtual (+5%), stop loss (-3%) o pérdida monetaria (-50 USD)."""
+    """Cierra la posición si alcanza un take profit virtual (+5%), stop loss (-3%) o pérdida monetaria (-50 USD).
+
+    Usa ``qty_available`` para evitar intentar cerrar más cantidad de la disponible cuando
+    ya existen órdenes abiertas (por ejemplo un trailing stop)."""
     try:
         current_price = get_current_price(symbol)
-        if current_price is None or entry_price is None or qty is None:
+        if (
+            current_price is None
+            or entry_price is None
+            or qty is None
+            or qty_available is None
+        ):
             return
 
         qty = abs(float(qty))
-        if qty <= 0:
+        qty_available = abs(float(qty_available))
+        if qty <= 0 or qty_available <= 0:
             return
 
         if position_side.lower() == "long":
@@ -53,7 +62,7 @@ def check_virtual_take_profit_and_stop(
                 for o in open_orders
                 if o.symbol == symbol and o.side == close_side
             )
-            available_qty = qty - reserved_qty
+            available_qty = min(qty_available, qty - reserved_qty)
             if available_qty <= 0:
                 log_event(
                     f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
@@ -108,6 +117,7 @@ def monitor_open_positions():
             for p in positions:
                 symbol = p.symbol
                 qty = float(p.qty)
+                qty_available = float(getattr(p, "qty_available", p.qty))
                 avg_entry_price = float(p.avg_entry_price)
                 current_price = float(p.current_price)
                 change_percent = (current_price - avg_entry_price) / avg_entry_price * 100
@@ -117,6 +127,7 @@ def monitor_open_positions():
                         symbol,
                         avg_entry_price,
                         qty,
+                        qty_available,
                         getattr(p, "side", "long"),
                         getattr(p, "asset_class", "us_equity"),
                     )
@@ -163,7 +174,8 @@ def watchdog_trailing_stop():
                 order = trailing_orders.get((symbol, side))
 
                 qty = float(pos.qty)
-                if qty <= 0:
+                qty_available = float(getattr(pos, "qty_available", pos.qty))
+                if qty <= 0 or qty_available <= 0:
                     continue
 
                 if order is None:
@@ -172,7 +184,7 @@ def watchdog_trailing_stop():
                         for o in open_orders
                         if o.symbol == symbol and o.side == side
                     )
-                    available_qty = qty - reserved_qty
+                    available_qty = min(qty_available, qty - reserved_qty)
                     if available_qty <= 0:
                         log_event(
                             f"⚠️ Cantidad no disponible para {symbol}, reservada: {reserved_qty}"
