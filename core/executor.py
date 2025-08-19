@@ -27,6 +27,7 @@ import gc
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 INVEST_STATE_FILE = os.path.join(DATA_DIR, "investment_state.json")
+EXECUTED_STATE_FILE = os.path.join(DATA_DIR, "executed_symbols.json")
 
 # Control de estado
 from utils.state import StateManager
@@ -83,6 +84,38 @@ def _save_investment_state():
         pass
 
 
+def _load_executed_symbols():
+    """Load executed symbols from disk; reset if file is for previous day."""
+    try:
+        with open(EXECUTED_STATE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        day = datetime.strptime(data.get("date", ""), "%Y-%m-%d").date()
+        symbols = set(data.get("symbols", []))
+        if day == datetime.utcnow().date():
+            return symbols
+    except Exception:
+        pass
+    return set()
+
+
+def _save_executed_symbols():
+    """Persist executed symbols for the current day."""
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(EXECUTED_STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "date": datetime.utcnow().date().isoformat(),
+                    "symbols": sorted(executed_symbols_today),
+                },
+                f,
+            )
+    except Exception:
+        pass
+
+
+executed_symbols_today = _load_executed_symbols()
+
 _last_investment_day, _total_invested_today, _realized_pnl_today = _load_investment_state()
 _last_equity_snapshot = None
 
@@ -129,6 +162,7 @@ def reset_daily_investment():
         _last_investment_day = today
         with executed_symbols_today_lock:
             executed_symbols_today.clear()
+            _save_executed_symbols()
         # Clear intraday caches to avoid unbounded growth
         quiver_signals_log.clear()
         gc.collect()
@@ -507,6 +541,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         add_to_invested(amount_usd)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
+            _save_executed_symbols()
         with pending_trades_lock:
             pending_trades.add(f"{symbol}: {qty:.6f} unidades — ${amount_usd:.2f}")
 
@@ -603,6 +638,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
         add_to_invested(amount_usd)
         with executed_symbols_today_lock:
             executed_symbols_today.add(symbol)
+            _save_executed_symbols()
         with pending_trades_lock:
             pending_trades.add(f"{symbol} SHORT: {qty:.6f} unidades — ${amount_usd:.2f}")
 
