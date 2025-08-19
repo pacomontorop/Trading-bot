@@ -8,6 +8,9 @@ from signals.quiver_throttler import throttled_request
 
 BASE_URL = "https://financialmodelingprep.com/stable"
 
+# Default timeout (seconds) for FMP HTTP requests. Increase if API is slow.
+REQUEST_TIMEOUT = float(os.getenv("FMP_TIMEOUT", 30))
+
 # Minimum seconds between grade-news requests to avoid hitting FMP limits.
 GRADES_NEWS_MIN_INTERVAL = float(os.getenv("FMP_GRADES_NEWS_DELAY", 15))
 GRADES_CACHE_TTL = float(os.getenv("FMP_GRADES_CACHE_TTL", 86400))
@@ -37,7 +40,10 @@ def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
     for attempt in range(max_retries):
         try:
             resp = throttled_request(
-                requests.get, f"{BASE_URL}/{endpoint}", params=params, timeout=10
+                requests.get,
+                f"{BASE_URL}/{endpoint}",
+                params=params,
+                timeout=REQUEST_TIMEOUT,
             )
             if resp.status_code == 429:
                 wait = 2 ** attempt
