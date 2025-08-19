@@ -19,6 +19,7 @@ from utils.daily_risk import (
 )
 from utils.order_tracker import record_trade_result
 from utils.orders import resolve_time_in_force
+from utils.daily_set import DailySet
 import os
 import csv
 import json
@@ -39,13 +40,14 @@ open_positions = state_manager.load_open_positions()
 update_positions_metric(len(open_positions))
 pending_opportunities = set()
 pending_trades = set()
-executed_symbols_today = set()
 
-# Locks for thread-safe access to the above sets
+executed_symbols_today = DailySet(EXECUTED_STATE_FILE)
+executed_symbols_today_lock = executed_symbols_today.lock
+
+# Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
 pending_opportunities_lock = threading.Lock()
 pending_trades_lock = threading.Lock()
-executed_symbols_today_lock = threading.Lock()
 DAILY_INVESTMENT_LIMIT_PCT = 0.50
 MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
@@ -83,38 +85,6 @@ def _save_investment_state():
     except Exception:
         pass
 
-
-def _load_executed_symbols():
-    """Load executed symbols from disk; reset if file is for previous day."""
-    try:
-        with open(EXECUTED_STATE_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        day = datetime.strptime(data.get("date", ""), "%Y-%m-%d").date()
-        symbols = set(data.get("symbols", []))
-        if day == datetime.utcnow().date():
-            return symbols
-    except Exception:
-        pass
-    return set()
-
-
-def _save_executed_symbols():
-    """Persist executed symbols for the current day."""
-    try:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        with open(EXECUTED_STATE_FILE, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "date": datetime.utcnow().date().isoformat(),
-                    "symbols": sorted(executed_symbols_today),
-                },
-                f,
-            )
-    except Exception:
-        pass
-
-
-executed_symbols_today = _load_executed_symbols()
 
 _last_investment_day, _total_invested_today, _realized_pnl_today = _load_investment_state()
 _last_equity_snapshot = None
@@ -154,15 +124,13 @@ def update_risk_limits():
 
 
 def reset_daily_investment():
-    global _total_invested_today, _last_investment_day, executed_symbols_today, _realized_pnl_today
+    global _total_invested_today, _last_investment_day, _realized_pnl_today
     today = datetime.utcnow().date()
     if today != _last_investment_day:
         _total_invested_today = 0.0
         _realized_pnl_today = 0.0
         _last_investment_day = today
-        with executed_symbols_today_lock:
-            executed_symbols_today.clear()
-            _save_executed_symbols()
+        executed_symbols_today.clear()
         # Clear intraday caches to avoid unbounded growth
         quiver_signals_log.clear()
         gc.collect()
@@ -539,9 +507,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
 
         register_open_position(symbol)
         add_to_invested(amount_usd)
-        with executed_symbols_today_lock:
-            executed_symbols_today.add(symbol)
-            _save_executed_symbols()
+        executed_symbols_today.add(symbol)
         with pending_trades_lock:
             pending_trades.add(f"{symbol}: {qty:.6f} unidades — ${amount_usd:.2f}")
 
@@ -636,9 +602,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
 
         register_open_position(symbol)
         add_to_invested(amount_usd)
-        with executed_symbols_today_lock:
-            executed_symbols_today.add(symbol)
-            _save_executed_symbols()
+        executed_symbols_today.add(symbol)
         with pending_trades_lock:
             pending_trades.add(f"{symbol} SHORT: {qty:.6f} unidades — ${amount_usd:.2f}")
 
@@ -661,10 +625,9 @@ def short_scan():
                     flush=True,
                 )
             for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
-                with executed_symbols_today_lock:
-                    if symbol in executed_symbols_today:
-                        print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
-                        continue
+                if symbol in executed_symbols_today:
+                    print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
+                    continue
                 try:
                     asset = api.get_asset(symbol)
                     if getattr(asset, "shortable", False):
