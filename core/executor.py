@@ -227,6 +227,31 @@ def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=
         log_event(f"❌ Error actualizando trailing stop para {symbol}: {e}")
         return False
 
+
+def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None):
+    """Actualiza una orden stop o stop-limit existente."""
+    try:
+        if order_id is None:
+            orders = api.list_orders(status="open")
+            for o in orders:
+                if o.symbol == symbol and getattr(o, "type", "") in ("stop", "stop_limit"):
+                    order_id = o.id
+                    break
+        if not order_id:
+            return False
+
+        params = {}
+        if stop_price is not None:
+            params["stop_price"] = stop_price
+        if limit_price is not None:
+            params["limit_price"] = limit_price
+        api.replace_order(order_id, **params)
+        log_event(f"🔁 Stop actualizado para {symbol}")
+        return True
+    except Exception as e:
+        log_event(f"❌ Error actualizando stop para {symbol}: {e}")
+        return False
+
 def wait_for_order_fill(order_id, symbol, timeout=60):
     print(f"⌛ Empezando espera para orden {order_id} de {symbol}", flush=True)
     start = time.time()

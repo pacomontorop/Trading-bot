@@ -12,6 +12,7 @@ from core.executor import (
     state_manager,
     entry_data,
     update_trailing_stop,
+    update_stop_order,
 )
 from utils.monitoring import update_positions_metric
 
@@ -171,15 +172,24 @@ def watchdog_trailing_stop():
                 for o in open_orders
                 if getattr(o, "type", "") == "trailing_stop"
             }
+            stop_orders = {
+                (o.symbol, o.side): o
+                for o in open_orders
+                if getattr(o, "type", "") in ("stop", "stop_limit")
+            }
 
             for symbol, pos in pos_map.items():
                 side = "sell" if pos.side.lower() == "long" else "buy"
-                order = trailing_orders.get((symbol, side))
-
                 qty = float(pos.qty)
                 qty_available = float(getattr(pos, "qty_available", pos.qty))
                 if qty <= 0 or qty_available <= 0:
                     continue
+                is_fractional = abs(qty - round(qty)) > 1e-6
+                order = (
+                    stop_orders.get((symbol, side))
+                    if is_fractional
+                    else trailing_orders.get((symbol, side))
+                )
 
                 if order is None:
                     reserved_qty = sum(
@@ -195,38 +205,99 @@ def watchdog_trailing_stop():
                         continue
 
                     trail_price = get_adaptive_trail_price(symbol)
-                    api.submit_order(
-                        symbol=symbol,
-                        qty=available_qty,
-                        side=side,
-                        type="trailing_stop",
-                        time_in_force=resolve_time_in_force(
-                            available_qty, asset_class=getattr(pos, "asset_class", "us_equity")
-                        ),
-                        trail_price=trail_price,
-                    )
-                    log_event(f"🚨 Trailing stop de emergencia colocado para {symbol}")
+                    current_price = get_current_price(symbol)
+                    if current_price is None:
+                        continue
+
+                    if is_fractional:
+                        stop_price = (
+                            current_price - trail_price
+                            if side == "sell"
+                            else current_price + trail_price
+                        )
+                        api.submit_order(
+                            symbol=symbol,
+                            qty=available_qty,
+                            side=side,
+                            type="stop",
+                            time_in_force=resolve_time_in_force(
+                                available_qty,
+                                asset_class=getattr(pos, "asset_class", "us_equity"),
+                            ),
+                            stop_price=stop_price,
+                        )
+                        log_event(
+                            f"🚨 Stop dinámico inicial colocado para {symbol}"
+                        )
+                    else:
+                        api.submit_order(
+                            symbol=symbol,
+                            qty=available_qty,
+                            side=side,
+                            type="trailing_stop",
+                            time_in_force=resolve_time_in_force(
+                                available_qty,
+                                asset_class=getattr(pos, "asset_class", "us_equity"),
+                            ),
+                            trail_price=trail_price,
+                        )
+                        log_event(
+                            f"🚨 Trailing stop de emergencia colocado para {symbol}"
+                        )
                     continue
 
-                # Actualizar trailing stop existente con valor dinámico
-                new_trail = get_adaptive_trail_price(symbol)
-                current_trail = float(getattr(order, "trail_price", new_trail))
-                if abs(new_trail - current_trail) > 0.01:
-                    update_trailing_stop(symbol, order_id=order.id, trail_price=new_trail)
-
-                # Mover a break-even si corresponde
-                entry_price, _, _ = entry_data.get(symbol, (None, None, None))
-                stop_price = float(getattr(order, "stop_price", 0))
                 current_price = get_current_price(symbol)
-                if (
-                    entry_price
-                    and current_price
-                    and current_price > entry_price
-                    and stop_price < entry_price
-                ):
-                    hwm = float(getattr(order, "hwm", current_price))
-                    be_trail = max(hwm - entry_price, 0.01)
-                    update_trailing_stop(symbol, order_id=order.id, trail_price=be_trail)
+                if current_price is None:
+                    continue
+
+                trail = get_adaptive_trail_price(symbol)
+                if is_fractional:
+                    new_stop = (
+                        current_price - trail if side == "sell" else current_price + trail
+                    )
+                    current_stop = float(getattr(order, "stop_price", new_stop))
+                    if (
+                        (side == "sell" and new_stop > current_stop + 0.01)
+                        or (side == "buy" and new_stop < current_stop - 0.01)
+                    ):
+                        update_stop_order(symbol, order_id=order.id, stop_price=new_stop)
+                    entry_price, _, _ = entry_data.get(symbol, (None, None, None))
+                    if entry_price:
+                        if (
+                            side == "sell"
+                            and current_price > entry_price
+                            and current_stop < entry_price
+                        ):
+                            update_stop_order(
+                                symbol, order_id=order.id, stop_price=entry_price
+                            )
+                        elif (
+                            side == "buy"
+                            and current_price < entry_price
+                            and current_stop > entry_price
+                        ):
+                            update_stop_order(
+                                symbol, order_id=order.id, stop_price=entry_price
+                            )
+                else:
+                    new_trail = trail
+                    current_trail = float(getattr(order, "trail_price", new_trail))
+                    if abs(new_trail - current_trail) > 0.01:
+                        update_trailing_stop(
+                            symbol, order_id=order.id, trail_price=new_trail
+                        )
+                    entry_price, _, _ = entry_data.get(symbol, (None, None, None))
+                    stop_price = float(getattr(order, "stop_price", 0))
+                    if (
+                        entry_price
+                        and current_price > entry_price
+                        and stop_price < entry_price
+                    ):
+                        hwm = float(getattr(order, "hwm", current_price))
+                        be_trail = max(hwm - entry_price, 0.01)
+                        update_trailing_stop(
+                            symbol, order_id=order.id, trail_price=be_trail
+                        )
 
         except Exception as e:
             log_event(f"❌ Error en watchdog_trailing_stop: {e}")
