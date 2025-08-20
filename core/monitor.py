@@ -1,5 +1,6 @@
 #monitor.py
 
+import os
 import time
 from broker.alpaca import api, get_current_price
 from utils.logger import log_event
@@ -15,9 +16,11 @@ from core.executor import (
 from utils.monitoring import update_positions_metric
 
 
-TAKE_PROFIT_PCT = 5
-STOP_LOSS_PCT = -3
-MAX_LOSS_USD = 50
+TAKE_PROFIT_PCT = float(os.getenv("TAKE_PROFIT_PCT", "5"))
+STOP_LOSS_PCT = float(os.getenv("STOP_LOSS_PCT", "-3"))
+MAX_LOSS_USD = float(os.getenv("MAX_LOSS_USD", "50"))
+MONITOR_INTERVAL = int(os.getenv("MONITOR_INTERVAL", "60"))
+TRAILING_WATCHDOG_INTERVAL = int(os.getenv("TRAILING_WATCHDOG_INTERVAL", "120"))
 
 
 def check_virtual_take_profit_and_stop(
@@ -110,7 +113,7 @@ def monitor_open_positions():
 
             if not positions:
                 print("⚠️ No hay posiciones abiertas actualmente.")
-                time.sleep(900)
+                time.sleep(MONITOR_INTERVAL)
                 continue
 
             positions_data = []
@@ -151,11 +154,11 @@ def monitor_open_positions():
             print(f"❌ Error monitorizando posiciones: {e}")
             log_event(f"❌ Error monitorizando posiciones: {e}")
 
-        time.sleep(900)
+        time.sleep(MONITOR_INTERVAL)
 
 
 def watchdog_trailing_stop():
-    """Reinstala trailing stops perdidos cada 10 minutos."""
+    """Reinstala trailing stops perdidos periódicamente."""
     print("🟢 Watchdog trailing stop iniciado.")
     while True:
         try:
@@ -228,4 +231,4 @@ def watchdog_trailing_stop():
         except Exception as e:
             log_event(f"❌ Error en watchdog_trailing_stop: {e}")
 
-        time.sleep(600)
+        time.sleep(TRAILING_WATCHDOG_INTERVAL)
