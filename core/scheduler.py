@@ -78,7 +78,17 @@ def pre_market_scan():
 
             # Obtener señales solo una vez por ciclo
             get_cached_positions(refresh=True)
-            evaluated_opportunities = get_top_signals(verbose=True)
+
+            # Construir conjunto de exclusión para evitar reevaluaciones
+            exclude_symbols = set(evaluated_symbols_today)
+            with pending_opportunities_lock:
+                exclude_symbols.update(pending_opportunities)
+            with executed_symbols_today_lock:
+                exclude_symbols.update(executed_symbols_today)
+
+            evaluated_opportunities = get_top_signals(
+                verbose=True, exclude=exclude_symbols
+            )
 
             if evaluated_opportunities:
                 print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)

@@ -215,15 +215,30 @@ def _save_evaluated_symbols():
 
 _load_evaluated_symbols()
 
-def get_top_signals(verbose=False):
+
+def get_top_signals(verbose=False, exclude=None):
+    """Return up to five top trading opportunities.
+
+    Parameters
+    ----------
+    verbose : bool, optional
+        If ``True`` debug information is printed.
+    exclude : Iterable[str], optional
+        Symbols that should be ignored for this scan. Useful to avoid
+        re-evaluating tickers that are already pending or have been
+        executed earlier in the day.
+    """
+
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
-    return run_in_quiver_loop(_get_top_signals_async(verbose))
+    return run_in_quiver_loop(_get_top_signals_async(verbose, exclude))
 
 
-async def _get_top_signals_async(verbose=False):
+async def _get_top_signals_async(verbose=False, exclude=None):
     global evaluated_symbols_today, last_reset_date, quiver_semaphore
     if quiver_semaphore is None:
         quiver_semaphore = asyncio.Semaphore(3)
+
+    exclude = set(exclude or [])
 
     aggregator = WeightedSignalAggregator({"base":1, "grade":float(os.getenv("FMP_GRADE_WEIGHT", 5))})
 
@@ -298,8 +313,11 @@ async def _get_top_signals_async(verbose=False):
         get_cached_positions(refresh=True)
 
         symbols_to_evaluate = [
-            s for s in stock_assets
-            if s not in evaluated_symbols_today and not is_position_open(s)
+            s
+            for s in stock_assets
+            if s not in evaluated_symbols_today
+            and s not in exclude
+            and not is_position_open(s)
         ]
 
         filtered_symbols = []
