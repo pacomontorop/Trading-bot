@@ -19,6 +19,19 @@ Alpaca requests are made using a basic retry policy defined in
 to three times with an exponential backoff of three seconds. You can modify the
 `Retry` settings in that module if a different strategy is required.
 
+## Risk Management
+
+The bot applies several layers of protection to limit losses:
+
+* **Daily risk limit** – set `DAILY_RISK_LIMIT` to a negative dollar amount. The
+  limit now considers both realized and unrealized PnL from open positions.
+* **Virtual stops** – percentage and monetary thresholds can be customised via
+  `TAKE_PROFIT_PCT`, `STOP_LOSS_PCT` and `MAX_LOSS_USD` environment variables
+  (defaults: `5`, `-3` and `50`).
+* **Monitoring frequency** – the position monitor and trailing-stop watchdog
+  run more frequently; use `MONITOR_INTERVAL` and `TRAILING_WATCHDOG_INTERVAL`
+  (seconds) to adjust the cadence.
+
 ## Examples
 
 The `examples` folder contains small scripts illustrating how to use

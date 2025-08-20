@@ -199,7 +199,31 @@ def is_equity_drop_exceeded(threshold_pct: float = 5.0) -> bool:
     drop_pct = (prev_equity - current_equity) / prev_equity * 100
     return drop_pct > threshold_pct
 
-def is_risk_limit_exceeded() -> bool:
+def get_open_positions_unrealized_pnl() -> float:
+    """Return total unrealized PnL of all open positions."""
+    global api
+    if api is None:
+        try:
+            from broker.alpaca import api as live_api
+            api = live_api
+        except Exception:  # pragma: no cover - environment without API
+            return 0.0
+
+    try:
+        positions = api.list_positions()
+    except Exception:  # pragma: no cover - API failure
+        return 0.0
+
+    total = 0.0
+    for p in positions:
+        try:
+            total += float(getattr(p, "unrealized_pl", 0))
+        except Exception:
+            continue
+    return total
+
+
+def is_risk_limit_exceeded(include_unrealized: bool = True) -> bool:
     """Check if the daily risk limit has been exceeded."""
     limit_str = os.getenv("DAILY_RISK_LIMIT")
     if not limit_str:
@@ -210,7 +234,11 @@ def is_risk_limit_exceeded() -> bool:
         return False
     if limit >= 0:
         return False
-    return get_today_pnl() <= limit
+
+    total_pnl = get_today_pnl()
+    if include_unrealized:
+        total_pnl += get_open_positions_unrealized_pnl()
+    return total_pnl <= limit
 
 
 def _get_equity_series(window: int | None = None) -> list[float]:

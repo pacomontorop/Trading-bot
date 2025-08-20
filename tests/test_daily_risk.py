@@ -18,6 +18,20 @@ def test_register_and_limit(monkeypatch, tmp_path):
     assert daily_risk.is_risk_limit_exceeded()
 
 
+def test_risk_limit_considers_unrealized(monkeypatch, tmp_path):
+    log_file = tmp_path / "daily_pnl_log.csv"
+    monkeypatch.setattr(daily_risk, "PNL_LOG_FILE", log_file)
+    monkeypatch.setenv("DAILY_RISK_LIMIT", "-100")
+
+    daily_risk.register_trade_pnl("TEST", -30)
+
+    # Mock unrealized losses so total PnL breaches the limit
+    monkeypatch.setattr(
+        daily_risk, "get_open_positions_unrealized_pnl", lambda: -80
+    )
+    assert daily_risk.is_risk_limit_exceeded()
+
+
 def test_equity_snapshot_and_drop(monkeypatch, tmp_path):
     log_file = tmp_path / "equity_log.csv"
     monkeypatch.setattr(daily_risk, "EQUITY_LOG_FILE", log_file)
