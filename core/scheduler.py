@@ -63,77 +63,72 @@ def pre_market_scan():
     evaluated_symbols_today = DailySet(PROGRESS_FILE)
 
     while True:
+        if not is_market_open():
+            print("⏳ Mercado cerrado para acciones. Escaneo pausado.", flush=True)
+            while not is_market_open():
+                pytime.sleep(60)
+            print("🔔 Mercado abierto. Reanudando escaneo de oportunidades.", flush=True)
         now_ny = get_ny_time()
-        market_open = is_market_open()
-        print(
-            f"\u23F0 {now_ny.strftime('%Y-%m-%d %H:%M:%S')} NY | is_market_open={market_open}",
-            flush=True,
+        print(f"⏰ {now_ny.strftime('%Y-%m-%d %H:%M:%S')} NY | Mercado abierto", flush=True)
+
+        # Reinicia lista si es un nuevo día
+        if evaluated_symbols_today.reset_if_new_day():
+            reset_daily_approvals()
+            print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
+
+        # Obtener señales solo una vez por ciclo
+        get_cached_positions(refresh=True)
+
+        # Construir conjunto de exclusión para evitar reevaluaciones
+        exclude_symbols = set(evaluated_symbols_today)
+        with pending_opportunities_lock:
+            exclude_symbols.update(pending_opportunities)
+        with executed_symbols_today_lock:
+            exclude_symbols.update(executed_symbols_today)
+
+        evaluated_opportunities = get_top_signals(
+            verbose=True, exclude=exclude_symbols
         )
 
-        if market_open:
-            # Reinicia lista si es un nuevo día
-            if evaluated_symbols_today.reset_if_new_day():
-                reset_daily_approvals()
-                print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
-
-            # Obtener señales solo una vez por ciclo
-            get_cached_positions(refresh=True)
-
-            # Construir conjunto de exclusión para evitar reevaluaciones
-            exclude_symbols = set(evaluated_symbols_today)
-            with pending_opportunities_lock:
-                exclude_symbols.update(pending_opportunities)
-            with executed_symbols_today_lock:
-                exclude_symbols.update(executed_symbols_today)
-
-            evaluated_opportunities = get_top_signals(
-                verbose=True, exclude=exclude_symbols
-            )
-
-            if evaluated_opportunities:
-                print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
-                for symb, score, origin in evaluated_opportunities:
-                    already_evaluated = symb in evaluated_symbols_today
-                    with executed_symbols_today_lock:
-                        already_executed = symb in executed_symbols_today
-                    with pending_opportunities_lock:
-                        already_pending = symb in pending_opportunities
-                    if already_evaluated or already_pending or already_executed:
-                        motivo = (
-                            "evaluado" if already_evaluated else (
-                                "pendiente" if already_pending else "ejecutado"
-                            )
+        if evaluated_opportunities:
+            print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
+            for symb, score, origin in evaluated_opportunities:
+                already_evaluated = symb in evaluated_symbols_today
+                with executed_symbols_today_lock:
+                    already_executed = symb in executed_symbols_today
+                with pending_opportunities_lock:
+                    already_pending = symb in pending_opportunities
+                if already_evaluated or already_pending or already_executed:
+                    motivo = (
+                        "evaluado" if already_evaluated else (
+                            "pendiente" if already_pending else "ejecutado"
                         )
-                        print(f"⏩ {symb} ya {motivo}. Se omite.", flush=True)
-                        evaluated_symbols_today.add(symb)
-                        continue
-
+                    )
+                    print(f"⏩ {symb} ya {motivo}. Se omite.", flush=True)
                     evaluated_symbols_today.add(symb)
+                    continue
 
-                    if is_position_open(symb):
-                        print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
-                        continue
+                evaluated_symbols_today.add(symb)
 
-                    amount_usd = calculate_investment_amount(score, symbol=symb)
-                    log_event(f"🟡 Ejecutando orden para {symb}")
-                    log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
+                if is_position_open(symb):
+                    print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
+                    continue
+
+                amount_usd = calculate_investment_amount(score, symbol=symb)
+                log_event(f"🟡 Ejecutando orden para {symb}")
+                log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
+                with pending_opportunities_lock:
+                    pending_opportunities.add(symb)
+                success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
+                if not success:
                     with pending_opportunities_lock:
-                        pending_opportunities.add(symb)
-                    success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
-                    if not success:
-                        with pending_opportunities_lock:
-                            pending_opportunities.discard(symb)
-                        log_event(f"❌ Falló la orden para {symb}")
-                    else:
-                        log_event(f"✅ Orden enviada para {symb}")
-                    pytime.sleep(1.5)  # Pequeña espera entre órdenes
-            else:
-                print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
-
-
+                        pending_opportunities.discard(symb)
+                    log_event(f"❌ Falló la orden para {symb}")
+                else:
+                    log_event(f"✅ Orden enviada para {symb}")
+                pytime.sleep(1.5)  # Pequeña espera entre órdenes
         else:
-            print("⏳ Mercado cerrado para acciones.", flush=True)
-            pytime.sleep(60)  # Espera 1 min cuando está cerrado
+            print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
 
         pytime.sleep(1)  # Espera mínima para no saturar el sistema
 
