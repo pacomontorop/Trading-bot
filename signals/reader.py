@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from utils.logger import log_event
 from signals.adaptive_bonus import apply_adaptive_bonus
 from signals.fmp_utils import get_fmp_grade_score
+from signals.fmp_signals import get_fmp_signal_score
 import yfinance as yf
 import os
 import pandas as pd
@@ -240,22 +241,29 @@ async def _get_top_signals_async(verbose=False, exclude=None):
 
     exclude = set(exclude or [])
 
-    aggregator = WeightedSignalAggregator({"base":1, "grade":float(os.getenv("FMP_GRADE_WEIGHT", 5))})
+    aggregator = WeightedSignalAggregator(
+        {
+            "base": 1,
+            "grade": float(os.getenv("FMP_GRADE_WEIGHT", 5)),
+            "fmp": float(os.getenv("FMP_SIGNAL_WEIGHT", 2)),
+        }
+    )
 
-    async def apply_grade_bonus(symbol, base_score):
-        """Combina el score base con la calificación FMP mediante ponderación.
-
-        Si la calificación de FMP no está disponible, se continúa con el score
-        base sin descartar el símbolo.
-        """
+    async def apply_external_scores(symbol, base_score):
+        """Combina el score base con calificaciones y señales FMP."""
+        scores = {"base": base_score}
         grade_score = await asyncio.to_thread(get_fmp_grade_score, symbol)
-        if grade_score is None:
+        if grade_score is not None:
+            scores["grade"] = grade_score
+        else:
             print(
                 f"⚠️ {symbol} sin calificación FMP, usando score base",
                 flush=True,
             )
-            return base_score
-        return aggregator.combine({"base": base_score, "grade": grade_score})
+        fmp_signal = await asyncio.to_thread(get_fmp_signal_score, symbol)
+        if fmp_signal is not None:
+            scores["fmp"] = fmp_signal
+        return aggregator.combine(scores)
 
     async def evaluate_symbol(symbol):
         if symbol in quiver_approval_cache:
@@ -271,7 +279,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 final_score = 90 + bonus
                 adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
                 final_score += adaptive_bonus
-                graded = await apply_grade_bonus(symbol, final_score)
+                graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
                 return (symbol, graded, "Quiver")
@@ -292,7 +300,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 final_score = 90 + bonus
                 adaptive_bonus = apply_adaptive_bonus(symbol, mode="long")
                 final_score += adaptive_bonus
-                graded = await apply_grade_bonus(symbol, final_score)
+                graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
                 return (symbol, graded, "Quiver")

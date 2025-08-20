@@ -5,6 +5,7 @@ import time
 from broker.alpaca import api, get_current_price
 from utils.logger import log_event
 from utils.orders import resolve_time_in_force
+from datetime import datetime, timedelta
 from core.executor import (
     open_positions,
     open_positions_lock,
@@ -125,6 +126,14 @@ def monitor_open_positions():
                 avg_entry_price = float(p.avg_entry_price)
                 current_price = float(p.current_price)
                 change_percent = (current_price - avg_entry_price) / avg_entry_price * 100
+
+                entry_ts = entry_data.get(symbol, (None, None, None))[2]
+                if change_percent <= -10 or (
+                    entry_ts and datetime.utcnow() - entry_ts > timedelta(days=30)
+                ):
+                    log_event(
+                        f"🔍 Revisión recomendada para {symbol}: {change_percent:.2f}% desde entrada"
+                    )
 
                 if symbol in open_positions:
                     check_virtual_take_profit_and_stop(
