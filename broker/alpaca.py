@@ -7,6 +7,7 @@ from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from dotenv import load_dotenv
 from utils.logger import log_event
+from pytz import timezone
 
 
 load_dotenv()
@@ -27,17 +28,31 @@ api._session.mount("http://", adapter)
 _market_open_cache = {"ts": None, "value": False}
 _price_cache = {}
 
+NY_TZ = timezone("America/New_York")
+
+
+def _within_regular_hours(now_ny: datetime) -> bool:
+    """Return True only during regular trading hours (Mon-Fri, 9:30-16:00 NY)."""
+    if now_ny.weekday() >= 5:
+        return False
+    if now_ny.hour < 9 or (now_ny.hour == 9 and now_ny.minute < 30):
+        return False
+    if now_ny.hour >= 16:
+        return False
+    return True
+
 
 def is_market_open(ttl: int = 60):
-    """Check if the market is open, caching the value for ``ttl`` seconds."""
-    now = datetime.utcnow()
+    """Check if the market is open, considering regular hours and caching for ``ttl`` seconds."""
+    now_utc = datetime.utcnow()
     ts = _market_open_cache["ts"]
-    if ts and (now - ts).total_seconds() < ttl:
+    if ts and (now_utc - ts).total_seconds() < ttl:
         return _market_open_cache["value"]
     try:
         clock = api.get_clock()
-        value = clock.is_open
-        _market_open_cache.update({"ts": now, "value": value})
+        now_ny = datetime.now(NY_TZ)
+        value = clock.is_open and _within_regular_hours(now_ny)
+        _market_open_cache.update({"ts": now_utc, "value": value})
         return value
     except Exception as e:
         log_event(f"❌ Error checking market open: {e}")

@@ -639,28 +639,32 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
-        if is_market_open():
-            print("🔍 Buscando oportunidades en corto...", flush=True)
-            shorts = get_top_shorts(min_criteria=6, verbose=True)
-            log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
-            MAX_SHORTS_PER_CYCLE = 1
-            if len(shorts) > MAX_SHORTS_PER_CYCLE:
-                print(
-                    f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.",
-                    flush=True,
-                )
-            for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
-                if symbol in executed_symbols_today:
-                    print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
-                    continue
-                try:
-                    asset = api.get_asset(symbol)
-                    if getattr(asset, "shortable", False):
-                        amount_usd = calculate_investment_amount(score, symbol=symbol)
-                        place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
-                except Exception as e:
-                    print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
-            log_event(
-                f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD"
+        if not is_market_open():
+            print("⏳ Mercado cerrado. short_scan pausado.", flush=True)
+            while not is_market_open():
+                time.sleep(60)
+            print("🔔 Mercado abierto. short_scan reanudado.", flush=True)
+        print("🔍 Buscando oportunidades en corto...", flush=True)
+        shorts = get_top_shorts(min_criteria=6, verbose=True)
+        log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
+        MAX_SHORTS_PER_CYCLE = 1
+        if len(shorts) > MAX_SHORTS_PER_CYCLE:
+            print(
+                f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.",
+                flush=True,
             )
+        for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
+            if symbol in executed_symbols_today:
+                print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
+                continue
+            try:
+                asset = api.get_asset(symbol)
+                if getattr(asset, "shortable", False):
+                    amount_usd = calculate_investment_amount(score, symbol=symbol)
+                    place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+            except Exception as e:
+                print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
+        log_event(
+            f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD",
+        )
         time.sleep(300)
