@@ -46,6 +46,9 @@ executed_symbols_today_lock = executed_symbols_today.lock
 EVALUATED_SHORTS_FILE = os.path.join(DATA_DIR, "evaluated_shorts.json")
 evaluated_shorts_today = DailySet(EVALUATED_SHORTS_FILE)
 evaluated_shorts_today_lock = evaluated_shorts_today.lock
+EVALUATED_LONGS_FILE = os.path.join(DATA_DIR, "evaluated_longs.json")
+evaluated_longs_today = DailySet(EVALUATED_LONGS_FILE)
+evaluated_longs_today_lock = evaluated_longs_today.lock
 
 # Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
@@ -652,6 +655,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
+        evaluated_shorts_today.reset_if_new_day()
         if not is_market_open():
             print("⏳ Mercado cerrado. short_scan pausado.", flush=True)
             while not is_market_open():
@@ -679,7 +683,9 @@ def short_scan():
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
                     amount_usd = calculate_investment_amount(score, symbol=symbol)
-                    place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+                    success = place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+                    if not success:
+                        log_event(f"❌ Falló la orden short para {symbol}")
             except Exception as e:
                 print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
         log_event(

@@ -15,6 +15,7 @@ from core.executor import (
     executed_symbols_today,
     executed_symbols_today_lock,
     short_scan,
+    evaluated_longs_today,
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
@@ -30,7 +31,6 @@ from core.grade_news import scan_grade_changes
 from signals.filters import is_position_open, get_cached_positions
 
 from utils.daily_risk import get_today_pnl_details
-from utils.daily_set import DailySet
 
 
 import threading
@@ -51,17 +51,8 @@ _last_summary_date = None
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
 
-PROGRESS_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "data",
-    "pre_market_progress.json",
-)
-
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
-
-    evaluated_symbols_today = DailySet(PROGRESS_FILE)
-
     while True:
         if not is_market_open():
             print("⏳ Mercado cerrado para acciones. Escaneo pausado.", flush=True)
@@ -72,7 +63,7 @@ def pre_market_scan():
         print(f"⏰ {now_ny.strftime('%Y-%m-%d %H:%M:%S')} NY | Mercado abierto", flush=True)
 
         # Reinicia lista si es un nuevo día
-        if evaluated_symbols_today.reset_if_new_day():
+        if evaluated_longs_today.reset_if_new_day():
             reset_daily_approvals()
             print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
 
@@ -80,7 +71,7 @@ def pre_market_scan():
         get_cached_positions(refresh=True)
 
         # Construir conjunto de exclusión para evitar reevaluaciones
-        exclude_symbols = set(evaluated_symbols_today)
+        exclude_symbols = set(evaluated_longs_today)
         with pending_opportunities_lock:
             exclude_symbols.update(pending_opportunities)
         with executed_symbols_today_lock:
@@ -93,7 +84,7 @@ def pre_market_scan():
         if evaluated_opportunities:
             print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
             for symb, score, origin in evaluated_opportunities:
-                already_evaluated = symb in evaluated_symbols_today
+                already_evaluated = symb in evaluated_longs_today
                 with executed_symbols_today_lock:
                     already_executed = symb in executed_symbols_today
                 with pending_opportunities_lock:
@@ -105,10 +96,10 @@ def pre_market_scan():
                         )
                     )
                     print(f"⏩ {symb} ya {motivo}. Se omite.", flush=True)
-                    evaluated_symbols_today.add(symb)
+                    evaluated_longs_today.add(symb)
                     continue
 
-                evaluated_symbols_today.add(symb)
+                evaluated_longs_today.add(symb)
 
                 if is_position_open(symb):
                     print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
