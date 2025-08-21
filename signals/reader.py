@@ -369,15 +369,16 @@ async def _get_top_signals_async(verbose=False, exclude=None):
 
     return []
 
-def get_top_shorts(min_criteria=20, verbose=False):
+def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
     shorts = []
     already_considered = set()
+    exclude = set(exclude or [])
 
     # Refresh positions cache once before scanning
     get_cached_positions(refresh=True)
 
     for symbol in stock_assets:
-        if symbol in already_considered or is_position_open(symbol):
+        if symbol in already_considered or symbol in exclude or is_position_open(symbol):
             continue
         if is_blacklisted_recent_loser(symbol):
             log_event(

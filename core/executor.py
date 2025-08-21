@@ -43,6 +43,9 @@ pending_trades = set()
 
 executed_symbols_today = DailySet(EXECUTED_STATE_FILE)
 executed_symbols_today_lock = executed_symbols_today.lock
+EVALUATED_SHORTS_FILE = os.path.join(DATA_DIR, "evaluated_shorts.json")
+evaluated_shorts_today = DailySet(EVALUATED_SHORTS_FILE)
+evaluated_shorts_today_lock = evaluated_shorts_today.lock
 
 # Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
@@ -655,7 +658,7 @@ def short_scan():
                 time.sleep(60)
             print("🔔 Mercado abierto. short_scan reanudado.", flush=True)
         print("🔍 Buscando oportunidades en corto...", flush=True)
-        shorts = get_top_shorts(min_criteria=6, verbose=True)
+        shorts = get_top_shorts(min_criteria=6, verbose=True, exclude=evaluated_shorts_today)
         log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
         MAX_SHORTS_PER_CYCLE = 1
         if len(shorts) > MAX_SHORTS_PER_CYCLE:
@@ -664,9 +667,14 @@ def short_scan():
                 flush=True,
             )
         for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
-            if symbol in executed_symbols_today:
-                print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
+            with executed_symbols_today_lock, evaluated_shorts_today_lock:
+                already_executed = symbol in executed_symbols_today
+                already_evaluated = symbol in evaluated_shorts_today
+            if already_executed or already_evaluated:
+                motivo = "ejecutado" if already_executed else "evaluado"
+                print(f"⏩ {symbol} ya {motivo} hoy. Se omite.", flush=True)
                 continue
+            evaluated_shorts_today.add(symbol)
             try:
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
