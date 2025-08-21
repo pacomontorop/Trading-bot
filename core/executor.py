@@ -547,7 +547,9 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         return True
 
     except Exception as e:
+        print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
         log_event(f"❌ Falló la orden para {symbol}: {e}")
+        return False
 
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
@@ -637,9 +639,12 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${amount_usd:.2f}")
 
         log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {amount_usd:.2f} USD")
+        return True
 
     except Exception as e:
+        print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
         log_event(f"❌ Falló la orden para {symbol}: {e}")
+        return False
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
