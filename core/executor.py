@@ -43,6 +43,12 @@ pending_trades = set()
 
 executed_symbols_today = DailySet(EXECUTED_STATE_FILE)
 executed_symbols_today_lock = executed_symbols_today.lock
+EVALUATED_SHORTS_FILE = os.path.join(DATA_DIR, "evaluated_shorts.json")
+evaluated_shorts_today = DailySet(EVALUATED_SHORTS_FILE)
+evaluated_shorts_today_lock = evaluated_shorts_today.lock
+EVALUATED_LONGS_FILE = os.path.join(DATA_DIR, "evaluated_longs.json")
+evaluated_longs_today = DailySet(EVALUATED_LONGS_FILE)
+evaluated_longs_today_lock = evaluated_longs_today.lock
 
 # Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
@@ -547,7 +553,9 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         return True
 
     except Exception as e:
+        print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
         log_event(f"❌ Falló la orden para {symbol}: {e}")
+        return False
 
 
 def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
@@ -637,20 +645,24 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${amount_usd:.2f}")
 
         log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {amount_usd:.2f} USD")
+        return True
 
     except Exception as e:
+        print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
         log_event(f"❌ Falló la orden para {symbol}: {e}")
+        return False
 
 def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
+        evaluated_shorts_today.reset_if_new_day()
         if not is_market_open():
             print("⏳ Mercado cerrado. short_scan pausado.", flush=True)
             while not is_market_open():
                 time.sleep(60)
             print("🔔 Mercado abierto. short_scan reanudado.", flush=True)
         print("🔍 Buscando oportunidades en corto...", flush=True)
-        shorts = get_top_shorts(min_criteria=6, verbose=True)
+        shorts = get_top_shorts(min_criteria=6, verbose=True, exclude=evaluated_shorts_today)
         log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
         MAX_SHORTS_PER_CYCLE = 1
         if len(shorts) > MAX_SHORTS_PER_CYCLE:
@@ -659,14 +671,21 @@ def short_scan():
                 flush=True,
             )
         for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
-            if symbol in executed_symbols_today:
-                print(f"⏩ {symbol} ya ejecutado hoy. Se omite.", flush=True)
+            with executed_symbols_today_lock, evaluated_shorts_today_lock:
+                already_executed = symbol in executed_symbols_today
+                already_evaluated = symbol in evaluated_shorts_today
+            if already_executed or already_evaluated:
+                motivo = "ejecutado" if already_executed else "evaluado"
+                print(f"⏩ {symbol} ya {motivo} hoy. Se omite.", flush=True)
                 continue
+            evaluated_shorts_today.add(symbol)
             try:
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
                     amount_usd = calculate_investment_amount(score, symbol=symbol)
-                    place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+                    success = place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+                    if not success:
+                        log_event(f"❌ Falló la orden short para {symbol}")
             except Exception as e:
                 print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
         log_event(

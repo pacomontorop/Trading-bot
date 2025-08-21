@@ -338,11 +338,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
             filtered_symbols.append(s)
         symbols_to_evaluate = filtered_symbols[:100]
 
-        # Si no hay símbolos restantes, comienza una nueva ronda
+        # Si no hay símbolos restantes, esperar sin reevaluar en la misma sesión
         if not symbols_to_evaluate:
-            evaluated_symbols_today.clear()
-            _save_evaluated_symbols()
-            print("🔄 Todos los símbolos analizados. Iniciando nueva ronda.")
+            print("⏳ Sin símbolos nuevos para evaluar hoy.")
+            await asyncio.sleep(60)
             continue
 
         for s in symbols_to_evaluate:
@@ -369,15 +368,16 @@ async def _get_top_signals_async(verbose=False, exclude=None):
 
     return []
 
-def get_top_shorts(min_criteria=20, verbose=False):
+def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
     shorts = []
     already_considered = set()
+    exclude = set(exclude or [])
 
     # Refresh positions cache once before scanning
     get_cached_positions(refresh=True)
 
     for symbol in stock_assets:
-        if symbol in already_considered or is_position_open(symbol):
+        if symbol in already_considered or symbol in exclude or is_position_open(symbol):
             continue
         if is_blacklisted_recent_loser(symbol):
             log_event(
