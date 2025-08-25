@@ -42,7 +42,7 @@ import time as pytime
 
 from signals.quiver_utils import initialize_quiver_caches, reset_daily_approvals
 
-from core.crypto_worker import crypto_trades, crypto_trades_lock, crypto_worker
+from core.crypto_worker import crypto_trades, crypto_trades_lock
 from utils.crypto_limit import get_crypto_limit
 
 summary_lock = threading.Lock()
@@ -306,7 +306,6 @@ def start_schedulers():
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=scan_grade_changes, daemon=True).start()
-    threading.Thread(target=crypto_worker, daemon=True).start()
 
     ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
 

@@ -12,8 +12,10 @@ from utils.monitoring import start_metrics_server
 
 app = FastAPI()
 
-# Flag para evitar iniciar los schedulers múltiples veces
+# Flags y referencias de hilos
 schedulers_started = threading.Event()
+crypto_thread = None
+crypto_stop_event = threading.Event()
 
 @app.get("/ping")
 def ping():
@@ -32,18 +34,30 @@ def start_schedulers_once():
         schedulers_started.set()
 
 
-def launch_all():
-    print("🟢 Lanzando schedulers...", flush=True)
-    start_schedulers_once()
-    start_metrics_server()
-    threading.Thread(target=heartbeat, daemon=True).start()
+def start_crypto_worker_thread():
+    global crypto_thread, crypto_stop_event
+    if crypto_thread is None or not crypto_thread.is_alive():
+        crypto_stop_event.clear()
+        crypto_thread = threading.Thread(
+            target=crypto_worker, args=(crypto_stop_event,), daemon=True
+        )
+        crypto_thread.start()
 
 
-def launch_crypto_only():
-    print("🪙 Lanzando solo el worker de cripto...", flush=True)
-    threading.Thread(target=crypto_worker, daemon=True).start()
-    start_metrics_server()
-    threading.Thread(target=heartbeat, daemon=True).start()
+def stop_crypto_worker_thread():
+    global crypto_thread, crypto_stop_event
+    if crypto_thread and crypto_thread.is_alive():
+        crypto_stop_event.set()
+        crypto_thread = None
+
+
+def manage_crypto_worker():
+    while True:
+        if is_market_open():
+            stop_crypto_worker_thread()
+        else:
+            start_crypto_worker_thread()
+        time.sleep(60)
 
 
 def await_market_open():
@@ -58,13 +72,14 @@ def await_market_open():
 
 @app.on_event("startup")
 def on_startup():
+    start_metrics_server()
+    threading.Thread(target=heartbeat, daemon=True).start()
+
     if is_market_open():
-        launch_all()
+        print("🟢 Mercado abierto. Iniciando schedulers de acciones...", flush=True)
+        start_schedulers_once()
     else:
-        print(
-            "⛔ Mercado cerrado. Solo se iniciará el worker de cripto.",
-            flush=True,
-        )
-        launch_crypto_only()
-    # Siempre lanzar un hilo que vigile la apertura del mercado
+        print("⛔ Mercado cerrado. Esperando apertura para acciones...", flush=True)
+
     threading.Thread(target=await_market_open, daemon=True).start()
+    threading.Thread(target=manage_crypto_worker, daemon=True).start()
