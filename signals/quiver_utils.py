@@ -3,6 +3,7 @@
 
 import os
 import time
+import random
 import requests
 import asyncio
 import math
@@ -287,7 +288,7 @@ def evaluate_quiver_signals(signals, symbol=""):
     return True
 
 
-def safe_quiver_request(url, retries=3, delay=2):
+def safe_quiver_request(url, retries=5, delay=4):
     # Log only that the key is present without revealing it
     if QUIVER_API_KEY:
         print("🔑 Usando clave Quiver: [REDACTED]")
@@ -303,6 +304,7 @@ def safe_quiver_request(url, retries=3, delay=2):
             # messages.
             if r.status_code == 429:
                 wait = delay * (2 ** i)
+                wait += random.uniform(0, delay)
                 print(f"⚠️ Límite de velocidad alcanzado en {url}: código {r.status_code}")
                 print(f"🔄 Reintentando en {wait}s...")
                 time.sleep(wait)
@@ -320,6 +322,7 @@ def safe_quiver_request(url, retries=3, delay=2):
         except Exception as e:
             print(f"⚠️ Error en {url}: {e}")
         wait = delay * (2 ** i)
+        wait += random.uniform(0, delay)
         print(f"🔄 Reintentando en {wait}s...")
         time.sleep(wait)
     print(f"❌ Fallo final en {url}. Se devuelve None.")
