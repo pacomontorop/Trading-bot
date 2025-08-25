@@ -25,15 +25,12 @@ def _calculate_allocation(score: int) -> float:
     return bp * 0.01
 
 
-def crypto_worker() -> None:
-    """Continuously scan for crypto signals when equities market is closed."""
+def crypto_worker(stop_event: threading.Event) -> None:
+    """Continuously scan for crypto signals only when the equities market is closed."""
     log_event("🪙 Crypto worker started")
-    while True:
+    while not stop_event.is_set():
         if is_market_open():
-            # Sleep while equities market is open
-            crypto_limit.check_reset()
-            time.sleep(60)
-            continue
+            break
 
         crypto_limit.check_reset()
         remaining = crypto_limit.remaining()
@@ -82,3 +79,4 @@ def crypto_worker() -> None:
                 log_event(f"❌ Crypto order failed for {symbol}: {e}")
             time.sleep(1)
         time.sleep(60)
+    log_event("🛑 Crypto worker stopped")
