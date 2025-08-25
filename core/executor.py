@@ -442,6 +442,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             if not getattr(asset, "tradable", True):
                 print(f"⛔ {symbol} no es tradable en Alpaca.", flush=True)
                 return False
+            is_fractionable = getattr(asset, "fractionable", False)
         except Exception as e:
             print(f"❌ Error obteniendo información de {symbol}: {e}", flush=True)
             return False
@@ -474,22 +475,40 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             )
             return False
 
-        qty = int(amount_usd / current_price)
-        if qty <= 0:
-            print(f"⚠️ Fondos insuficientes para comprar {symbol}", flush=True)
-            return False
-
-        print(
-            f"🛒 Orden de compra -> {symbol} {qty}×${current_price:.2f}",
-            flush=True,
-        )
-        order = api.submit_order(
-            symbol=symbol,
-            qty=qty,
-            side='buy',
-            type='market',
-            time_in_force=resolve_time_in_force(qty)
-        )
+        desired_qty = amount_usd / current_price
+        if is_fractionable:
+            qty = desired_qty
+            print(
+                f"🛒 Orden de compra fraccional -> {symbol} ≈{qty:.4f}×${current_price:.2f} (${amount_usd:.2f})",
+                flush=True,
+            )
+            order = api.submit_order(
+                symbol=symbol,
+                notional=amount_usd,
+                side='buy',
+                type='market',
+                time_in_force=resolve_time_in_force(qty),
+            )
+        else:
+            qty = round(desired_qty)
+            cost = qty * current_price
+            if qty <= 0 or cost > buying_power:
+                qty = int(buying_power / current_price)
+                cost = qty * current_price
+            if qty <= 0:
+                print(f"⚠️ Fondos insuficientes para comprar {symbol}", flush=True)
+                return False
+            print(
+                f"🛒 Orden de compra -> {symbol} {qty}×${current_price:.2f} (~${cost:.2f})",
+                flush=True,
+            )
+            order = api.submit_order(
+                symbol=symbol,
+                qty=qty,
+                side='buy',
+                type='market',
+                time_in_force=resolve_time_in_force(qty),
+            )
         orders_placed.inc()
         print(
             f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
