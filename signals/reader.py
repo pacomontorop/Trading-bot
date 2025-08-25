@@ -21,6 +21,7 @@ import os
 import pandas as pd
 import json
 from signals.aggregator import WeightedSignalAggregator
+import random
 
 
 
@@ -71,13 +72,14 @@ def fetch_symbols_from_csv(path="data/symbols.csv"):
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
-            symbols.sort()
+            random.shuffle(symbols)
             print(
-                f"📄 Se cargaron {len(symbols)} símbolos desde {path} en orden fijo"
+                f"📄 Se cargaron {len(symbols)} símbolos desde {path} en orden aleatorio"
             )
             return symbols
     except Exception as e:
         print(f"❌ Error leyendo CSV de símbolos desde '{path}': {e}")
+        random.shuffle(local_sp500_symbols)
         return local_sp500_symbols
 
 
@@ -89,8 +91,11 @@ def is_options_enabled(symbol):
     except:
         return False
 
-# Primero la lista de prioridad, luego el resto (sin duplicados)
-stock_assets = priority_symbols + [s for s in fetch_symbols_from_csv() if s not in priority_symbols]
+# Combina símbolos de prioridad con el resto en orden aleatorio sin duplicados
+stock_assets = priority_symbols + [
+    s for s in fetch_symbols_from_csv() if s not in priority_symbols
+]
+random.shuffle(stock_assets)
 
 
 BLACKLIST_DAYS = 5  # Puede ponerse en config/env si se desea
@@ -337,6 +342,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 continue
             filtered_symbols.append(s)
         symbols_to_evaluate = filtered_symbols[:100]
+        random.shuffle(symbols_to_evaluate)
 
         # Si no hay símbolos restantes, esperar sin reevaluar en la misma sesión
         if not symbols_to_evaluate:
