@@ -7,7 +7,7 @@ import threading
 # Variables globales
 REQUEST_LOCK = threading.Lock()
 LAST_REQUEST_TIME = 0
-RATE_LIMIT_DELAY = 1.2  # segundos entre peticiones, ajustable según tu plan
+RATE_LIMIT_DELAY = 2.0  # segundos entre peticiones, ajustable según tu plan
 
 
 def throttled_request(request_func, *args, **kwargs):
@@ -22,7 +22,7 @@ def throttled_request(request_func, *args, **kwargs):
         time_since_last = now - LAST_REQUEST_TIME
 
         if time_since_last < RATE_LIMIT_DELAY:
-            sleep_time = RATE_LIMIT_DELAY - time_since_last + random.uniform(0, 0.5)
+            sleep_time = RATE_LIMIT_DELAY - time_since_last + random.uniform(0, 1.0)
             time.sleep(sleep_time)
 
         try:
