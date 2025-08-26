@@ -3,6 +3,8 @@
 import threading
 import time
 
+from alpaca_trade_api.rest import APIError
+
 from broker.alpaca import api, is_market_open
 from signals.crypto_signals import get_crypto_signals
 from utils.crypto_limit import get_crypto_limit
@@ -55,6 +57,14 @@ def crypto_worker(stop_event: threading.Event) -> None:
 
         signals = get_crypto_signals()
         for symbol, score in signals:
+            # Skip if a position already exists for this symbol
+            try:
+                api.get_position(symbol)
+                log_event(f"⚠️ Position already open for {symbol}, skipping")
+                continue
+            except APIError:
+                pass
+
             raw_alloc = min(
                 _calculate_allocation(score),
                 crypto_limit.remaining(),
@@ -71,6 +81,24 @@ def crypto_worker(stop_event: threading.Event) -> None:
                     type="market",
                     time_in_force="ioc",
                 )
+                # Allow fill before placing protective stop
+                time.sleep(1)
+                try:
+                    position = api.get_position(symbol)
+                    qty = abs(float(position.qty))
+                    stop_price = round(float(position.avg_entry_price) * 0.95, 2)
+                    api.submit_order(
+                        symbol=symbol,
+                        qty=qty,
+                        side="sell",
+                        type="stop_limit",
+                        time_in_force="gtc",
+                        stop_price=stop_price,
+                        limit_price=stop_price,
+                    )
+                    log_event(f"🔒 Stop loss for {symbol} at {stop_price}")
+                except Exception as e:
+                    log_event(f"⚠️ Failed to set stop loss for {symbol}: {e}")
                 available_funds -= alloc
                 with crypto_trades_lock:
                     crypto_trades.append(f"{symbol} ${alloc:.2f}")
