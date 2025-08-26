@@ -2,7 +2,7 @@
 
 import os
 import time
-from broker.alpaca import api, get_current_price
+from broker.alpaca import api, get_current_price, is_market_open
 from utils.logger import log_event
 from utils.orders import resolve_time_in_force
 from datetime import datetime, timedelta
@@ -23,6 +23,8 @@ STOP_LOSS_PCT = float(os.getenv("STOP_LOSS_PCT", "-3"))
 MAX_LOSS_USD = float(os.getenv("MAX_LOSS_USD", "50"))
 MONITOR_INTERVAL = int(os.getenv("MONITOR_INTERVAL", "60"))
 TRAILING_WATCHDOG_INTERVAL = int(os.getenv("TRAILING_WATCHDOG_INTERVAL", "120"))
+CANCEL_ORDERS_INTERVAL = int(os.getenv("CANCEL_ORDERS_INTERVAL", "300"))
+STALE_ORDER_MINUTES = int(os.getenv("STALE_ORDER_MINUTES", "15"))
 
 
 def check_virtual_take_profit_and_stop(
@@ -312,3 +314,29 @@ def watchdog_trailing_stop():
             log_event(f"❌ Error en watchdog_trailing_stop: {e}")
 
         time.sleep(TRAILING_WATCHDOG_INTERVAL)
+
+
+def cancel_stale_orders_loop():
+    """Cancel pending orders that are no longer relevant."""
+    while True:
+        try:
+            now = datetime.utcnow()
+            open_orders = api.list_orders(status="open")
+            for o in open_orders:
+                submitted = getattr(o, "submitted_at", None)
+                tif = getattr(o, "time_in_force", "")
+                if not submitted:
+                    continue
+                age_min = (now - submitted.replace(tzinfo=None)).total_seconds() / 60
+                if age_min > STALE_ORDER_MINUTES or (
+                    tif == "day" and not is_market_open()
+                ):
+                    try:
+                        api.cancel_order(o.id)
+                        log_event(f"🗑️ Orden cancelada por antigüedad: {o.symbol}")
+                    except Exception as e:
+                        log_event(f"⚠️ Error cancelando orden {o.id}: {e}")
+        except Exception as e:
+            log_event(f"⚠️ Error en cancel_stale_orders_loop: {e}")
+        time.sleep(CANCEL_ORDERS_INTERVAL)
+

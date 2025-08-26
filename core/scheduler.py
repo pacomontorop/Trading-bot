@@ -25,7 +25,7 @@ from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
 from utils.logger import log_event, log_dir
 from utils.telegram_report import generate_cumulative_report
-from core.monitor import monitor_open_positions, watchdog_trailing_stop
+from core.monitor import monitor_open_positions, watchdog_trailing_stop, cancel_stale_orders_loop
 from utils.generate_symbols_csv import generate_symbols_csv
 from core.grade_news import scan_grade_changes
 from signals.filters import is_position_open, get_cached_positions
@@ -303,6 +303,7 @@ def start_schedulers():
     print("🟢 Lanzando schedulers...", flush=True)
     threading.Thread(target=monitor_open_positions, daemon=True).start()
     threading.Thread(target=watchdog_trailing_stop, daemon=True).start()
+    threading.Thread(target=cancel_stale_orders_loop, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
     threading.Thread(target=scan_grade_changes, daemon=True).start()
