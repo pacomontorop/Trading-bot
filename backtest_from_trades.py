@@ -7,6 +7,8 @@ import argparse
 import csv
 import os
 from typing import Dict, List, Sequence, Tuple
+import statistics
+import math
 
 
 Trade = Dict[str, str]
@@ -54,6 +56,14 @@ def analyze_trades(trades: Sequence[Trade]) -> Dict[str, object]:
         if drawdown > max_dd:
             max_dd = drawdown
 
+    # Sharpe ratio (risk-free rate assumed 0). Use population stdev for stability.
+    sharpe = 0.0
+    if pnl_values:
+        mean_pnl = statistics.mean(pnl_values)
+        stdev = statistics.pstdev(pnl_values)
+        if stdev > 0:
+            sharpe = mean_pnl / stdev * math.sqrt(len(pnl_values))
+
     # Symbols profitability
     symbol_totals: Dict[str, float] = {}
     for t in trades:
@@ -72,6 +82,7 @@ def analyze_trades(trades: Sequence[Trade]) -> Dict[str, object]:
         "average_pnl": average_pnl,
         "signals_summary": signals_summary,
         "max_drawdown": max_dd,
+        "sharpe_ratio": sharpe,
         "top_symbols": top_symbols,
         "bottom_symbols": bottom_symbols,
     }
@@ -91,6 +102,7 @@ def format_summary(stats: Dict[str, object]) -> str:
                 f" - {entry['signal']}: {entry['count']} ops, avg {entry['avg_pnl']:.2f}"
             )
     lines.append(f"Máximo drawdown: {stats['max_drawdown']:.2f} USD")
+    lines.append(f"Sharpe ratio: {stats['sharpe_ratio']:.2f}")
     if stats["top_symbols"]:
         lines.append("5 símbolos más rentables:")
         for sym, pnl in stats["top_symbols"]:

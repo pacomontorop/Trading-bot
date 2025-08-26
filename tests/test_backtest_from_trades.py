@@ -17,5 +17,6 @@ def test_analyze_trades_basic():
     assert round(stats["win_rate"], 2) == 60.0
     assert stats["average_pnl"] == 4.0
     assert round(stats["max_drawdown"], 2) == 10.0
+    assert round(stats["sharpe_ratio"], 2) == 0.84
     assert stats["top_symbols"][0][0] == "A"
     assert stats["bottom_symbols"][0][0] == "C"
