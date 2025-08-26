@@ -21,12 +21,13 @@ def send_email(subject, body, attach_log=False):
         message.attach(MIMEText(body, "plain"))
 
         if attach_log:
-            log_file_path = os.path.join(log_dir, "events.log")
-            if os.path.exists(log_file_path):
-                with open(log_file_path, "rb") as log_file:
-                    part = MIMEApplication(log_file.read(), Name="events.log")
-                    part['Content-Disposition'] = 'attachment; filename="events.log"'
-                    message.attach(part)
+            for fname in ("events.log", "approvals.log"):
+                log_file_path = os.path.join(log_dir, fname)
+                if os.path.exists(log_file_path):
+                    with open(log_file_path, "rb") as log_file:
+                        part = MIMEApplication(log_file.read(), Name=fname)
+                        part['Content-Disposition'] = f'attachment; filename="{fname}"'
+                        message.attach(part)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(EMAIL_SENDER, EMAIL_PASSWORD)

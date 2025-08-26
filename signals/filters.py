@@ -13,6 +13,8 @@ from data.tiingo_client import get_daily_prices
 from data.fred_client import get_macro_snapshot
 from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
+from utils.daily_set import DailySet
+from utils.logger import log_dir
 
 load_dotenv()
 api = tradeapi.REST(
@@ -21,6 +23,14 @@ api = tradeapi.REST(
     "https://paper-api.alpaca.markets",
     api_version='v2'
 )
+
+# Daily tracking of approval outcomes
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+APPROVED_FILE = os.path.join(DATA_DIR, "approved_symbols.json")
+REJECTED_FILE = os.path.join(DATA_DIR, "rejected_symbols.json")
+approved_symbols_today = DailySet(APPROVED_FILE)
+rejected_symbols_today = DailySet(REJECTED_FILE)
 
 # Cache for list_positions results to reduce API calls
 _POSITIONS_CACHE = {"timestamp": 0.0, "data": []}
@@ -171,7 +181,20 @@ def is_symbol_approved(symbol):
             score += 0.25
 
     print(f"📈 Score final {symbol}: {score:.2f}")
-    return score > 0
+    approved = score > 0
+    if approved:
+        approved_symbols_today.add(symbol)
+    else:
+        rejected_symbols_today.add(symbol)
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        status = "APPROVED" if approved else "REJECTED"
+        ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        with open(os.path.join(log_dir, "approvals.log"), "a", encoding="utf-8") as f:
+            f.write(f"[{ts}] {symbol} {status}\n")
+    except Exception:
+        pass
+    return approved
 
 
 def is_approved_by_fmp(symbol):
