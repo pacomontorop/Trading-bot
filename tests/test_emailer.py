@@ -11,12 +11,15 @@ import importlib
 import utils.emailer as emailer
 
 
-def test_send_email_attaches_events_log(tmp_path, monkeypatch):
-    # Prepare dummy log file
+def test_send_email_attaches_logs(tmp_path, monkeypatch):
+    # Prepare dummy log files
     log_dir = tmp_path
-    log_path = log_dir / "events.log"
-    content = "line1\nline2"
-    log_path.write_text(content)
+    events_path = log_dir / "events.log"
+    approvals_path = log_dir / "approvals.log"
+    events_content = "line1\nline2"
+    approvals_content = "appr\nrej"
+    events_path.write_text(events_content)
+    approvals_path.write_text(approvals_content)
 
     # Patch emailer configuration
     monkeypatch.setattr(emailer, "EMAIL_SENDER", "sender@example.com", raising=False)
@@ -48,7 +51,7 @@ def test_send_email_attaches_events_log(tmp_path, monkeypatch):
     assert sent_messages, "No email was sent"
     msg = message_from_string(sent_messages[0])
     attachments = [part for part in msg.walk() if part.get_content_disposition() == "attachment"]
-    assert len(attachments) == 1
-    attachment = attachments[0]
-    assert attachment.get_filename() == "events.log"
-    assert attachment.get_payload(decode=True).decode() == content
+    assert sorted(part.get_filename() for part in attachments) == ["approvals.log", "events.log"]
+    contents = {part.get_filename(): part.get_payload(decode=True).decode() for part in attachments}
+    assert contents["events.log"] == events_content
+    assert contents["approvals.log"] == approvals_content

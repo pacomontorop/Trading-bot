@@ -28,7 +28,12 @@ from utils.telegram_report import generate_cumulative_report
 from core.monitor import monitor_open_positions, watchdog_trailing_stop, cancel_stale_orders_loop
 from utils.generate_symbols_csv import generate_symbols_csv
 from core.grade_news import scan_grade_changes
-from signals.filters import is_position_open, get_cached_positions
+from signals.filters import (
+    is_position_open,
+    get_cached_positions,
+    approved_symbols_today,
+    rejected_symbols_today,
+)
 
 from utils.daily_risk import get_today_pnl_details
 
@@ -191,6 +196,14 @@ def daily_summary():
                 for line in crypto_snapshot:
                     body += f"→ {line}\n"
 
+            # Approved and rejected symbols
+            body += "\n📝 *Símbolos aprobados hoy:*\n"
+            for sym in sorted(approved_symbols_today):
+                body += f"→ {sym}\n"
+            body += "\n🚫 *Símbolos rechazados hoy:*\n"
+            for sym in sorted(rejected_symbols_today):
+                body += f"→ {sym}\n"
+
             # PnL y estado de cartera
             try:
                 positions = api.list_positions()
@@ -259,11 +272,13 @@ def daily_summary():
                 generate_cumulative_report()
             except Exception:
                 log_event("❌ Fallo Telegram, sistema sigue OK")
+            approved_symbols_today.clear()
+            rejected_symbols_today.clear()
             with pending_opportunities_lock:
                 pending_opportunities.clear()
             with pending_trades_lock:
                 pending_trades.clear()
-            for fname in ("events.log", "pnl.log"):
+            for fname in ("events.log", "pnl.log", "approvals.log"):
                 path = os.path.join(log_dir, fname)
                 if os.path.exists(path):
                     open(path, "w").close()
