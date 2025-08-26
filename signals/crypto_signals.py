@@ -27,7 +27,7 @@ def get_crypto_signals(limit: int = 5) -> List[Tuple[str, int]]:
     results: List[Tuple[str, int]] = []
     for item in data.get("coins", []):
         sym = item.get("item", {}).get("symbol", "").upper()
-        alpaca_symbol = f"{sym}/USD"
+        alpaca_symbol = f"{sym}USD"
         try:
             asset = api.get_asset(alpaca_symbol)
             if asset.tradable:
