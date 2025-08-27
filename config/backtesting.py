@@ -1,7 +1,10 @@
-import pandas as pd
-from datetime import datetime, timedelta
+import argparse
 import time
+from datetime import datetime, timedelta
+
+import pandas as pd
 import requests
+
 from signals.filters import is_approved_by_finnhub_and_alphavantage
 from signals.scoring import fetch_yfinance_stock_data
 from signals.reader import stock_assets
@@ -33,19 +36,20 @@ def simulate_trade(symbol, hist, verbose=False):
 
     return (hist['Close'].iloc[-1] - entry_price) / entry_price * 100
 
+def backtest(start_date: datetime = START_DATE, end_date: datetime = END_DATE, verbose: bool = False):
+    """Ejecuta un backtest simple entre dos fechas."""
 
-def backtest(verbose=False):
     capital = INITIAL_BALANCE
     results = []
     error_429_count = 0
     MAX_429 = 10
 
-    print(f"\n🧪 Iniciando backtest entre {START_DATE.date()} y {END_DATE.date()}...\n")
+    print(f"\n🧪 Iniciando backtest entre {start_date.date()} y {end_date.date()}...\n")
 
     for symbol in stock_assets[:30]:  # Ajusta a más si no hay errores
         try:
             df = pd.DataFrame(fetch_yfinance_stock_data(symbol, verbose=True)).T
-            df.columns = ['market_cap', 'volume', 'weekly_change', 'trend', 'price_change_24h', 'volume_7d_avg']
+            df.columns = ["market_cap", "volume", "weekly_change", "trend", "price_change_24h", "volume_7d_avg"]
             df = df.dropna()
 
             if df.empty:
@@ -67,12 +71,19 @@ def backtest(verbose=False):
                 score += 1
 
             if verbose:
-                print(f"📊 {symbol} | MC: {row.market_cap}, V: {row.volume}, \u03947d: {row.weekly_change}, Trend: {row.trend}, \u039424h: {row.price_change_24h}, V_avg: {row.volume_7d_avg}")
+                print(
+                    f"📊 {symbol} | MC: {row.market_cap}, V: {row.volume}, \u03947d: {row.weekly_change}, "
+                    f"Trend: {row.trend}, \u039424h: {row.price_change_24h}, V_avg: {row.volume_7d_avg}"
+                )
 
             if score >= MIN_CRITERIA and is_approved_by_finnhub_and_alphavantage(symbol):
-                hist_url = f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}?period1={(START_DATE - timedelta(days=1)).timestamp():.0f}&period2={(END_DATE + timedelta(days=1)).timestamp():.0f}&interval=1d&events=history"
+                hist_url = (
+                    f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}?period1="
+                    f"{(start_date - timedelta(days=1)).timestamp():.0f}&period2="
+                    f"{(end_date + timedelta(days=1)).timestamp():.0f}&interval=1d&events=history"
+                )
                 hist = pd.read_csv(hist_url, parse_dates=["Date"])
-                hist = hist.set_index("Date").loc[START_DATE:END_DATE]
+                hist = hist.set_index("Date").loc[start_date:end_date]
 
                 pct_return = simulate_trade(symbol, hist, verbose=verbose)
                 if pct_return is not None:
@@ -100,4 +111,13 @@ def backtest(verbose=False):
 
 
 if __name__ == "__main__":
-    backtest(verbose=True)
+    parser = argparse.ArgumentParser(description="Run stock backtesting over a date range")
+    parser.add_argument("--start-date", type=str, help="Fecha inicial (YYYY-MM-DD)")
+    parser.add_argument("--end-date", type=str, help="Fecha final (YYYY-MM-DD)")
+    parser.add_argument("--verbose", action="store_true", help="Imprime información detallada")
+    args = parser.parse_args()
+
+    start = START_DATE if not args.start_date else datetime.strptime(args.start_date, "%Y-%m-%d")
+    end = END_DATE if not args.end_date else datetime.strptime(args.end_date, "%Y-%m-%d")
+
+    backtest(start_date=start, end_date=end, verbose=args.verbose)
