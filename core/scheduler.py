@@ -19,7 +19,7 @@ from core.executor import (
 )
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
-from signals.reader import get_top_signals
+from signals.reader import get_top_signals, stock_assets, reset_symbol_rotation
 from broker.alpaca import api, is_market_open
 from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
@@ -74,6 +74,15 @@ def pre_market_scan():
 
         # Obtener señales solo una vez por ciclo
         get_cached_positions(refresh=True)
+
+        # Reiniciar rotación si todos los símbolos fueron evaluados
+        if len(evaluated_longs_today) >= len(stock_assets):
+            evaluated_longs_today.clear()
+            reset_symbol_rotation()
+            print(
+                "🔄 Todos los símbolos evaluados. Reiniciando lista de evaluación.",
+                flush=True,
+            )
 
         # Construir conjunto de exclusión para evitar reevaluaciones
         exclude_symbols = set(evaluated_longs_today)
