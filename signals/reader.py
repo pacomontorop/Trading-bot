@@ -222,6 +222,13 @@ def _save_evaluated_symbols():
 _load_evaluated_symbols()
 
 
+def reset_symbol_rotation():
+    """Shuffle the symbol universe and clear evaluation progress."""
+    random.shuffle(stock_assets)
+    evaluated_symbols_today.clear()
+    _save_evaluated_symbols()
+
+
 def get_top_signals(verbose=False, exclude=None):
     """Return up to five top trading opportunities.
 
@@ -344,9 +351,9 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         symbols_to_evaluate = filtered_symbols[:100]
         random.shuffle(symbols_to_evaluate)
 
-        # Si no hay símbolos restantes, esperar sin reevaluar en la misma sesión
         if not symbols_to_evaluate:
-            print("⏳ Sin símbolos nuevos para evaluar hoy.")
+            print("🔄 Todos los símbolos evaluados. Reiniciando ciclo.")
+            reset_symbol_rotation()
             await asyncio.sleep(60)
             continue
 
