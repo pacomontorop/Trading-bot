@@ -20,6 +20,17 @@ def test_rejects_when_score_negative():
          patch('signals.filters.volatility_penalty', return_value=0.3), \
          patch('signals.filters.reddit_score', return_value=-0.2), \
          patch('signals.filters.is_approved_by_quiver', return_value=False), \
+        patch('signals.filters.is_approved_by_finnhub_and_alphavantage', return_value=False), \
+        patch('signals.filters.is_approved_by_fmp', return_value=False):
+        assert is_symbol_approved('AAPL') is False
+
+
+def test_requires_external_approval():
+    """Even with a positive score, lack of external approval should reject."""
+    with patch('signals.filters.macro_score', return_value=0.2), \
+         patch('signals.filters.volatility_penalty', return_value=0.1), \
+         patch('signals.filters.reddit_score', return_value=0.2), \
+         patch('signals.filters.is_approved_by_quiver', return_value=False), \
          patch('signals.filters.is_approved_by_finnhub_and_alphavantage', return_value=False), \
          patch('signals.filters.is_approved_by_fmp', return_value=False):
         assert is_symbol_approved('AAPL') is False
