@@ -49,6 +49,8 @@ evaluated_shorts_today_lock = evaluated_shorts_today.lock
 EVALUATED_LONGS_FILE = os.path.join(DATA_DIR, "evaluated_longs.json")
 evaluated_longs_today = DailySet(EVALUATED_LONGS_FILE)
 evaluated_longs_today_lock = evaluated_longs_today.lock
+TRAILING_ERROR_FILE = os.path.join(DATA_DIR, "trailing_error_symbols.json")
+trailing_error_symbols = DailySet(TRAILING_ERROR_FILE)
 
 # Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
@@ -215,7 +217,9 @@ def get_adaptive_trail_price(symbol, window: int = 14):
         gc.collect()
         return result
     except Exception as e:
-        print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
+        if symbol not in trailing_error_symbols:
+            print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
+            trailing_error_symbols.add(symbol)
         fallback_price = get_current_price(symbol)
         return round(fallback_price * 0.015, 2)
 
