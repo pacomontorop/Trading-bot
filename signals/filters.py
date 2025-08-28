@@ -15,6 +15,8 @@ from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
 from utils.logger import log_dir
+import yfinance as yf
+from signals.fmp_utils import search_stock_news
 
 load_dotenv()
 api = tradeapi.REST(
@@ -56,11 +58,44 @@ def is_position_open(symbol):
         print(f"❌ Error verificando posición abierta para {symbol}: {e}")
         return True
 
+def _compute_rsi(series, window: int = 14):
+    delta = series.diff()
+    gain = delta.clip(lower=0).rolling(window).mean()
+    loss = -delta.clip(upper=0).rolling(window).mean()
+    rs = gain / loss
+    rsi = 100 - 100 / (1 + rs)
+    return float(rsi.iloc[-1]) if not rsi.empty else 50.0
+
+
 def confirm_secondary_indicators(symbol):
-    return True
+    """Basic technical confirmation: trend and momentum checks."""
+    try:
+        hist = yf.download(symbol, period="200d", interval="1d", progress=False)
+        close = hist["Close"].dropna()
+        if close.empty:
+            return False
+        price = close.iloc[-1]
+        sma50 = close.rolling(50).mean().iloc[-1]
+        sma200 = close.rolling(200).mean().iloc[-1]
+        sma7 = close.rolling(7).mean().iloc[-1]
+        cond1 = price >= sma50 and sma50 >= sma200
+        cond2 = abs(price - sma7) / sma7 < 0.025
+        rsi = _compute_rsi(close)
+        cond3 = rsi < 80
+        return sum([cond1, cond2, cond3]) >= 2
+    except Exception:
+        return False
+
 
 def has_negative_news(symbol):
-    return False
+    """Use FMP news sentiment; block if negatives outweigh positives by ≥2."""
+    try:
+        news = search_stock_news(symbol)
+        pos = sum(1 for n in news if n.get("sentiment") == "positive")
+        neg = sum(1 for n in news if n.get("sentiment") == "negative")
+        return (neg - pos) >= 2
+    except Exception:
+        return False
 
 
 def macro_score() -> float:

@@ -7,6 +7,9 @@ import pandas as pd
 import yfinance as yf
 from broker.alpaca import api, get_current_price, is_market_open
 from signals.filters import is_position_open, is_symbol_approved
+from utils.state import already_executed_today, mark_executed
+from core.order_utils import make_client_order_id, alpaca_order_exists
+from config import STRATEGY_VER
 from signals.reader import get_top_shorts
 from utils.logger import log_event, log_dir
 from utils.daily_risk import (
@@ -401,6 +404,10 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
 
 def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
     global _last_equity_snapshot
+    client_order_id = make_client_order_id(symbol, "BUY", STRATEGY_VER)
+    if already_executed_today(symbol) or alpaca_order_exists(client_order_id):
+        log_event(f"⏩ Orden duplicada para {symbol}, se omite")
+        return False
     reset_daily_investment()
     today = datetime.utcnow().date()
     if _last_equity_snapshot != today:
@@ -567,6 +574,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         register_open_position(symbol)
         add_to_invested(amount_usd)
         executed_symbols_today.add(symbol)
+        mark_executed(symbol)
         with pending_trades_lock:
             pending_trades.add(f"{symbol}: {qty} unidades — ${amount_usd:.2f}")
 
