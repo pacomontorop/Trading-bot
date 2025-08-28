@@ -325,8 +325,10 @@ def cancel_stale_orders_loop():
             for o in open_orders:
                 submitted = getattr(o, "submitted_at", None)
                 tif = getattr(o, "time_in_force", "")
-                if not submitted:
+                otype = getattr(o, "type", "")
+                if not submitted or otype in ("trailing_stop", "stop", "stop_limit"):
                     continue
+
                 age_min = (now - submitted.replace(tzinfo=None)).total_seconds() / 60
                 if age_min > STALE_ORDER_MINUTES or (
                     tif == "day" and not is_market_open()
