@@ -2,7 +2,7 @@
 
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 import requests
 import pandas as pd
@@ -14,9 +14,8 @@ from data.fred_client import get_macro_snapshot
 from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
-from utils.logger import log_dir
+from utils.logger import log_dir, log_event
 import yfinance as yf
-from signals.fmp_utils import search_stock_news
 
 load_dotenv()
 api = tradeapi.REST(
@@ -36,6 +35,49 @@ rejected_symbols_today = DailySet(REJECTED_FILE)
 
 # Cache for list_positions results to reduce API calls
 _POSITIONS_CACHE = {"timestamp": 0.0, "data": []}
+
+FMP_API_KEY = os.getenv("FMP_API_KEY") or os.getenv("FINANCIAL_MODELING_PREP_API_KEY")
+
+# --- Listas de keywords (pueden ampliarse) ---
+NEGATIVE_KEYWORDS = {
+    "lawsuit","lawsuits","probe","investigation","regulatory probe","fraud","fraudulent",
+    "accounting issue","accounting issues","sec charges","charges","indicted","indictment",
+    "short seller","short-seller","downgrade","downgraded","cut to sell","downgrade to sell",
+    "cuts outlook","cut outlook","weak guidance","guidance cut","profit warning",
+    "misses","miss","missed estimates","eps miss","earnings miss","revenue miss","underperform",
+    "recall","product recall","data breach","breach","cyberattack","hack","hacked","ransomware",
+    "class action","class-action","fire","explosion","accident","fatalities","casualties",
+    "layoffs","job cuts","workforce reduction","restructuring charges","impairment",
+    "bankruptcy","insolvency","default","chapter 11","chapter 7",
+    "sanction","sanctions","fine","fined","penalty","penalties","settlement",
+    "antitrust","anti trust","monopoly","antimonopoly","cartel","price fixing",
+    "delist","delisting","going concern","going-concern doubt","restatement","restated earnings",
+    "resign","resigns","resignation","steps down","suspension",
+    "scandal","controversy","whistleblower","whistle-blower","allegations","allegation",
+    "sell-off","selloff","collapse","plunge","plunges","tumbles","slump","freefall","meltdown",
+    "fall sharply","volatile drop","liquidity crunch","covenant breach",
+    "criminal investigation","securities fraud","market manipulation","audit committee review",
+    "regulatory action","fined by","probe into","under investigation"
+}
+
+POSITIVE_KEYWORDS = {
+    "upgrade","upgraded","initiated buy","reiterate buy","overweight","outperform",
+    "price target increase","raises target","target raised",
+    "raises outlook","raise outlook","guidance raise","raises guidance","strong guidance",
+    "beats","beat","surprise beat","tops estimates","exceeds estimates","eps beat","revenue beat",
+    "contract win","wins contract","award","awarded","order win","large order","backlog record",
+    "approval","regulatory approval","fda approval","sec approval","clearance","authorized",
+    "buyback","share repurchase","dividend increase","hike dividend","special dividend",
+    "record revenue","record profit","record backlog","all-time high","record high",
+    "positive preliminary","prelim beats","reaffirm guidance",
+    "partnership","strategic alliance","joint venture","JV","collaboration",
+    "expansion","capacity expansion","new plant","new facility","hiring","adds jobs",
+    "growth","accelerates","acceleration","momentum","strong demand","resilient demand",
+    "innovation","new product","launch","rollout","AI breakthrough","patent granted",
+    "positive data","phase 3 success","fast track approval","accelerated approval",
+    "solid earnings","robust earnings","margin expansion","operating leverage",
+    "deleveraging","debt reduction","investment grade upgrade","credit upgrade"
+}
 
 
 def get_cached_positions(ttl=60, refresh=False):
@@ -87,14 +129,92 @@ def confirm_secondary_indicators(symbol):
         return False
 
 
-def has_negative_news(symbol):
-    """Use FMP news sentiment; block if negatives outweigh positives by ≥2."""
+def _label_from_keywords(text: str) -> int:
+    """
+    +1 si hay términos positivos y no negativos,
+    -1 si hay negativos y no positivos,
+     0 si ambos o ninguno.
+    """
+    if not text:
+        return 0
+    t = text.lower()
+    has_neg = any(k in t for k in NEGATIVE_KEYWORDS)
+    has_pos = any(k in t for k in POSITIVE_KEYWORDS)
+    if has_neg and not has_pos:
+        return -1
+    if has_pos and not has_neg:
+        return +1
+    return 0
+
+
+def _fetch_fmp_stock_news(symbol: str, limit: int = 50, days_back: int = 2):
+    """
+    Devuelve artículos recientes de FMP para 'symbol' limitando la ventana a 'days_back' días.
+    Endpoint: /stable/news/stock?symbols=...&from=YYYY-MM-DD&to=YYYY-MM-DD&page=0&limit=...
+    En error devuelve [] (tolerante).
+    """
+    if not FMP_API_KEY:
+        return []
     try:
-        news = search_stock_news(symbol)
-        pos = sum(1 for n in news if n.get("sentiment") == "positive")
-        neg = sum(1 for n in news if n.get("sentiment") == "negative")
-        return (neg - pos) >= 2
+        end_dt = datetime.now(timezone.utc)
+        start_dt = end_dt - timedelta(days=days_back)
+        url = (
+            "https://financialmodelingprep.com/stable/news/stock"
+            f"?symbols={symbol}"
+            f"&from={start_dt:%Y-%m-%d}"
+            f"&to={end_dt:%Y-%m-%d}"
+            f"&page=0&limit={limit}"
+            f"&apikey={FMP_API_KEY}"
+        )
+        r = requests.get(url, timeout=6)
+        r.raise_for_status()
+        data = r.json()
+        if not isinstance(data, list):
+            return []
+        # Filtro adicional por fecha exacta
+        cutoff = end_dt - timedelta(days=days_back)
+        recent = []
+        for it in data:
+            try:
+                d = datetime.fromisoformat((it.get("publishedDate") or "").replace(" ", "T"))
+                if d.tzinfo is None:
+                    d = d.replace(tzinfo=timezone.utc)
+                if d >= cutoff:
+                    recent.append(it)
+            except Exception:
+                continue
+        return recent
     except Exception:
+        return []
+
+
+def has_negative_news(symbol: str, days_back: int = 2) -> bool:
+    """
+    Bloquea si las noticias de los últimos 'days_back' días tienen
+    (negativas - positivas) >= 2. En error de red/parseo → False (no bloquea).
+    """
+    try:
+        items = _fetch_fmp_stock_news(symbol, limit=50, days_back=days_back)
+        pos = neg = 0
+        for it in items:
+            title = it.get("title") or ""
+            text = it.get("text") or ""
+            label = _label_from_keywords(f"{title}\n{text}")
+            if label > 0:
+                pos += 1
+            elif label < 0:
+                neg += 1
+        log_event(
+            "negative_news_check",
+            symbol=symbol,
+            positives=pos,
+            negatives=neg,
+            lookback_days=days_back,
+            articles=len(items)
+        )
+        return (neg - pos) >= 2
+    except Exception as e:
+        log_event("negative_news_error", symbol=symbol, error=str(e))
         return False
 
 
