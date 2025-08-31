@@ -11,7 +11,7 @@ def test_gate_liquidity_enforced(monkeypatch):
     monkeypatch.setattr(gates, "already_executed_today", lambda s: False)
     monkeypatch.setattr(gates, "is_market_open", lambda: True)
     monkeypatch.setattr(gates, "is_blacklisted_recent_loser", lambda s: False)
-    monkeypatch.setattr(gates, "fetch_quiver_signals", lambda s: {"insider_buy_more_than_sell": {"age": 1}})
+    monkeypatch.setattr(gates, "_has_strong_recent_quiver_signal", lambda s, m: True)
 
     # Passing case
     monkeypatch.setattr(gates, "fetch_yfinance_stock_data", lambda s: (500e6, 500000, None, None, None, None))

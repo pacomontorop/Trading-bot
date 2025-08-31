@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict
 from broker.alpaca import is_market_open, get_current_price
 from signals.scoring import fetch_yfinance_stock_data
 from utils.state import already_evaluated_today, already_executed_today
@@ -17,17 +17,24 @@ LIQ_MIN_AVG_VOL20 = float(GATE_CFG.get("min_avg_vol_20d", 500000))
 STRONG_SIGNAL_MAX_AGE_DAYS = int(GATE_CFG.get("strong_signal_max_age_days", 3))
 
 
-STRONG_QUIVER_KEYS = [
-    "insider_buy_more_than_sell",
-    "has_gov_contract",
-    "positive_patent_momentum",
-]
+def _has_strong_recent_quiver_signal(symbol: str, max_age_days: float) -> bool:
+    from signals.quiver_utils import (
+        get_insider_signal,
+        get_gov_contract_signal,
+        get_patent_momentum_signal,
+    )
+
+    for fn in (get_insider_signal, get_gov_contract_signal, get_patent_momentum_signal):
+        r = fn(symbol)
+        if getattr(r, "active", False) and (r.days is not None) and (r.days <= max_age_days):
+            return True
+    return False
 
 
-def passes_long_gate(symbol: str) -> Tuple[bool, Dict]:
+def passes_long_gate(symbol: str, data_ctx=None) -> Tuple[bool, Dict]:
     """Hard gate for long trades. Returns (ok, details)."""
     reasons: Dict[str, str] = {}
-    details: Dict[str, List[str] | bool] = {}
+    details: Dict[str, bool] = {}
 
     if already_evaluated_today(symbol):
         reasons["duplicate"] = "already_evaluated"
@@ -47,25 +54,18 @@ def passes_long_gate(symbol: str) -> Tuple[bool, Dict]:
     if price is None or price < MIN_PRICE:
         reasons["price"] = "min_price"
 
-    q_signals = fetch_quiver_signals(symbol) or {}
-    strong = []
-    recency_ok = False
-    for key in STRONG_QUIVER_KEYS:
-        data = q_signals.get(key)
-        if data:
-            strong.append(key)
-            if data.get("age", 999) <= STRONG_SIGNAL_MAX_AGE_DAYS:
-                recency_ok = True
-    if not strong or not recency_ok:
+    if not _has_strong_recent_quiver_signal(symbol, STRONG_SIGNAL_MAX_AGE_DAYS):
         reasons["quiver"] = "weak_or_stale"
-    details["quiver_strong"] = strong
+        details["quiver_strong"] = False
+    else:
+        details["quiver_strong"] = True
 
-    if is_blacklisted_recent_loser(symbol) and len(strong) < 2:
+    if is_blacklisted_recent_loser(symbol):
         reasons["recent_loser"] = "cooldown"
 
     ok = not reasons
     return ok, (details if ok else reasons)
-def _default_fetch(symbol: str):
+def _default_fetch(symbol: str):  # pragma: no cover - kept for backward compatibility
     from signals import quiver_utils
     return quiver_utils.fetch_quiver_signals(symbol)
 
