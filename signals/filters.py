@@ -10,7 +10,6 @@ import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
 
 from data.tiingo_client import get_daily_prices
-from data.fred_client import get_macro_snapshot
 from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
@@ -218,25 +217,6 @@ def has_negative_news(symbol: str, days_back: int = 2) -> bool:
         return False
 
 
-def macro_score() -> float:
-    """Return a macroeconomic score based on FRED data.
-
-    Positive values indicate a favorable environment, negative values a headwind.
-    """
-    score = 0.0
-    try:
-        snapshot = get_macro_snapshot()
-        inflation = snapshot.get("inflation")
-        unemployment = snapshot.get("unemployment")
-        if inflation is not None:
-            score += (2 - inflation) / 10  # reward low inflation, penalize high
-        if unemployment is not None:
-            score += (5 - unemployment) / 10  # reward low unemployment
-    except Exception as e:
-        print(f"⚠️ FRED macro check failed: {e}")
-    return score
-
-
 def reddit_score(symbol: str) -> float:
     """Fetch Reddit sentiment score for ``symbol`` (-1 to 1)."""
     try:
@@ -318,9 +298,9 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
     return fmp
 
 def is_symbol_approved(symbol):
+    """La decisión por-ticker no usa macro; el ajuste macro se aplica a tamaño en core/executor.py."""
     print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
     score = 0.0
-    score += macro_score()
     score -= volatility_penalty(symbol)
     score += reddit_score(symbol)
 

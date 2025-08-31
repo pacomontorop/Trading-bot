@@ -1,6 +1,6 @@
 # executor.py
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import threading
 import pandas as pd
@@ -64,6 +64,40 @@ MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
 STOP_PCT = float(os.getenv("STOP_PCT", "0.05"))  # Stop loss fijo por defecto 5%
 RISK_PCT = float(os.getenv("RISK_PCT", "0.01"))  # Riesgo máximo por operación 1%
+
+_market_exposure_state = {"last_calculated": None, "factor": 1.0}
+
+
+def get_market_exposure_factor(cfg) -> float:
+    """Return a cached daily market exposure factor ∈ [0.6, 1.0]."""
+    now = datetime.utcnow()
+    if (
+        _market_exposure_state["last_calculated"] is None
+        or now.date() != _market_exposure_state["last_calculated"].date()
+    ):
+        market_cfg = getattr(cfg, "market", None)
+        default_exposure = getattr(market_cfg, "default_exposure", 0.85)
+        min_exposure = getattr(market_cfg, "min_exposure", 0.6)
+        max_exposure = getattr(market_cfg, "max_exposure", 1.0)
+        try:
+            from utils.cache import get_cached_market_regime  # opcional
+
+            regime = get_cached_market_regime()  # podría devolver None
+            if regime == "high_vol":
+                factor = 0.7
+            elif regime == "elevated_vol":
+                factor = 0.85
+            elif regime == "normal":
+                factor = 1.0
+            else:
+                factor = default_exposure
+        except Exception:
+            factor = default_exposure  # valor prudente por defecto hasta #9
+        _market_exposure_state["factor"] = max(
+            min_exposure, min(max_exposure, float(factor))
+        )
+        _market_exposure_state["last_calculated"] = now
+    return _market_exposure_state["factor"]
 
 
 def _load_investment_state():
@@ -164,7 +198,9 @@ def calculate_investment_amount(score: int, equity: float, cfg) -> float:
     base_allocation = 2000 + 10 * score
     base_allocation = max(2000, min(3000, base_allocation))
     per_symbol_cap = 0.10 * equity
-    return min(base_allocation, per_symbol_cap)
+    alloc = min(base_allocation, per_symbol_cap)
+    exposure = get_market_exposure_factor(cfg)
+    return alloc * exposure
 
 
 def get_adaptive_trail_price(symbol, window: int = 14):
