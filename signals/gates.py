@@ -3,8 +3,18 @@ from typing import Tuple, Dict, List
 from broker.alpaca import is_market_open, get_current_price
 from signals.scoring import fetch_yfinance_stock_data
 from utils.state import already_evaluated_today, already_executed_today
-from config import LIQ_MIN_MKTCAP, LIQ_MIN_AVG_VOL20, MIN_PRICE
 from signals.reader import is_blacklisted_recent_loser
+import yaml
+import os
+
+_POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
+with open(_POLICY_PATH, "r", encoding="utf-8") as _f:
+    _policy = yaml.safe_load(_f)
+GATE_CFG = _policy.get("gate", {})
+MIN_PRICE = float(GATE_CFG.get("min_price", 3.0))
+LIQ_MIN_MKTCAP = float(GATE_CFG.get("min_cap", 500e6))
+LIQ_MIN_AVG_VOL20 = float(GATE_CFG.get("min_avg_vol_20d", 500000))
+STRONG_SIGNAL_MAX_AGE_DAYS = int(GATE_CFG.get("strong_signal_max_age_days", 3))
 
 
 STRONG_QUIVER_KEYS = [
@@ -44,7 +54,7 @@ def passes_long_gate(symbol: str) -> Tuple[bool, Dict]:
         data = q_signals.get(key)
         if data:
             strong.append(key)
-            if data.get("age", 999) <= 3:
+            if data.get("age", 999) <= STRONG_SIGNAL_MAX_AGE_DAYS:
                 recency_ok = True
     if not strong or not recency_ok:
         reasons["quiver"] = "weak_or_stale"

@@ -17,6 +17,7 @@ from core.executor import (
     short_scan,
     evaluated_longs_today,
 )
+import config
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, stock_assets, reset_symbol_rotation
@@ -119,7 +120,8 @@ def pre_market_scan():
                     print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
                     continue
 
-                amount_usd = calculate_investment_amount(score, symbol=symb)
+                equity = float(api.get_account().equity)
+                amount_usd = calculate_investment_amount(int(round(score)), equity, config)
                 log_event(f"🟡 Ejecutando orden para {symb}")
                 log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
                 with pending_opportunities_lock:
