@@ -14,7 +14,6 @@ from utils.logger import log_event
 from datetime import datetime, timedelta
 from typing import Optional
 from signals.quiver_throttler import throttled_request
-from signals.scoring import fetch_yfinance_stock_data
 from signals.fmp_utils import price_target_news
 
 
@@ -264,21 +263,6 @@ def evaluate_quiver_signals(signals, symbol=""):
         return False
     else:
         print(f"✅ {symbol} tiene eventos recientes dentro de {days_window} días")
-
-    # ✅ Filtro de liquidez
-    try:
-        market_cap, volume, *_ = fetch_yfinance_stock_data(symbol)
-        if not market_cap or not volume:
-            print(f"⚠️ Datos de mercado incompletos para {symbol}. Se descarta.")
-            return False
-        if market_cap < 50_000_000 or volume < 100_000:
-            print(f"⛔ {symbol} descartado por falta de liquidez: market_cap={market_cap}, volume={volume}")
-            return False
-        else:
-            print(f"✅ {symbol} pasa filtro de liquidez: market_cap={market_cap}, volume={volume}")
-    except Exception as e:
-        print(f"⚠️ Error al evaluar liquidez para {symbol}: {e}")
-        return False
 
     if symbol not in approved_today:
         log_event(
