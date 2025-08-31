@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 
 from data.tiingo_client import get_daily_prices
 from data.fred_client import get_macro_snapshot
-from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
 from utils.logger import log_dir, log_event
@@ -325,19 +324,13 @@ def is_symbol_approved(symbol):
     score += reddit_score(symbol)
 
     had_external_approval = False
-    if is_approved_by_quiver(symbol):
-        print(f"✅ {symbol} aprobado por Quiver")
-        score += 1.0
+    if is_approved_by_finnhub_and_alphavantage(symbol):
+        print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
+        score += 0.5
         had_external_approval = True
-    else:
-        print(f"➡️ {symbol} no pasó filtro Quiver. Evaluando Finnhub y AlphaVantage...")
-        if is_approved_by_finnhub_and_alphavantage(symbol):
-            print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
-            score += 0.5
-            had_external_approval = True
-        elif is_approved_by_fmp(symbol):
-            score += 0.25
-            had_external_approval = True
+    elif is_approved_by_fmp(symbol):
+        score += 0.25
+        had_external_approval = True
 
     print(f"📈 Score final {symbol}: {score:.2f}")
     approved = score > 0 and had_external_approval
