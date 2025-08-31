@@ -16,7 +16,7 @@ def test_idempotent_order(monkeypatch):
     # Patch environment to avoid real API calls
     monkeypatch.setattr(order_utils, "alpaca_order_exists", lambda cid: True)
     monkeypatch.setattr(executor, "log_event", lambda *a, **k: None)
-    monkeypatch.setattr(executor, "is_symbol_approved", lambda s: True)
+    monkeypatch.setattr(executor, "is_symbol_approved", lambda s, score, cfg: True)
     monkeypatch.setattr(executor, "is_position_open", lambda s: False)
     monkeypatch.setattr(executor, "get_current_price", lambda s: 10.0)
     monkeypatch.setattr(executor.api, "get_account", lambda: types.SimpleNamespace(equity="10000", buying_power="10000", cash="10000"))

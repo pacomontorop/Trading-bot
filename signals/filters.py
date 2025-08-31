@@ -13,7 +13,8 @@ from data.tiingo_client import get_daily_prices
 from data.fred_client import get_macro_snapshot
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
-from utils.logger import log_dir, log_event
+from utils.logger import log_event
+from typing import Optional, Dict, Any
 import yfinance as yf
 
 load_dotenv()
@@ -316,42 +317,108 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
         print(f"⛔ {symbol} no aprobado: Finnhub={finnhub}, AlphaVantage={alpha}, FMP={fmp}")
     return fmp
 
-def is_symbol_approved(symbol):
-    print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
-    score = 0.0
-    score += macro_score()
-    score -= volatility_penalty(symbol)
-    score += reddit_score(symbol)
+# Cache for final approval decisions (symbol -> (approved, timestamp, detail))
+_APPROVAL_CACHE: Dict[str, tuple[bool, float, Dict[str, Any]]] = {}
 
-    had_external_approval = False
-    if is_approved_by_finnhub_and_alphavantage(symbol):
-        print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
-        score += 0.5
-        had_external_approval = True
-    elif is_approved_by_fmp(symbol):
-        score += 0.25
-        had_external_approval = True
 
-    print(f"📈 Score final {symbol}: {score:.2f}")
-    approved = score > 0 and had_external_approval
-    if approved:
-        approved_symbols_today.add(symbol)
-    else:
-        rejected_symbols_today.add(symbol)
+def _now_ts() -> float:
+    return time.time()
+
+
+def _is_quiver_strong(symbol: str, cfg) -> bool:
+    from signals.quiver_utils import (
+        get_all_quiver_signals,
+        score_quiver_signals,
+        has_recent_quiver_event,
+    )
+
+    s = get_all_quiver_signals(symbol)
+    q_score = score_quiver_signals(s)
+    rec_h = cfg.get("approvals", {}).get("quiver_strong", {}).get("recency_hours", 48)
+    score_th = cfg.get("approvals", {}).get("quiver_strong", {}).get("score_threshold", 8.0)
+    require_recent = (
+        cfg.get("approvals", {}).get("quiver_strong", {}).get("require_recent_event", True)
+    )
+    fresh = True
+    if require_recent:
+        fresh = has_recent_quiver_event(symbol, days=max(1, rec_h / 24.0))
+    return (q_score >= float(score_th)) and fresh
+
+
+def _provider_votes(symbol: str, cfg) -> Dict[str, bool]:
+    """Devuelve votos de {Quiver, FinnhubAlpha, FMP} sin lanzar excepciones."""
+    votes = {"Quiver": False, "FinnhubAlpha": False, "FMP": False}
     try:
-        os.makedirs(log_dir, exist_ok=True)
-        status = "APPROVED" if approved else "REJECTED"
-        ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        with open(os.path.join(log_dir, "approvals.log"), "a", encoding="utf-8") as f:
-            f.write(f"[{ts}] {symbol} {status}\n")
+        from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, has_recent_quiver_event
+
+        signals = get_all_quiver_signals(symbol)
+        q_score = score_quiver_signals(signals)
+        votes["Quiver"] = (q_score >= 5.0) and has_recent_quiver_event(symbol, days=2)
     except Exception:
-        pass
-    return approved
+        votes["Quiver"] = False
+
+    try:
+        from signals.filters import is_approved_by_finnhub_and_alphavantage as finalpha_approved
+
+        votes["FinnhubAlpha"] = bool(finalpha_approved(symbol))
+    except Exception:
+        votes["FinnhubAlpha"] = False
+
+    try:
+        from signals.fmp_signals import get_fmp_signal_score
+
+        f = get_fmp_signal_score(symbol)
+        votes["FMP"] = bool(
+            f and isinstance(f.get("score"), (int, float)) and f["score"] > 0
+        )
+    except Exception:
+        votes["FMP"] = False
+
+    return votes
+
+
+def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
+    """Aprobación final: override Quiver opcional o consenso 2/3."""
+    ttl = 300.0
+    cached = _APPROVAL_CACHE.get(symbol)
+    now = _now_ts()
+    if cached and now - cached[1] < ttl:
+        return cached[0]
+
+    try:
+        if cfg.get("approvals", {}).get("quiver_override", True):
+            if _is_quiver_strong(symbol, cfg):
+                log_event(
+                    f"APPROVAL {symbol}: ✅ Quiver OVERRIDE (strong & fresh). overall_score={overall_score}"
+                )
+                _APPROVAL_CACHE[symbol] = (True, now, {"mode": "override"})
+                return True
+
+        votes = _provider_votes(symbol, cfg)
+        yes = sum(1 for v in votes.values() if v)
+        needed = int(cfg.get("approvals", {}).get("consensus_required", 2))
+        ok = yes >= needed
+        detail = ", ".join([f"{k}:{'✓' if v else '×'}" for k, v in votes.items()])
+        if ok:
+            log_event(
+                f"APPROVAL {symbol}: ✅ Consenso {yes}/3 → {detail}. overall_score={overall_score}"
+            )
+        else:
+            log_event(
+                f"APPROVAL {symbol}: ❌ Consenso {yes}/3 → {detail}. overall_score={overall_score}"
+            )
+        _APPROVAL_CACHE[symbol] = (ok, now, votes)
+        return ok
+    except Exception as e:
+        log_event(f"APPROVAL {symbol}: ⛔ error {e}")
+        _APPROVAL_CACHE[symbol] = (False, now, {"error": str(e)})
+        return False
 
 
 def is_approved_by_fmp(symbol):
     try:
         from signals.fmp_utils import get_fmp_grade_score
+
         threshold = float(os.getenv("FMP_GRADE_THRESHOLD", 0))
         score = get_fmp_grade_score(symbol)
         return score is not None and score >= threshold

@@ -402,7 +402,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         return False
     print(f"\n🚀 Iniciando proceso de compra para {symbol} por ${amount_usd}...")
     try:
-        if not is_symbol_approved(symbol):
+        if not is_symbol_approved(symbol, 0, config._policy):
             print(f"❌ {symbol} no aprobado para compra según criterios de análisis.")
             return False
 
@@ -575,7 +575,7 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
         return
     print(f"\n🚀 Iniciando proceso de short para {symbol} por ${amount_usd}...")
     try:
-        if not is_symbol_approved(symbol):
+        if not is_symbol_approved(symbol, 0, config._policy):
             print(f"❌ {symbol} no aprobado para short según criterios de análisis.")
             return
 
