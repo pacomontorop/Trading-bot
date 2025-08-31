@@ -6,6 +6,14 @@ _CACHE_TTL = timedelta(minutes=5)
 _stock_cache = {}
 
 
+def _normalize_0_100(x: float) -> int:
+    """Coerce ``x`` into an integer within the [0, 100] range."""
+    try:
+        return max(0, min(100, int(round(x))))
+    except Exception:
+        return 0
+
+
 def fetch_yfinance_stock_data(symbol, verbose: bool = False):
     now = datetime.utcnow()
     cached = _stock_cache.get(symbol)
@@ -98,5 +106,5 @@ def score_long_signal(symbol: str, market_data: dict) -> dict:
     score -= penalties
     components["penalties"] = -penalties
 
-    score = max(0, min(100, int(score)))
+    score = _normalize_0_100(score)
     return {"score": score, "components": components, "quiver_recent": quiver_recent}

@@ -10,6 +10,7 @@ from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
 from core.order_utils import make_client_order_id, alpaca_order_exists
 from config import STRATEGY_VER
+import config
 from signals.reader import get_top_shorts
 from utils.logger import log_event, log_dir
 from utils.daily_risk import (
@@ -35,7 +36,6 @@ EXECUTED_STATE_FILE = os.path.join(DATA_DIR, "executed_symbols.json")
 
 # Control de estado
 from utils.state import StateManager
-from utils.scaling import adjust_by_volatility
 from utils.monitoring import orders_placed, update_positions_metric
 
 state_manager = StateManager()
@@ -159,38 +159,12 @@ def invested_today_usd():
     return _total_invested_today
 
 
-def calculate_investment_amount(
-    score,
-    min_score=6,
-    max_score=19,
-    min_investment=2000,
-    max_investment=3000,
-    symbol=None,
-    stop_pct: float = STOP_PCT,
-    risk_pct: float = RISK_PCT,
-):
-    """Devuelve un monto ajustado por score y volatilidad sin exceder límites de riesgo."""
-    if score < min_score:
-        base_amount = min_investment
-    else:
-        normalized_score = min(max(score, min_score), max_score)
-        proportion = (normalized_score - min_score) / (max_score - min_score)
-        base_amount = int(min_investment + proportion * (max_investment - min_investment))
-
-    try:
-        equity = float(api.get_account().equity)
-    except Exception:
-        equity = float(max_investment) / MAX_POSITION_PCT  # Fallback para pruebas
-
-    max_per_symbol = equity * MAX_POSITION_PCT
-    remaining_daily = max(0.0, equity * DAILY_INVESTMENT_LIMIT_PCT - invested_today_usd())
-    risk_cap = equity * risk_pct / stop_pct if stop_pct > 0 else base_amount
-    base_amount = int(min(base_amount, max_per_symbol, remaining_daily, risk_cap))
-
-    if symbol:
-        base_amount = adjust_by_volatility(symbol, base_amount)
-
-    return base_amount
+def calculate_investment_amount(score: int, equity: float, cfg) -> float:
+    """Scale allocation linearly using a 0-100 ``score``."""
+    base_allocation = 2000 + 10 * score
+    base_allocation = max(2000, min(3000, base_allocation))
+    per_symbol_cap = 0.10 * equity
+    return min(base_allocation, per_symbol_cap)
 
 
 def get_adaptive_trail_price(symbol, window: int = 14):
@@ -713,7 +687,8 @@ def short_scan():
             try:
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
-                    amount_usd = calculate_investment_amount(score, symbol=symbol)
+                    equity = float(api.get_account().equity)
+                    amount_usd = calculate_investment_amount(int(round(score)), equity, config)
                     success = place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
                     if not success:
                         log_event(f"❌ Falló la orden short para {symbol}")
