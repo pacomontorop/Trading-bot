@@ -8,10 +8,17 @@ import signals.gates as gates
 
 
 def test_approval_does_not_call_gate(monkeypatch):
-    monkeypatch.setattr(filters, "macro_score", lambda: 0.0)
-    monkeypatch.setattr(filters, "volatility_penalty", lambda s: 0.0)
-    monkeypatch.setattr(filters, "reddit_score", lambda s: 0.0)
-    monkeypatch.setattr(filters, "is_approved_by_finnhub_and_alphavantage", lambda s: True)
-    monkeypatch.setattr(filters, "is_approved_by_fmp", lambda s: False)
-    monkeypatch.setattr(gates, "_has_strong_recent_quiver_signal", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("should not be called")))
-    assert filters.is_symbol_approved("AAPL") is True
+    monkeypatch.setattr(
+        gates,
+        "_has_strong_recent_quiver_signal",
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("should not be called")),
+    )
+    monkeypatch.setattr(filters, "_is_quiver_strong", lambda s, cfg: False)
+    monkeypatch.setattr(
+        filters,
+        "_provider_votes",
+        lambda s, cfg: {"Quiver": True, "FinnhubAlpha": True, "FMP": False},
+    )
+    filters._APPROVAL_CACHE.clear()
+    cfg = {"approvals": {"quiver_override": False, "consensus_required": 2}}
+    assert filters.is_symbol_approved("AAPL", 0, cfg) is True

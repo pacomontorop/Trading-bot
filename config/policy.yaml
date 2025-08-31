@@ -6,3 +6,11 @@ gate:
 
 score:
   strong_recency_hours: 48
+
+approvals:
+  quiver_override: true         # permite aprobar solo por Quiver fuerte
+  consensus_required: 2         # de {Quiver, FinnhubAlpha, FMP}
+  quiver_strong:
+    recency_hours: 48           # “fresco” para override
+    score_threshold: 8.0        # umbral de convicción Quiver (ajustable)
+    require_recent_event: true  # además de score, exige evento <= recency_hours
