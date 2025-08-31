@@ -10,8 +10,6 @@ import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
 
 from data.tiingo_client import get_daily_prices
-from data.fred_client import get_macro_snapshot
-from signals.quiver_utils import is_approved_by_quiver
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
 from utils.logger import log_dir, log_event
@@ -219,22 +217,12 @@ def has_negative_news(symbol: str, days_back: int = 2) -> bool:
 
 
 def macro_score() -> float:
-    """Return a macroeconomic score based on FRED data.
+    """Return a neutral macro score.
 
-    Positive values indicate a favorable environment, negative values a headwind.
+    Macro-level adjustments are now handled elsewhere. This stub is kept for
+    backward compatibility and always returns ``0.0``.
     """
-    score = 0.0
-    try:
-        snapshot = get_macro_snapshot()
-        inflation = snapshot.get("inflation")
-        unemployment = snapshot.get("unemployment")
-        if inflation is not None:
-            score += (2 - inflation) / 10  # reward low inflation, penalize high
-        if unemployment is not None:
-            score += (5 - unemployment) / 10  # reward low unemployment
-    except Exception as e:
-        print(f"⚠️ FRED macro check failed: {e}")
-    return score
+    return 0.0
 
 
 def reddit_score(symbol: str) -> float:
@@ -318,26 +306,20 @@ def is_approved_by_finnhub_and_alphavantage(symbol):
     return fmp
 
 def is_symbol_approved(symbol):
+    """La decisión por-ticker no usa macro; el ajuste macro se aplica a tamaño en core/executor.py."""
     print(f"\n🚦 Iniciando análisis de aprobación para {symbol}...")
     score = 0.0
-    score += macro_score()
     score -= volatility_penalty(symbol)
     score += reddit_score(symbol)
 
     had_external_approval = False
-    if is_approved_by_quiver(symbol):
-        print(f"✅ {symbol} aprobado por Quiver")
-        score += 1.0
+    if is_approved_by_finnhub_and_alphavantage(symbol):
+        print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
+        score += 0.5
         had_external_approval = True
-    else:
-        print(f"➡️ {symbol} no pasó filtro Quiver. Evaluando Finnhub y AlphaVantage...")
-        if is_approved_by_finnhub_and_alphavantage(symbol):
-            print(f"✅ {symbol} aprobado por Finnhub + AlphaVantage")
-            score += 0.5
-            had_external_approval = True
-        elif is_approved_by_fmp(symbol):
-            score += 0.25
-            had_external_approval = True
+    elif is_approved_by_fmp(symbol):
+        score += 0.25
+        had_external_approval = True
 
     print(f"📈 Score final {symbol}: {score:.2f}")
     approved = score > 0 and had_external_approval

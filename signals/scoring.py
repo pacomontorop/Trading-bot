@@ -1,6 +1,14 @@
 import yfinance as yf
 from datetime import datetime, timedelta
 from config import STRATEGY_VER
+import os
+import yaml
+
+_POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
+with open(_POLICY_PATH, "r", encoding="utf-8") as _f:
+    _policy = yaml.safe_load(_f)
+SCORE_CFG = _policy.get("score", {})
+STRONG_RECENCY_HOURS = float(SCORE_CFG.get("strong_recency_hours", 48))
 
 _CACHE_TTL = timedelta(minutes=5)
 _stock_cache = {}

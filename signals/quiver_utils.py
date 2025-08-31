@@ -101,8 +101,14 @@ def recency_weight(days_since_event: Optional[float], k: float = 2.0, decay: flo
     return math.exp(-decay * (days_since_event - 2))
 
 
-async def _async_is_approved_by_quiver(symbol):
-    """Asynchronous helper that fetches and evaluates Quiver signals."""
+async def _async_is_approved_by_quiver(symbol):  # pragma: no cover - backward compat
+    """Fetch and evaluate Quiver signals for ``symbol``.
+
+    Historically this function returned a boolean indicating approval. It now
+    returns a dictionary with scoring information so that approval decisions
+    can be made elsewhere.
+    """
+
     print(f"🔎 Checking {symbol}...", flush=True)
     try:
         signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
@@ -110,11 +116,16 @@ async def _async_is_approved_by_quiver(symbol):
     except Exception as e:
         print(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
         log_event(f"⛔ {symbol} no aprobado por Quiver debido a error: {e}")
-        return False
+        return {}
 
 
-def is_approved_by_quiver(symbol):
-    """Synchronous wrapper for :func:`_async_is_approved_by_quiver`."""
+def is_approved_by_quiver(symbol):  # pragma: no cover - backward compat
+    """Synchronous wrapper for :func:`_async_is_approved_by_quiver`.
+
+    Returns the same evaluation dictionary produced by
+    :func:`evaluate_quiver_signals`.
+    """
+
     return run_in_quiver_loop(_async_is_approved_by_quiver(symbol))
 
 
@@ -215,9 +226,10 @@ def has_recent_quiver_event(symbol, days=2):
 
 
 def evaluate_quiver_signals(signals, symbol=""):
+    """Return scoring info for Quiver signals without making approval decisions."""
+
     print(f"\n🧪 Evaluando señales Quiver para {symbol}...")
 
-    # Mostrar todas las señales con su estado
     active_signals = []
     for key, value in signals.items():
         if isinstance(value, SignalResult):
@@ -235,41 +247,10 @@ def evaluate_quiver_signals(signals, symbol=""):
         if active:
             active_signals.append(key)
 
-    # Calcular el score final con ponderación por recencia
     score = score_quiver_signals(signals)
-    active_signals_count = len(active_signals)
-
-    print(
-        f"🧠 {symbol} → score: {score:.2f} (umbral: {QUIVER_APPROVAL_THRESHOLD}), señales activas: {active_signals_count}"
-    )
-
-    # High conviction signals maintained for reference
-    HIGH_CONVICTION_SIGNALS = ["insider_buy_more_than_sell", "has_gov_contract"]
-
-    # Less strict: require at least two active signals and a lower score
-    aprobado_por_señales = (
-        score >= QUIVER_APPROVAL_THRESHOLD
-        and active_signals_count >= 2
-    )
-
-    if not aprobado_por_señales:
-        print(f"⛔ {symbol} no aprobado por señales.")
-        return False
-
-    # Restrict evaluation to very recent activity (last 2 days)
-    days_window = 2
-    if not has_recent_quiver_event(symbol, days=days_window):
-        print(f"⛔ {symbol} descartado por falta de eventos recientes")
-        return False
-    else:
-        print(f"✅ {symbol} tiene eventos recientes dentro de {days_window} días")
-
-    if symbol not in approved_today:
-        log_event(
-            f"✅ {symbol} aprobado con score {score}. Activas: {', '.join(active_signals)}. Liquidez OK."
-        )
-        approved_today.add(symbol)
-    return True
+    info = {"score": score, "active_signals": active_signals}
+    print(f"🧠 {symbol} → score: {score:.2f}, señales activas: {len(active_signals)}")
+    return info
 
 
 def safe_quiver_request(url, retries=5, delay=4):

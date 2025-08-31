@@ -7,7 +7,7 @@ import signals.gates as gates
 
 
 def setup_env(monkeypatch):
-    monkeypatch.setattr(gates, "fetch_quiver_signals", lambda s: {"insider_buy_more_than_sell": {"age": 1}})
+    monkeypatch.setattr(gates, "_has_strong_recent_quiver_signal", lambda s, m: True)
     monkeypatch.setattr(gates, "get_current_price", lambda s: 10.0)
     monkeypatch.setattr(gates, "fetch_yfinance_stock_data", lambda s: (600_000_000, 600_000, None, None, None, None))
     monkeypatch.setattr(gates, "is_market_open", lambda: True)

@@ -11,7 +11,7 @@ def test_has_downtrend_handles_multiindex(monkeypatch):
     monkeypatch.setitem(sys.modules, 'urllib3', SimpleNamespace(util=SimpleNamespace(retry=SimpleNamespace(Retry=lambda *a, **k: None))))
     monkeypatch.setitem(sys.modules, 'urllib3.util', SimpleNamespace(retry=SimpleNamespace(Retry=lambda *a, **k: None)))
     monkeypatch.setitem(sys.modules, 'urllib3.util.retry', SimpleNamespace(Retry=lambda *a, **k: None))
-    monkeypatch.setitem(sys.modules, 'signals.quiver_utils', SimpleNamespace(_async_is_approved_by_quiver=lambda *a, **k: True, fetch_quiver_signals=lambda *a, **k: []))
+    monkeypatch.setitem(sys.modules, 'signals.quiver_utils', SimpleNamespace(_async_is_approved_by_quiver=lambda *a, **k: True, fetch_quiver_signals=lambda *a, **k: [], is_approved_by_quiver=lambda *a, **k: {"active_signals": []}))
     monkeypatch.setitem(sys.modules, 'signals.quiver_event_loop', SimpleNamespace(run_in_quiver_loop=lambda coro: None))
     monkeypatch.setitem(sys.modules, 'signals.scoring', SimpleNamespace(fetch_yfinance_stock_data=lambda *a, **k: None))
     monkeypatch.setitem(sys.modules, 'utils.logger', SimpleNamespace(log_event=lambda *a, **k: None))

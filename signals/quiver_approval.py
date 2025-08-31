@@ -14,18 +14,17 @@ __all__ = [
 ]
 
 
-def is_approved_by_quiver(symbol: str) -> bool:
+def is_approved_by_quiver(symbol: str) -> dict:
     """Proxy to :func:`quiver_utils.is_approved_by_quiver`.
 
-    Keeping this thin wrapper allows test suites to patch
-    ``signals.quiver_utils.is_approved_by_quiver`` and have those
-    patches reflected here regardless of import order.
+    The function now returns a dictionary with signal/score information instead
+    of a boolean approval flag.
     """
 
     return _quiver.is_approved_by_quiver(symbol)
 
 
-def evaluate_quiver_signals(signals: dict, symbol: str = "") -> bool:
+def evaluate_quiver_signals(signals: dict, symbol: str = "") -> dict:
     """Proxy to :func:`quiver_utils.evaluate_quiver_signals`."""
 
     return _quiver.evaluate_quiver_signals(signals, symbol)

@@ -4,9 +4,12 @@ from signals.filters import (
     is_position_open,
     is_approved_by_finnhub_and_alphavantage,
     get_cached_positions,
+)
+from signals.quiver_utils import (
+    _async_is_approved_by_quiver,
+    fetch_quiver_signals,
     is_approved_by_quiver,
 )
-from signals.quiver_utils import _async_is_approved_by_quiver, fetch_quiver_signals
 from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
@@ -281,7 +284,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         if symbol in quiver_approval_cache:
             approved = quiver_approval_cache[symbol]
             print(f"↩️ [{symbol}] Resultado en caché", flush=True)
-            if approved:
+            if approved and approved.get("active_signals"):
                 print(f"✅ {symbol} approved.", flush=True)
                 bonus = get_trade_history_score(symbol)
                 if bonus > 0:
@@ -302,7 +305,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
             async with quiver_semaphore:
                 approved = await _async_is_approved_by_quiver(symbol)
             quiver_approval_cache[symbol] = approved
-            if approved:
+            if approved and approved.get("active_signals"):
                 print(f"✅ {symbol} approved.", flush=True)
                 bonus = get_trade_history_score(symbol)
                 if bonus > 0:
@@ -399,7 +402,8 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
             continue
         already_considered.add(symbol)
 
-        if is_approved_by_quiver(symbol):
+        eval_res = is_approved_by_quiver(symbol)
+        if eval_res and eval_res.get("active_signals"):
             log_event(f"⛔ {symbol} tiene señales alcistas en Quiver. Short descartado.")
             continue
 
