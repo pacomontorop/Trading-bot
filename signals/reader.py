@@ -10,6 +10,9 @@ from signals.quiver_utils import (
     fetch_quiver_signals,
     is_approved_by_quiver,
 )
+import signals.quiver_utils as _quiver_utils
+
+QUIVER_APPROVAL_THRESHOLD = getattr(_quiver_utils, "QUIVER_APPROVAL_THRESHOLD", 5)
 from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
@@ -284,7 +287,13 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         if symbol in quiver_approval_cache:
             approved = quiver_approval_cache[symbol]
             print(f"↩️ [{symbol}] Resultado en caché", flush=True)
-            if approved and approved.get("active_signals"):
+            cond = (
+                approved
+                and approved.get("active_signals")
+                and approved.get("score", 0) >= QUIVER_APPROVAL_THRESHOLD
+                and approved.get("fresh")
+            )
+            if cond:
                 print(f"✅ {symbol} approved.", flush=True)
                 bonus = get_trade_history_score(symbol)
                 if bonus > 0:
@@ -305,7 +314,13 @@ async def _get_top_signals_async(verbose=False, exclude=None):
             async with quiver_semaphore:
                 approved = await _async_is_approved_by_quiver(symbol)
             quiver_approval_cache[symbol] = approved
-            if approved and approved.get("active_signals"):
+            cond = (
+                approved
+                and approved.get("active_signals")
+                and approved.get("score", 0) >= QUIVER_APPROVAL_THRESHOLD
+                and approved.get("fresh")
+            )
+            if cond:
                 print(f"✅ {symbol} approved.", flush=True)
                 bonus = get_trade_history_score(symbol)
                 if bonus > 0:

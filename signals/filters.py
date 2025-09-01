@@ -10,7 +10,6 @@ import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
 
 from data.tiingo_client import get_daily_prices
-from data.fred_client import get_macro_snapshot
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
 from utils.logger import log_event
@@ -37,6 +36,11 @@ rejected_symbols_today = DailySet(REJECTED_FILE)
 _POSITIONS_CACHE = {"timestamp": 0.0, "data": []}
 
 FMP_API_KEY = os.getenv("FMP_API_KEY") or os.getenv("FINANCIAL_MODELING_PREP_API_KEY")
+
+
+def macro_score():
+    """Compatibilidad retro: el ajuste macro ahora se aplica fuera de este módulo."""
+    return 0.0
 
 # --- Listas de keywords (pueden ampliarse) ---
 NEGATIVE_KEYWORDS = {
@@ -218,25 +222,6 @@ def has_negative_news(symbol: str, days_back: int = 2) -> bool:
         return False
 
 
-def macro_score() -> float:
-    """Return a macroeconomic score based on FRED data.
-
-    Positive values indicate a favorable environment, negative values a headwind.
-    """
-    score = 0.0
-    try:
-        snapshot = get_macro_snapshot()
-        inflation = snapshot.get("inflation")
-        unemployment = snapshot.get("unemployment")
-        if inflation is not None:
-            score += (2 - inflation) / 10  # reward low inflation, penalize high
-        if unemployment is not None:
-            score += (5 - unemployment) / 10  # reward low unemployment
-    except Exception as e:
-        print(f"⚠️ FRED macro check failed: {e}")
-    return score
-
-
 def reddit_score(symbol: str) -> float:
     """Fetch Reddit sentiment score for ``symbol`` (-1 to 1)."""
     try:
@@ -358,9 +343,9 @@ def _provider_votes(symbol: str, cfg) -> Dict[str, bool]:
         votes["Quiver"] = False
 
     try:
-        from signals.filters import is_approved_by_finnhub_and_alphavantage as finalpha_approved
-
-        votes["FinnhubAlpha"] = bool(finalpha_approved(symbol))
+        fh = is_approved_by_finnhub(symbol)
+        av = is_approved_by_alphavantage(symbol)
+        votes["FinnhubAlpha"] = fh and av
     except Exception:
         votes["FinnhubAlpha"] = False
 
