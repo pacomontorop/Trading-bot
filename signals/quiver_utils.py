@@ -110,8 +110,14 @@ async def _async_is_approved_by_quiver(symbol):  # pragma: no cover - backward c
     """
 
     print(f"🔎 Checking {symbol}...", flush=True)
-    signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
-    return evaluate_quiver_signals(signals, symbol)
+    try:
+        signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
+        return evaluate_quiver_signals(signals, symbol)
+    except Exception as e:  # pragma: no cover - network/parse errors
+        msg = f"⛔ {symbol} no aprobado por Quiver debido a error: {e}"
+        print(msg)
+        log_event(msg)
+        return {"score": 0.0, "active_signals": []}
 
 
 def is_approved_by_quiver(symbol):  # pragma: no cover - backward compat
