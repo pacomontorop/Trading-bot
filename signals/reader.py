@@ -317,7 +317,9 @@ async def _get_top_signals_async(verbose=False, exclude=None):
             async with quiver_semaphore:
                 approved = await _async_is_approved_by_quiver(symbol)
             if isinstance(approved, dict):
-                approved["fresh"] = has_recent_quiver_event(symbol, days=2)
+                approved["fresh"] = await asyncio.to_thread(
+                    has_recent_quiver_event, symbol, days=2
+                )
             quiver_approval_cache[symbol] = approved
             cond = (
                 approved
