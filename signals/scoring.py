@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from config import STRATEGY_VER
 import os
 import yaml
+import pandas as pd
 
 _POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
 with open(_POLICY_PATH, "r", encoding="utf-8") as _f:
@@ -37,13 +38,44 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
         if len(hist) >= 2:
             weekly_change = ((hist['Close'].iloc[-1] - hist['Close'].iloc[0]) / hist['Close'].iloc[0]) * 100
         trend_positive = hist['Close'].iloc[-1] > hist['Close'].iloc[0] if len(hist) >= 2 else None
-        price_change_24h = abs((hist['Close'].iloc[-1] - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100 if len(hist) >= 2 else None
+        price_change_24h = (
+            abs((hist['Close'].iloc[-1] - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100
+            if len(hist) >= 2
+            else None
+        )
         volume_7d_avg = hist['Volume'].mean() if not hist['Volume'].isna().all() else None
-        data = (market_cap, volume, weekly_change, trend_positive, price_change_24h, volume_7d_avg)
+
+        current_price = hist['Close'].iloc[-1] if not hist.empty else None
+        atr = None
+        try:
+            if len(hist) >= 2 and {"High", "Low", "Close"}.issubset(hist.columns):
+                high = hist['High']
+                low = hist['Low']
+                close = hist['Close']
+                prev_close = close.shift(1)
+                tr = pd.concat([
+                    high - low,
+                    (high - prev_close).abs(),
+                    (low - prev_close).abs(),
+                ], axis=1).max(axis=1)
+                atr = tr.rolling(14).mean().iloc[-1]
+        except Exception:
+            atr = None
+
+        data = (
+            market_cap,
+            volume,
+            weekly_change,
+            trend_positive,
+            price_change_24h,
+            volume_7d_avg,
+            current_price,
+            atr,
+        )
         _stock_cache[symbol] = {"data": data, "ts": now}
         return data
     except Exception:
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
 
 def score_long_signal(symbol: str, market_data: dict) -> dict:

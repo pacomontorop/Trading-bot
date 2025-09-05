@@ -5,7 +5,8 @@
 
 from core.executor import (
     place_order_with_trailing_stop,
-    calculate_investment_amount,
+    calculate_position_size_risk_based,
+    get_market_exposure_factor,
     pending_opportunities,
     pending_trades,
     pending_opportunities_lock,
@@ -98,7 +99,7 @@ def pre_market_scan():
 
         if evaluated_opportunities:
             print(f"🔎 {len(evaluated_opportunities)} oportunidades encontradas.", flush=True)
-            for symb, score, origin in evaluated_opportunities:
+            for symb, score, origin, current_price, current_atr in evaluated_opportunities:
                 already_evaluated = symb in evaluated_longs_today
                 with executed_symbols_today_lock:
                     already_executed = symb in executed_symbols_today
@@ -121,12 +122,26 @@ def pre_market_scan():
                     continue
 
                 equity = float(api.get_account().equity)
-                amount_usd = calculate_investment_amount(int(round(score)), equity, config)
+                exposure = get_market_exposure_factor(config._policy)
+                sizing = calculate_position_size_risk_based(
+                    symbol=symb,
+                    price=current_price,
+                    atr=current_atr,
+                    equity=equity,
+                    cfg=config._policy,
+                    market_exposure_factor=exposure,
+                )
+                if sizing["shares"] <= 0 or sizing["notional"] <= 0:
+                    log_event(f"SIZE {symb}: ❌ sin tamaño ({sizing['reason']})")
+                    continue
+                log_event(
+                    f"SIZE {symb}: ✅ shares={sizing['shares']:.4f} notional=${sizing['notional']:.2f} "
+                    f"stop_dist=${sizing['stop_distance']:.4f} risk_budget=${sizing['risk_budget']:.2f} exposure={exposure:.2f}"
+                )
                 log_event(f"🟡 Ejecutando orden para {symb}")
-                log_event(f"🛒 Intentando comprar {symb} por {amount_usd} USD")
                 with pending_opportunities_lock:
                     pending_opportunities.add(symb)
-                success = place_order_with_trailing_stop(symb, amount_usd, 1.0)
+                success = place_order_with_trailing_stop(symb, sizing, 1.0)
                 if not success:
                     with pending_opportunities_lock:
                         pending_opportunities.discard(symb)

@@ -309,7 +309,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
-                return (symbol, graded, "Quiver")
+                data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                current_price = data[6] if data and len(data) >= 8 else None
+                atr = data[7] if data and len(data) >= 8 else None
+                return (symbol, graded, "Quiver", current_price, atr)
             return None
 
         print(f"🔎 Checking {symbol}...", flush=True)
@@ -340,7 +343,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
-                return (symbol, graded, "Quiver")
+                data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                current_price = data[6] if data and len(data) >= 8 else None
+                atr = data[7] if data and len(data) >= 8 else None
+                return (symbol, graded, "Quiver", current_price, atr)
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
         return None
@@ -444,12 +450,21 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
 
         try:
             data = fetch_yfinance_stock_data(symbol)
-            if not data or len(data) != 6 or any(d is None for d in data):
+            if not data or len(data) < 8 or any(d is None for d in data[:7]):
                 if verbose:
                     print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
                 continue
 
-            market_cap, volume, weekly_change, trend, price_change_24h, volume_7d_avg = data
+            (
+                market_cap,
+                volume,
+                weekly_change,
+                trend,
+                price_change_24h,
+                volume_7d_avg,
+                current_price,
+                atr,
+            ) = data
 
             score = 0
             if market_cap > 500_000_000:
@@ -478,7 +493,7 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
             if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
                 adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
                 score += adaptive_bonus
-                shorts.append((symbol, score, "Técnico"))
+                shorts.append((symbol, score, "Técnico", current_price, atr))
             elif verbose:
                 print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
 

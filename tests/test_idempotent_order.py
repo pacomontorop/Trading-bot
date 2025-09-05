@@ -15,6 +15,7 @@ class DummyOrder:
 def test_idempotent_order(monkeypatch):
     # Patch environment to avoid real API calls
     monkeypatch.setattr(order_utils, "alpaca_order_exists", lambda cid: True)
+    monkeypatch.setattr(executor, "alpaca_order_exists", lambda cid: True)
     monkeypatch.setattr(executor, "log_event", lambda *a, **k: None)
     monkeypatch.setattr(executor, "is_symbol_approved", lambda s, score, cfg: True)
     monkeypatch.setattr(executor, "is_position_open", lambda s: False)
@@ -26,6 +27,7 @@ def test_idempotent_order(monkeypatch):
         submit_called['called'] = True
         return DummyOrder()
     monkeypatch.setattr(executor.api, "submit_order", fake_submit_order)
-    res = executor.place_order_with_trailing_stop("AAPL", 1000)
+    sizing = {"notional": 1000, "shares": 100, "stop_distance": 1}
+    res = executor.place_order_with_trailing_stop("AAPL", sizing)
     assert res is False
     assert 'called' not in submit_called

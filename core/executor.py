@@ -5,6 +5,7 @@ import time
 import threading
 import pandas as pd
 import yfinance as yf
+import math
 from broker.alpaca import api, get_current_price, is_market_open
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
@@ -64,6 +65,103 @@ MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
 STOP_PCT = float(os.getenv("STOP_PCT", "0.05"))  # Stop loss fijo por defecto 5%
 RISK_PCT = float(os.getenv("RISK_PCT", "0.01"))  # Riesgo máximo por operación 1%
+
+
+def _cfg_risk(cfg):
+    r = (cfg or {}).get("risk", {})
+    return {
+        "max_daily_loss_pct": float(r.get("max_daily_loss_pct", 0.7)),
+        "max_symbol_risk_pct": float(r.get("max_symbol_risk_pct", 0.35)),
+        "atr_k": float(r.get("atr_k", 2.0)),
+        "min_stop_pct": float(r.get("min_stop_pct", 0.05)),
+        "min_trailing_pct": float(r.get("min_trailing_pct", 0.005)),
+        "max_trailing_pct": float(r.get("max_trailing_pct", 0.05)),
+        "allow_fractional": bool(r.get("allow_fractional", True)),
+    }
+
+
+def get_market_exposure_factor(cfg) -> float:
+    """Stub for global exposure factor calculation."""
+    return 1.0
+
+
+def calculate_position_size_risk_based(
+    symbol: str,
+    price: float,
+    atr: float | None,
+    equity: float,
+    cfg,
+    market_exposure_factor: float = 1.0,
+    daily_realized_loss_pct: float = 0.0,
+):
+    """
+    Devuelve: {shares, notional, stop_distance, risk_budget, reason}
+    Regla:
+      stop_distance = max(atr_k * ATR, min_stop_pct * price)
+      risk_budget  = equity * max_symbol_risk_pct / 100
+      shares       = risk_budget / stop_distance   (fraccional si allow_fractional)
+      notional     = shares * price
+      caps         = min(notional, 10% del equity) y multiplicar por market_exposure_factor
+    """
+    r = _cfg_risk(cfg)
+
+    if equity <= 0 or price <= 0:
+        return {
+            "shares": 0,
+            "notional": 0.0,
+            "stop_distance": None,
+            "risk_budget": 0.0,
+            "reason": "invalid_inputs",
+        }
+
+    if daily_realized_loss_pct >= r["max_daily_loss_pct"]:
+        return {
+            "shares": 0,
+            "notional": 0.0,
+            "stop_distance": None,
+            "risk_budget": 0.0,
+            "reason": f"daily_loss_limit_reached_{daily_realized_loss_pct:.2f}%",
+        }
+
+    atr_val = float(atr or 0.0)
+    stop_distance = max(r["atr_k"] * atr_val, r["min_stop_pct"] * price)
+
+    risk_budget = equity * (r["max_symbol_risk_pct"] / 100.0)
+    raw_shares = risk_budget / stop_distance
+
+    if r["allow_fractional"]:
+        shares = max(raw_shares, 0.0)
+    else:
+        shares = math.floor(raw_shares)
+
+    notional = shares * price
+
+    per_symbol_cap = 0.10 * equity
+    if notional > per_symbol_cap:
+        if r["allow_fractional"]:
+            shares = per_symbol_cap / price
+        else:
+            shares = math.floor(per_symbol_cap / price)
+        notional = shares * price
+
+    notional *= float(market_exposure_factor or 1.0)
+
+    if notional <= 0 or shares <= 0:
+        return {
+            "shares": 0,
+            "notional": 0.0,
+            "stop_distance": stop_distance,
+            "risk_budget": risk_budget,
+            "reason": "size_zero_after_caps_or_exposure",
+        }
+
+    return {
+        "shares": shares,
+        "notional": notional,
+        "stop_distance": stop_distance,
+        "risk_budget": risk_budget,
+        "reason": "ok",
+    }
 
 
 def _load_investment_state():
@@ -160,7 +258,8 @@ def invested_today_usd():
 
 
 def calculate_investment_amount(score: int, equity: float, cfg) -> float:
-    """Scale allocation linearly using a 0-100 ``score``."""
+    """Legacy fixed sizing. Avoid using in production."""
+    log_event("⚠️ calculate_investment_amount invoked — using legacy sizing")
     base_allocation = 2000 + 10 * score
     base_allocation = max(2000, min(3000, base_allocation))
     per_symbol_cap = 0.10 * equity
@@ -264,10 +363,12 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                                 entry_time = datetime.fromisoformat(entry_time.replace("Z", "+00:00"))
                             except Exception:
                                 entry_time = datetime.utcnow()
+                        prev = entry_data.get(symbol, (None, None, None, None))
                         entry_data[symbol] = (
                             float(order.filled_avg_price),
                             float(order.qty),
                             entry_time.strftime("%Y-%m-%d %H:%M:%S"),
+                            prev[3],
                         )
                     except Exception:
                         pass
@@ -276,7 +377,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                 if order.type in ("trailing_stop", "limit"):
                     fill_price = float(getattr(order, "filled_avg_price", 0))
                     qty = float(order.qty)
-                    avg_entry, _, date_in = entry_data.get(symbol, (None, None, None))
+                    avg_entry, _, date_in, _ = entry_data.get(symbol, (None, None, None, None))
                     if avg_entry is not None:
                         if order.side == "sell":
                             pnl = (fill_price - avg_entry) * qty
@@ -376,7 +477,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
     log_event(f"⚠️ Timeout esperando fill para {symbol}")
     return False
 
-def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
+def place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
     global _last_equity_snapshot
     client_order_id = make_client_order_id(symbol, "BUY", STRATEGY_VER)
     if already_executed_today(symbol) or alpaca_order_exists(client_order_id):
@@ -400,6 +501,9 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
         )
         return False
+    amount_usd = float(sizing.get("notional", 0.0))
+    shares = float(sizing.get("shares", 0.0))
+    stop_distance = sizing.get("stop_distance")
     print(f"\n🚀 Iniciando proceso de compra para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol, 0, config._policy):
@@ -421,6 +525,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         account = api.get_account()
         equity = float(account.equity)
         buying_power = float(getattr(account, "buying_power", account.cash))
+        r_cfg = _cfg_risk(config._policy)
 
         try:
             asset = api.get_asset(symbol)
@@ -453,60 +558,46 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
             print(f"❌ Precio no disponible para {symbol}")
             return False
 
-        if amount_usd > buying_power:
+        if not r_cfg["allow_fractional"] and shares < 1:
+            log_event(f"SIZE {symbol}: ❌ fracciones no permitidas y shares<1")
+            return False
+
+        qty = shares if (is_fractionable and r_cfg["allow_fractional"]) else int(shares)
+        cost = qty * current_price
+        if cost > buying_power:
             print(
-                f"⛔ Fondos insuficientes para comprar {symbol}: requieren {amount_usd}, disponible {buying_power}",
+                f"⛔ Fondos insuficientes para comprar {symbol}: requieren {cost}, disponible {buying_power}",
                 flush=True,
             )
             return False
 
-        desired_qty = amount_usd / current_price
-        if is_fractionable:
-            qty = desired_qty
-            print(
-                f"🛒 Orden de compra fraccional -> {symbol} ≈{qty:.4f}×${current_price:.2f} (${amount_usd:.2f})",
-                flush=True,
-            )
-            order = api.submit_order(
-                symbol=symbol,
-                notional=amount_usd,
-                side='buy',
-                type='market',
-                time_in_force=resolve_time_in_force(qty),
-            )
-        else:
-            qty = round(desired_qty)
-            cost = qty * current_price
-            if qty <= 0 or cost > buying_power:
-                qty = int(buying_power / current_price)
-                cost = qty * current_price
-            if qty <= 0:
-                print(f"⚠️ Fondos insuficientes para comprar {symbol}", flush=True)
-                return False
-            print(
-                f"🛒 Orden de compra -> {symbol} {qty}×${current_price:.2f} (~${cost:.2f})",
-                flush=True,
-            )
-            order = api.submit_order(
-                symbol=symbol,
-                qty=qty,
-                side='buy',
-                type='market',
-                time_in_force=resolve_time_in_force(qty),
-            )
+        print(
+            f"🛒 Orden de compra -> {symbol} {qty:.4f}×${current_price:.2f} (~${cost:.2f})",
+            flush=True,
+        )
+        order = api.submit_order(
+            symbol=symbol,
+            qty=qty,
+            side='buy',
+            type='market',
+            time_in_force=resolve_time_in_force(qty),
+        )
         orders_placed.inc()
         print(
             f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
             flush=True,
         )
         log_event(f"✅ Orden enviada para {symbol}")
+        entry_data[symbol] = (None, shares, None, stop_distance)
         print(
             "⌛ Esperando a que se rellene la orden...",
             flush=True,
         )
         if not wait_for_order_fill(order.id, symbol):
             return False
-        entry_price, filled_qty, _ = entry_data.get(symbol, (current_price, qty, None))
+        entry_price, filled_qty, _, stop_dist = entry_data.get(
+            symbol, (current_price, qty, None, stop_distance)
+        )
         qty = float(filled_qty)
         take_profit = get_adaptive_take_profit(symbol, entry_price, quiver_score)
         if take_profit:
@@ -563,7 +654,7 @@ def place_order_with_trailing_stop(symbol, amount_usd, trail_percent=1.0):
         return False
 
 
-def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
+def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
     reset_daily_investment()
     if is_risk_limit_exceeded():
         log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
@@ -573,6 +664,9 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
         )
         return
+    amount_usd = float(sizing.get("notional", 0.0))
+    shares = float(sizing.get("shares", 0.0))
+    stop_distance = sizing.get("stop_distance")
     print(f"\n🚀 Iniciando proceso de short para {symbol} por ${amount_usd}...")
     try:
         if not is_symbol_approved(symbol, 0, config._policy):
@@ -607,12 +701,13 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
             print(f"❌ Precio no disponible para {symbol}")
             return
 
-        qty = int(amount_usd / current_price)
+        qty = int(shares)
         if qty <= 0:
-            print(f"⚠️ Fondos insuficientes para short en {symbol}")
+            log_event(f"SIZE {symbol}: ❌ fracciones no permitidas y shares<1")
             return
 
-        print(f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
+        print(
+            f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
         order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -622,9 +717,12 @@ def place_short_order_with_trailing_buy(symbol, amount_usd, trail_percent=1.0):
         )
         orders_placed.inc()
 
+        entry_data[symbol] = (None, shares, None, stop_distance)
         if not wait_for_order_fill(order.id, symbol):
             return
-        entry_price, filled_qty, _ = entry_data.get(symbol, (current_price, qty, None))
+        entry_price, filled_qty, _, stop_dist = entry_data.get(
+            symbol, (current_price, qty, None, stop_distance)
+        )
         qty = float(filled_qty)
 
         trail_price = max(get_adaptive_trail_price(symbol), entry_price * STOP_PCT)
@@ -675,7 +773,7 @@ def short_scan():
                 f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.",
                 flush=True,
             )
-        for symbol, score, origin in shorts[:MAX_SHORTS_PER_CYCLE]:
+        for symbol, score, origin, current_price, current_atr in shorts[:MAX_SHORTS_PER_CYCLE]:
             with executed_symbols_today_lock, evaluated_shorts_today_lock:
                 already_executed = symbol in executed_symbols_today
                 already_evaluated = symbol in evaluated_shorts_today
@@ -688,8 +786,23 @@ def short_scan():
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
                     equity = float(api.get_account().equity)
-                    amount_usd = calculate_investment_amount(int(round(score)), equity, config)
-                    success = place_short_order_with_trailing_buy(symbol, amount_usd, 1.0)
+                    exposure = get_market_exposure_factor(config._policy)
+                    sizing = calculate_position_size_risk_based(
+                        symbol=symbol,
+                        price=current_price,
+                        atr=current_atr,
+                        equity=equity,
+                        cfg=config._policy,
+                        market_exposure_factor=exposure,
+                    )
+                    if sizing["shares"] <= 0 or sizing["notional"] <= 0:
+                        log_event(f"SIZE {symbol}: ❌ sin tamaño ({sizing['reason']})")
+                        continue
+                    log_event(
+                        f"SIZE {symbol}: ✅ shares={sizing['shares']:.4f} notional=${sizing['notional']:.2f} "
+                        f"stop_dist=${sizing['stop_distance']:.4f} risk_budget=${sizing['risk_budget']:.2f} exposure={exposure:.2f}"
+                    )
+                    success = place_short_order_with_trailing_buy(symbol, sizing, 1.0)
                     if not success:
                         log_event(f"❌ Falló la orden short para {symbol}")
             except Exception as e:

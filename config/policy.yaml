@@ -14,3 +14,12 @@ approvals:
     recency_hours: 48           # “fresco” para override
     score_threshold: 8.0        # umbral de convicción Quiver (ajustable)
     require_recent_event: true  # además de score, exige evento <= recency_hours
+
+risk:
+  max_daily_loss_pct: 0.7        # % de equity como pérdida diaria máxima antes de parar
+  max_symbol_risk_pct: 0.35      # % de equity arriesgado por operación
+  atr_k: 2.0                     # múltiplo de ATR para definir stop_distance
+  min_stop_pct: 0.05             # 5% del precio si ATR es pequeño
+  min_trailing_pct: 0.005        # 0.5% (se usará en #6)
+  max_trailing_pct: 0.05         # 5%   (se usará en #6)
+  allow_fractional: true         # habilitar compra fraccional si broker lo soporta
