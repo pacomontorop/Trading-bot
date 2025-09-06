@@ -31,6 +31,17 @@ _price_cache = {}
 NY_TZ = timezone("America/New_York")
 
 
+def supports_bracket_trailing() -> bool:
+    """Return whether Alpaca allows trailing stops inside bracket orders."""
+    # Alpaca currently does not allow trailing stops within standard brackets.
+    return False
+
+
+def supports_fractional_shares() -> bool:
+    """Indicate if Alpaca supports fractional share trading."""
+    return True
+
+
 def _within_regular_hours(now_ny: datetime) -> bool:
     """Return True only during regular trading hours (Mon-Fri, 9:30-16:00 NY)."""
     if now_ny.weekday() >= 5:

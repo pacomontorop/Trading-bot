@@ -80,6 +80,37 @@ def _cfg_risk(cfg):
     }
 
 
+def compute_chandelier_trail(price: float, atr: float, cfg) -> float:
+    """Compute Chandelier-style trailing distance in dollars for a long position."""
+    r = (cfg or {}).get("risk", {})
+    atr_k = float(r.get("atr_k", 2.0))
+    min_tr = float(r.get("min_trailing_pct", 0.005))
+    max_tr = float(r.get("max_trailing_pct", 0.05))
+    trail = max(min_tr * price, atr_k * float(atr or 0.0))
+    trail = min(trail, max_tr * price)
+    return max(trail, 0.0)
+
+
+def compute_partial_take_profit(entry_price: float, stop_distance: float, cfg) -> float | None:
+    """Return partial take-profit price or ``None`` if disabled."""
+    ex = (cfg or {}).get("exits", {})
+    if not bool(ex.get("use_partial_take_profit", True)):
+        return None
+    R = float(ex.get("partial_tp_at_R", 1.5))
+    if stop_distance is None or stop_distance <= 0:
+        return None
+    return round(entry_price + R * stop_distance, 2)
+
+
+def should_use_combined_bracket(cfg, broker_module) -> bool:
+    """Determine whether to place TP and trailing in the same bracket."""
+    ex = (cfg or {}).get("exits", {})
+    if not bool(ex.get("allow_tp_and_trailing_same_bracket", False)):
+        return False
+    supports = getattr(broker_module, "supports_bracket_trailing", None)
+    return bool(callable(supports) and supports())
+
+
 def get_market_exposure_factor(cfg) -> float:
     """Stub for global exposure factor calculation."""
     return 1.0
