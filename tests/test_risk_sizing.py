@@ -26,7 +26,7 @@ def test_caps_and_fractional_behavior():
     r2 = calculate_position_size_risk_based("CCC", price=500, atr=0.1, equity=equity, cfg=cfg2, market_exposure_factor=1.0)
     assert r2["shares"] == 0 or r2["notional"] == 0
 
-def test_exposure_factor_affects_notional():
+def test_exposure_factor_scales_shares_and_notional():
     from core.executor import calculate_position_size_risk_based
     class Cfg(dict):
         pass
@@ -35,6 +35,7 @@ def test_exposure_factor_affects_notional():
     reduced = calculate_position_size_risk_based("DDD", price=100, atr=1, equity=50000, cfg=cfg, market_exposure_factor=0.7)
     assert reduced["notional"] < base["notional"]
     assert abs(reduced["notional"]/base["notional"] - 0.7) < 1e-6
+    assert abs(reduced["shares"]/base["shares"] - 0.7) < 1e-6
 
 def test_min_stop_pct_when_atr_small():
     from core.executor import calculate_position_size_risk_based

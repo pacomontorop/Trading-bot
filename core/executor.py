@@ -144,7 +144,11 @@ def calculate_position_size_risk_based(
             shares = math.floor(per_symbol_cap / price)
         notional = shares * price
 
-    notional *= float(market_exposure_factor or 1.0)
+    exposure = float(market_exposure_factor or 1.0)
+    shares *= exposure
+    if not r["allow_fractional"]:
+        shares = math.floor(shares)
+    notional = shares * price
 
     if notional <= 0 or shares <= 0:
         return {
