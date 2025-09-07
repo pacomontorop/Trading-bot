@@ -2,93 +2,32 @@ import os
 import json
 from datetime import date
 from threading import Lock
-from typing import Set
+from typing import Set, Dict, Any
+
 from config import USE_REDIS
 
-try:
+try:  # pragma: no cover
     import redis  # type: ignore
 except Exception:  # pragma: no cover
     redis = None
+
+# ---------------------------------------------------------------------------
+# Daily evaluation/execution helpers (legacy behaviour kept for compatibility)
+# ---------------------------------------------------------------------------
 
 _lock = Lock()
 _state_date: str | None = None
 _evaluated: Set[str] = set()
 _executed: Set[str] = set()
-_open_positions: Set[str] = set()
 
-if USE_REDIS and redis is not None:
+if USE_REDIS and redis is not None:  # pragma: no cover
     _redis = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-else:
+else:  # pragma: no cover
     _redis = None
-
-
-class StateManager:
-    """Backward compatible placeholder for previous API."""
-
-    def load_open_positions(self) -> Set[str]:
-        with _lock:
-            if _redis is not None:
-                return set(_redis.smembers("open_positions"))
-            _load_open_positions_file()
-            return set(_open_positions)
-
-    def add_open_position(self, symbol: str) -> None:
-        with _lock:
-            if _redis is not None:
-                _redis.sadd("open_positions", symbol)
-                return
-            _open_positions.add(symbol)
-            _dump_open_positions_file()
-
-    def remove_open_position(self, symbol: str) -> None:
-        with _lock:
-            if _redis is not None:
-                _redis.srem("open_positions", symbol)
-                return
-            _open_positions.discard(symbol)
-            _dump_open_positions_file()
-
-    def replace_open_positions(self, symbols: Set[str]) -> None:
-        with _lock:
-            if _redis is not None:
-                pipe = _redis.pipeline()
-                pipe.delete("open_positions")
-                if symbols:
-                    pipe.sadd("open_positions", *symbols)
-                pipe.execute()
-                return
-            global _open_positions
-            _open_positions = set(symbols)
-            _dump_open_positions_file()
 
 
 def _json_path() -> str:
     return os.path.join("data", f"state_{date.today():%Y%m%d}.json")
-
-
-def _open_positions_path() -> str:
-    return os.path.join("data", "open_positions.json")
-
-
-def _load_open_positions_file() -> None:
-    global _open_positions
-    path = _open_positions_path()
-    if os.path.exists(path):
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            _open_positions = set(data)
-        except Exception:
-            _open_positions = set()
-    else:
-        _open_positions = set()
-
-
-def _dump_open_positions_file() -> None:
-    path = _open_positions_path()
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(list(_open_positions), f)
 
 
 def _load_json() -> None:
@@ -115,7 +54,7 @@ def _dump_json() -> None:
 
 
 def _ensure_state() -> None:
-    if _redis is not None:
+    if _redis is not None:  # pragma: no cover
         return
     global _state_date
     today = date.today().isoformat()
@@ -125,7 +64,7 @@ def _ensure_state() -> None:
 
 def already_evaluated_today(symbol: str) -> bool:
     with _lock:
-        if _redis is not None:
+        if _redis is not None:  # pragma: no cover
             return _redis.exists(f"eval:{symbol}") == 1
         _ensure_state()
         return symbol in _evaluated
@@ -133,7 +72,7 @@ def already_evaluated_today(symbol: str) -> bool:
 
 def mark_evaluated(symbol: str) -> None:
     with _lock:
-        if _redis is not None:
+        if _redis is not None:  # pragma: no cover
             _redis.setex(f"eval:{symbol}", 24 * 3600, 1)
             return
         _ensure_state()
@@ -143,7 +82,7 @@ def mark_evaluated(symbol: str) -> None:
 
 def already_executed_today(symbol: str) -> bool:
     with _lock:
-        if _redis is not None:
+        if _redis is not None:  # pragma: no cover
             return _redis.exists(f"exec:{symbol}") == 1
         _ensure_state()
         return symbol in _executed
@@ -151,9 +90,136 @@ def already_executed_today(symbol: str) -> bool:
 
 def mark_executed(symbol: str) -> None:
     with _lock:
-        if _redis is not None:
+        if _redis is not None:  # pragma: no cover
             _redis.setex(f"exec:{symbol}", 24 * 3600, 1)
             return
         _ensure_state()
         _executed.add(symbol)
         _dump_json()
+
+
+# ---------------------------------------------------------------------------
+# Persistent trade state (open orders/positions, executed symbols)
+# ---------------------------------------------------------------------------
+
+_state_file = os.path.join("data", "state_manager.json")
+_state_lock = Lock()
+_persistent: Dict[str, Any] = {
+    "open_orders": {},
+    "open_positions": {},
+    "executed_symbols": [],
+}
+
+
+def _load_persistent() -> None:
+    if os.path.exists(_state_file):
+        try:
+            with open(_state_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            _persistent.update({
+                "open_orders": data.get("open_orders", {}),
+                "open_positions": data.get("open_positions", {}),
+                "executed_symbols": data.get("executed_symbols", []),
+            })
+        except Exception:
+            pass
+
+
+def _persist() -> None:
+    os.makedirs(os.path.dirname(_state_file), exist_ok=True)
+    with open(_state_file, "w", encoding="utf-8") as f:
+        json.dump(_persistent, f)
+
+
+_load_persistent()
+
+
+class StateManager:
+    """Thread-safe persistence for trading state."""
+
+    @classmethod
+    def load_open_positions(cls) -> Set[str]:
+        with _state_lock:
+            return set(_persistent["open_positions"].keys())
+
+    @classmethod
+    def add_open_position(cls, symbol: str, coid: str | None = None,
+                          qty: float | int | None = None,
+                          avg_price: float | None = None) -> None:
+        with _state_lock:
+            _persistent["open_positions"][symbol] = {
+                "coid": coid,
+                "qty": qty,
+                "avg": avg_price,
+            }
+            _persist()
+
+    @classmethod
+    def remove_open_position(cls, symbol: str) -> None:
+        with _state_lock:
+            _persistent["open_positions"].pop(symbol, None)
+            _persist()
+
+    @classmethod
+    def replace_open_positions(cls, symbols: Dict[str, Any]) -> None:
+        with _state_lock:
+            _persistent["open_positions"] = dict(symbols)
+            _persist()
+
+    # --- New atomic helpers ---
+    @classmethod
+    def add_open_order(cls, symbol: str, coid: str) -> None:
+        with _state_lock:
+            _persistent["open_orders"][symbol] = coid
+            _persist()
+
+    @classmethod
+    def remove_open_order(cls, symbol: str, coid: str | None = None) -> None:
+        with _state_lock:
+            if symbol in _persistent["open_orders"] and (
+                coid is None or _persistent["open_orders"][symbol] == coid
+            ):
+                _persistent["open_orders"].pop(symbol, None)
+                _persist()
+
+    @classmethod
+    def add_open_position_detailed(
+        cls, symbol: str, coid: str, qty: float, avg_price: float
+    ) -> None:
+        cls.add_open_position(symbol, coid, qty, avg_price)
+
+    @classmethod
+    def add_executed_symbol(cls, symbol: str) -> None:
+        with _state_lock:
+            if symbol not in _persistent["executed_symbols"]:
+                _persistent["executed_symbols"].append(symbol)
+                _persist()
+
+    @classmethod
+    def replace_open_orders(cls, mapping: Dict[str, str]) -> None:
+        with _state_lock:
+            _persistent["open_orders"] = dict(mapping)
+            _persist()
+
+    @classmethod
+    def get_open_orders(cls) -> Dict[str, str]:
+        with _state_lock:
+            return dict(_persistent["open_orders"])
+
+    @classmethod
+    def get_open_positions(cls) -> Dict[str, Any]:
+        with _state_lock:
+            return dict(_persistent["open_positions"])
+
+    @classmethod
+    def get_executed_symbols(cls) -> Set[str]:
+        with _state_lock:
+            return set(_persistent["executed_symbols"])
+
+    @classmethod
+    def clear(cls) -> None:
+        with _state_lock:
+            _persistent["open_orders"].clear()
+            _persistent["open_positions"].clear()
+            _persistent["executed_symbols"].clear()
+            _persist()

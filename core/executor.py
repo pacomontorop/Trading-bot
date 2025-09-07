@@ -7,9 +7,10 @@ import pandas as pd
 import yfinance as yf
 import math
 from broker.alpaca import api, get_current_price, is_market_open
+from broker import alpaca as broker
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
-from core.order_utils import make_client_order_id, alpaca_order_exists
+from core.order_utils import alpaca_order_exists
 from config import STRATEGY_VER
 import config
 from signals.reader import get_top_shorts
@@ -65,6 +66,28 @@ MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
 STOP_PCT = float(os.getenv("STOP_PCT", "0.05"))  # Stop loss fijo por defecto 5%
 RISK_PCT = float(os.getenv("RISK_PCT", "0.01"))  # Riesgo máximo por operación 1%
+
+# Mutex por símbolo para evitar condiciones de carrera
+_symbol_locks: dict[str, threading.Lock] = {}
+_global_lock = threading.Lock()
+
+
+def _get_symbol_lock(symbol: str) -> threading.Lock:
+    with _global_lock:
+        if symbol not in _symbol_locks:
+            _symbol_locks[symbol] = threading.Lock()
+        return _symbol_locks[symbol]
+
+
+# Generación determinística de client_order_id
+import hashlib
+import datetime as _dt
+
+
+def make_client_order_id(symbol: str, side: str, nonce: str | None = None) -> str:
+    session = _dt.datetime.utcnow().strftime("%Y%m%d")
+    raw = f"{session}:{symbol}:{side}:{nonce or '0'}"
+    return "BOT-" + hashlib.sha1(raw.encode()).hexdigest()[:16]
 
 
 def _cfg_risk(cfg):
@@ -512,7 +535,7 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
     log_event(f"⚠️ Timeout esperando fill para {symbol}")
     return False
 
-def place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
+def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
     global _last_equity_snapshot
     client_order_id = make_client_order_id(symbol, "BUY", STRATEGY_VER)
     if already_executed_today(symbol) or alpaca_order_exists(client_order_id):
@@ -846,3 +869,126 @@ def short_scan():
             f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD",
         )
         time.sleep(300)
+
+
+# ---------------------------------------------------------------------------
+# Nuevo flujo de ejecución robusta
+# ---------------------------------------------------------------------------
+
+
+def _wait_for_fill_or_timeout(client_order_id: str, timeout_sec: int):
+    import time
+
+    start = time.time()
+    delay = 0.5
+    last_status = None
+    while time.time() - start < timeout_sec:
+        st = broker.get_order_status_by_client_id(client_order_id)
+        last_status = st
+        if st and st.state in ("filled", "partially_filled", "rejected", "canceled"):
+            return st
+        time.sleep(delay)
+        delay = min(delay * 1.8, 2.0)
+    return last_status or type("S", (), {"state": "timeout"})
+
+
+def _on_fill_success(symbol, coid, status, cfg):
+    filled_qty = getattr(status, "filled_qty", 0)
+    avg_price = getattr(status, "filled_avg_price", 0)
+    StateManager.add_executed_symbol(symbol)
+    StateManager.add_open_position(symbol, coid, filled_qty, avg_price)
+    log_event(f"FILL {symbol}: qty={filled_qty} avg={avg_price} coid={coid}")
+
+
+def _reconcile_existing_order(symbol, coid, cfg):
+    st = broker.get_order_status_by_client_id(coid)
+    if not st:
+        StateManager.remove_open_order(symbol, coid)
+        return False
+    if st.state in ("filled", "partially_filled"):
+        _on_fill_success(symbol, coid, st, cfg)
+        return True
+    if st.state in ("new", "accepted", "open"):
+        StateManager.add_open_order(symbol, coid)
+        log_event(f"RECONCILE {symbol}: open order restored in StateManager")
+        return True
+    StateManager.remove_open_order(symbol, coid)
+    log_event(f"RECONCILE {symbol}: state={st.state}, cleaned")
+    return False
+
+
+def _safe_reconcile_by_coid(symbol, coid, cfg):
+    try:
+        return _reconcile_existing_order(symbol, coid, cfg)
+    except Exception as e:  # pragma: no cover - defensive
+        log_event(f"RECONCILE {symbol}: error {e}")
+        return False
+
+
+def place_order_with_trailing_stop(
+    symbol,
+    side_or_sizing,
+    shares: float | None = None,
+    entry_type: str = "market",
+    price_ctx: dict | None = None,
+    cfg=None,
+):
+    """Place an order with idempotency, locking and reconciliation."""
+
+    if isinstance(side_or_sizing, dict):
+        # Backward compatibility with previous signature using sizing dict
+        sizing = side_or_sizing
+        side = "buy"
+        shares = float(sizing.get("shares", 0))
+    else:
+        side = side_or_sizing
+    lock = _get_symbol_lock(symbol)
+    if not lock.acquire(blocking=False):
+        log_event(f"ORDER {symbol}: lock busy, skipping")
+        return False
+
+    coid = make_client_order_id(symbol, side)
+    try:
+        if broker.order_exists(client_order_id=coid):
+            log_event(
+                f"ORDER {symbol}: already exists {coid}, reconciling instead of resending"
+            )
+            return _reconcile_existing_order(symbol, coid, cfg)
+
+        StateManager.add_open_order(symbol, coid)
+
+        ok, broker_order_id = broker.submit_order(
+            symbol=symbol,
+            side=side,
+            qty=shares,
+            client_order_id=coid,
+            order_type=entry_type,
+            price_ctx=price_ctx,
+        )
+        if not ok:
+            StateManager.remove_open_order(symbol, coid)
+            log_event(f"ORDER {symbol}: ❌ submit failed, cleaned open_orders")
+            return False
+
+        status = _wait_for_fill_or_timeout(
+            coid, timeout_sec=(cfg or {}).get("broker", {}).get("fill_timeout_sec", 20)
+        )
+        if status.state in ("filled", "partially_filled"):
+            _on_fill_success(symbol, coid, status, cfg)
+            StateManager.remove_open_order(symbol, coid)
+            return True
+        elif status.state in ("accepted", "new", "open"):
+            log_event(f"ORDER {symbol}: pending after timeout -> monitoring")
+            return True
+        else:
+            StateManager.remove_open_order(symbol, coid)
+            log_event(
+                f"ORDER {symbol}: ❌ state={getattr(status, 'state', None)}, removed from open_orders"
+            )
+            return False
+    except Exception as e:
+        log_event(f"ORDER {symbol}: ⛔ exception {e}")
+        _safe_reconcile_by_coid(symbol, coid, cfg)
+        return False
+    finally:
+        lock.release()
