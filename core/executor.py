@@ -897,8 +897,7 @@ def _on_fill_success(symbol, coid, status, cfg):
     avg_price = getattr(status, "filled_avg_price", 0)
     StateManager.add_executed_symbol(symbol)
     StateManager.add_open_position(symbol, coid, filled_qty, avg_price)
-    with executed_symbols_today_lock:
-        executed_symbols_today.add(symbol)
+    executed_symbols_today.add(symbol)
     mark_executed(symbol)
     amount_usd = float(filled_qty) * float(avg_price)
     with pending_trades_lock:
