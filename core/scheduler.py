@@ -23,6 +23,8 @@ import config
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, stock_assets, reset_symbol_rotation
 from broker.alpaca import api, is_market_open
+from broker import alpaca as broker
+from utils.state import StateManager
 from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
 from utils.logger import log_event, log_dir
@@ -54,6 +56,25 @@ from utils.crypto_limit import get_crypto_limit
 
 summary_lock = threading.Lock()
 _last_summary_date = None
+
+
+def reconcile_on_boot() -> None:
+    """Align StateManager with broker state at startup."""
+    orders = broker.list_open_orders_today()
+    positions = broker.list_positions()
+    StateManager.replace_open_orders({o.symbol: o.client_order_id for o in orders})
+    pos_map = {
+        p.symbol: {
+            "coid": getattr(p, "client_order_id", ""),
+            "qty": float(getattr(p, "qty", 0)),
+            "avg": float(getattr(p, "avg_entry_price", 0)),
+        }
+        for p in positions
+    }
+    StateManager.replace_open_positions(pos_map)
+    log_event(
+        f"BOOT reconcile: restored {len(orders)} orders, {len(positions)} positions"
+    )
 
 def get_ny_time():
     return datetime.now(timezone('America/New_York'))
