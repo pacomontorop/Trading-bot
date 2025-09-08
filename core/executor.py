@@ -30,6 +30,7 @@ import os
 import csv
 import json
 import gc
+from utils.market_calendar import earnings_within, minutes_to_close
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -101,6 +102,31 @@ def _cfg_risk(cfg):
         "max_trailing_pct": float(r.get("max_trailing_pct", 0.05)),
         "allow_fractional": bool(r.get("allow_fractional", True)),
     }
+
+
+def _apply_event_and_cutoff_policies(symbol: str, sizing_notional: float, cfg) -> tuple[bool, float, str]:
+    """Return (allowed, adjusted_notional, reason) after applying event and cutoff rules."""
+    mkt = (cfg or {}).get("market", {})
+    avoid_days = int(mkt.get("avoid_earnings_days", 3))
+    event_mode = (mkt.get("event_block_mode") or "reduce").lower()
+    reduce_frac = float(mkt.get("event_reduce_fraction", 0.5))
+    consider_div = bool(mkt.get("consider_dividends", True))
+    consider_guid = bool(mkt.get("consider_guidance", True))
+    cutoff_min = int(mkt.get("avoid_last_minutes", 20))
+
+    # Cutoff fin de sesión
+    mins = minutes_to_close(None)
+    if mins <= cutoff_min:
+        return (False, 0.0, f"cutoff_last_{cutoff_min}m")
+
+    # Eventos
+    has_event = earnings_within(symbol, avoid_days)
+    if has_event:
+        if event_mode == "block":
+            return (False, 0.0, f"event_block_{avoid_days}d")
+        return (True, sizing_notional * reduce_frac, f"event_reduce_{reduce_frac:.2f}")
+
+    return (True, sizing_notional, "ok")
 
 
 def compute_chandelier_trail(price: float, atr: float, cfg) -> float:
@@ -856,6 +882,29 @@ def short_scan():
                     if sizing["shares"] <= 0 or sizing["notional"] <= 0:
                         log_event(f"SIZE {symbol}: ❌ sin tamaño ({sizing['reason']})")
                         continue
+                    allowed, adj_notional, reason = _apply_event_and_cutoff_policies(
+                        symbol, sizing["notional"], config._policy
+                    )
+                    if not allowed or adj_notional <= 0:
+                        log_event(f"ENTRY {symbol}: ❌ veto por {reason}")
+                        continue
+                    if adj_notional != sizing["notional"]:
+                        price = current_price
+                        allow_frac = _cfg_risk(config._policy)["allow_fractional"]
+                        if allow_frac:
+                            new_shares = adj_notional / price
+                        else:
+                            new_shares = int(adj_notional // price)
+                        if new_shares <= 0:
+                            log_event(
+                                f"ENTRY {symbol}: ❌ tamaño tras reducción no válido ({reason})"
+                            )
+                            continue
+                        sizing["shares"] = new_shares
+                        sizing["notional"] = new_shares * price
+                        log_event(
+                            f"ENTRY {symbol}: ⚠️ tamaño reducido por {reason} -> shares={new_shares:.4f} notional=${sizing['notional']:.2f}"
+                        )
                     log_event(
                         f"SIZE {symbol}: ✅ shares={sizing['shares']:.4f} notional=${sizing['notional']:.2f} "
                         f"stop_dist=${sizing['stop_distance']:.4f} risk_budget=${sizing['risk_budget']:.2f} exposure={exposure:.2f}"
