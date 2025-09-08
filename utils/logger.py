@@ -7,7 +7,7 @@ log_dir = os.path.join(PROJECT_ROOT, "logs")
 
 def log_event(message, **fields):
     os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, "events.log")
+    trading_file = os.path.join(log_dir, "trading.log")
     approval_file = os.path.join(log_dir, "approvals.log")
 
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -15,8 +15,9 @@ def log_event(message, **fields):
     log_line = f"[{timestamp}] {message}" + (f" {extra}" if extra else "")
 
     print(log_line)
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(log_line + "\n")
     if message.startswith("APPROVAL"):
         with open(approval_file, "a", encoding="utf-8") as f:
+            f.write(log_line + "\n")
+    else:
+        with open(trading_file, "a", encoding="utf-8") as f:
             f.write(log_line + "\n")

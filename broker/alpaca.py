@@ -19,7 +19,9 @@ api = tradeapi.REST(
 )
 
 # Configure basic retry logic on the underlying HTTP session
-retry = Retry(total=3, backoff_factor=3)
+RETRY_TOTAL = int(os.getenv("APCA_RETRY_TOTAL", "3"))
+RETRY_BACKOFF = float(os.getenv("APCA_BACKOFF_FACTOR", "3"))
+retry = Retry(total=RETRY_TOTAL, backoff_factor=RETRY_BACKOFF)
 adapter = HTTPAdapter(max_retries=retry)
 api._session.mount("https://", adapter)
 api._session.mount("http://", adapter)

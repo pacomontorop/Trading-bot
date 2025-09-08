@@ -6,7 +6,7 @@ from utils.telegram_alert import send_telegram_alert
 from utils.order_tracker import compute_cumulative_stats
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG_FILE = os.path.join(PROJECT_ROOT, "logs", "events.log")
+LOG_FILE = os.path.join(PROJECT_ROOT, "logs", "trading.log")
 
 def _parse_today_events(log_path: str, target_date: datetime.date):
     success = failures = shorts = errors = 0
