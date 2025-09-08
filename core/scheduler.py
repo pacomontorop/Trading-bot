@@ -17,6 +17,8 @@ from core.executor import (
     executed_symbols_today_lock,
     short_scan,
     evaluated_longs_today,
+    _apply_event_and_cutoff_policies,
+    _cfg_risk,
 )
 import config
 
@@ -40,6 +42,7 @@ from signals.filters import (
 )
 
 from utils.daily_risk import get_today_pnl_details
+from utils.market_calendar import minutes_to_close
 
 
 import threading
@@ -87,6 +90,12 @@ def pre_market_scan():
             while not is_market_open():
                 pytime.sleep(60)
             print("🔔 Mercado abierto. Reanudando escaneo de oportunidades.", flush=True)
+        mkt_cfg = (config._policy or {}).get("market", {})
+        cutoff_min = int(mkt_cfg.get("avoid_last_minutes", 20))
+        if minutes_to_close(None) <= cutoff_min:
+            print(f"⏹️ A {cutoff_min}m del cierre. Escaneo detenido.", flush=True)
+            pytime.sleep(60)
+            continue
         now_ny = get_ny_time()
         print(f"⏰ {now_ny.strftime('%Y-%m-%d %H:%M:%S')} NY | Mercado abierto", flush=True)
 
@@ -155,6 +164,30 @@ def pre_market_scan():
                 if sizing["shares"] <= 0 or sizing["notional"] <= 0:
                     log_event(f"SIZE {symb}: ❌ sin tamaño ({sizing['reason']})")
                     continue
+
+                allowed, adj_notional, reason = _apply_event_and_cutoff_policies(
+                    symb, sizing["notional"], config._policy
+                )
+                if not allowed or adj_notional <= 0:
+                    log_event(f"ENTRY {symb}: ❌ veto por {reason}")
+                    continue
+                if adj_notional != sizing["notional"]:
+                    price = current_price
+                    allow_frac = _cfg_risk(config._policy)["allow_fractional"]
+                    if allow_frac:
+                        new_shares = adj_notional / price
+                    else:
+                        new_shares = int(adj_notional // price)
+                    if new_shares <= 0:
+                        log_event(
+                            f"ENTRY {symb}: ❌ tamaño tras reducción no válido ({reason})"
+                        )
+                        continue
+                    sizing["shares"] = new_shares
+                    sizing["notional"] = new_shares * price
+                    log_event(
+                        f"ENTRY {symb}: ⚠️ tamaño reducido por {reason} -> shares={new_shares:.4f} notional=${sizing['notional']:.2f}"
+                    )
                 log_event(
                     f"SIZE {symb}: ✅ shares={sizing['shares']:.4f} notional=${sizing['notional']:.2f} "
                     f"stop_dist=${sizing['stop_distance']:.4f} risk_budget=${sizing['risk_budget']:.2f} exposure={exposure:.2f}"

@@ -31,3 +31,11 @@ exits:
   trailing_mode: "chandelier"    # único modo por ahora
   update_trailing_on_new_highs: true
   allow_tp_and_trailing_same_bracket: false  # si el broker no lo soporta, usa órdenes separadas
+
+market:
+  avoid_earnings_days: 3       # ventana ±días para bloquear/reducir
+  avoid_last_minutes: 20       # no abrir nuevas posiciones a X min del cierre
+  event_block_mode: "reduce"   # "block" | "reduce"
+  event_reduce_fraction: 0.5   # si "reduce", reduce tamaño al 50%
+  consider_dividends: true
+  consider_guidance: true
