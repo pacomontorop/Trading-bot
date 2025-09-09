@@ -117,7 +117,7 @@ def _apply_event_and_cutoff_policies(symbol: str, sizing_notional: float, cfg) -
 
     # Cutoff fin de sesión
     mins = market_calendar.minutes_to_close(None)
-    if mins <= cutoff_min:
+    if cutoff_min > 0 and mins <= cutoff_min:
         return (False, 0.0, f"cutoff_last_{cutoff_min}m")
 
     # Eventos

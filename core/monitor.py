@@ -108,11 +108,19 @@ def monitor_open_positions():
     while True:
         try:
             positions = api.list_positions()
-            symbols = {p.symbol for p in positions} if positions else set()
+            pos_map = {
+                p.symbol: {
+                    "coid": getattr(p, "client_order_id", ""),
+                    "qty": float(getattr(p, "qty", 0)),
+                    "avg": float(getattr(p, "avg_entry_price", 0)),
+                }
+                for p in positions
+            } if positions else {}
+            symbols = set(pos_map.keys())
             with open_positions_lock:
                 open_positions.intersection_update(symbols)
                 open_positions.update(symbols)
-                state_manager.replace_open_positions(open_positions)
+                state_manager.replace_open_positions(pos_map)
             update_positions_metric(len(open_positions))
 
             if not positions:
