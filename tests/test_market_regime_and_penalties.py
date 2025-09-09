@@ -50,3 +50,24 @@ def test_compute_vix_regime_uses_cache(monkeypatch):
     b = mr.compute_vix_regime(cfg)
     assert a["regime"] in ("normal", "elevated_vol", "high_vol")
     assert b == a
+
+
+def test_compute_vix_regime_excludes_today(monkeypatch):
+    monkeypatch.setattr(mr, "_CACHE", {})
+    monkeypatch.setattr(
+        mr,
+        "_get_recent_vix_levels",
+        lambda wins: [5, 9, 8, 7, 6, 10],
+    )
+    cfg = {
+        "market": {
+            "vix_percentile_windows": [1, 5, 20],
+            "vix_high_pct": 80,
+            "vix_elevated_pct": 60,
+        }
+    }
+    res = mr.compute_vix_regime(cfg)
+    assert res["regime"] == "normal"
+    assert res["pctiles"]["pctl_1d"] == 0.0
+    assert res["pctiles"]["pctl_5d"] == 0.0
+    assert res["pctiles"]["pctl_20d"] == 0.0

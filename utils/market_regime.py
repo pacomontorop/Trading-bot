@@ -57,7 +57,9 @@ def compute_vix_regime(cfg) -> dict:
 
     pctiles = {}
     for w in wins:
-        sample = levels[:w] if len(levels) >= w else levels
+        # Exclude today's level from the percentile sample so that
+        # windows that include ``1`` compare today against prior days.
+        sample = levels[1 : w + 1]
         pctiles[f"pctl_{w}d"] = _percentile_rank(sample, today) if sample else 0.0
 
     high_th = float(mkt.get("vix_high_pct", 80))
