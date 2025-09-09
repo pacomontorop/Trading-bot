@@ -4,6 +4,7 @@ from config import STRATEGY_VER
 import os
 import yaml
 import pandas as pd
+from utils.logger import log_event
 
 _POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
 with open(_POLICY_PATH, "r", encoding="utf-8") as _f:
@@ -21,6 +22,52 @@ def _normalize_0_100(x: float) -> int:
         return max(0, min(100, int(round(x))))
     except Exception:
         return 0
+
+
+def _atr_z_penalty(atr_series: list[float], cfg) -> float:
+    p = (cfg or {}).get("score", {}).get("atr_z_penalty", {})
+    look = int(p.get("lookback_days", 20))
+    z_th = float(p.get("z_threshold", 1.0))
+    max_pen = float(p.get("max_penalty", 10.0))
+    data = atr_series[-look:] if len(atr_series) >= look else atr_series
+    if len(data) < 5:
+        return 0.0
+    import statistics
+
+    mu = statistics.median(data)
+    sd = statistics.pstdev(data) or 1e-6
+    z = (data[-1] - mu) / sd
+    pen = -min(max(0.0, z - z_th), max_pen)
+    if pen < 0:
+        log_event(f"PENALTY ATR_Z z≈{z:.2f} -> {pen}")
+    return pen
+
+
+def _gap_open_rejection_penalty(
+    open_price: float,
+    first_n_min_prices: list[float],
+    prev_close: float,
+    cfg,
+) -> float:
+    g = (cfg or {}).get("score", {}).get("gap_open_rejection", {})
+    look = int(g.get("lookback_minutes", 15))
+    weak_th = float(g.get("weakness_threshold_pct", -0.3))
+    pen = float(g.get("penalty", 5.0))
+    if prev_close <= 0 or open_price <= 0:
+        return 0.0
+    gap_pct = 100.0 * (open_price / prev_close - 1.0)
+    if gap_pct <= 0.0:
+        return 0.0
+    if not first_n_min_prices:
+        return 0.0
+    low_early = min(first_n_min_prices[:look])
+    weakness_pct = 100.0 * (low_early / open_price - 1.0)
+    penalty = -pen if weakness_pct <= weak_th else 0.0
+    if penalty < 0:
+        log_event(
+            f"PENALTY GAP_REJECTION gap={gap_pct:.2f}% weak={weakness_pct:.2f}% -> {penalty}"
+        )
+    return penalty
 
 
 def fetch_yfinance_stock_data(symbol, verbose: bool = False):
@@ -133,18 +180,21 @@ def score_long_signal(symbol: str, market_data: dict) -> dict:
         score = 20
     score += quiver_score
 
-    penalties = 0
-    atr_ratio = market_data.get("atr_ratio")
-    if atr_ratio and atr_ratio > 0:
-        penalties += 10
-    gap = market_data.get("gap", 0)
-    if gap and gap > 0:
-        penalties += 5
+    penalties = 0.0
+    atr_series20 = market_data.get("atr_series20", []) or []
+    open_price = market_data.get("open_price", 0.0)
+    prev_close = market_data.get("prev_close", 0.0)
+    first_15m_prices = market_data.get("first_15m_prices", []) or []
+
+    penalties += _atr_z_penalty(atr_series20, _policy)
+    penalties += _gap_open_rejection_penalty(open_price, first_15m_prices, prev_close, _policy)
+
     macro = market_data.get("macro_vix", 0)
     if macro and macro > 0:
-        penalties += 5
-    score -= penalties
-    components["penalties"] = -penalties
+        penalties -= 5
+
+    score += penalties
+    components["penalties"] = penalties
 
     score = _normalize_0_100(score)
     return {"score": score, "components": components, "quiver_recent": quiver_recent}

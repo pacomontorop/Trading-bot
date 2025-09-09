@@ -6,6 +6,14 @@ gate:
 
 score:
   strong_recency_hours: 48
+  atr_z_penalty:
+    lookback_days: 20
+    z_threshold: 1.0
+    max_penalty: 10
+  gap_open_rejection:
+    lookback_minutes: 15
+    weakness_threshold_pct: -0.3
+    penalty: 5
 
 approvals:
   quiver_override: true         # permite aprobar solo por Quiver fuerte
@@ -33,6 +41,13 @@ exits:
   allow_tp_and_trailing_same_bracket: false  # si el broker no lo soporta, usa órdenes separadas
 
 market:
+  default_exposure: 0.85
+  min_exposure: 0.6
+  max_exposure: 1.0
+  vix_percentile_windows: [1, 5, 20]
+  vix_high_pct: 80
+  vix_elevated_pct: 60
+  cache_ttl_sec: 3600
   avoid_earnings_days: 3       # ventana ±días para bloquear/reducir
   avoid_last_minutes: 20       # no abrir nuevas posiciones a X min del cierre
   event_block_mode: "reduce"   # "block" | "reduce"

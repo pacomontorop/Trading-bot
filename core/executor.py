@@ -30,7 +30,8 @@ import os
 import csv
 import json
 import gc
-from utils.market_calendar import earnings_within, minutes_to_close
+import utils.market_calendar as market_calendar
+from utils.market_regime import compute_vix_regime, exposure_from_regime
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -115,12 +116,12 @@ def _apply_event_and_cutoff_policies(symbol: str, sizing_notional: float, cfg) -
     cutoff_min = int(mkt.get("avoid_last_minutes", 20))
 
     # Cutoff fin de sesión
-    mins = minutes_to_close(None)
+    mins = market_calendar.minutes_to_close(None)
     if mins <= cutoff_min:
         return (False, 0.0, f"cutoff_last_{cutoff_min}m")
 
     # Eventos
-    has_event = earnings_within(symbol, avoid_days)
+    has_event = market_calendar.earnings_within(symbol, avoid_days)
     if has_event:
         if event_mode == "block":
             return (False, 0.0, f"event_block_{avoid_days}d")
@@ -160,9 +161,39 @@ def should_use_combined_bracket(cfg, broker_module) -> bool:
     return bool(callable(supports) and supports())
 
 
+_EXPOSURE_CACHE: dict[str, float] = {}
+
+
 def get_market_exposure_factor(cfg) -> float:
-    """Stub for global exposure factor calculation."""
-    return 1.0
+    """Return market-wide exposure factor based on VIX regime.
+
+    The value is cached per day; ``compute_vix_regime`` maintains its own TTL.
+    """
+    today = _dt.datetime.utcnow().date()
+    cached = _EXPOSURE_CACHE.get(str(today))
+    if cached is not None:
+        return cached
+
+    regime_info = compute_vix_regime(cfg)
+    factor = exposure_from_regime(cfg, regime_info["regime"])
+    mkt = (cfg or {}).get("market", {})
+    min_e = float(mkt.get("min_exposure", 0.6))
+    max_e = float(mkt.get("max_exposure", 1.0))
+    exposure = max(min_e, min(max_e, factor))
+
+    log_event(
+        "REGIME: {} VIX={} pctiles={} composite={:.1f} -> exposure={:.2f}".format(
+            regime_info["regime"],
+            regime_info.get("today"),
+            regime_info.get("pctiles"),
+            regime_info.get("composite", 0.0),
+            exposure,
+        )
+    )
+
+    _EXPOSURE_CACHE.clear()
+    _EXPOSURE_CACHE[str(today)] = exposure
+    return exposure
 
 
 def calculate_position_size_risk_based(
