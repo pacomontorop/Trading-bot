@@ -21,7 +21,7 @@ def send_email(subject, body, attach_log=False):
         message.attach(MIMEText(body, "plain"))
 
         if attach_log:
-            for fname in ("events.log", "approvals.log"):
+            for fname in ("trading.log", "approvals.log"):
                 log_file_path = os.path.join(log_dir, fname)
                 if os.path.exists(log_file_path):
                     with open(log_file_path, "rb") as log_file:

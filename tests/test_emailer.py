@@ -14,11 +14,11 @@ import utils.emailer as emailer
 def test_send_email_attaches_logs(tmp_path, monkeypatch):
     # Prepare dummy log files
     log_dir = tmp_path
-    events_path = log_dir / "events.log"
+    trading_path = log_dir / "trading.log"
     approvals_path = log_dir / "approvals.log"
-    events_content = "line1\nline2"
+    trading_content = "line1\nline2"
     approvals_content = "appr\nrej"
-    events_path.write_text(events_content)
+    trading_path.write_text(trading_content)
     approvals_path.write_text(approvals_content)
 
     # Patch emailer configuration
@@ -51,7 +51,7 @@ def test_send_email_attaches_logs(tmp_path, monkeypatch):
     assert sent_messages, "No email was sent"
     msg = message_from_string(sent_messages[0])
     attachments = [part for part in msg.walk() if part.get_content_disposition() == "attachment"]
-    assert sorted(part.get_filename() for part in attachments) == ["approvals.log", "events.log"]
+    assert sorted(part.get_filename() for part in attachments) == ["approvals.log", "trading.log"]
     contents = {part.get_filename(): part.get_payload(decode=True).decode() for part in attachments}
-    assert contents["events.log"] == events_content
+    assert contents["trading.log"] == trading_content
     assert contents["approvals.log"] == approvals_content

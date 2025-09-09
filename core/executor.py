@@ -956,11 +956,17 @@ def short_scan():
 # ---------------------------------------------------------------------------
 
 
-def _wait_for_fill_or_timeout(client_order_id: str, timeout_sec: int):
+def _wait_for_fill_or_timeout(
+    client_order_id: str,
+    timeout_sec: int,
+    initial_delay: float = 0.5,
+    backoff_factor: float = 1.8,
+    max_delay: float = 2.0,
+):
     import time
 
     start = time.time()
-    delay = 0.5
+    delay = initial_delay
     last_status = None
     while time.time() - start < timeout_sec:
         st = broker.get_order_status_by_client_id(client_order_id)
@@ -968,7 +974,7 @@ def _wait_for_fill_or_timeout(client_order_id: str, timeout_sec: int):
         if st and st.state in ("filled", "partially_filled", "rejected", "canceled"):
             return st
         time.sleep(delay)
-        delay = min(delay * 1.8, 2.0)
+        delay = min(delay * backoff_factor, max_delay)
     return last_status or type("S", (), {"state": "timeout"})
 
 
@@ -1057,8 +1063,13 @@ def place_order_with_trailing_stop(
             log_event(f"ORDER {symbol}: ❌ submit failed, cleaned open_orders")
             return False
 
+        broker_cfg = (cfg or {}).get("broker", {})
         status = _wait_for_fill_or_timeout(
-            coid, timeout_sec=(cfg or {}).get("broker", {}).get("fill_timeout_sec", 20)
+            coid,
+            timeout_sec=broker_cfg.get("fill_timeout_sec", 20),
+            initial_delay=broker_cfg.get("fill_initial_delay_sec", 0.5),
+            backoff_factor=broker_cfg.get("fill_backoff_factor", 1.8),
+            max_delay=broker_cfg.get("fill_max_delay_sec", 2.0),
         )
         if status.state in ("filled", "partially_filled"):
             _on_fill_success(symbol, coid, status, cfg)

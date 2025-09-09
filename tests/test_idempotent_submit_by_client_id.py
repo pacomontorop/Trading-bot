@@ -19,7 +19,7 @@ def test_idempotent_submit_by_client_id(monkeypatch):
         status = types.SimpleNamespace(state="filled", filled_qty=1, filled_avg_price=10)
         return True, "1"
 
-    def fake_wait(coid, timeout_sec):
+    def fake_wait(coid, timeout_sec, initial_delay, backoff_factor, max_delay):
         return types.SimpleNamespace(state="filled", filled_qty=1, filled_avg_price=10)
 
     def fake_reconcile(symbol, coid, cfg):
