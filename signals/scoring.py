@@ -4,6 +4,7 @@ from config import STRATEGY_VER
 import os
 import yaml
 import pandas as pd
+import math
 from utils.logger import log_event
 
 _POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
@@ -68,6 +69,21 @@ def _gap_open_rejection_penalty(
             f"PENALTY GAP_REJECTION gap={gap_pct:.2f}% weak={weakness_pct:.2f}% -> {penalty}"
         )
     return penalty
+
+
+def _recency_boost(days_since_event: float | None, strong_recency_hours: float, k: float = 2.0, decay: float = 0.1) -> float:
+    """
+    Devuelve multiplicador de recencia.
+    - Si edad_horas <= strong_recency_hours -> boost fijo k
+    - Si mayor: decae exponencial: exp(-decay * (edad_horas - strong_recency_hours)/24)
+    """
+    if days_since_event is None:
+        return 1.0
+    edad_h = float(days_since_event) * 24.0
+    if edad_h <= strong_recency_hours:
+        return k
+    extra_h = max(0.0, edad_h - strong_recency_hours)
+    return float(math.exp(-decay * (extra_h / 24.0)))
 
 
 def fetch_yfinance_stock_data(symbol, verbose: bool = False):
@@ -137,27 +153,37 @@ def score_long_signal(symbol: str, market_data: dict) -> dict:
     def _decay(base, days):
         return base if days <= 3 else max(5, int(base * (0.9 ** days)))
 
-    if "insiders" in quiver:
-        quiver_score += _decay(30, quiver["insiders"])
-        strong_count += 1
-        if quiver["insiders"] <= 3:
-            quiver_recent = True
-    if "gov_contract" in quiver:
-        quiver_score += _decay(25, quiver["gov_contract"])
-        strong_count += 1
-        if quiver["gov_contract"] <= 3:
-            quiver_recent = True
-    if "patent_momentum" in quiver:
-        quiver_score += _decay(15, quiver["patent_momentum"])
-        strong_count += 1
-        if quiver["patent_momentum"] <= 3:
-            quiver_recent = True
-    if "sec13f_activity" in quiver:
-        quiver_score += _decay(5, quiver["sec13f_activity"])
-    if "sec13f_changes" in quiver:
-        quiver_score += _decay(8, quiver["sec13f_changes"])
-    if "house" in quiver:
-        quiver_score += _decay(10, quiver["house"])
+    def _add_signal(key: str, base: int, strong: bool = False):
+        nonlocal quiver_score, strong_count, quiver_recent
+        if key not in quiver:
+            return
+        days = quiver.get(key)
+        if days is None:
+            return
+        weight = _decay(base, days)
+        boost = _recency_boost(days, STRONG_RECENCY_HOURS)
+        weight *= boost
+        quiver_score += weight
+        age_h = days * 24.0
+        if age_h <= STRONG_RECENCY_HOURS:
+            log_event(
+                f"SCORE {symbol}: recency boost k=2.0 age={age_h:.1f}h (≤ {STRONG_RECENCY_HOURS}h)"
+            )
+        else:
+            log_event(
+                f"SCORE {symbol}: decayed boost={boost:.2f} age={age_h:.1f}h (> {STRONG_RECENCY_HOURS}h)"
+            )
+        if strong:
+            strong_count += 1
+            if age_h <= STRONG_RECENCY_HOURS:
+                quiver_recent = True
+
+    _add_signal("insiders", 30, strong=True)
+    _add_signal("gov_contract", 25, strong=True)
+    _add_signal("patent_momentum", 15, strong=True)
+    _add_signal("sec13f_activity", 5)
+    _add_signal("sec13f_changes", 8)
+    _add_signal("house", 10)
     quiver_score += min(3, quiver.get("wsb", 0))
     quiver_score += min(3, quiver.get("twitter", 0))
     components["quiver"] = quiver_score

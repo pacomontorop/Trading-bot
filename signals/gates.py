@@ -4,6 +4,7 @@ from broker.alpaca import is_market_open, get_current_price
 from signals.scoring import fetch_yfinance_stock_data
 from utils.state import already_evaluated_today, already_executed_today
 from signals.reader import is_blacklisted_recent_loser
+from utils.logger import log_event
 import yaml
 import os
 
@@ -27,6 +28,9 @@ def _has_strong_recent_quiver_signal(symbol: str, max_age_days: float) -> bool:
     for fn in (get_insider_signal, get_gov_contract_signal, get_patent_momentum_signal):
         r = fn(symbol)
         if getattr(r, "active", False) and (r.days is not None) and (r.days <= max_age_days):
+            log_event(
+                f"GATE {symbol}: strong recent via {fn.__name__} age={r.days:.2f}d (≤ {max_age_days}d)"
+            )
             return True
     return False
 

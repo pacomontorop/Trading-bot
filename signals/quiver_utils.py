@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from signals.quiver_throttler import throttled_request
 from signals.fmp_utils import price_target_news
@@ -86,6 +86,20 @@ class SignalResult:
 
     def __bool__(self):  # pragma: no cover - simple delegator
         return self.active
+
+
+def _days_since(dt: datetime | None) -> float | None:
+    if not dt:
+        return None
+    try:
+        from datetime import timezone, datetime as _dt
+        now = _dt.utcnow().replace(tzinfo=timezone.utc)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        days = (now - dt).total_seconds() / 86400.0
+        return max(0.0, days)
+    except Exception:
+        return None
 
 
 def recency_weight(days_since_event: Optional[float], k: float = 2.0, decay: float = 0.1) -> float:
@@ -321,7 +335,7 @@ def get_insider_signal(symbol):
     latest_buy = None
     for d in entries:
         try:
-            event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+            event_date = datetime.fromisoformat(d["Date"].replace("Z", "")).replace(tzinfo=timezone.utc)
         except Exception:
             continue
         if d["TransactionCode"] == "P":
@@ -332,7 +346,7 @@ def get_insider_signal(symbol):
             recent_sells += 1
 
     if recent_buys >= 2 and recent_buys >= 2 * recent_sells and latest_buy:
-        days = (datetime.utcnow() - latest_buy).total_seconds() / 86400
+        days = _days_since(latest_buy)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -356,13 +370,13 @@ def get_gov_contract_signal(symbol):
             if not date_str:
                 continue
             try:
-                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 continue
             if amt >= 100_000 and (latest is None or event_date > latest):
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -378,13 +392,13 @@ def get_patent_momentum_signal(symbol):
             if not date_str:
                 continue
             try:
-                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 continue
             if latest is None or event_date > latest:
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -399,13 +413,13 @@ def get_wsb_signal(symbol):
         if not date_str:
             continue
         try:
-            event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
         except Exception:
             continue
         if d.get("Mentions", 0) >= 10 and (latest is None or event_date > latest):
             latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -421,13 +435,13 @@ def get_price_target_signal(symbol):
         if not date_str or not isinstance(target, (int, float)) or not isinstance(posted, (int, float)):
             continue
         try:
-            pub_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+            pub_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
         except Exception:
             continue
         if target >= posted * 1.05 and (latest is None or pub_date > latest):
             latest = pub_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -452,13 +466,13 @@ def sec13f_activity_signal(symbol):
             if not date_str:
                 continue
             try:
-                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 continue
             if latest is None or event_date > latest:
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -474,7 +488,7 @@ def sec13f_changes_signal(symbol):
                 pct = d.get("Change_Pct")
                 date_str = d.get("ReportDate") or d.get("Date")
                 if date_str:
-                    event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                    event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
                 else:
                     event_date = None
                 if isinstance(pct, (int, float)) and abs(pct) >= 5:
@@ -483,7 +497,7 @@ def sec13f_changes_signal(symbol):
             except Exception:
                 continue
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -496,13 +510,13 @@ def house_purchase_signal(symbol):
     for d in data:
         if d.get("Ticker") == symbol.upper() and d.get("Transaction") == "Purchase":
             try:
-                event_date = datetime.fromisoformat(d["Date"].replace("Z", ""))
+                event_date = datetime.fromisoformat(d["Date"].replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 continue
             if latest is None or event_date > latest:
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -518,7 +532,7 @@ def twitter_trending_signal(symbol):
         date_str = d.get("Date") or d.get("date")
         if date_str:
             try:
-                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 event_date = None
         else:
@@ -527,7 +541,7 @@ def twitter_trending_signal(symbol):
             if event_date and (latest is None or event_date > latest):
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
@@ -543,7 +557,7 @@ def app_ratings_signal(symbol):
         date_str = d.get("Date") or d.get("date")
         if date_str:
             try:
-                event_date = datetime.fromisoformat(str(date_str).replace("Z", ""))
+                event_date = datetime.fromisoformat(str(date_str).replace("Z", "")).replace(tzinfo=timezone.utc)
             except Exception:
                 event_date = None
         else:
@@ -557,7 +571,7 @@ def app_ratings_signal(symbol):
             if event_date and (latest is None or event_date > latest):
                 latest = event_date
     if latest:
-        days = (datetime.utcnow() - latest).total_seconds() / 86400
+        days = _days_since(latest)
         return SignalResult(True, days)
     return SignalResult(False, None)
 
