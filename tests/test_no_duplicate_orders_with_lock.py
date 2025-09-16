@@ -18,7 +18,7 @@ def test_no_duplicate_orders_with_lock(monkeypatch):
 
     status = types.SimpleNamespace(state="filled", filled_qty=1, filled_avg_price=10)
 
-    def fake_wait(coid, timeout_sec):
+    def fake_wait(coid, timeout_sec, initial_delay, backoff_factor, max_delay):
         start_evt.set()
         release_evt.wait()
         return status

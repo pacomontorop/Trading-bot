@@ -358,7 +358,7 @@ def daily_summary():
                 pending_opportunities.clear()
             with pending_trades_lock:
                 pending_trades.clear()
-            for fname in ("events.log", "pnl.log", "approvals.log"):
+            for fname in ("trading.log", "pnl.log", "approvals.log"):
                 path = os.path.join(log_dir, fname)
                 if os.path.exists(path):
                     open(path, "w").close()

@@ -44,7 +44,7 @@ approaches for running coroutines from worker threads:
 
 ## Utilities
 
-`utils/log_summary.py` provides a small CLI to inspect `logs/events.log` for a given date.
+`utils/log_summary.py` provides a small CLI to inspect `logs/trading.log` for a given date.
 It prints how many orders succeeded, failed, shorts were executed and any errors logged.
 
 ```bash

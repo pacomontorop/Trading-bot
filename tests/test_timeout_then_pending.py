@@ -13,7 +13,7 @@ def test_timeout_then_pending(monkeypatch):
     def fake_submit_order(**kwargs):
         return True, "1"
 
-    def fake_wait(coid, timeout_sec):
+    def fake_wait(coid, timeout_sec, initial_delay, backoff_factor, max_delay):
         return types.SimpleNamespace(state="new")
 
     monkeypatch.setattr(executor.broker, "order_exists", fake_order_exists)
