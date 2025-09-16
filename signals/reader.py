@@ -22,6 +22,7 @@ from broker.alpaca import api
 from signals.scoring import fetch_yfinance_stock_data
 from datetime import datetime, timedelta
 from utils.logger import log_event
+from utils import metrics
 from signals.adaptive_bonus import apply_adaptive_bonus
 from signals.fmp_utils import get_fmp_grade_score
 from signals.fmp_signals import get_fmp_signal_score
@@ -300,7 +301,16 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         return aggregator.combine(scores)
 
     async def evaluate_symbol(symbol):
-        if symbol in quiver_approval_cache:
+        cache_hit = symbol in quiver_approval_cache
+        metrics.inc("scanned")
+        log_event(
+            "cached evaluation" if cache_hit else "evaluating candidate",
+            event="SCAN",
+            symbol=symbol,
+            cached=cache_hit,
+        )
+
+        if cache_hit:
             approved = quiver_approval_cache[symbol]
             print(f"↩️ [{symbol}] Resultado en caché", flush=True)
             cond = (
@@ -325,6 +335,12 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
+                metrics.inc("scored")
+                log_event(
+                    f"score={graded:.1f} source=Quiver",
+                    event="SCORE",
+                    symbol=symbol,
+                )
                 return (symbol, graded, "Quiver", current_price, atr)
             return None
 
@@ -359,6 +375,12 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
+                metrics.inc("scored")
+                log_event(
+                    f"score={graded:.1f} source=Quiver",
+                    event="SCORE",
+                    symbol=symbol,
+                )
                 return (symbol, graded, "Quiver", current_price, atr)
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")

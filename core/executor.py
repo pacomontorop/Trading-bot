@@ -15,6 +15,7 @@ from config import STRATEGY_VER
 import config
 from signals.reader import get_top_shorts
 from utils.logger import log_event, log_dir
+from utils import metrics
 from utils.daily_risk import (
     register_trade_pnl,
     is_risk_limit_exceeded,
@@ -698,11 +699,18 @@ def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
             time_in_force=resolve_time_in_force(qty),
         )
         orders_placed.inc()
+        metrics.inc("ordered")
         print(
             f"📨 Orden enviada: ID {order.id}, estado inicial {order.status}",
             flush=True,
         )
-        log_event(f"✅ Orden enviada para {symbol}")
+        log_event(
+            "placed market order",
+            event="ORDER",
+            symbol=symbol,
+            qty=f"{qty:.4f}",
+            notional=f"{cost:.2f}",
+        )
         entry_data[symbol] = (None, shares, None, stop_distance)
         print(
             "⌛ Esperando a que se rellene la orden...",
@@ -831,6 +839,7 @@ def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
             time_in_force=resolve_time_in_force(qty)
         )
         orders_placed.inc()
+        metrics.inc("ordered")
 
         entry_data[symbol] = (None, shares, None, stop_distance)
         if not wait_for_order_fill(order.id, symbol):
@@ -862,12 +871,22 @@ def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
         with pending_trades_lock:
             pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${amount_usd:.2f}")
 
-        log_event(f"✅ Short y trailing buy colocados para {symbol}: {qty} unidades por {amount_usd:.2f} USD")
+        log_event(
+            "short order placed",
+            event="ORDER",
+            symbol=symbol,
+            qty=f"{qty:.4f}",
+            notional=f"{amount_usd:.2f}",
+        )
         return True
 
     except Exception as e:
         print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
-        log_event(f"❌ Falló la orden para {symbol}: {e}")
+        log_event(
+            f"Falló la orden: {e}",
+            event="ERROR",
+            symbol=symbol,
+        )
         return False
 
 def short_scan():
@@ -1056,6 +1075,8 @@ def place_order_with_trailing_stop(
             StateManager.remove_open_order(symbol, coid)
             log_event(f"ORDER {symbol}: ❌ submit failed, cleaned open_orders")
             return False
+
+        metrics.inc("ordered")
 
         status = _wait_for_fill_or_timeout(
             coid, timeout_sec=(cfg or {}).get("broker", {}).get("fill_timeout_sec", 20)

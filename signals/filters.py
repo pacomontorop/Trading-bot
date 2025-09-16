@@ -13,6 +13,7 @@ from data.tiingo_client import get_daily_prices
 from signals.reddit_scraper import get_reddit_sentiment
 from utils.daily_set import DailySet
 from utils.logger import log_event
+from utils import metrics
 from typing import Optional, Dict, Any
 import yfinance as yf
 
@@ -368,6 +369,7 @@ def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
     cached = _APPROVAL_CACHE.get(symbol)
     now = _now_ts()
     if cached and now - cached[1] < ttl:
+        metrics.inc("approved" if cached[0] else "rejected")
         return cached[0]
 
     try:
@@ -376,6 +378,7 @@ def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
                 log_event(
                     f"APPROVAL {symbol}: ✅ Quiver OVERRIDE (strong & fresh). overall_score={overall_score}"
                 )
+                metrics.inc("approved")
                 _APPROVAL_CACHE[symbol] = (True, now, {"mode": "override"})
                 return True
 
@@ -388,14 +391,17 @@ def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
             log_event(
                 f"APPROVAL {symbol}: ✅ Consenso {yes}/3 → {detail}. overall_score={overall_score}"
             )
+            metrics.inc("approved")
         else:
             log_event(
                 f"APPROVAL {symbol}: ❌ Consenso {yes}/3 → {detail}. overall_score={overall_score}"
             )
+            metrics.inc("rejected")
         _APPROVAL_CACHE[symbol] = (ok, now, votes)
         return ok
     except Exception as e:
         log_event(f"APPROVAL {symbol}: ⛔ error {e}")
+        metrics.inc("rejected")
         _APPROVAL_CACHE[symbol] = (False, now, {"error": str(e)})
         return False
 

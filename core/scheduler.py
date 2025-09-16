@@ -31,6 +31,8 @@ from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
 from utils.logger import log_event, log_dir
 from utils.telegram_report import generate_cumulative_report
+from utils.telegram_alert import send_telegram_alert
+from utils import report_builder
 from core.monitor import monitor_open_positions, watchdog_trailing_stop, cancel_stale_orders_loop
 from utils.generate_symbols_csv import generate_symbols_csv
 from core.grade_news import scan_grade_changes
@@ -365,7 +367,83 @@ def daily_summary():
 
         pytime.sleep(3600)
 
-        
+
+_last_report_date = None
+
+
+def _parse_daily_time(cfg) -> tuple[int, int]:
+    time_str = str(cfg.get("daily_time_utc", "20:30"))
+    try:
+        parts = time_str.split(":")
+        hour = int(parts[0])
+        minute = int(parts[1]) if len(parts) > 1 else 0
+    except (TypeError, ValueError):
+        return 20, 30
+    hour = max(0, min(23, hour))
+    minute = max(0, min(59, minute))
+    return hour, minute
+
+
+def daily_reporting_loop():
+    global _last_report_date
+    print("🌀 daily_reporting_loop iniciado.", flush=True)
+    while True:
+        try:
+            policy = config._policy if hasattr(config, "_policy") else {}
+            reporting_cfg = (policy or {}).get("reporting", {}) or {}
+            if not reporting_cfg:
+                pytime.sleep(60)
+                continue
+
+            hour, minute = _parse_daily_time(reporting_cfg)
+            now = datetime.utcnow()
+            target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+            if now >= target and _last_report_date != now.date():
+                report = report_builder.build_report(policy=policy, reset_counters=True)
+                text_report = report_builder.format_text(report)
+                log_event(
+                    "Daily observability report generated",
+                    event="REPORT",
+                    symbol=report.get("date"),
+                )
+
+                if reporting_cfg.get("telegram_enabled", False):
+                    if not send_telegram_alert(text_report):
+                        log_event(
+                            "Failed to deliver daily report to Telegram",
+                            event="ERROR",
+                        )
+
+                if reporting_cfg.get("email_enabled", False):
+                    subject = f"Daily Trading Report {report.get('date')}"
+                    try:
+                        send_email(subject, text_report)
+                    except Exception as exc:
+                        log_event(
+                            f"Email delivery failed: {exc}",
+                            event="ERROR",
+                        )
+
+                if reporting_cfg.get("file_export_enabled", False):
+                    export_dir = reporting_cfg.get("export_dir", "reports/")
+                    paths = report_builder.save_report_files(report, export_dir)
+                    log_event(
+                        "Report files stored",
+                        event="REPORT",
+                        symbol=report.get("date"),
+                        csv=paths.get("csv"),
+                        json=paths.get("json"),
+                    )
+
+                _last_report_date = now.date()
+        except Exception as exc:
+            log_event(
+                f"Daily reporting loop error: {exc}",
+                event="ERROR",
+            )
+        pytime.sleep(30)
+
 
 def start_schedulers():
     print("🟢 Iniciando verificación de symbols.csv...", flush=True)
@@ -401,6 +479,7 @@ def start_schedulers():
     threading.Thread(target=cancel_stale_orders_loop, daemon=True).start()
     threading.Thread(target=pre_market_scan, daemon=True).start()
     threading.Thread(target=daily_summary, daemon=True).start()
+    threading.Thread(target=daily_reporting_loop, daemon=True).start()
     threading.Thread(target=scan_grade_changes, daemon=True).start()
 
     ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
