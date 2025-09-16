@@ -31,6 +31,17 @@ import pandas as pd
 import json
 from signals.aggregator import WeightedSignalAggregator
 import random
+import config
+
+
+def maybe_fetch_externals(symbol, prelim_score, cfg):
+    th = int(((cfg or {}).get("cache", {}) or {}).get("score_recalc_threshold", 60))
+    if prelim_score < th:
+        log_event(
+            f"SCORE {symbol}: skip externals (prelim={prelim_score}<{th})"
+        )
+        return None
+    return True
 
 
 
@@ -272,6 +283,8 @@ async def _get_top_signals_async(verbose=False, exclude=None):
 
     async def apply_external_scores(symbol, base_score):
         """Combina el score base con calificaciones y señales FMP."""
+        if maybe_fetch_externals(symbol, base_score, config._policy) is None:
+            return base_score
         scores = {"base": base_score}
         grade_score = await asyncio.to_thread(get_fmp_grade_score, symbol)
         if grade_score is not None:
