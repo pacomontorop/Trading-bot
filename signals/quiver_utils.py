@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event
+from utils.cache import get as cache_get, set as cache_set
+import config
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from signals.quiver_throttler import throttled_request
@@ -20,9 +22,21 @@ from signals.fmp_utils import price_target_news
 
 load_dotenv()
 
-# Variables globales para caché de endpoints grandes
-INSIDERS_DATA = None
-GOVCONTRACTS_DATA = None
+# TTL helpers for caching
+def _ttl_lot() -> int:
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("cache") or {}).get("lot_ttl_sec", 900)))
+
+
+def _cached_heavy_endpoint(name: str, url: str, ttl: int):
+    key = f"HE_{name}"
+    data = cache_get(key, ttl)
+    if data is not None:
+        return data
+    data = safe_quiver_request(url)
+    if isinstance(data, list):
+        cache_set(key, data)
+    return data
 
 
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
@@ -156,7 +170,15 @@ def get_all_quiver_signals(symbol):
 
 
 def fetch_quiver_signals(symbol):
-    return get_all_quiver_signals(symbol)
+    cfg = getattr(config, "_policy", {}) or {}
+    ttl = int(((cfg.get("cache") or {}).get("symbol_ttl_sec", 600)))
+    k = f"Q_SIG:{symbol.upper()}"
+    v = cache_get(k, ttl)
+    if v is not None:
+        return v
+    res = get_all_quiver_signals(symbol)
+    cache_set(k, res)
+    return res
 
 def score_quiver_signals(signals):
     """Calculate final score applying recency weighting to each active signal."""
@@ -321,10 +343,10 @@ def get_quiver_signals(symbol):
     }
 
 def get_insider_signal(symbol):
-    global INSIDERS_DATA
-    if INSIDERS_DATA is None:
-        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
-    data = INSIDERS_DATA
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl
+    )
     if not isinstance(data, list):
         return SignalResult(False, None)
 
@@ -353,10 +375,10 @@ def get_insider_signal(symbol):
 
 
 def get_gov_contract_signal(symbol):
-    global GOVCONTRACTS_DATA
-    if GOVCONTRACTS_DATA is None:
-        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
-    data = GOVCONTRACTS_DATA
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl
+    )
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -576,7 +598,8 @@ def app_ratings_signal(symbol):
     return SignalResult(False, None)
 
 def has_recent_sec13f_activity(symbol, cutoff=None):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint("live_sec13f", f"{QUIVER_BASE_URL}/live/sec13f", ttl)
     if not isinstance(data, list):
         return False
     if cutoff is None:
@@ -595,7 +618,10 @@ def has_recent_sec13f_activity(symbol, cutoff=None):
     return False
 
 def has_recent_sec13f_changes(symbol, cutoff=None):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_sec13fchanges", f"{QUIVER_BASE_URL}/live/sec13fchanges", ttl
+    )
     if not isinstance(data, list):
         return False
     if cutoff is None:
@@ -619,7 +645,10 @@ def has_recent_sec13f_changes(symbol, cutoff=None):
 
 def has_recent_house_purchase(symbol, cutoff=None):
     """Check recent purchases from U.S. House representatives."""
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl
+    )
     if not isinstance(data, list):
         return False
     if cutoff is None:
@@ -634,10 +663,10 @@ def has_recent_house_purchase(symbol, cutoff=None):
 
 def has_recent_insider_trade(symbol, cutoff):
     """Recent insider transactions for the given symbol."""
-    global INSIDERS_DATA
-    if INSIDERS_DATA is None:
-        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
-    data = INSIDERS_DATA
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl
+    )
     if not isinstance(data, list):
         return False
     for d in data:
@@ -716,10 +745,10 @@ def has_historical_senate_trade(symbol, cutoff):
 
 
 def has_recent_gov_contract(symbol, cutoff):
-    global GOVCONTRACTS_DATA
-    if GOVCONTRACTS_DATA is None:
-        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
-    data = GOVCONTRACTS_DATA
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl
+    )
     if not isinstance(data, list):
         return False
     for d in data:
@@ -853,7 +882,10 @@ def has_recent_patents(symbol, cutoff):
     return isinstance(data, list) and len(data) > 0
 
 def is_trending_on_twitter(symbol, cutoff=None):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl
+    )
     if not isinstance(data, list):
         return False
     if cutoff is None:
@@ -874,7 +906,10 @@ def is_trending_on_twitter(symbol, cutoff=None):
     return False
 
 def has_positive_app_ratings(symbol, cutoff=None):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
+    ttl = _ttl_lot()
+    data = _cached_heavy_endpoint(
+        "live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl
+    )
     if not isinstance(data, list):
         return False
     if cutoff is None:
@@ -913,14 +948,10 @@ def initialize_quiver_caches():
     Inicializa los datos pesados de Quiver para ser usados localmente.
     Evita llamadas repetidas a la API para datos grandes.
     """
-    global INSIDERS_DATA, GOVCONTRACTS_DATA
-    if INSIDERS_DATA is None:
-        print("🔄 Descargando datos de insiders...")
-        INSIDERS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/insiders")
-        print(f"✅ INSIDERS_DATA cargado: {len(INSIDERS_DATA) if isinstance(INSIDERS_DATA, list) else 'Error'}")
-    if GOVCONTRACTS_DATA is None:
-        print("🔄 Descargando datos de contratos gubernamentales...")
-        GOVCONTRACTS_DATA = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontracts")
-        print(f"✅ GOVCONTRACTS_DATA cargado: {len(GOVCONTRACTS_DATA) if isinstance(GOVCONTRACTS_DATA, list) else 'Error'}")
+    ttl = _ttl_lot()
+    print("🔄 Descargando datos de insiders...")
+    _cached_heavy_endpoint("live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl)
+    print("🔄 Descargando datos de contratos gubernamentales...")
+    _cached_heavy_endpoint("live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl)
 
 

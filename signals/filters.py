@@ -364,7 +364,7 @@ def _provider_votes(symbol: str, cfg) -> Dict[str, bool]:
 
 def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
     """Aprobación final: override Quiver opcional o consenso 2/3."""
-    ttl = 300.0
+    ttl = float(((cfg or {}).get("cache", {}) or {}).get("approval_ttl_sec", 300.0))
     cached = _APPROVAL_CACHE.get(symbol)
     now = _now_ts()
     if cached and now - cached[1] < ttl:
