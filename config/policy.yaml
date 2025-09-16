@@ -61,3 +61,13 @@ market:
   event_reduce_fraction: 0.5   # si "reduce", reduce tamaño al 50%
   consider_dividends: true
   consider_guidance: true
+
+reporting:
+  daily_time_utc: "20:30"          # hora del resumen
+  telegram_enabled: true
+  email_enabled: true
+  file_export_enabled: true
+  export_dir: "reports/"
+  include_cache_metrics: true
+  include_risk_metrics: true
+  funnel_fields: [scanned, gated, scored, approved, ordered, rejected]

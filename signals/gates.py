@@ -5,6 +5,7 @@ from signals.scoring import fetch_yfinance_stock_data
 from utils.state import already_evaluated_today, already_executed_today
 from signals.reader import is_blacklisted_recent_loser
 from utils.logger import log_event
+from utils import metrics
 import yaml
 import os
 
@@ -68,6 +69,22 @@ def passes_long_gate(symbol: str, data_ctx=None) -> Tuple[bool, Dict]:
         reasons["recent_loser"] = "cooldown"
 
     ok = not reasons
+    payload = details if ok else reasons
+    summary = ", ".join(f"{k}={v}" for k, v in payload.items()) if payload else "ok"
+    if ok:
+        metrics.inc("gated")
+        log_event(
+            f"passed gate {summary}",
+            event="GATE",
+            symbol=symbol,
+        )
+    else:
+        metrics.inc("rejected")
+        log_event(
+            f"failed gate {summary}",
+            event="GATE",
+            symbol=symbol,
+        )
     return ok, (details if ok else reasons)
 def _default_fetch(symbol: str):  # pragma: no cover - kept for backward compatibility
     from signals import quiver_utils
