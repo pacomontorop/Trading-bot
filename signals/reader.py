@@ -19,7 +19,13 @@ has_recent_quiver_event = getattr(
 from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
-from signals.scoring import fetch_yfinance_stock_data
+try:
+    from signals.scoring import fetch_yfinance_stock_data, SkipSymbol
+except ImportError:
+    from signals.scoring import fetch_yfinance_stock_data
+
+    class SkipSymbol(Exception):
+        pass
 from datetime import datetime, timedelta
 from utils.logger import log_event
 from utils import metrics
@@ -33,6 +39,7 @@ import json
 from signals.aggregator import WeightedSignalAggregator
 import random
 import config
+from utils.symbols import detect_asset_class, normalize_for_yahoo
 
 
 def maybe_fetch_externals(symbol, prelim_score, cfg):
@@ -76,6 +83,13 @@ priority_symbols = [
 ]
 
 
+def _only_equities(symbols):
+    return [s for s in symbols if detect_asset_class(s) == "equity"]
+
+
+priority_symbols = _only_equities(priority_symbols)
+
+
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
 
@@ -114,7 +128,9 @@ def is_options_enabled(symbol):
 
 # Combina símbolos de prioridad con el resto en orden aleatorio sin duplicados
 stock_assets = priority_symbols + [
-    s for s in fetch_symbols_from_csv() if s not in priority_symbols
+    s
+    for s in fetch_symbols_from_csv()
+    if s not in priority_symbols and detect_asset_class(s) == "equity"
 ]
 random.shuffle(stock_assets)
 
@@ -143,7 +159,11 @@ def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAY
 
 def has_downtrend(symbol: str, days: int = 4) -> bool:
     try:
-        df = yf.download(symbol, period=f"{days}d", interval="1d", progress=False)
+        asset_class = detect_asset_class(symbol)
+        if asset_class != "equity":
+            return False
+        yf_symbol = normalize_for_yahoo(symbol) if asset_class == "preferred" else symbol
+        df = yf.download(yf_symbol, period=f"{days}d", interval="1d", progress=False)
         close_data = df["Close"]
         if isinstance(close_data, pd.DataFrame):
             if symbol in close_data.columns:
@@ -332,7 +352,15 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
-                data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                try:
+                    data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                except SkipSymbol as exc:
+                    log_event(
+                        f"SCORE {symbol}: skip symbol ({exc})",
+                        event="SCORE",
+                        symbol=symbol,
+                    )
+                    return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
                 metrics.inc("scored")
@@ -372,7 +400,15 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                 graded = await apply_external_scores(symbol, final_score)
                 if graded is None:
                     return None
-                data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                try:
+                    data = await asyncio.to_thread(fetch_yfinance_stock_data, symbol)
+                except SkipSymbol as exc:
+                    log_event(
+                        f"SCORE {symbol}: skip symbol ({exc})",
+                        event="SCORE",
+                        symbol=symbol,
+                    )
+                    return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
                 metrics.inc("scored")
@@ -458,6 +494,9 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
     for symbol in stock_assets:
         if symbol in already_considered or symbol in exclude or is_position_open(symbol):
             continue
+        if detect_asset_class(symbol) != "equity":
+            continue
+        metrics.inc("scanned")
         if is_blacklisted_recent_loser(symbol):
             log_event(
                 f"🚫 {symbol} descartado por pérdida reciente (lista negra temporal)"
@@ -485,55 +524,68 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
 
         try:
             data = fetch_yfinance_stock_data(symbol)
-            if not data or len(data) < 8 or any(d is None for d in data[:7]):
-                if verbose:
-                    print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
-                continue
-
-            (
-                market_cap,
-                volume,
-                weekly_change,
-                trend,
-                price_change_24h,
-                volume_7d_avg,
-                current_price,
-                atr,
-            ) = data
-
-            score = 0
-            if market_cap > 500_000_000:
-                score += CRITERIA_WEIGHTS["market_cap"]
-            if volume > STRICTER_VOLUME_THRESHOLD:
-                score += CRITERIA_WEIGHTS["volume"]
-            if weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
-                score += CRITERIA_WEIGHTS["weekly_change_positive"]
-            if trend is False:
-                score += CRITERIA_WEIGHTS["trend_positive"]
-            if 0 < price_change_24h < 10:
-                score += CRITERIA_WEIGHTS["volatility_ok"]
-            if volume > volume_7d_avg:
-                score += CRITERIA_WEIGHTS["volume_growth"]
-
-            symbol_score = get_trade_history_score(symbol)
-            if symbol_score > 0:
-                print(
-                    f"✅ {symbol} bonificado con {symbol_score} puntos por buen historial"
-                )
-            score += symbol_score
-
-            if verbose:
-                print(f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}")
-
-            if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
-                adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
-                score += adaptive_bonus
-                shorts.append((symbol, score, "Técnico", current_price, atr))
-            elif verbose:
-                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
-
+        except SkipSymbol as exc:
+            log_event(
+                f"SCORE {symbol}: skip symbol ({exc})",
+                event="SCORE",
+                symbol=symbol,
+            )
+            continue
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
+            continue
+
+        if not data or len(data) < 8 or any(d is None for d in data[:7]):
+            if verbose:
+                print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+            continue
+
+        (
+            market_cap,
+            volume,
+            weekly_change,
+            trend,
+            price_change_24h,
+            volume_7d_avg,
+            current_price,
+            atr,
+        ) = data
+
+        score = 0
+        if market_cap > 500_000_000:
+            score += CRITERIA_WEIGHTS["market_cap"]
+        if volume > STRICTER_VOLUME_THRESHOLD:
+            score += CRITERIA_WEIGHTS["volume"]
+        if weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
+            score += CRITERIA_WEIGHTS["weekly_change_positive"]
+        if trend is False:
+            score += CRITERIA_WEIGHTS["trend_positive"]
+        if 0 < price_change_24h < 10:
+            score += CRITERIA_WEIGHTS["volatility_ok"]
+        if volume > volume_7d_avg:
+            score += CRITERIA_WEIGHTS["volume_growth"]
+
+        symbol_score = get_trade_history_score(symbol)
+        if symbol_score > 0:
+            print(
+                f"✅ {symbol} bonificado con {symbol_score} puntos por buen historial"
+            )
+        score += symbol_score
+
+        metrics.inc("scored")
+
+        if verbose:
+            print(
+                f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}"
+            )
+
+        if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
+            adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
+            score += adaptive_bonus
+            shorts.append((symbol, score, "Técnico", current_price, atr))
+            metrics.inc("approved")
+        elif verbose:
+            print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
 
     if not shorts:
         return []

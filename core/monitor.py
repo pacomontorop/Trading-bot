@@ -2,6 +2,7 @@
 
 import os
 import time
+import math
 from broker.alpaca import api, get_current_price, is_market_open
 from utils.logger import log_event
 from utils.orders import resolve_time_in_force
@@ -14,8 +15,11 @@ from core.executor import (
     entry_data,
     update_trailing_stop,
     update_stop_order,
+    compute_chandelier_trail,
 )
 from utils.monitoring import update_positions_metric
+import config
+from utils.symbols import detect_asset_class
 
 
 TAKE_PROFIT_PCT = float(os.getenv("TAKE_PROFIT_PCT", "5"))
@@ -25,6 +29,16 @@ MONITOR_INTERVAL = int(os.getenv("MONITOR_INTERVAL", "60"))
 TRAILING_WATCHDOG_INTERVAL = int(os.getenv("TRAILING_WATCHDOG_INTERVAL", "120"))
 CANCEL_ORDERS_INTERVAL = int(os.getenv("CANCEL_ORDERS_INTERVAL", "300"))
 STALE_ORDER_MINUTES = int(os.getenv("STALE_ORDER_MINUTES", "15"))
+
+
+def _safe_float(value, default: float = 0.0) -> float:
+    try:
+        result = float(value)
+        if math.isnan(result) or math.isinf(result):
+            return default
+        return result
+    except Exception:
+        return default
 
 
 def check_virtual_take_profit_and_stop(
@@ -198,9 +212,14 @@ def watchdog_trailing_stop():
             }
 
             for symbol, pos in pos_map.items():
+                if detect_asset_class(symbol) != "equity":
+                    continue
+
                 side = "sell" if pos.side.lower() == "long" else "buy"
-                qty = float(pos.qty)
-                qty_available = float(getattr(pos, "qty_available", pos.qty))
+                qty = _safe_float(getattr(pos, "qty", 0.0), 0.0)
+                qty_available = _safe_float(
+                    getattr(pos, "qty_available", getattr(pos, "qty", 0.0)), 0.0
+                )
                 if qty <= 0 or qty_available <= 0:
                     continue
                 is_fractional = abs(qty - round(qty)) > 1e-6
@@ -212,7 +231,7 @@ def watchdog_trailing_stop():
 
                 if order is None:
                     reserved_qty = sum(
-                        float(o.qty)
+                        _safe_float(o.qty, 0.0)
                         for o in open_orders
                         if o.symbol == symbol and o.side == side
                     )
@@ -223,16 +242,33 @@ def watchdog_trailing_stop():
                         )
                         continue
 
-                    trail_price = get_adaptive_trail_price(symbol)
-                    current_price = get_current_price(symbol)
-                    if current_price is None:
+                    entry_price = _safe_float(
+                        getattr(pos, "avg_entry_price", None), 0.0
+                    )
+                    current_price = _safe_float(get_current_price(symbol), 0.0)
+                    if entry_price <= 0 or current_price <= 0:
+                        log_event(
+                            f"ERROR: watchdog_trailing_stop: datos inválidos entry={entry_price} price={current_price} — skip"
+                        )
                         continue
+
+                    risk_cfg = (config._policy or {}).get("risk", {})
+                    atr_k = float(risk_cfg.get("atr_k", 2.0)) or 1.0
+                    _, _, _, stop_hint = entry_data.get(symbol, (None, None, None, None))
+                    stop_hint = _safe_float(stop_hint, 0.0)
+                    atr_hint = stop_hint / atr_k if atr_k > 0 else stop_hint
+                    trail_dist = compute_chandelier_trail(
+                        current_price, atr_hint, config._policy
+                    )
+                    if trail_dist is None or trail_dist <= 0:
+                        min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
+                        trail_dist = max(min_tr * current_price, 0.01 * current_price)
 
                     if is_fractional:
                         stop_price = (
-                            current_price - trail_price
+                            current_price - trail_dist
                             if side == "sell"
-                            else current_price + trail_price
+                            else current_price + trail_dist
                         )
                         api.submit_order(
                             symbol=symbol,
@@ -258,30 +294,38 @@ def watchdog_trailing_stop():
                                 available_qty,
                                 asset_class=getattr(pos, "asset_class", "us_equity"),
                             ),
-                            trail_price=trail_price,
+                            trail_price=trail_dist,
                         )
                         log_event(
                             f"🚨 Trailing stop de emergencia colocado para {symbol}"
                         )
                     continue
 
-                current_price = get_current_price(symbol)
-                if current_price is None:
+                current_price = _safe_float(get_current_price(symbol), 0.0)
+                if current_price <= 0:
                     continue
 
-                trail = get_adaptive_trail_price(symbol)
+                trail = _safe_float(get_adaptive_trail_price(symbol), 0.0)
+                if trail <= 0:
+                    risk_cfg = (config._policy or {}).get("risk", {})
+                    min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
+                    trail = max(min_tr * current_price, 0.01 * current_price)
+
                 if is_fractional:
                     new_stop = (
                         current_price - trail if side == "sell" else current_price + trail
                     )
-                    current_stop = float(getattr(order, "stop_price", new_stop))
+                    current_stop = _safe_float(
+                        getattr(order, "stop_price", new_stop), new_stop
+                    )
                     if (
                         (side == "sell" and new_stop > current_stop + 0.01)
                         or (side == "buy" and new_stop < current_stop - 0.01)
                     ):
                         update_stop_order(symbol, order_id=order.id, stop_price=new_stop)
                     entry_price, _, _ = entry_data.get(symbol, (None, None, None))
-                    if entry_price:
+                    entry_price = _safe_float(entry_price, 0.0)
+                    if entry_price > 0:
                         if (
                             side == "sell"
                             and current_price > entry_price
@@ -300,7 +344,9 @@ def watchdog_trailing_stop():
                             )
                 else:
                     new_trail = trail
-                    current_trail = float(getattr(order, "trail_price", new_trail))
+                    current_trail = _safe_float(
+                        getattr(order, "trail_price", new_trail), new_trail
+                    )
                     if abs(new_trail - current_trail) > 0.01:
                         update_trailing_stop(
                             symbol, order_id=order.id, trail_price=new_trail

@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import os
+import threading
+import time
 from datetime import datetime
 from typing import Tuple
 
 from utils import metrics
+
+_rate_lock = threading.Lock()
+_last_msg: dict[str, float] = {}
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_dir = os.path.join(PROJECT_ROOT, "logs")
@@ -144,3 +149,27 @@ def log_event(message, **fields):
             metrics.inc("errors")
         except Exception:
             pass
+
+
+def log_once(key: str, message: str, min_interval_sec: float = 60.0, **fields) -> None:
+    """Log ``message`` at most once every ``min_interval_sec`` seconds.
+
+    Parameters
+    ----------
+    key:
+        Identifier for the message to be rate-limited.
+    message:
+        Text to be logged via :func:`log_event`.
+    min_interval_sec:
+        Minimum number of seconds between log emissions for the same ``key``.
+    **fields:
+        Extra structured fields passed through to :func:`log_event`.
+    """
+
+    now = time.time()
+    with _rate_lock:
+        last = _last_msg.get(key, 0.0)
+        if now - last < max(min_interval_sec, 0.0):
+            return
+        _last_msg[key] = now
+    log_event(message, **fields)

@@ -6,8 +6,9 @@ import pandas as pd
 import requests
 
 from signals.filters import is_approved_by_finnhub_and_alphavantage
-from signals.scoring import fetch_yfinance_stock_data
+from signals.scoring import fetch_yfinance_stock_data, SkipSymbol
 from signals.reader import stock_assets
+from utils.symbols import detect_asset_class
 
 INITIAL_BALANCE = 100_000
 TRAIL_PERCENT = 2.0
@@ -47,8 +48,14 @@ def backtest(start_date: datetime = START_DATE, end_date: datetime = END_DATE, v
     print(f"\n🧪 Iniciando backtest entre {start_date.date()} y {end_date.date()}...\n")
 
     for symbol in stock_assets[:30]:  # Ajusta a más si no hay errores
+        if detect_asset_class(symbol) != "equity":
+            continue
         try:
-            df = pd.DataFrame(fetch_yfinance_stock_data(symbol, verbose=True)).T
+            data = fetch_yfinance_stock_data(symbol, verbose=True)
+        except SkipSymbol:
+            continue
+        try:
+            df = pd.DataFrame(data).T
             df.columns = ["market_cap", "volume", "weekly_change", "trend", "price_change_24h", "volume_7d_avg"]
             df = df.dropna()
 
@@ -90,6 +97,8 @@ def backtest(start_date: datetime = START_DATE, end_date: datetime = END_DATE, v
                     results.append(pct_return)
                     capital *= (1 + pct_return / 100)
 
+        except SkipSymbol:
+            continue
         except Exception as e:
             print(f"⚠️ Error procesando {symbol}: {e}")
             if "429" in str(e):

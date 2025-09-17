@@ -8,13 +8,14 @@ import yfinance as yf
 import math
 from broker.alpaca import api, get_current_price, is_market_open
 from broker import alpaca as broker
+from broker.account import get_account_equity_safe
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
 from core.order_utils import alpaca_order_exists
 from config import STRATEGY_VER
 import config
 from signals.reader import get_top_shorts
-from utils.logger import log_event, log_dir
+from utils.logger import log_event, log_dir, log_once
 from utils import metrics
 from utils.daily_risk import (
     register_trade_pnl,
@@ -33,6 +34,7 @@ import json
 import gc
 import utils.market_calendar as market_calendar
 from utils.market_regime import compute_vix_regime, exposure_from_regime
+from utils.symbols import detect_asset_class, normalize_for_yahoo
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -103,7 +105,31 @@ def _cfg_risk(cfg):
         "min_trailing_pct": float(r.get("min_trailing_pct", 0.005)),
         "max_trailing_pct": float(r.get("max_trailing_pct", 0.05)),
         "allow_fractional": bool(r.get("allow_fractional", True)),
+        "min_equity_usd": float(r.get("min_equity_usd", 0.0)),
     }
+
+
+def _equity_guard(equity: float, cfg, key: str) -> bool:
+    r = (cfg or {}).get("risk", {})
+    min_equity = float(r.get("min_equity_usd", 0.0))
+    if equity is None or equity <= 0:
+        log_once(
+            f"equity_guard_zero_{key}",
+            "RISK: ❌ equity inválido (0). Trading deshabilitado hasta recuperar equity.",
+            min_interval_sec=300,
+        )
+        return False
+    if min_equity > 0 and equity < min_equity:
+        log_once(
+            f"equity_guard_min_{key}",
+            (
+                f"RISK: ❌ equity actual {equity:.2f} < mínimo requerido {min_equity:.2f}. "
+                "Trading deshabilitado."
+            ),
+            min_interval_sec=300,
+        )
+        return False
+    return True
 
 
 def _apply_event_and_cutoff_policies(symbol: str, sizing_notional: float, cfg) -> tuple[bool, float, str]:
@@ -137,7 +163,11 @@ def compute_chandelier_trail(price: float, atr: float, cfg) -> float:
     atr_k = float(r.get("atr_k", 2.0))
     min_tr = float(r.get("min_trailing_pct", 0.005))
     max_tr = float(r.get("max_trailing_pct", 0.05))
-    trail = max(min_tr * price, atr_k * float(atr or 0.0))
+    atr = 0.0 if atr is None else float(atr)
+    price = float(price or 0.0)
+    if price <= 0:
+        return 0.0
+    trail = max(min_tr * price, atr_k * atr)
     trail = min(trail, max_tr * price)
     return max(trail, 0.0)
 
@@ -217,6 +247,20 @@ def calculate_position_size_risk_based(
     """
     r = _cfg_risk(cfg)
 
+    asset_class = detect_asset_class(symbol)
+    if asset_class != "equity":
+        return {
+            "shares": 0,
+            "notional": 0.0,
+            "stop_distance": None,
+            "risk_budget": 0.0,
+            "reason": f"unsupported_asset_class_{asset_class}",
+        }
+
+    equity = float(equity or 0.0)
+    price = float(price or 0.0)
+    min_equity = float(r.get("min_equity_usd", 0.0))
+
     if equity <= 0 or price <= 0:
         return {
             "shares": 0,
@@ -224,6 +268,15 @@ def calculate_position_size_risk_based(
             "stop_distance": None,
             "risk_budget": 0.0,
             "reason": "invalid_inputs",
+        }
+
+    if min_equity > 0 and equity < min_equity:
+        return {
+            "shares": 0,
+            "notional": 0.0,
+            "stop_distance": None,
+            "risk_budget": 0.0,
+            "reason": f"equity_below_min_{min_equity:.0f}",
         }
 
     if daily_realized_loss_pct >= r["max_daily_loss_pct"]:
@@ -237,9 +290,10 @@ def calculate_position_size_risk_based(
 
     atr_val = float(atr or 0.0)
     stop_distance = max(r["atr_k"] * atr_val, r["min_stop_pct"] * price)
+    stop_distance = max(stop_distance, 1e-6)
 
     risk_budget = equity * (r["max_symbol_risk_pct"] / 100.0)
-    raw_shares = risk_budget / stop_distance
+    raw_shares = risk_budget / max(stop_distance, 1e-6)
 
     if r["allow_fractional"]:
         shares = max(raw_shares, 0.0)
@@ -260,6 +314,7 @@ def calculate_position_size_risk_based(
     shares *= exposure
     if not r["allow_fractional"]:
         shares = math.floor(shares)
+    shares = max(shares, 0.0)
     notional = shares * price
 
     if notional <= 0 or shares <= 0:
@@ -385,7 +440,15 @@ def calculate_investment_amount(score: int, equity: float, cfg) -> float:
 def get_adaptive_trail_price(symbol, window: int = 14):
     """Calcula un ``trail_price`` dinámico utilizando el ATR de ``window`` días."""
     try:
-        hist = yf.download(symbol, period="21d", interval="1d", progress=False)
+        asset_class = detect_asset_class(symbol)
+        if asset_class != "equity":
+            price = get_current_price(symbol)
+            if not price:
+                return 0.0
+            return round(float(price) * 0.01, 2)
+
+        yf_symbol = normalize_for_yahoo(symbol)
+        hist = yf.download(yf_symbol, period="21d", interval="1d", progress=False)
         if hist.empty or not {"High", "Low", "Close"}.issubset(hist.columns):
             raise ValueError("Datos insuficientes")
 
@@ -413,7 +476,9 @@ def get_adaptive_trail_price(symbol, window: int = 14):
             print(f"⚠️ Error calculando trail adaptativo para {symbol}: {e}")
             trailing_error_symbols.add(symbol)
         fallback_price = get_current_price(symbol)
-        return round(fallback_price * 0.015, 2)
+        if not fallback_price:
+            return 0.0
+        return round(float(fallback_price) * 0.015, 2)
 
 
 def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=None):
@@ -638,9 +703,12 @@ def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
         quiver_score = score_quiver_signals(quiver_signals)
         quiver_signals_log[symbol] = [k for k, v in quiver_signals.items() if v]
 
+        equity = get_account_equity_safe()
+        if not _equity_guard(equity, config._policy, "legacy_long"):
+            return False
+
         account = api.get_account()
-        equity = float(account.equity)
-        buying_power = float(getattr(account, "buying_power", account.cash))
+        buying_power = float(getattr(account, "buying_power", getattr(account, "cash", 0)))
         r_cfg = _cfg_risk(config._policy)
 
         try:
@@ -803,8 +871,9 @@ def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
             k for k, v in get_all_quiver_signals(symbol).items() if v
         ]
 
-        account = api.get_account()
-        equity = float(account.equity)
+        equity = get_account_equity_safe()
+        if not _equity_guard(equity, config._policy, "short"):
+            return
 
         if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
             print("⛔ Límite de inversión alcanzado para hoy.")
@@ -919,7 +988,9 @@ def short_scan():
             try:
                 asset = api.get_asset(symbol)
                 if getattr(asset, "shortable", False):
-                    equity = float(api.get_account().equity)
+                    equity = get_account_equity_safe()
+                    if not _equity_guard(equity, config._policy, "short_scan"):
+                        continue
                     exposure = get_market_exposure_factor(config._policy)
                     sizing = calculate_position_size_risk_based(
                         symbol=symbol,

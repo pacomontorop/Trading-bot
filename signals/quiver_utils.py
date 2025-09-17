@@ -10,7 +10,7 @@ import math
 from dataclasses import dataclass
 from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
-from utils.logger import log_event
+from utils.logger import log_event, log_once
 from utils.cache import get as cache_get, set as cache_set
 import config
 from datetime import datetime, timedelta, timezone
@@ -293,9 +293,17 @@ def evaluate_quiver_signals(signals, symbol=""):
 def safe_quiver_request(url, retries=5, delay=4):
     # Log only that the key is present without revealing it
     if QUIVER_API_KEY:
-        print("🔑 Usando clave Quiver: [REDACTED]")
+        log_once(
+            "quiver_api_key_present",
+            "🔑 Usando clave Quiver: [REDACTED]",
+            min_interval_sec=3600,
+        )
     else:
-        print("🔑 Advertencia: QUIVER_API_KEY no configurada")
+        log_once(
+            "quiver_api_key_missing",
+            "🔑 Advertencia: QUIVER_API_KEY no configurada",
+            min_interval_sec=3600,
+        )
     for i in range(retries):
         try:
             r = throttled_request(requests.get, url, headers=HEADERS, timeout=QUIVER_TIMEOUT)
