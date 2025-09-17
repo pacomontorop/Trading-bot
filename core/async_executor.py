@@ -3,13 +3,15 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Iterable, Tuple
 
 from broker.alpaca import api, get_current_price
+from broker.account import get_account_equity_safe
 import config
 from core.executor import (
     place_order_with_trailing_stop,
     calculate_position_size_risk_based,
     get_market_exposure_factor,
+    _equity_guard,
 )
-from signals.scoring import fetch_yfinance_stock_data
+from signals.scoring import fetch_yfinance_stock_data, SkipSymbol
 
 
 async def place_orders_concurrently(opportunities: Iterable[Tuple[str, int]]):
@@ -17,10 +19,15 @@ async def place_orders_concurrently(opportunities: Iterable[Tuple[str, int]]):
     loop = asyncio.get_event_loop()
     with ThreadPoolExecutor() as pool:
         tasks = []
-        equity = float(api.get_account().equity)
+        equity = get_account_equity_safe()
+        if not _equity_guard(equity, config._policy, "async_executor"):
+            return []
         exposure = get_market_exposure_factor(config._policy)
         for symbol, score in opportunities:
-            data = fetch_yfinance_stock_data(symbol)
+            try:
+                data = fetch_yfinance_stock_data(symbol)
+            except SkipSymbol:
+                continue
             price = data[6] if data and len(data) >= 8 else get_current_price(symbol)
             atr = data[7] if data and len(data) >= 8 else None
             sizing = calculate_position_size_risk_based(

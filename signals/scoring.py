@@ -6,6 +6,7 @@ import yaml
 import pandas as pd
 import math
 from utils.logger import log_event
+from utils.symbols import detect_asset_class, normalize_for_yahoo
 
 _POLICY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "policy.yaml")
 with open(_POLICY_PATH, "r", encoding="utf-8") as _f:
@@ -15,6 +16,10 @@ STRONG_RECENCY_HOURS = float(SCORE_CFG.get("strong_recency_hours", 48))
 
 _CACHE_TTL = timedelta(minutes=5)
 _stock_cache = {}
+
+
+class SkipSymbol(Exception):
+    """Signal that a symbol should be skipped by upstream callers."""
 
 
 def _normalize_0_100(x: float) -> int:
@@ -92,7 +97,11 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
     if cached and (now - cached["ts"]) < _CACHE_TTL:
         return cached["data"]
     try:
-        ticker = yf.Ticker(symbol)
+        asset_class = detect_asset_class(symbol)
+        if asset_class == "crypto":
+            raise SkipSymbol("crypto_not_supported_in_yf")
+        yf_symbol = normalize_for_yahoo(symbol) if asset_class == "preferred" else symbol
+        ticker = yf.Ticker(yf_symbol)
         info = ticker.info
         market_cap = info.get("marketCap")
         volume = info.get("volume")
@@ -137,6 +146,8 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
         )
         _stock_cache[symbol] = {"data": data, "ts": now}
         return data
+    except SkipSymbol:
+        raise
     except Exception:
         return None, None, None, None, None, None, None, None
 

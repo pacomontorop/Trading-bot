@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import Tuple, Dict
 from broker.alpaca import is_market_open, get_current_price
-from signals.scoring import fetch_yfinance_stock_data
+from signals.scoring import fetch_yfinance_stock_data, SkipSymbol
 from utils.state import already_evaluated_today, already_executed_today
 from signals.reader import is_blacklisted_recent_loser
 from utils.logger import log_event
 from utils import metrics
+from utils.symbols import detect_asset_class
 import yaml
 import os
 
@@ -50,7 +51,19 @@ def passes_long_gate(symbol: str, data_ctx=None) -> Tuple[bool, Dict]:
 
     if not is_market_open():
         reasons["market"] = "closed"
-    mc, vol, *_ = fetch_yfinance_stock_data(symbol)
+
+    mc = vol = None
+    asset_class = detect_asset_class(symbol)
+    if asset_class != "equity":
+        reasons["asset_class"] = asset_class
+    else:
+        try:
+            mc, vol, *_ = fetch_yfinance_stock_data(symbol)
+        except SkipSymbol as exc:
+            reasons["asset_class"] = str(exc)
+        except Exception:
+            mc = vol = None
+
     if mc is None or mc < LIQ_MIN_MKTCAP:
         reasons["liquidity"] = "market_cap"
     if vol is None or vol < LIQ_MIN_AVG_VOL20:

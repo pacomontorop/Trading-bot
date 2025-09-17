@@ -19,12 +19,14 @@ from core.executor import (
     evaluated_longs_today,
     _apply_event_and_cutoff_policies,
     _cfg_risk,
+    _equity_guard,
 )
 import config
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, stock_assets, reset_symbol_rotation
 from broker.alpaca import api, is_market_open
+from broker.account import get_account_equity_safe
 from broker import alpaca as broker
 from utils.state import StateManager
 from utils.emailer import send_email
@@ -153,7 +155,9 @@ def pre_market_scan():
                     print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
                     continue
 
-                equity = float(api.get_account().equity)
+                equity = get_account_equity_safe()
+                if not _equity_guard(equity, config._policy, "scheduler_long"):
+                    continue
                 exposure = get_market_exposure_factor(config._policy)
                 sizing = calculate_position_size_risk_based(
                     symbol=symb,

@@ -108,6 +108,7 @@ _persistent: Dict[str, Any] = {
     "open_orders": {},
     "open_positions": {},
     "executed_symbols": [],
+    "metrics": {},
 }
 
 
@@ -120,6 +121,7 @@ def _load_persistent() -> None:
                 "open_orders": data.get("open_orders", {}),
                 "open_positions": data.get("open_positions", {}),
                 "executed_symbols": data.get("executed_symbols", []),
+                "metrics": data.get("metrics", {}),
             })
         except Exception:
             pass
@@ -217,9 +219,27 @@ class StateManager:
             return set(_persistent["executed_symbols"])
 
     @classmethod
+    def get_metric_counters(cls) -> Dict[str, int]:
+        with _state_lock:
+            return {k: int(v) for k, v in _persistent.get("metrics", {}).items()}
+
+    @classmethod
+    def set_metric_counter(cls, key: str, value: int) -> None:
+        with _state_lock:
+            _persistent.setdefault("metrics", {})[key] = int(value)
+            _persist()
+
+    @classmethod
+    def replace_metric_counters(cls, counters: Dict[str, int]) -> None:
+        with _state_lock:
+            _persistent["metrics"] = {k: int(v) for k, v in (counters or {}).items()}
+            _persist()
+
+    @classmethod
     def clear(cls) -> None:
         with _state_lock:
             _persistent["open_orders"].clear()
             _persistent["open_positions"].clear()
             _persistent["executed_symbols"].clear()
+            _persistent["metrics"].clear()
             _persist()

@@ -1,4 +1,5 @@
 from broker.alpaca import api, get_current_price
+from broker.account import get_account_equity_safe
 from utils.logger import log_event
 from datetime import datetime
 
@@ -30,8 +31,10 @@ def get_options_log_and_reset():
 def buy_simple_call_option(symbol, strike_price, expiration_date, contracts=1):
     reset_option_investment()
     try:
-        account = api.get_account()
-        equity = float(account.equity)
+        equity = get_account_equity_safe()
+        if equity <= 0:
+            log_event('RISK: ❌ equity inválido para opciones. Se omite compra.')
+            return
         max_allowed = equity * OPTIONS_INVESTMENT_LIMIT_PCT
 
         estimated_cost = strike_price * 100 * contracts
