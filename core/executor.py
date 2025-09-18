@@ -8,6 +8,7 @@ import yfinance as yf
 import math
 from broker.alpaca import api, get_current_price, is_market_open
 from broker import alpaca as broker
+from core.broker import get_tick_size, round_to_tick
 from broker.account import get_account_equity_safe
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
@@ -172,7 +173,12 @@ def compute_chandelier_trail(price: float, atr: float, cfg) -> float:
     return max(trail, 0.0)
 
 
-def compute_partial_take_profit(entry_price: float, stop_distance: float, cfg) -> float | None:
+def compute_partial_take_profit(
+    entry_price: float,
+    stop_distance: float,
+    cfg,
+    tick: float | None = None,
+) -> float | None:
     """Return partial take-profit price or ``None`` if disabled."""
     ex = (cfg or {}).get("exits", {})
     if not bool(ex.get("use_partial_take_profit", True)):
@@ -180,7 +186,10 @@ def compute_partial_take_profit(entry_price: float, stop_distance: float, cfg) -
     R = float(ex.get("partial_tp_at_R", 1.5))
     if stop_distance is None or stop_distance <= 0:
         return None
-    return round(entry_price + R * stop_distance, 2)
+    price = entry_price + R * stop_distance
+    if tick is not None and tick > 0:
+        return round_to_tick(price, tick, mode="up")
+    return round(price, 2)
 
 
 def should_use_combined_bracket(cfg, broker_module) -> bool:
@@ -193,6 +202,71 @@ def should_use_combined_bracket(cfg, broker_module) -> bool:
 
 
 _EXPOSURE_CACHE: dict[str, float] = {}
+
+
+def _tick_rounding_enabled(cfg) -> bool:
+    risk_cfg = (cfg or {}).get("risk", {})
+    return bool(risk_cfg.get("enforce_tick_rounding", True))
+
+
+def _apply_tick_rounding(
+    *,
+    symbol: str,
+    side: str,
+    entry_price: float | None,
+    asset_class: str | None,
+    stop_price: float | None = None,
+    take_profit: float | None = None,
+    trail_price: float | None = None,
+    cfg=None,
+):
+    tick = get_tick_size(symbol, asset_class, entry_price)
+    lower_side = (side or "").lower()
+    stop_mode = "down" if lower_side == "buy" else "up"
+    tp_mode = "up" if lower_side == "buy" else "down"
+    rounded_stop = round_to_tick(stop_price, tick, mode=stop_mode)
+    rounded_tp = round_to_tick(take_profit, tick, mode=tp_mode)
+    rounded_trail = round_to_tick(trail_price, tick)
+
+    if (
+        lower_side == "buy"
+        and entry_price not in (None, 0)
+        and rounded_stop is not None
+        and tick > 0
+        and rounded_stop >= entry_price
+    ):
+        adjusted = round_to_tick(entry_price - tick, tick, mode="down")
+        if adjusted is None or adjusted <= 0:
+            log_event(
+                f"RISK {symbol}: ❌ stop>=entry tras redondeo, se omite stop", event="RISK"
+            )
+            rounded_stop = None
+        else:
+            log_event(
+                f"RISK {symbol}: stop ajustado a {adjusted:.4f} tras redondeo", event="RISK"
+            )
+            rounded_stop = adjusted
+
+    if (
+        lower_side == "sell"
+        and entry_price not in (None, 0)
+        and rounded_stop is not None
+        and tick > 0
+        and rounded_stop <= entry_price
+    ):
+        adjusted = round_to_tick(entry_price + tick, tick, mode="up")
+        if adjusted is None or adjusted <= 0:
+            log_event(
+                f"RISK {symbol}: ❌ stop<=entry tras redondeo, se omite stop", event="RISK"
+            )
+            rounded_stop = None
+        else:
+            log_event(
+                f"RISK {symbol}: stop ajustado a {adjusted:.4f} tras redondeo", event="RISK"
+            )
+            rounded_stop = adjusted
+
+    return tick, rounded_stop, rounded_tp, rounded_trail
 
 
 def get_market_exposure_factor(cfg) -> float:
@@ -481,17 +555,35 @@ def get_adaptive_trail_price(symbol, window: int = 14):
         return round(float(fallback_price) * 0.015, 2)
 
 
-def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=None):
+def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=None, side=None):
     """Actualiza un trailing stop existente con nueva distancia."""
     try:
+        order_side = side
         if order_id is None:
             orders = api.list_orders(status="open")
             for o in orders:
                 if o.symbol == symbol and getattr(o, "type", "") == "trailing_stop":
                     order_id = o.id
+                    order_side = getattr(o, "side", order_side)
                     break
         if not order_id:
             return False
+        if order_side is None:
+            try:
+                existing = api.get_order(order_id)
+                order_side = getattr(existing, "side", order_side)
+            except Exception:
+                order_side = side
+        if _tick_rounding_enabled(config._policy) and trail_price is not None:
+            _, _, _, rounded = _apply_tick_rounding(
+                symbol=symbol,
+                side=order_side or "buy",
+                entry_price=None,
+                asset_class=detect_asset_class(symbol),
+                trail_price=trail_price,
+                cfg=config._policy,
+            )
+            trail_price = rounded
         api.replace_order(order_id, trail_price=trail_price, trail_percent=trail_percent)
         log_event(f"🔁 Trailing stop actualizado para {symbol}")
         return True
@@ -500,7 +592,7 @@ def update_trailing_stop(symbol, order_id=None, trail_price=None, trail_percent=
         return False
 
 
-def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None):
+def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None, side=None):
     """Actualiza una orden stop o stop-limit existente."""
     try:
         if order_id is None:
@@ -508,15 +600,31 @@ def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None):
             for o in orders:
                 if o.symbol == symbol and getattr(o, "type", "") in ("stop", "stop_limit"):
                     order_id = o.id
+                    side = getattr(o, "side", side)
                     break
         if not order_id:
             return False
+        if side is None:
+            try:
+                existing = api.get_order(order_id)
+                side = getattr(existing, "side", None)
+            except Exception:
+                side = None
 
         params = {}
+        mode = "down" if (side or "").lower() == "sell" else "up"
+        tick = None
+        if _tick_rounding_enabled(config._policy):
+            basis = stop_price if stop_price is not None else limit_price
+            tick = get_tick_size(symbol, detect_asset_class(symbol), basis)
         if stop_price is not None:
-            params["stop_price"] = stop_price
+            params["stop_price"] = (
+                round_to_tick(stop_price, tick, mode=mode) if tick else stop_price
+            )
         if limit_price is not None:
-            params["limit_price"] = limit_price
+            params["limit_price"] = (
+                round_to_tick(limit_price, tick, mode=mode) if tick else limit_price
+            )
         api.replace_order(order_id, **params)
         log_event(f"🔁 Stop actualizado para {symbol}")
         return True
@@ -790,8 +898,18 @@ def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
             symbol, (current_price, qty, None, stop_distance)
         )
         qty = float(filled_qty)
+        asset_class = detect_asset_class(symbol)
         take_profit = get_adaptive_take_profit(symbol, entry_price, quiver_score)
         if take_profit:
+            if _tick_rounding_enabled(config._policy):
+                _, _, take_profit, _ = _apply_tick_rounding(
+                    symbol=symbol,
+                    side="buy",
+                    entry_price=entry_price,
+                    asset_class=asset_class,
+                    take_profit=take_profit,
+                    cfg=config._policy,
+                )
             print(
                 f"🎯 Colocando take profit para {symbol} en ${take_profit:.2f}",
                 flush=True,
@@ -812,6 +930,15 @@ def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
             ).start()
 
         trail_price = max(get_adaptive_trail_price(symbol), entry_price * STOP_PCT)
+        if _tick_rounding_enabled(config._policy):
+            _, _, _, trail_price = _apply_tick_rounding(
+                symbol=symbol,
+                side="buy",
+                entry_price=entry_price,
+                asset_class=asset_class,
+                trail_price=trail_price,
+                cfg=config._policy,
+            )
         trail_order = api.submit_order(
             symbol=symbol,
             qty=qty,
@@ -919,6 +1046,15 @@ def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
         qty = float(filled_qty)
 
         trail_price = max(get_adaptive_trail_price(symbol), entry_price * STOP_PCT)
+        if _tick_rounding_enabled(config._policy):
+            _, _, _, trail_price = _apply_tick_rounding(
+                symbol=symbol,
+                side="sell",
+                entry_price=entry_price,
+                asset_class=detect_asset_class(symbol),
+                trail_price=trail_price,
+                cfg=config._policy,
+            )
         trail_order = api.submit_order(
             symbol=symbol,
             qty=qty,

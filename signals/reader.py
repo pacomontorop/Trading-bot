@@ -10,6 +10,7 @@ from signals.quiver_utils import (
     fetch_quiver_signals,
     is_approved_by_quiver,
 )
+import re
 import signals.quiver_utils as _quiver_utils
 
 QUIVER_APPROVAL_THRESHOLD = getattr(_quiver_utils, "QUIVER_APPROVAL_THRESHOLD", 5)
@@ -20,14 +21,22 @@ from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
 from broker.alpaca import api
 try:
-    from signals.scoring import fetch_yfinance_stock_data, SkipSymbol
+    from signals.scoring import (
+        fetch_yfinance_stock_data,
+        SkipSymbol,
+        YFPricesMissingError,
+    )
 except ImportError:
     from signals.scoring import fetch_yfinance_stock_data
 
     class SkipSymbol(Exception):
         pass
+
+    class YFPricesMissingError(Exception):
+        pass
 from datetime import datetime, timedelta
 from utils.logger import log_event
+from utils.state import mark_evaluated
 from utils import metrics
 from signals.adaptive_bonus import apply_adaptive_bonus
 from signals.fmp_utils import get_fmp_grade_score
@@ -90,6 +99,31 @@ def _only_equities(symbols):
 priority_symbols = _only_equities(priority_symbols)
 
 
+def _compile_exclude_patterns():
+    patterns = []
+    gate_cfg = (getattr(config, "_policy", {}) or {}).get("gate", {})
+    for expr in gate_cfg.get("exclude_regex", []) or []:
+        try:
+            patterns.append(re.compile(expr))
+        except re.error:
+            log_event(
+                f"SCAN: patrón inválido en exclude_regex: {expr}",
+                event="SCAN",
+            )
+    return patterns
+
+
+_EXCLUDE_PATTERNS = _compile_exclude_patterns()
+
+
+def is_symbol_excluded(symbol: str) -> bool:
+    upper = symbol or ""
+    return any(p.search(upper) for p in _EXCLUDE_PATTERNS)
+
+
+priority_symbols = [s for s in priority_symbols if not is_symbol_excluded(s)]
+
+
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
 
@@ -130,7 +164,9 @@ def is_options_enabled(symbol):
 stock_assets = priority_symbols + [
     s
     for s in fetch_symbols_from_csv()
-    if s not in priority_symbols and detect_asset_class(s) == "equity"
+    if s not in priority_symbols
+    and detect_asset_class(s) == "equity"
+    and not is_symbol_excluded(s)
 ]
 random.shuffle(stock_assets)
 
@@ -290,7 +326,9 @@ def get_top_signals(verbose=False, exclude=None):
 async def _get_top_signals_async(verbose=False, exclude=None):
     global evaluated_symbols_today, last_reset_date, quiver_semaphore
     if quiver_semaphore is None:
-        quiver_semaphore = asyncio.Semaphore(3)
+        cache_cfg = (getattr(config, "_policy", {}) or {}).get("cache", {})
+        concurrency = int(cache_cfg.get("quiver_concurrency", 2))
+        quiver_semaphore = asyncio.Semaphore(max(1, concurrency))
 
     exclude = set(exclude or [])
 
@@ -361,6 +399,14 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                         symbol=symbol,
                     )
                     return None
+                except YFPricesMissingError as exc:
+                    log_event(
+                        f"SCAN {symbol}: datos YF incompletos ({exc})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    mark_evaluated(symbol)
+                    return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
                 metrics.inc("scored")
@@ -408,6 +454,14 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                         event="SCORE",
                         symbol=symbol,
                     )
+                    return None
+                except YFPricesMissingError as exc:
+                    log_event(
+                        f"SCAN {symbol}: datos YF incompletos ({exc})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    mark_evaluated(symbol)
                     return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None

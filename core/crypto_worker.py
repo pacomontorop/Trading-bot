@@ -8,7 +8,7 @@ from alpaca_trade_api.rest import APIError
 from broker.alpaca import api, is_market_open
 from signals.crypto_signals import get_crypto_signals
 from utils.crypto_limit import get_crypto_limit
-from utils.logger import log_event, log_once
+from utils.logger import log_event
 
 
 # Thread-safe list of executed crypto trades for daily summaries
@@ -60,10 +60,12 @@ def crypto_worker(stop_event: threading.Event) -> None:
             # Skip if a position already exists for this symbol
             try:
                 api.get_position(symbol)
-                log_once(
-                    f"pos_open_{symbol}",
-                    f"REPORT: ⚠️ Position already open for {symbol}, skipping",
-                    min_interval_sec=60,
+                log_event(
+                    f"Position already open for {symbol}, skipping",
+                    event="DEBUG",
+                    symbol=symbol,
+                    dedupe_key=("open_position", symbol),
+                    dedupe_ttl=45,
                 )
                 continue
             except APIError:

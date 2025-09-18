@@ -12,6 +12,8 @@ from utils import metrics
 
 _rate_lock = threading.Lock()
 _last_msg: dict[str, float] = {}
+_dedupe_lock = threading.Lock()
+_dedupe_last: dict[str, float] = {}
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_dir = os.path.join(PROJECT_ROOT, "logs")
@@ -28,6 +30,7 @@ _PREFIXES = {
     "CACHE",
     "ERROR",
     "REPORT",
+    "DEBUG",
 }
 
 _ALIAS_PREFIXES = {
@@ -125,8 +128,19 @@ def log_event(message, **fields):
 
     event_hint = fields.pop("event", None) or fields.pop("event_type", None)
     symbol_hint = fields.pop("symbol", None)
+    dedupe_key = fields.pop("dedupe_key", None)
+    dedupe_ttl = float(fields.pop("dedupe_ttl", 45.0))
 
     event, symbol, body = _normalize_message(message, event_hint, symbol_hint)
+
+    if dedupe_key is not None:
+        now = time.time()
+        key = str(dedupe_key)
+        with _dedupe_lock:
+            last = _dedupe_last.get(key, 0.0)
+            if now - last < max(dedupe_ttl, 0.0):
+                return
+            _dedupe_last[key] = now
 
     header = event
     if symbol:
