@@ -3,6 +3,10 @@ gate:
   min_cap: 500e6
   min_avg_vol_20d: 500000
   strong_signal_max_age_days: 3
+  exclude_regex:
+    - "\\.[Pp][Rr][A-Za-z]"
+    - "(^|\\.)WLACU$|U$|\\-U$"
+    - "W$|WS$|WSA$|WT$"
 
 score:
   strong_recency_hours: 48
@@ -28,7 +32,9 @@ cache:
   lot_ttl_sec: 900            # 15 min: Reddit/Tiingo/feeds por lote
   symbol_ttl_sec: 600         # 10 min: señales por símbolo (Quiver/FMP)
   approval_ttl_sec: 300       # 5 min: cache de aprobación
-  score_recalc_threshold: 60  # no pedir proveedores externos si overall_score < 60
+  quiver_heavy_ttl_sec: 480   # 8 minutos para endpoints pesados
+  quiver_concurrency: 2
+  score_recalc_threshold: 50  # no pedir proveedores externos si overall_score < 50
 
 risk:
   max_daily_loss_pct: 0.7        # % de equity como pérdida diaria máxima antes de parar
@@ -38,6 +44,10 @@ risk:
   min_trailing_pct: 0.005        # 0.5% (se usará en #6)
   max_trailing_pct: 0.05         # 5%   (se usará en #6)
   allow_fractional: true         # habilitar compra fraccional si broker lo soporta
+  enforce_tick_rounding: true
+  min_tick_equity_ge_1: 0.01
+  min_tick_equity_lt_1: 0.0001
+  min_tick_crypto: 0.01
 
 exits:
   use_partial_take_profit: true
@@ -71,3 +81,6 @@ reporting:
   include_cache_metrics: true
   include_risk_metrics: true
   funnel_fields: [scanned, gated, scored, approved, ordered, rejected]
+
+shorts:
+  enabled: false

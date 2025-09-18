@@ -16,10 +16,15 @@ from core.executor import (
     update_trailing_stop,
     update_stop_order,
     compute_chandelier_trail,
+    _tick_rounding_enabled,
 )
 from utils.monitoring import update_positions_metric
 import config
 from utils.symbols import detect_asset_class
+from core.broker import get_tick_size, round_to_tick
+
+
+EPS = 1e-9
 
 
 TAKE_PROFIT_PCT = float(os.getenv("TAKE_PROFIT_PCT", "5"))
@@ -56,19 +61,39 @@ def check_virtual_take_profit_and_stop(
             or qty is None
             or qty_available is None
         ):
+            log_event(
+                f"MONITOR {symbol}: skip (datos incompletos)",
+                event="REPORT",
+            )
             return
 
         qty = abs(float(qty))
         qty_available = abs(float(qty_available))
         if qty <= 0 or qty_available <= 0:
+            log_event(
+                f"MONITOR {symbol}: skip (qty<=0)",
+                event="REPORT",
+            )
             return
 
         if position_side.lower() == "long":
-            gain_pct = (current_price - entry_price) / entry_price * 100
+            if not entry_price or entry_price <= 0:
+                log_event(
+                    f"MONITOR {symbol}: skip (entry_price invalid)",
+                    event="REPORT",
+                )
+                return
+            gain_pct = (current_price - entry_price) / max(entry_price, EPS) * 100
             unrealized = (current_price - entry_price) * qty
             close_side = "sell"
         else:
-            gain_pct = (entry_price - current_price) / entry_price * 100
+            if not entry_price or entry_price <= 0:
+                log_event(
+                    f"MONITOR {symbol}: skip (entry_price invalid)",
+                    event="REPORT",
+                )
+                return
+            gain_pct = (entry_price - current_price) / max(entry_price, EPS) * 100
             unrealized = (entry_price - current_price) * qty
             close_side = "buy"
 
@@ -145,11 +170,32 @@ def monitor_open_positions():
             positions_data = []
             for p in positions:
                 symbol = p.symbol
-                qty = float(p.qty)
+                raw_qty = getattr(p, "qty", None)
+                if raw_qty is None:
+                    log_event(
+                        f"MONITOR {symbol}: skip (qty is None)",
+                        event="REPORT",
+                    )
+                    continue
+                qty = float(raw_qty)
                 qty_available = float(getattr(p, "qty_available", p.qty))
-                avg_entry_price = float(p.avg_entry_price)
-                current_price = float(p.current_price)
-                change_percent = (current_price - avg_entry_price) / avg_entry_price * 100
+                avg_entry_price = float(getattr(p, "avg_entry_price", 0.0) or 0.0)
+                current_price = float(getattr(p, "current_price", 0.0) or 0.0)
+                if qty <= 0 or qty_available <= 0:
+                    log_event(
+                        f"MONITOR {symbol}: skip (qty<=0)",
+                        event="REPORT",
+                    )
+                    continue
+                if avg_entry_price <= 0 or current_price <= 0:
+                    log_event(
+                        f"MONITOR {symbol}: skip (price invalid)",
+                        event="REPORT",
+                    )
+                    continue
+                change_percent = (
+                    (current_price - avg_entry_price) / max(avg_entry_price, EPS) * 100
+                )
 
                 entry_ts = entry_data.get(symbol, (None, None, None))[2]
                 if change_percent <= -10 or (
@@ -220,7 +266,17 @@ def watchdog_trailing_stop():
                 qty_available = _safe_float(
                     getattr(pos, "qty_available", getattr(pos, "qty", 0.0)), 0.0
                 )
+                entry_price_val = _safe_float(getattr(pos, "avg_entry_price", None), 0.0)
                 if qty <= 0 or qty_available <= 0:
+                    log_event(
+                        f"MONITOR {symbol}: skip (qty<=0)", event="REPORT"
+                    )
+                    continue
+                if entry_price_val <= 0:
+                    log_event(
+                        f"MONITOR {symbol}: skip (entry_price invalid)",
+                        event="REPORT",
+                    )
                     continue
                 is_fractional = abs(qty - round(qty)) > 1e-6
                 order = (
@@ -242,13 +298,12 @@ def watchdog_trailing_stop():
                         )
                         continue
 
-                    entry_price = _safe_float(
-                        getattr(pos, "avg_entry_price", None), 0.0
-                    )
+                    entry_price = entry_price_val
                     current_price = _safe_float(get_current_price(symbol), 0.0)
                     if entry_price <= 0 or current_price <= 0:
                         log_event(
-                            f"ERROR: watchdog_trailing_stop: datos inválidos entry={entry_price} price={current_price} — skip"
+                            f"MONITOR {symbol}: skip (price invalid)",
+                            event="REPORT",
                         )
                         continue
 
@@ -264,12 +319,21 @@ def watchdog_trailing_stop():
                         min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
                         trail_dist = max(min_tr * current_price, 0.01 * current_price)
 
+                    tick = get_tick_size(
+                        symbol,
+                        getattr(pos, "asset_class", "us_equity"),
+                        current_price,
+                    ) if _tick_rounding_enabled(config._policy) else None
+
                     if is_fractional:
                         stop_price = (
                             current_price - trail_dist
                             if side == "sell"
                             else current_price + trail_dist
                         )
+                        if tick:
+                            mode = "down" if side == "sell" else "up"
+                            stop_price = round_to_tick(stop_price, tick, mode=mode)
                         api.submit_order(
                             symbol=symbol,
                             qty=available_qty,
@@ -285,6 +349,8 @@ def watchdog_trailing_stop():
                             f"🚨 Stop dinámico inicial colocado para {symbol}"
                         )
                     else:
+                        if tick:
+                            trail_dist = round_to_tick(trail_dist, tick)
                         api.submit_order(
                             symbol=symbol,
                             qty=available_qty,
@@ -310,11 +376,21 @@ def watchdog_trailing_stop():
                     risk_cfg = (config._policy or {}).get("risk", {})
                     min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
                     trail = max(min_tr * current_price, 0.01 * current_price)
+                tick = get_tick_size(
+                    symbol,
+                    getattr(pos, "asset_class", "us_equity"),
+                    current_price,
+                ) if _tick_rounding_enabled(config._policy) else None
+                if tick:
+                    trail = round_to_tick(trail, tick)
 
                 if is_fractional:
                     new_stop = (
                         current_price - trail if side == "sell" else current_price + trail
                     )
+                    if tick:
+                        mode = "down" if side == "sell" else "up"
+                        new_stop = round_to_tick(new_stop, tick, mode=mode)
                     current_stop = _safe_float(
                         getattr(order, "stop_price", new_stop), new_stop
                     )
@@ -322,7 +398,12 @@ def watchdog_trailing_stop():
                         (side == "sell" and new_stop > current_stop + 0.01)
                         or (side == "buy" and new_stop < current_stop - 0.01)
                     ):
-                        update_stop_order(symbol, order_id=order.id, stop_price=new_stop)
+                        update_stop_order(
+                            symbol,
+                            order_id=order.id,
+                            stop_price=new_stop,
+                            side=side,
+                        )
                     entry_price, _, _ = entry_data.get(symbol, (None, None, None))
                     entry_price = _safe_float(entry_price, 0.0)
                     if entry_price > 0:
@@ -332,7 +413,10 @@ def watchdog_trailing_stop():
                             and current_stop < entry_price
                         ):
                             update_stop_order(
-                                symbol, order_id=order.id, stop_price=entry_price
+                                symbol,
+                                order_id=order.id,
+                                stop_price=entry_price,
+                                side=side,
                             )
                         elif (
                             side == "buy"
@@ -340,7 +424,10 @@ def watchdog_trailing_stop():
                             and current_stop > entry_price
                         ):
                             update_stop_order(
-                                symbol, order_id=order.id, stop_price=entry_price
+                                symbol,
+                                order_id=order.id,
+                                stop_price=entry_price,
+                                side=side,
                             )
                 else:
                     new_trail = trail
@@ -349,7 +436,10 @@ def watchdog_trailing_stop():
                     )
                     if abs(new_trail - current_trail) > 0.01:
                         update_trailing_stop(
-                            symbol, order_id=order.id, trail_price=new_trail
+                            symbol,
+                            order_id=order.id,
+                            trail_price=new_trail,
+                            side=side,
                         )
                     entry_price, _, _ = entry_data.get(symbol, (None, None, None))
                     stop_price = float(getattr(order, "stop_price", 0))
@@ -395,4 +485,3 @@ def cancel_stale_orders_loop():
         except Exception as e:
             log_event(f"⚠️ Error en cancel_stale_orders_loop: {e}")
         time.sleep(CANCEL_ORDERS_INTERVAL)
-

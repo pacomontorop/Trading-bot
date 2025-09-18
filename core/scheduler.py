@@ -107,6 +107,7 @@ def pre_market_scan():
         if evaluated_longs_today.reset_if_new_day():
             reset_daily_approvals()
             print("🔁 Nuevo día detectado, reiniciando lista de símbolos.", flush=True)
+            initialize_quiver_caches()
 
         # Obtener señales solo una vez por ciclo
         get_cached_positions(refresh=True)
@@ -152,6 +153,13 @@ def pre_market_scan():
                 evaluated_longs_today.add(symb)
 
                 if is_position_open(symb):
+                    log_event(
+                        "Position already open, skipping",
+                        event="DEBUG",
+                        symbol=symb,
+                        dedupe_key=("open_position", symb),
+                        dedupe_ttl=45,
+                    )
                     print(f"📌 {symb} tiene posición abierta. Se omite.", flush=True)
                     continue
 
@@ -486,7 +494,12 @@ def start_schedulers():
     threading.Thread(target=daily_reporting_loop, daemon=True).start()
     threading.Thread(target=scan_grade_changes, daemon=True).start()
 
-    ENABLE_SHORTS = os.getenv("ENABLE_SHORTS", "false").lower() == "true"
+    policy_shorts = ((config._policy or {}).get("shorts", {}) or {}).get("enabled", False)
+    env_setting = os.getenv("ENABLE_SHORTS")
+    if env_setting is not None:
+        ENABLE_SHORTS = env_setting.lower() == "true"
+    else:
+        ENABLE_SHORTS = bool(policy_shorts)
 
     if ENABLE_SHORTS:
         print("🟢 ENABLE_SHORTS=True: Activando escaneo de oportunidades short...", flush=True)

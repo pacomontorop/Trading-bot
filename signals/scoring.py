@@ -22,6 +22,10 @@ class SkipSymbol(Exception):
     """Signal that a symbol should be skipped by upstream callers."""
 
 
+class YFPricesMissingError(Exception):
+    """Raised when Yahoo Finance does not return enough pricing data."""
+
+
 def _normalize_0_100(x: float) -> int:
     """Coerce ``x`` into an integer within the [0, 100] range."""
     try:
@@ -106,6 +110,8 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
         market_cap = info.get("marketCap")
         volume = info.get("volume")
         hist = ticker.history(period="21d", interval="1d")
+        if hist.empty or hist["Close"].dropna().empty:
+            raise YFPricesMissingError("history_empty")
         weekly_change = None
         if len(hist) >= 2:
             weekly_change = ((hist['Close'].iloc[-1] - hist['Close'].iloc[0]) / hist['Close'].iloc[0]) * 100
@@ -118,6 +124,8 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
         volume_7d_avg = hist['Volume'].mean() if not hist['Volume'].isna().all() else None
 
         current_price = hist['Close'].iloc[-1] if not hist.empty else None
+        if current_price is None or (isinstance(current_price, float) and math.isnan(current_price)):
+            raise YFPricesMissingError("last_close_missing")
         atr = None
         try:
             if len(hist) >= 2 and {"High", "Low", "Close"}.issubset(hist.columns):

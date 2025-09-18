@@ -19,6 +19,14 @@ from signals.quiver_throttler import throttled_request
 from signals.fmp_utils import price_target_news
 
 
+class QuiverRateLimitError(Exception):
+    """Raised when the Quiver API responds with a rate limit."""
+
+
+class QuiverTemporaryError(Exception):
+    """Raised when a transient error should suppress further requests."""
+
+
 
 load_dotenv()
 
@@ -28,12 +36,45 @@ def _ttl_lot() -> int:
     return int(((cfg.get("cache") or {}).get("lot_ttl_sec", 900)))
 
 
+def _ttl_heavy() -> int:
+    cfg = getattr(config, "_policy", {}) or {}
+    cache_cfg = cfg.get("cache") or {}
+    return int(cache_cfg.get("quiver_heavy_ttl_sec", _ttl_lot()))
+
+
+_ENDPOINT_SUPPRESS: dict[str, float] = {}
+
+
 def _cached_heavy_endpoint(name: str, url: str, ttl: int):
     key = f"HE_{name}"
     data = cache_get(key, ttl)
     if data is not None:
         return data
-    data = safe_quiver_request(url)
+    now = time.time()
+    suppressed_until = _ENDPOINT_SUPPRESS.get(name)
+    if suppressed_until and now < suppressed_until:
+        log_once(
+            f"quiver_suppressed_{name}",
+            f"CACHE {name}: salto por suppress hasta {suppressed_until:.0f}",
+            min_interval_sec=60,
+        )
+        return None
+    try:
+        data = safe_quiver_request(url)
+    except QuiverRateLimitError:
+        _ENDPOINT_SUPPRESS[name] = now + ttl
+        log_event(
+            f"CACHE {name}: suppress por rate limit durante {ttl}s",
+            event="CACHE",
+        )
+        return None
+    except QuiverTemporaryError:
+        _ENDPOINT_SUPPRESS[name] = now + ttl
+        log_event(
+            f"CACHE {name}: suppress temporal durante {ttl}s",
+            event="CACHE",
+        )
+        return None
     if isinstance(data, list):
         cache_set(key, data)
     return data
@@ -304,6 +345,7 @@ def safe_quiver_request(url, retries=5, delay=4):
             "🔑 Advertencia: QUIVER_API_KEY no configurada",
             min_interval_sec=3600,
         )
+    last_error: Optional[Exception] = None
     for i in range(retries):
         try:
             r = throttled_request(requests.get, url, headers=HEADERS, timeout=QUIVER_TIMEOUT)
@@ -313,6 +355,7 @@ def safe_quiver_request(url, retries=5, delay=4):
             # stop early to avoid spamming the logs with exponential backoff
             # messages.
             if r.status_code == 429:
+                last_error = QuiverRateLimitError("rate_limit")
                 wait = delay * (2 ** i)
                 wait += random.uniform(0, delay)
                 print(f"⚠️ Límite de velocidad alcanzado en {url}: código {r.status_code}")
@@ -320,22 +363,28 @@ def safe_quiver_request(url, retries=5, delay=4):
                 time.sleep(wait)
                 continue
             if r.status_code >= 500:
+                last_error = QuiverTemporaryError(f"server_{r.status_code}")
                 print(f"⚠️ Error del servidor en {url}: código {r.status_code}")
                 break
             if r.status_code == 404:
                 print(f"ℹ️ Datos no encontrados en {url}")
                 return []
+            last_error = QuiverTemporaryError(f"http_{r.status_code}")
             print(f"⚠️ Respuesta inesperada en {url}: código {r.status_code}")
             break
         except requests.exceptions.Timeout:
+            last_error = QuiverTemporaryError("timeout")
             print(f"⏱️ Timeout en {url} tras {QUIVER_TIMEOUT}s")
         except Exception as e:
+            last_error = QuiverTemporaryError(str(e))
             print(f"⚠️ Error en {url}: {e}")
         wait = delay * (2 ** i)
         wait += random.uniform(0, delay)
         print(f"🔄 Reintentando en {wait}s...")
         time.sleep(wait)
     print(f"❌ Fallo final en {url}. Se devuelve None.")
+    if last_error:
+        raise last_error
     return None
 
 
@@ -351,7 +400,7 @@ def get_quiver_signals(symbol):
     }
 
 def get_insider_signal(symbol):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl
     )
@@ -383,7 +432,7 @@ def get_insider_signal(symbol):
 
 
 def get_gov_contract_signal(symbol):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl
     )
@@ -533,7 +582,10 @@ def sec13f_changes_signal(symbol):
 
 
 def house_purchase_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/housetrading")
+    ttl = _ttl_heavy()
+    data = _cached_heavy_endpoint(
+        "live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl
+    )
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -552,7 +604,8 @@ def house_purchase_signal(symbol):
 
 
 def twitter_trending_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/twitter")
+    ttl = _ttl_heavy()
+    data = _cached_heavy_endpoint("live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl)
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -606,7 +659,7 @@ def app_ratings_signal(symbol):
     return SignalResult(False, None)
 
 def has_recent_sec13f_activity(symbol, cutoff=None):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint("live_sec13f", f"{QUIVER_BASE_URL}/live/sec13f", ttl)
     if not isinstance(data, list):
         return False
@@ -626,7 +679,7 @@ def has_recent_sec13f_activity(symbol, cutoff=None):
     return False
 
 def has_recent_sec13f_changes(symbol, cutoff=None):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_sec13fchanges", f"{QUIVER_BASE_URL}/live/sec13fchanges", ttl
     )
@@ -653,7 +706,7 @@ def has_recent_sec13f_changes(symbol, cutoff=None):
 
 def has_recent_house_purchase(symbol, cutoff=None):
     """Check recent purchases from U.S. House representatives."""
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl
     )
@@ -671,7 +724,7 @@ def has_recent_house_purchase(symbol, cutoff=None):
 
 def has_recent_insider_trade(symbol, cutoff):
     """Recent insider transactions for the given symbol."""
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl
     )
@@ -753,7 +806,7 @@ def has_historical_senate_trade(symbol, cutoff):
 
 
 def has_recent_gov_contract(symbol, cutoff):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl
     )
@@ -890,7 +943,7 @@ def has_recent_patents(symbol, cutoff):
     return isinstance(data, list) and len(data) > 0
 
 def is_trending_on_twitter(symbol, cutoff=None):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl
     )
@@ -914,7 +967,7 @@ def is_trending_on_twitter(symbol, cutoff=None):
     return False
 
 def has_positive_app_ratings(symbol, cutoff=None):
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     data = _cached_heavy_endpoint(
         "live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl
     )
@@ -956,10 +1009,16 @@ def initialize_quiver_caches():
     Inicializa los datos pesados de Quiver para ser usados localmente.
     Evita llamadas repetidas a la API para datos grandes.
     """
-    ttl = _ttl_lot()
+    ttl = _ttl_heavy()
     print("🔄 Descargando datos de insiders...")
     _cached_heavy_endpoint("live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl)
     print("🔄 Descargando datos de contratos gubernamentales...")
     _cached_heavy_endpoint("live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl)
+    print("🔄 Descargando datos de housetrading...")
+    _cached_heavy_endpoint("live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl)
+    print("🔄 Descargando datos de Twitter...")
+    _cached_heavy_endpoint("live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl)
+    print("🔄 Descargando datos de app ratings...")
+    _cached_heavy_endpoint("live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl)
 
 
