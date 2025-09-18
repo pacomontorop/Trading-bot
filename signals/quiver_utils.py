@@ -388,6 +388,13 @@ def safe_quiver_request(url, retries=5, delay=4):
     return None
 
 
+def _request_or_default(url: str, default=None):
+    """Fetch data from Quiver while tolerating transient failures."""
+
+    try:
+        return safe_quiver_request(url)
+    except (QuiverRateLimitError, QuiverTemporaryError):
+        return default
 
 
 def get_quiver_signals(symbol):
@@ -461,7 +468,7 @@ def get_gov_contract_signal(symbol):
 
 
 def get_patent_momentum_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/patentmomentum")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/patentmomentum")
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -483,7 +490,9 @@ def get_patent_momentum_signal(symbol):
 
 
 def get_wsb_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}")
+    data = _request_or_default(
+        f"{QUIVER_BASE_URL}/historical/wallstreetbets/{symbol.upper()}"
+    )
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -535,7 +544,7 @@ def get_extended_quiver_signals(symbol):
 
 
 def sec13f_activity_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13f")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/sec13f")
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -557,7 +566,7 @@ def sec13f_activity_signal(symbol):
 
 
 def sec13f_changes_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/sec13fchanges")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/sec13fchanges")
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -630,7 +639,7 @@ def twitter_trending_signal(symbol):
 
 
 def app_ratings_signal(symbol):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/appratings")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/appratings")
     if not isinstance(data, list):
         return SignalResult(False, None)
     latest = None
@@ -742,7 +751,7 @@ def has_recent_insider_trade(symbol, cutoff):
 
 
 def has_recent_senate_trade(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/senatetrading")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/senatetrading")
     if not isinstance(data, list):
         return False
     for d in data:
@@ -757,7 +766,7 @@ def has_recent_senate_trade(symbol, cutoff):
 
 
 def has_recent_congress_trade(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/congresstrading")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/congresstrading")
     if not isinstance(data, list):
         return False
     for d in data:
@@ -772,7 +781,9 @@ def has_recent_congress_trade(symbol, cutoff):
 
 
 def has_historical_congress_trade(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/congresstrading/{symbol.upper()}")
+    data = _request_or_default(
+        f"{QUIVER_BASE_URL}/historical/congresstrading/{symbol.upper()}"
+    )
     if not isinstance(data, list):
         return False
     for d in data:
@@ -789,7 +800,9 @@ def has_historical_congress_trade(symbol, cutoff):
 
 
 def has_historical_senate_trade(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/historical/senatetrading/{symbol.upper()}")
+    data = _request_or_default(
+        f"{QUIVER_BASE_URL}/historical/senatetrading/{symbol.upper()}"
+    )
     if not isinstance(data, list):
         return False
     for d in data:
@@ -827,7 +840,7 @@ def has_recent_gov_contract(symbol, cutoff):
 
 
 def has_recent_gov_contract_all(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/govcontractsall")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/govcontractsall")
     if not isinstance(data, list):
         return False
     for d in data:
@@ -845,7 +858,7 @@ def has_recent_gov_contract_all(symbol, cutoff):
 
 
 def has_recent_lobbying(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/lobbying")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/lobbying")
     if not isinstance(data, list):
         return False
     for d in data:
@@ -863,7 +876,7 @@ def has_recent_lobbying(symbol, cutoff):
 
 
 def has_recent_off_exchange(symbol, cutoff):
-    data = safe_quiver_request(f"{QUIVER_BASE_URL}/live/offexchange")
+    data = _request_or_default(f"{QUIVER_BASE_URL}/live/offexchange")
     if not isinstance(data, list):
         return False
     for d in data:
@@ -901,7 +914,7 @@ def has_recent_price_target_news(symbol, cutoff=None):
 
 def has_recent_patent_drift(symbol, cutoff):
     url = f"{QUIVER_BASE_URL}/live/patentdrift?ticker={symbol.upper()}&latest=true"
-    data = safe_quiver_request(url)
+    data = _request_or_default(url)
     if not isinstance(data, list):
         return False
     for d in data:
@@ -919,7 +932,7 @@ def has_recent_patent_drift(symbol, cutoff):
 
 def has_recent_patent_momentum(symbol, cutoff):
     url = f"{QUIVER_BASE_URL}/live/patentmomentum?ticker={symbol.upper()}&latest=true"
-    data = safe_quiver_request(url)
+    data = _request_or_default(url)
     if not isinstance(data, list):
         return False
     for d in data:
@@ -939,7 +952,7 @@ def has_recent_patents(symbol, cutoff):
     date_from = cutoff.strftime("%Y%m%d")
     date_to = datetime.utcnow().strftime("%Y%m%d")
     url = f"{QUIVER_BASE_URL}/live/allpatents?ticker={symbol.upper()}&date_from={date_from}&date_to={date_to}"
-    data = safe_quiver_request(url)
+    data = _request_or_default(url)
     return isinstance(data, list) and len(data) > 0
 
 def is_trending_on_twitter(symbol, cutoff=None):
