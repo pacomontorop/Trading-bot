@@ -9,6 +9,7 @@ import math
 from broker.alpaca import api, get_current_price, is_market_open
 from broker import alpaca as broker
 from core.broker import get_tick_size, round_to_tick
+from libs.broker.ticks import round_stop_price
 from broker.account import get_account_equity_safe
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
@@ -222,9 +223,23 @@ def _apply_tick_rounding(
 ):
     tick = get_tick_size(symbol, asset_class, entry_price)
     lower_side = (side or "").lower()
-    stop_mode = "down" if lower_side == "buy" else "up"
     tp_mode = "up" if lower_side == "buy" else "down"
-    rounded_stop = round_to_tick(stop_price, tick, mode=stop_mode)
+    round_asset_class = asset_class or "us_equity"
+    if round_asset_class == "equity":
+        round_asset_class = "us_equity"
+    stop_side = "SELL" if lower_side == "buy" else "BUY"
+    rounded_stop_dec = (
+        round_stop_price(
+            symbol,
+            stop_side,
+            stop_price,
+            asset_class=round_asset_class,
+            tick_override=tick,
+        )
+        if stop_price is not None
+        else None
+    )
+    rounded_stop = float(rounded_stop_dec) if rounded_stop_dec is not None else None
     rounded_tp = round_to_tick(take_profit, tick, mode=tp_mode)
     rounded_trail = round_to_tick(trail_price, tick)
 
@@ -235,7 +250,14 @@ def _apply_tick_rounding(
         and tick > 0
         and rounded_stop >= entry_price
     ):
-        adjusted = round_to_tick(entry_price - tick, tick, mode="down")
+        adjusted_dec = round_stop_price(
+            symbol,
+            stop_side,
+            entry_price - tick,
+            asset_class=round_asset_class,
+            tick_override=tick,
+        )
+        adjusted = float(adjusted_dec) if adjusted_dec is not None else None
         if adjusted is None or adjusted <= 0:
             log_event(
                 f"RISK {symbol}: ❌ stop>=entry tras redondeo, se omite stop", event="RISK"
@@ -254,7 +276,14 @@ def _apply_tick_rounding(
         and tick > 0
         and rounded_stop <= entry_price
     ):
-        adjusted = round_to_tick(entry_price + tick, tick, mode="up")
+        adjusted_dec = round_stop_price(
+            symbol,
+            stop_side,
+            entry_price + tick,
+            asset_class=round_asset_class,
+            tick_override=tick,
+        )
+        adjusted = float(adjusted_dec) if adjusted_dec is not None else None
         if adjusted is None or adjusted <= 0:
             log_event(
                 f"RISK {symbol}: ❌ stop<=entry tras redondeo, se omite stop", event="RISK"
@@ -614,12 +643,23 @@ def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None, 
         params = {}
         mode = "down" if (side or "").lower() == "sell" else "up"
         tick = None
+        asset_cls = detect_asset_class(symbol)
         if _tick_rounding_enabled(config._policy):
             basis = stop_price if stop_price is not None else limit_price
-            tick = get_tick_size(symbol, detect_asset_class(symbol), basis)
+            tick = get_tick_size(symbol, asset_cls, basis)
         if stop_price is not None:
+            round_asset_class = asset_cls if asset_cls != "equity" else "us_equity"
+            rounded_stop_dec = round_stop_price(
+                symbol,
+                side or "",
+                stop_price,
+                asset_class=round_asset_class,
+                tick_override=tick,
+            )
             params["stop_price"] = (
-                round_to_tick(stop_price, tick, mode=mode) if tick else stop_price
+                float(rounded_stop_dec)
+                if rounded_stop_dec is not None
+                else stop_price
             )
         if limit_price is not None:
             params["limit_price"] = (

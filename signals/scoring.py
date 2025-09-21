@@ -95,10 +95,12 @@ def _recency_boost(days_since_event: float | None, strong_recency_hours: float, 
     return float(math.exp(-decay * (extra_h / 24.0)))
 
 
-def fetch_yfinance_stock_data(symbol, verbose: bool = False):
+def fetch_yfinance_stock_data(symbol, verbose: bool = False, return_history: bool = False):
     now = datetime.utcnow()
     cached = _stock_cache.get(symbol)
     if cached and (now - cached["ts"]) < _CACHE_TTL:
+        if return_history:
+            return cached["data"], cached.get("history")
         return cached["data"]
     try:
         asset_class = detect_asset_class(symbol)
@@ -109,12 +111,18 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
         info = ticker.info
         market_cap = info.get("marketCap")
         volume = info.get("volume")
-        hist = ticker.history(period="21d", interval="1d")
+        hist = ticker.history(period="90d", interval="1d")
         if hist.empty or hist["Close"].dropna().empty:
             raise YFPricesMissingError("history_empty")
         weekly_change = None
         if len(hist) >= 2:
-            weekly_change = ((hist['Close'].iloc[-1] - hist['Close'].iloc[0]) / hist['Close'].iloc[0]) * 100
+            lookback = min(len(hist) - 1, 6)
+            base_idx = -lookback - 1
+            base_price = hist['Close'].iloc[base_idx]
+            if base_price:
+                weekly_change = (
+                    (hist['Close'].iloc[-1] - base_price) / base_price
+                ) * 100
         trend_positive = hist['Close'].iloc[-1] > hist['Close'].iloc[0] if len(hist) >= 2 else None
         price_change_24h = (
             abs((hist['Close'].iloc[-1] - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100
@@ -152,12 +160,17 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False):
             current_price,
             atr,
         )
-        _stock_cache[symbol] = {"data": data, "ts": now}
+        _stock_cache[symbol] = {"data": data, "history": hist, "ts": now}
+        if return_history:
+            return data, hist
         return data
     except SkipSymbol:
         raise
     except Exception:
-        return None, None, None, None, None, None, None, None
+        data = (None, None, None, None, None, None, None, None)
+        if return_history:
+            return data, None
+        return data
 
 
 def score_long_signal(symbol: str, market_data: dict) -> dict:

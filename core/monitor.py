@@ -3,6 +3,7 @@
 import os
 import time
 import math
+from decimal import Decimal
 from broker.alpaca import api, get_current_price, is_market_open
 from utils.logger import log_event
 from utils.orders import resolve_time_in_force
@@ -22,6 +23,7 @@ from utils.monitoring import update_positions_metric
 import config
 from utils.symbols import detect_asset_class
 from core.broker import get_tick_size, round_to_tick
+from libs.broker.ticks import equity_tick_for, round_stop_price
 
 
 EPS = 1e-9
@@ -319,21 +321,59 @@ def watchdog_trailing_stop():
                         min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
                         trail_dist = max(min_tr * current_price, 0.01 * current_price)
 
-                    tick = get_tick_size(
-                        symbol,
-                        getattr(pos, "asset_class", "us_equity"),
-                        current_price,
-                    ) if _tick_rounding_enabled(config._policy) else None
+                    asset_class = getattr(pos, "asset_class", "us_equity") or "us_equity"
+                    tick = (
+                        get_tick_size(symbol, asset_class, current_price)
+                        if _tick_rounding_enabled(config._policy)
+                        else None
+                    )
+                    tick_dec = Decimal(str(tick)) if tick else None
 
                     if is_fractional:
-                        stop_price = (
-                            current_price - trail_dist
+                        current_dec = Decimal(str(current_price))
+                        trail_dec = Decimal(str(trail_dist))
+                        raw_stop = (
+                            current_dec - trail_dec
                             if side == "sell"
-                            else current_price + trail_dist
+                            else current_dec + trail_dec
                         )
-                        if tick:
-                            mode = "down" if side == "sell" else "up"
-                            stop_price = round_to_tick(stop_price, tick, mode=mode)
+                        stop_dec = round_stop_price(
+                            symbol,
+                            side,
+                            raw_stop,
+                            asset_class=asset_class,
+                            tick_override=tick_dec,
+                        )
+                        last_price_dec = current_dec
+                        if (
+                            side == "sell"
+                            and stop_dec is not None
+                            and stop_dec >= last_price_dec
+                        ):
+                            step = tick_dec or equity_tick_for(last_price_dec)
+                            adjust_basis = last_price_dec - step
+                            if adjust_basis > 0:
+                                stop_dec = round_stop_price(
+                                    symbol,
+                                    side,
+                                    adjust_basis,
+                                    asset_class=asset_class,
+                                    tick_override=tick_dec or step,
+                                )
+                        elif (
+                            side == "buy"
+                            and stop_dec is not None
+                            and stop_dec <= last_price_dec
+                        ):
+                            step = tick_dec or equity_tick_for(last_price_dec)
+                            stop_dec = round_stop_price(
+                                symbol,
+                                side,
+                                last_price_dec + step,
+                                asset_class=asset_class,
+                                tick_override=tick_dec or step,
+                            )
+                        stop_price_value = float(stop_dec) if stop_dec is not None else None
                         api.submit_order(
                             symbol=symbol,
                             qty=available_qty,
@@ -341,9 +381,9 @@ def watchdog_trailing_stop():
                             type="stop",
                             time_in_force=resolve_time_in_force(
                                 available_qty,
-                                asset_class=getattr(pos, "asset_class", "us_equity"),
+                                asset_class=asset_class,
                             ),
-                            stop_price=stop_price,
+                            stop_price=stop_price_value,
                         )
                         log_event(
                             f"🚨 Stop dinámico inicial colocado para {symbol}"
@@ -358,7 +398,7 @@ def watchdog_trailing_stop():
                             type="trailing_stop",
                             time_in_force=resolve_time_in_force(
                                 available_qty,
-                                asset_class=getattr(pos, "asset_class", "us_equity"),
+                                asset_class=asset_class,
                             ),
                             trail_price=trail_dist,
                         )
@@ -376,21 +416,61 @@ def watchdog_trailing_stop():
                     risk_cfg = (config._policy or {}).get("risk", {})
                     min_tr = float(risk_cfg.get("min_trailing_pct", 0.005))
                     trail = max(min_tr * current_price, 0.01 * current_price)
-                tick = get_tick_size(
-                    symbol,
-                    getattr(pos, "asset_class", "us_equity"),
-                    current_price,
-                ) if _tick_rounding_enabled(config._policy) else None
+                asset_class = getattr(pos, "asset_class", "us_equity") or "us_equity"
+                tick = (
+                    get_tick_size(symbol, asset_class, current_price)
+                    if _tick_rounding_enabled(config._policy)
+                    else None
+                )
                 if tick:
                     trail = round_to_tick(trail, tick)
 
                 if is_fractional:
-                    new_stop = (
-                        current_price - trail if side == "sell" else current_price + trail
+                    current_dec = Decimal(str(current_price))
+                    trail_dec = Decimal(str(trail))
+                    raw_stop = (
+                        current_dec - trail_dec
+                        if side == "sell"
+                        else current_dec + trail_dec
                     )
-                    if tick:
-                        mode = "down" if side == "sell" else "up"
-                        new_stop = round_to_tick(new_stop, tick, mode=mode)
+                    tick_dec = Decimal(str(tick)) if tick else None
+                    new_stop_dec = round_stop_price(
+                        symbol,
+                        side,
+                        raw_stop,
+                        asset_class=asset_class,
+                        tick_override=tick_dec,
+                    )
+                    if new_stop_dec is not None:
+                        if (
+                            side == "sell"
+                            and new_stop_dec >= current_dec
+                        ):
+                            step = tick_dec or equity_tick_for(current_dec)
+                            adjust_basis = current_dec - step
+                            if adjust_basis > 0:
+                                new_stop_dec = round_stop_price(
+                                    symbol,
+                                    side,
+                                    adjust_basis,
+                                    asset_class=asset_class,
+                                    tick_override=tick_dec or step,
+                                )
+                        elif (
+                            side == "buy"
+                            and new_stop_dec <= current_dec
+                        ):
+                            step = tick_dec or equity_tick_for(current_dec)
+                            new_stop_dec = round_stop_price(
+                                symbol,
+                                side,
+                                current_dec + step,
+                                asset_class=asset_class,
+                                tick_override=tick_dec or step,
+                            )
+                    new_stop = float(new_stop_dec) if new_stop_dec is not None else None
+                    if new_stop is None:
+                        continue
                     current_stop = _safe_float(
                         getattr(order, "stop_price", new_stop), new_stop
                     )
