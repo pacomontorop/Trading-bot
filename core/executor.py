@@ -642,25 +642,29 @@ def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None, 
 
         params = {}
         mode = "down" if (side or "").lower() == "sell" else "up"
+        tick_rounding = _tick_rounding_enabled(config._policy)
         tick = None
         asset_cls = detect_asset_class(symbol)
-        if _tick_rounding_enabled(config._policy):
+        if tick_rounding:
             basis = stop_price if stop_price is not None else limit_price
             tick = get_tick_size(symbol, asset_cls, basis)
         if stop_price is not None:
-            round_asset_class = asset_cls if asset_cls != "equity" else "us_equity"
-            rounded_stop_dec = round_stop_price(
-                symbol,
-                side or "",
-                stop_price,
-                asset_class=round_asset_class,
-                tick_override=tick,
-            )
-            params["stop_price"] = (
-                float(rounded_stop_dec)
-                if rounded_stop_dec is not None
-                else stop_price
-            )
+            if tick_rounding:
+                round_asset_class = asset_cls if asset_cls != "equity" else "us_equity"
+                rounded_stop_dec = round_stop_price(
+                    symbol,
+                    side or "",
+                    stop_price,
+                    asset_class=round_asset_class,
+                    tick_override=tick,
+                )
+                params["stop_price"] = (
+                    float(rounded_stop_dec)
+                    if rounded_stop_dec is not None
+                    else stop_price
+                )
+            else:
+                params["stop_price"] = stop_price
         if limit_price is not None:
             params["limit_price"] = (
                 round_to_tick(limit_price, tick, mode=mode) if tick else limit_price
