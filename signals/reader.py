@@ -5,13 +5,24 @@ from signals.filters import (
     is_approved_by_finnhub_and_alphavantage,
     get_cached_positions,
 )
-from signals.quiver_utils import (
-    _async_is_approved_by_quiver,
-    fetch_quiver_signals,
-    is_approved_by_quiver,
-)
 import re
-import signals.quiver_utils as _quiver_utils
+import sys
+try:
+    from signals.quiver_utils import (
+        _async_is_approved_by_quiver,
+        fetch_quiver_signals,
+        is_approved_by_quiver,
+    )
+    import signals.quiver_utils as _quiver_utils
+except ModuleNotFoundError:
+    _quiver_utils = sys.modules.get("signals.quiver_utils")
+    if _quiver_utils is None:
+        raise
+    _async_is_approved_by_quiver = getattr(
+        _quiver_utils, "_async_is_approved_by_quiver", None
+    )
+    fetch_quiver_signals = getattr(_quiver_utils, "fetch_quiver_signals", None)
+    is_approved_by_quiver = getattr(_quiver_utils, "is_approved_by_quiver", None)
 
 QUIVER_APPROVAL_THRESHOLD = getattr(_quiver_utils, "QUIVER_APPROVAL_THRESHOLD", 5)
 has_recent_quiver_event = getattr(
@@ -35,12 +46,46 @@ except ImportError:
     class YFPricesMissingError(Exception):
         pass
 from datetime import datetime, timedelta
-from utils.logger import log_event
-from utils.state import mark_evaluated
-from utils import metrics
+try:
+    from utils.logger import log_event
+except ModuleNotFoundError:
+    _utils_logger = sys.modules.get("utils.logger")
+    if _utils_logger is None:
+        log_event = lambda *a, **k: None  # type: ignore
+    else:
+        log_event = getattr(_utils_logger, "log_event", lambda *a, **k: None)
+try:
+    from utils.state import mark_evaluated
+except ModuleNotFoundError:
+    _utils_state = sys.modules.get("utils.state")
+    if _utils_state is None:
+        mark_evaluated = lambda *a, **k: None  # type: ignore
+    else:
+        mark_evaluated = getattr(_utils_state, "mark_evaluated", lambda *a, **k: None)
+try:
+    from utils import metrics
+except ModuleNotFoundError:
+    _utils_pkg = sys.modules.get("utils")
+    if _utils_pkg is None:
+        class _Metrics:
+            @staticmethod
+            def inc(*args, **kwargs):
+                return None
+
+        metrics = _Metrics()  # type: ignore
+    else:
+        metrics = getattr(_utils_pkg, "metrics", None)
+        if metrics is None:
+            class _Metrics:
+                @staticmethod
+                def inc(*args, **kwargs):
+                    return None
+
+            metrics = _Metrics()  # type: ignore
 from signals.adaptive_bonus import apply_adaptive_bonus
 from signals.fmp_utils import get_fmp_grade_score
 from signals.fmp_signals import get_fmp_signal_score
+from libs.logging.approvals import approvals_log
 import yfinance as yf
 import os
 import pandas as pd
@@ -174,6 +219,41 @@ random.shuffle(stock_assets)
 BLACKLIST_DAYS = 5  # Puede ponerse en config/env si se desea
 
 
+def _extract_close_series(history, symbol: str) -> pd.Series:
+    if history is None or getattr(history, "empty", True):
+        return pd.Series(dtype=float)
+    try:
+        close_data = history["Close"]
+    except Exception:
+        return pd.Series(dtype=float)
+    if isinstance(close_data, pd.DataFrame):
+        if symbol in close_data.columns:
+            series = close_data[symbol]
+        else:
+            series = close_data.iloc[:, 0]
+    else:
+        series = close_data
+    return series.dropna()
+
+
+def _compute_rsi(close_series: pd.Series, period: int = 14) -> float | None:
+    close_series = close_series.dropna()
+    if close_series.size <= period:
+        return None
+    delta = close_series.diff()
+    gains = delta.clip(lower=0)
+    losses = (-delta).clip(lower=0)
+    avg_gain = gains.ewm(alpha=1 / period, adjust=False).mean()
+    avg_loss = losses.ewm(alpha=1 / period, adjust=False).mean()
+    avg_loss = avg_loss.replace(0, pd.NA)
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    value = rsi.iloc[-1]
+    if pd.isna(value):
+        return None
+    return float(value)
+
+
 def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAYS) -> bool:
     try:
         if not os.path.exists(ORDERS_HISTORY_FILE):
@@ -193,23 +273,32 @@ def is_blacklisted_recent_loser(symbol: str, blacklist_days: int = BLACKLIST_DAY
         return False  # Permitir si hay error
 
 
-def has_downtrend(symbol: str, days: int = 4) -> bool:
+def has_downtrend(symbol: str, days: int = 4, close_series: pd.Series | None = None) -> bool:
     try:
-        asset_class = detect_asset_class(symbol)
-        if asset_class != "equity":
-            return False
-        yf_symbol = normalize_for_yahoo(symbol) if asset_class == "preferred" else symbol
-        df = yf.download(yf_symbol, period=f"{days}d", interval="1d", progress=False)
-        close_data = df["Close"]
-        if isinstance(close_data, pd.DataFrame):
-            if symbol in close_data.columns:
-                close_series = close_data[symbol]
-            else:
-                close_series = close_data.iloc[:, 0]
+        if close_series is None or close_series.empty:
+            history = None
+            data = fetch_yfinance_stock_data(symbol, return_history=True)
+            if isinstance(data, tuple) and len(data) == 2:
+                _, history = data
+            if history is None:
+                asset_class = detect_asset_class(symbol)
+                if asset_class != "equity":
+                    return False
+                yf_symbol = normalize_for_yahoo(symbol) if asset_class == "preferred" else symbol
+                history = yf.download(yf_symbol, period=f"{max(days, 20)}d", interval="1d", progress=False)
+            close_series = _extract_close_series(history, symbol)
         else:
-            close_series = close_data
-        closes = close_series.dropna().tolist()
-        return len(closes) >= 3 and closes[-1] < closes[-2] < closes[-3]
+            close_series = close_series.dropna()
+
+        if close_series.empty:
+            return False
+
+        pct_neg = close_series.pct_change().tail(3).lt(0).sum()
+        ema20 = close_series.ewm(span=20, adjust=False).mean().iloc[-1]
+        last_close = close_series.iloc[-1]
+        if pd.isna(ema20):
+            return False
+        return bool(int(pct_neg) >= 2 and float(last_close) < float(ema20))
     except Exception as e:
         log_event(f"⚠️ Error obteniendo precios de cierre para {symbol}: {e}")
         return False
@@ -551,47 +640,111 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
         if detect_asset_class(symbol) != "equity":
             continue
         metrics.inc("scanned")
+        signals_count = 0
         if is_blacklisted_recent_loser(symbol):
             log_event(
                 f"🚫 {symbol} descartado por pérdida reciente (lista negra temporal)"
             )
+            approvals_log(
+                symbol,
+                "REJECT",
+                "recent_loser_blacklist",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
             continue
         already_considered.add(symbol)
 
-        eval_res = is_approved_by_quiver(symbol)
-        if eval_res and eval_res.get("active_signals"):
-            log_event(f"⛔ {symbol} tiene señales alcistas en Quiver. Short descartado.")
-            continue
-
         try:
             quiver_signals = fetch_quiver_signals(symbol)
-            if quiver_signals.get("has_recent_sec13f_activity") or quiver_signals.get("has_recent_sec13f_changes"):
-                log_event(f"⛔ {symbol} con señales 13F positivas. Short descartado.")
-                continue
         except Exception as e:
             log_event(f"⚠️ Error obteniendo señales 13F para {symbol}: {e}")
+            approvals_log(
+                symbol,
+                "REJECT",
+                "quiver_fetch_error",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
             continue
 
-        if not has_downtrend(symbol):
-            log_event(f"⛔ {symbol} no cumple patrón bajista de 3 días. Short descartado.")
-            continue
+        def _is_active_signal(value):
+            if isinstance(value, dict):
+                return value.get("active", False)
+            return getattr(value, "active", bool(value))
+
+        def _signal_days(value):
+            if isinstance(value, dict):
+                return value.get("days")
+            return getattr(value, "days", None)
+
+        bullish_signals = {k for k, v in quiver_signals.items() if _is_active_signal(v)}
+        signals_count = len(bullish_signals)
+
+        def _is_strong_signal(name, days):
+            if name == "insider_buy_more_than_sell":
+                return True
+            if name == "has_recent_sec13f_activity":
+                return days is not None and days <= 7
+            if name == "bullish_price_target":
+                return days is not None and days <= 7
+            return False
+
+        strong_hits = sum(
+            1
+            for key, value in quiver_signals.items()
+            if _is_active_signal(value) and _is_strong_signal(key, _signal_days(value))
+        )
+
+        quiver_blocks = signals_count >= 2 or strong_hits >= 1
 
         try:
-            data = fetch_yfinance_stock_data(symbol)
+            data, price_history = fetch_yfinance_stock_data(symbol, return_history=True)
         except SkipSymbol as exc:
             log_event(
                 f"SCORE {symbol}: skip symbol ({exc})",
                 event="SCORE",
                 symbol=symbol,
             )
+            approvals_log(
+                symbol,
+                "REJECT",
+                "skip_symbol",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
             continue
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
+            approvals_log(
+                symbol,
+                "REJECT",
+                "data_error",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
             continue
 
-        if not data or len(data) < 8 or any(d is None for d in data[:7]):
+        if not isinstance(data, tuple) or len(data) < 8:
             if verbose:
                 print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
+            approvals_log(
+                symbol,
+                "REJECT",
+                "insufficient_data",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
             continue
 
         (
@@ -604,6 +757,83 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
             current_price,
             atr,
         ) = data
+
+        if price_history is None or getattr(price_history, "empty", True):
+            if verbose:
+                print(f"⚠️ Historial insuficiente para {symbol}. Se omite.")
+            approvals_log(
+                symbol,
+                "REJECT",
+                "insufficient_history",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
+            continue
+
+        close_series = _extract_close_series(price_history, symbol)
+        if close_series.empty or close_series.size < 3:
+            if verbose:
+                print(f"⚠️ Historial insuficiente para {symbol}. Se omite.")
+            approvals_log(
+                symbol,
+                "REJECT",
+                "insufficient_history",
+                score=None,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
+            continue
+
+        ema20 = close_series.ewm(span=20, adjust=False).mean().iloc[-1]
+        ema50 = close_series.ewm(span=50, adjust=False).mean().iloc[-1]
+        last_close = close_series.iloc[-1]
+        down_days = int(close_series.pct_change().tail(3).lt(0).sum())
+        price_below_ema20 = not pd.isna(ema20) and last_close < ema20
+        down_ok = down_days >= 2 and price_below_ema20
+
+        rsi14 = _compute_rsi(close_series)
+        ema_stack = (
+            not pd.isna(ema20)
+            and not pd.isna(ema50)
+            and last_close < ema20 < ema50
+        )
+        momentum_override = (
+            ema_stack
+            and (rsi14 is not None and rsi14 > 30)
+            and (weekly_change is not None and weekly_change <= -3)
+        )
+
+        if not ((down_ok and not quiver_blocks) or momentum_override):
+            if quiver_blocks:
+                log_event(
+                    f"⛔ {symbol} bloqueado por Quiver (señales={signals_count}, fuertes={strong_hits})."
+                )
+                approvals_log(
+                    symbol,
+                    "REJECT",
+                    "quiver_block",
+                    score=None,
+                    signals_active=signals_count,
+                    side="SHORT",
+                    module="short_scanner",
+                )
+            else:
+                log_event(
+                    f"⛔ {symbol} sin patrón bajista (últimos3_down={down_days}, precio<EMA20={price_below_ema20})."
+                )
+                approvals_log(
+                    symbol,
+                    "REJECT",
+                    "no_downtrend",
+                    score=None,
+                    signals_active=signals_count,
+                    side="SHORT",
+                    module="short_scanner",
+                )
+            continue
 
         score = 0
         if market_cap > 500_000_000:
@@ -633,13 +863,34 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
                 f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}"
             )
 
+        log_score = score
         if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
             adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
             score += adaptive_bonus
             shorts.append((symbol, score, "Técnico", current_price, atr))
             metrics.inc("approved")
-        elif verbose:
-            print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
+            approvals_log(
+                symbol,
+                "APPROVE",
+                "momentum_override" if momentum_override else "all_checks_passed",
+                score=score,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
+        else:
+            if verbose:
+                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
+            reason = "external_checks_failed" if log_score >= min_criteria else "score_threshold"
+            approvals_log(
+                symbol,
+                "REJECT",
+                reason,
+                score=score,
+                signals_active=signals_count,
+                side="SHORT",
+                module="short_scanner",
+            )
 
     if not shorts:
         return []
