@@ -3,12 +3,16 @@
 import threading
 import time
 
+import threading
+import time
+
 from alpaca_trade_api.rest import APIError
 
 from broker.alpaca import api, is_market_open
 from signals.crypto_signals import get_crypto_signals
 from utils.crypto_limit import get_crypto_limit
 from utils.logger import log_event
+from utils.health import record_scan
 
 
 # Thread-safe list of executed crypto trades for daily summaries
@@ -56,6 +60,7 @@ def crypto_worker(stop_event: threading.Event) -> None:
             continue
 
         signals = get_crypto_signals()
+        record_scan("crypto", len(signals))
         for symbol, score in signals:
             # Skip if a position already exists for this symbol
             try:

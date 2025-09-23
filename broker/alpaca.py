@@ -1,13 +1,12 @@
 #alpaca.py
 
 import os
-from datetime import datetime, timedelta
 import alpaca_trade_api as tradeapi
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from dotenv import load_dotenv
 from utils.logger import log_event
-from pytz import timezone
+from data.providers import get_price
 
 
 load_dotenv()
@@ -24,13 +23,6 @@ adapter = HTTPAdapter(max_retries=retry)
 api._session.mount("https://", adapter)
 api._session.mount("http://", adapter)
 
-# Simple TTL caches to avoid hitting the Alpaca API repeatedly
-_market_open_cache = {"ts": None, "value": False}
-_price_cache = {}
-
-NY_TZ = timezone("America/New_York")
-
-
 def supports_bracket_trailing() -> bool:
     """Return whether Alpaca allows trailing stops inside bracket orders."""
     # Alpaca currently does not allow trailing stops within standard brackets.
@@ -42,49 +34,23 @@ def supports_fractional_shares() -> bool:
     return True
 
 
-def _within_regular_hours(now_ny: datetime) -> bool:
-    """Return True only during regular trading hours (Mon-Fri, 9:30-16:00 NY)."""
-    if now_ny.weekday() >= 5:
-        return False
-    if now_ny.hour < 9 or (now_ny.hour == 9 and now_ny.minute < 30):
-        return False
-    if now_ny.hour >= 16:
-        return False
-    return True
-
-
 def is_market_open(ttl: int = 60):
-    """Check if the market is open, considering regular hours and caching for ``ttl`` seconds."""
-    now_utc = datetime.utcnow()
-    ts = _market_open_cache["ts"]
-    if ts and (now_utc - ts).total_seconds() < ttl:
-        return _market_open_cache["value"]
+    """Compatibility wrapper around :func:`core.market_gate.is_us_equity_market_open`."""
+
     try:
-        clock = api.get_clock()
-        now_ny = datetime.now(NY_TZ)
-        value = clock.is_open and _within_regular_hours(now_ny)
-        _market_open_cache.update({"ts": now_utc, "value": value})
-        return value
-    except Exception as e:
-        log_event(f"❌ Error checking market open: {e}")
-        return _market_open_cache["value"]
+        from core.market_gate import is_us_equity_market_open
+
+        return is_us_equity_market_open()
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        log_event(f"❌ Error checking market gate: {exc}")
+        return False
 
 
 def get_current_price(symbol, ttl: int = 30):
-    """Return the latest minute close for ``symbol`` with a short-lived cache."""
-    now = datetime.utcnow()
-    cached = _price_cache.get(symbol)
-    if cached and (now - cached["ts"]).total_seconds() < ttl:
-        return cached["price"]
-    try:
-        bars = api.get_bars(symbol, tradeapi.TimeFrame.Minute, limit=1)
-        if not bars.df.empty:
-            price = bars.df['close'].iloc[0]
-            _price_cache[symbol] = {"price": price, "ts": now}
-            return price
-    except Exception as e:
-        log_event(f"❌ Error fetching price for {symbol}: {e}")
-    return None
+    """Return the latest trade price using the shared provider cascade."""
+
+    price, _, _, _, _ = get_price(symbol)
+    return float(price) if price is not None else None
 
 
 # ---------------------------------------------------------------------------
