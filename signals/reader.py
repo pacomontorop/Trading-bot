@@ -1,5 +1,8 @@
 #reader.py
 
+from collections import Counter
+import json
+import math
 from signals.filters import (
     is_position_open,
     is_approved_by_finnhub_and_alphavantage,
@@ -94,6 +97,7 @@ from signals.aggregator import WeightedSignalAggregator
 import random
 import config
 from utils.symbols import detect_asset_class, normalize_for_yahoo
+from utils.health import record_scan
 
 
 def maybe_fetch_externals(symbol, prelim_score, cfg):
@@ -171,6 +175,7 @@ priority_symbols = [s for s in priority_symbols if not is_symbol_excluded(s)]
 
 STRICTER_WEEKLY_CHANGE_THRESHOLD = 7
 STRICTER_VOLUME_THRESHOLD = 70_000_000
+RELAX_BEAR_PATTERN = os.getenv("RELAX_BEAR_PATTERN", "true").lower() in {"1", "true", "yes"}
 
 # Ruta del historial de órdenes para cálculos de bonificación
 ORDERS_HISTORY_FILE = os.path.join(
@@ -182,19 +187,34 @@ ORDERS_HISTORY_FILE = os.path.join(
 import csv
 
 def fetch_symbols_from_csv(path="data/symbols.csv"):
+    stats = Counter()
+    symbols: list[str] = []
+    seen: set[str] = set()
     try:
-        with open(path, newline='') as csvfile:
+        with open(path, newline="") as csvfile:
             reader = csv.DictReader(csvfile)
-            symbols = [row["Symbol"] for row in reader if row.get("Symbol")]
-            random.shuffle(symbols)
-            print(
-                f"📄 Se cargaron {len(symbols)} símbolos desde {path} en orden aleatorio"
-            )
-            return symbols
+            for row in reader:
+                raw_symbol = (row.get("Symbol") or "").strip().upper()
+                if not raw_symbol or raw_symbol in seen:
+                    continue
+                seen.add(raw_symbol)
+                name = (row.get("Name") or "").upper()
+                if "ETF" in name:
+                    stats["etf_filter"] += 1
+                    continue
+                if detect_asset_class(raw_symbol) != "equity":
+                    stats["non_equity"] += 1
+                    continue
+                symbols.append(raw_symbol)
+        random.shuffle(symbols)
+        print(
+            f"📄 Se cargaron {len(symbols)} símbolos desde {path} en orden aleatorio"
+        )
+        return symbols, stats
     except Exception as e:
         print(f"❌ Error leyendo CSV de símbolos desde '{path}': {e}")
         random.shuffle(local_sp500_symbols)
-        return local_sp500_symbols
+        return local_sp500_symbols, stats
 
 
 
@@ -205,15 +225,32 @@ def is_options_enabled(symbol):
     except:
         return False
 
+def _format_exclusions(counter: Counter) -> str:
+    ordered = {k: int(counter.get(k, 0)) for k in sorted(counter.keys())}
+    return json.dumps(ordered, separators=(",", ":"))
+
+
+_csv_symbols, _csv_stats = fetch_symbols_from_csv()
+UNIVERSE_EXCLUDED = Counter(
+    {"yahoo_missing": 0, "price_nan": 0, "penny_stock": 0, "etf_filter": 0}
+)
+if _csv_stats:
+    UNIVERSE_EXCLUDED.update({"etf_filter": _csv_stats.get("etf_filter", 0)})
+
 # Combina símbolos de prioridad con el resto en orden aleatorio sin duplicados
 stock_assets = priority_symbols + [
     s
-    for s in fetch_symbols_from_csv()
+    for s in _csv_symbols
     if s not in priority_symbols
     and detect_asset_class(s) == "equity"
     and not is_symbol_excluded(s)
 ]
 random.shuffle(stock_assets)
+
+log_event(
+    f"UNIVERSE equities size={len(stock_assets)} excluded={_format_exclusions(UNIVERSE_EXCLUDED)}",
+    event="SCAN",
+)
 
 
 BLACKLIST_DAYS = 5  # Puede ponerse en config/env si se desea
@@ -413,13 +450,18 @@ def get_top_signals(verbose=False, exclude=None):
 
 
 async def _get_top_signals_async(verbose=False, exclude=None):
-    global evaluated_symbols_today, last_reset_date, quiver_semaphore
+    global evaluated_symbols_today, last_reset_date, quiver_semaphore, UNIVERSE_EXCLUDED
     if quiver_semaphore is None:
         cache_cfg = (getattr(config, "_policy", {}) or {}).get("cache", {})
         concurrency = int(cache_cfg.get("quiver_concurrency", 2))
         quiver_semaphore = asyncio.Semaphore(max(1, concurrency))
 
     exclude = set(exclude or [])
+
+    log_event(
+        f"UNIVERSE equities size={len(stock_assets)} excluded={_format_exclusions(UNIVERSE_EXCLUDED)}",
+        event="SCAN",
+    )
 
     aggregator = WeightedSignalAggregator(
         {
@@ -489,6 +531,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     )
                     return None
                 except YFPricesMissingError as exc:
+                    UNIVERSE_EXCLUDED["yahoo_missing"] += 1
                     log_event(
                         f"SCAN {symbol}: datos YF incompletos ({exc})",
                         event="SCAN",
@@ -498,6 +541,27 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
+                try:
+                    price_val = float(current_price) if current_price is not None else None
+                except Exception:
+                    price_val = None
+                if price_val is None or math.isnan(price_val) or price_val <= 0:
+                    UNIVERSE_EXCLUDED["price_nan"] += 1
+                    log_event(
+                        f"SCAN {symbol}: precio inválido ({current_price})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    return None
+                if price_val < 5.0:
+                    UNIVERSE_EXCLUDED["penny_stock"] += 1
+                    log_event(
+                        f"SCAN {symbol}: descartado por penny_stock (price={price_val:.2f})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    return None
+                current_price = price_val
                 metrics.inc("scored")
                 log_event(
                     f"score={graded:.1f} source=Quiver",
@@ -545,6 +609,7 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     )
                     return None
                 except YFPricesMissingError as exc:
+                    UNIVERSE_EXCLUDED["yahoo_missing"] += 1
                     log_event(
                         f"SCAN {symbol}: datos YF incompletos ({exc})",
                         event="SCAN",
@@ -554,6 +619,27 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     return None
                 current_price = data[6] if data and len(data) >= 8 else None
                 atr = data[7] if data and len(data) >= 8 else None
+                try:
+                    price_val = float(current_price) if current_price is not None else None
+                except Exception:
+                    price_val = None
+                if price_val is None or math.isnan(price_val) or price_val <= 0:
+                    UNIVERSE_EXCLUDED["price_nan"] += 1
+                    log_event(
+                        f"SCAN {symbol}: precio inválido ({current_price})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    return None
+                if price_val < 5.0:
+                    UNIVERSE_EXCLUDED["penny_stock"] += 1
+                    log_event(
+                        f"SCAN {symbol}: descartado por penny_stock (price={price_val:.2f})",
+                        event="SCAN",
+                        symbol=symbol,
+                    )
+                    return None
+                current_price = price_val
                 metrics.inc("scored")
                 log_event(
                     f"score={graded:.1f} source=Quiver",
@@ -596,6 +682,8 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         symbols_to_evaluate = filtered_symbols[:100]
         random.shuffle(symbols_to_evaluate)
 
+        record_scan("equity", len(symbols_to_evaluate))
+
         if not symbols_to_evaluate:
             print("🔄 Todos los símbolos evaluados. Reiniciando ciclo.")
             reset_symbol_rotation()
@@ -627,9 +715,15 @@ async def _get_top_signals_async(verbose=False, exclude=None):
     return []
 
 def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
+    global UNIVERSE_EXCLUDED
     shorts = []
     already_considered = set()
     exclude = set(exclude or [])
+
+    log_event(
+        f"UNIVERSE equities size={len(stock_assets)} excluded={_format_exclusions(UNIVERSE_EXCLUDED)}",
+        event="SCAN",
+    )
 
     # Refresh positions cache once before scanning
     get_cached_positions(refresh=True)
@@ -640,6 +734,7 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
         if detect_asset_class(symbol) != "equity":
             continue
         metrics.inc("scanned")
+        record_scan("equity")
         signals_count = 0
         if is_blacklisted_recent_loser(symbol):
             log_event(
@@ -720,6 +815,14 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
                 module="short_scanner",
             )
             continue
+        except YFPricesMissingError as exc:
+            UNIVERSE_EXCLUDED["yahoo_missing"] += 1
+            log_event(
+                f"SCAN {symbol}: datos YF incompletos ({exc})",
+                event="SCAN",
+                symbol=symbol,
+            )
+            continue
         except Exception as e:
             print(f"❌ Error en short scan {symbol}: {e}")
             approvals_log(
@@ -790,9 +893,37 @@ def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
         ema20 = close_series.ewm(span=20, adjust=False).mean().iloc[-1]
         ema50 = close_series.ewm(span=50, adjust=False).mean().iloc[-1]
         last_close = close_series.iloc[-1]
-        down_days = int(close_series.pct_change().tail(3).lt(0).sum())
+        try:
+            price_val = float(last_close)
+        except Exception:
+            price_val = None
+        if price_val is None or math.isnan(price_val) or price_val <= 0:
+            UNIVERSE_EXCLUDED["price_nan"] += 1
+            log_event(
+                f"SCAN {symbol}: precio de cierre inválido ({last_close})",
+                event="SCAN",
+                symbol=symbol,
+            )
+            continue
+        if price_val < 5.0:
+            UNIVERSE_EXCLUDED["penny_stock"] += 1
+            log_event(
+                f"SCAN {symbol}: descartado por penny_stock (price={price_val:.2f})",
+                event="SCAN",
+                symbol=symbol,
+            )
+            continue
+        changes = close_series.pct_change()
+        window = 4 if RELAX_BEAR_PATTERN else 3
+        recent = changes.tail(window)
+        recent_valid = recent.dropna()
+        down_days = int(recent_valid.tail(3).lt(0).sum())
+        missing = window - len(recent_valid.tail(3))
         price_below_ema20 = not pd.isna(ema20) and last_close < ema20
-        down_ok = down_days >= 2 and price_below_ema20
+        if RELAX_BEAR_PATTERN:
+            down_ok = down_days >= 2 and price_below_ema20 and missing <= 1
+        else:
+            down_ok = down_days >= 2 and price_below_ema20 and missing == 0
 
         rsi14 = _compute_rsi(close_series)
         ema_stack = (

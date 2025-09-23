@@ -25,7 +25,9 @@ import config
 
 from core.options_trader import run_options_strategy, get_options_log_and_reset
 from signals.reader import get_top_signals, stock_assets, reset_symbol_rotation
-from broker.alpaca import api, is_market_open
+from broker.alpaca import api
+from core.market_gate import is_us_equity_market_open
+from data.providers import ALLOW_STALE_EQ_WHEN_CLOSED
 from broker.account import get_account_equity_safe
 from broker import alpaca as broker
 from utils.state import StateManager
@@ -89,11 +91,27 @@ def get_ny_time():
 def pre_market_scan():
     print("🌀 pre_market_scan continuo iniciado.", flush=True)
     while True:
-        if not is_market_open():
-            print("⏳ Mercado cerrado para acciones. Escaneo pausado.", flush=True)
-            while not is_market_open():
-                pytime.sleep(60)
-            print("🔔 Mercado abierto. Reanudando escaneo de oportunidades.", flush=True)
+        market_open = is_us_equity_market_open()
+        if not market_open and not ALLOW_STALE_EQ_WHEN_CLOSED:
+            log_event(
+                (
+                    "EQUITY_SCAN skipped reason=market_closed "
+                    f"mode=afterhours_allowed={ALLOW_STALE_EQ_WHEN_CLOSED}"
+                ),
+                event="SCAN",
+            )
+            pytime.sleep(60)
+            continue
+        mode = "regular" if market_open else "afterhours"
+        log_event(
+            (
+                f"EQUITY_SCAN running mode={mode}" +
+                (f" (stale_ok={ALLOW_STALE_EQ_WHEN_CLOSED})" if mode == "afterhours" else "")
+            ),
+            event="SCAN",
+        )
+        if not market_open:
+            print("🌙 Mercado cerrado, ejecutando en modo afterhours.", flush=True)
         mkt_cfg = (config._policy or {}).get("market", {})
         cutoff_min = int(mkt_cfg.get("avoid_last_minutes", 20))
         if minutes_to_close(None) <= cutoff_min:

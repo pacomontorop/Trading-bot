@@ -1,15 +1,17 @@
 # executor.py
 
 from datetime import datetime
+from decimal import Decimal
 import time
 import threading
 import pandas as pd
 import yfinance as yf
 import math
-from broker.alpaca import api, get_current_price, is_market_open
+from broker.alpaca import api, get_current_price
+from core.market_gate import is_us_equity_market_open
 from broker import alpaca as broker
 from core.broker import get_tick_size, round_to_tick
-from libs.broker.ticks import round_stop_price
+from libs.broker.ticks import round_stop_price, equity_tick_for, ceil_to_tick, floor_to_tick
 from broker.account import get_account_equity_safe
 from signals.filters import is_position_open, is_symbol_approved
 from utils.state import already_executed_today, mark_executed
@@ -17,6 +19,7 @@ from core.order_utils import alpaca_order_exists
 from config import STRATEGY_VER
 import config
 from signals.reader import get_top_shorts
+from data.providers import ALLOW_STALE_EQ_WHEN_CLOSED
 from utils.logger import log_event, log_dir, log_once
 from utils import metrics
 from utils.daily_risk import (
@@ -648,6 +651,7 @@ def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None, 
         if tick_rounding:
             basis = stop_price if stop_price is not None else limit_price
             tick = get_tick_size(symbol, asset_cls, basis)
+        rounded_stop_dec = None
         if stop_price is not None:
             if tick_rounding:
                 round_asset_class = asset_cls if asset_cls != "equity" else "us_equity"
@@ -673,6 +677,24 @@ def update_stop_order(symbol, order_id=None, stop_price=None, limit_price=None, 
         log_event(f"🔁 Stop actualizado para {symbol}")
         return True
     except Exception as e:
+        message = str(e).lower()
+        if "sub-penny" in message and rounded_stop_dec is not None:
+            try:
+                tick_dec = Decimal(str(tick)) if tick else equity_tick_for(rounded_stop_dec)
+                adjust_dec = (
+                    ceil_to_tick(rounded_stop_dec, tick_dec)
+                    if (side or "").lower() == "sell"
+                    else floor_to_tick(rounded_stop_dec, tick_dec)
+                )
+                params["stop_price"] = float(adjust_dec)
+                api.replace_order(order_id, **params)
+                log_event(
+                    f"🔁 Stop ajustado por sub-penny para {symbol}",
+                    event="ORDER",
+                )
+                return True
+            except Exception as inner:
+                log_event(f"❌ Ajuste sub-penny falló para {symbol}: {inner}")
         log_event(f"❌ Error actualizando stop para {symbol}: {e}")
         return False
 
@@ -1142,11 +1164,25 @@ def short_scan():
     print("🌀 short_scan iniciado.", flush=True)
     while True:
         evaluated_shorts_today.reset_if_new_day()
-        if not is_market_open():
-            print("⏳ Mercado cerrado. short_scan pausado.", flush=True)
-            while not is_market_open():
-                time.sleep(60)
-            print("🔔 Mercado abierto. short_scan reanudado.", flush=True)
+        market_open = is_us_equity_market_open()
+        if not market_open and not ALLOW_STALE_EQ_WHEN_CLOSED:
+            log_event(
+                (
+                    "EQUITY_SCAN skipped reason=market_closed "
+                    f"mode=afterhours_allowed={ALLOW_STALE_EQ_WHEN_CLOSED}"
+                ),
+                event="SCAN",
+            )
+            time.sleep(60)
+            continue
+        mode = "regular" if market_open else "afterhours"
+        log_event(
+            (
+                f"EQUITY_SCAN running mode={mode}" +
+                (f" (stale_ok={ALLOW_STALE_EQ_WHEN_CLOSED})" if mode == "afterhours" else "")
+            ),
+            event="SCAN",
+        )
         print("🔍 Buscando oportunidades en corto...", flush=True)
         shorts = get_top_shorts(min_criteria=6, verbose=True, exclude=evaluated_shorts_today)
         log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")

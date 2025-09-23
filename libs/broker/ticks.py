@@ -1,3 +1,5 @@
+"""Tick-size utilities for Alpaca-compliant rounding."""
+
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP, getcontext
@@ -62,3 +64,11 @@ def round_stop_price(
         mode = "UP"
 
     return round_to_tick(price, tick, mode)
+
+
+def ceil_to_tick(price: Decimal, tick: Decimal) -> Decimal:
+    return round_to_tick(price, tick, "UP")
+
+
+def floor_to_tick(price: Decimal, tick: Decimal) -> Decimal:
+    return round_to_tick(price, tick, "DOWN")
