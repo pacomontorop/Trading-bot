@@ -1,15 +1,20 @@
 #alpaca.py
 
 import os
+
 import alpaca_trade_api as tradeapi
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from dotenv import load_dotenv
-from utils.logger import log_event
+
 from data.providers import get_price
+from utils.logger import log_event
+from utils.system_log import get_logger
 
 
 load_dotenv()
+log = get_logger("broker.alpaca")
+
 api = tradeapi.REST(
     os.getenv("APCA_API_KEY_ID"),
     os.getenv("APCA_API_SECRET_KEY"),
@@ -22,6 +27,16 @@ retry = Retry(total=3, backoff_factor=3)
 adapter = HTTPAdapter(max_retries=retry)
 api._session.mount("https://", adapter)
 api._session.mount("http://", adapter)
+
+try:  # pragma: no cover - network dependent
+    base_url = getattr(api._session, "base_url", "")
+    log.info(f"[ALPACA_ENV] base_url={base_url} paper={getattr(api, '_use_paper', '?')}")
+    acct = api.get_account()
+    log.info(
+        f"[ALPACA] account_id={getattr(acct, 'id', 'unknown')} buying_power={getattr(acct, 'buying_power', '0')}"
+    )
+except Exception as exc:  # pragma: no cover - defensive logging
+    log.warning(f"[ALPACA_ENV] unable to fetch account details: {exc}")
 
 def supports_bracket_trailing() -> bool:
     """Return whether Alpaca allows trailing stops inside bracket orders."""

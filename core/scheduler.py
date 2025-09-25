@@ -20,6 +20,7 @@ from core.executor import (
     _apply_event_and_cutoff_policies,
     _cfg_risk,
     _equity_guard,
+    log_audit_snapshot,
 )
 import config
 
@@ -34,6 +35,7 @@ from utils.state import StateManager
 from utils.emailer import send_email
 from utils.backtest_report import generate_paper_summary, analyze_trades, format_summary
 from utils.logger import log_event, log_dir
+from utils.system_log import get_logger
 from utils.telegram_report import generate_cumulative_report
 from utils.telegram_alert import send_telegram_alert
 from utils import report_builder
@@ -65,6 +67,8 @@ from utils.crypto_limit import get_crypto_limit
 
 summary_lock = threading.Lock()
 _last_summary_date = None
+
+sched_log = get_logger("core.scheduler")
 
 
 def reconcile_on_boot() -> None:
@@ -238,6 +242,7 @@ def pre_market_scan():
         else:
             print("🔍 Sin oportunidades válidas en este ciclo.", flush=True)
 
+        log_audit_snapshot(api, sched_log)
         pytime.sleep(1)  # Espera mínima para no saturar el sistema
 
 

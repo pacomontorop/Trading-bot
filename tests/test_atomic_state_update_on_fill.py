@@ -20,6 +20,12 @@ def test_atomic_state_update_on_fill(monkeypatch):
     monkeypatch.setattr(executor.broker, "submit_order", fake_submit_order)
     monkeypatch.setattr(executor, "_wait_for_fill_or_timeout", fake_wait)
     monkeypatch.setattr(executor, "log_event", lambda *a, **k: None)
+    monkeypatch.setattr(executor, "reconcile_after_fill", lambda *a, **k: None)
+    monkeypatch.setattr(executor.api, "get_position", lambda symbol: types.SimpleNamespace(qty=0), raising=False)
+    monkeypatch.setattr(executor, "get_current_price", lambda symbol: 100)
+    monkeypatch.setattr(executor.broker, "list_open_orders_today", lambda: [])
+    executor._recent_intents.clear()
+    executor._intent_by_coid.clear()
 
     res = executor.place_order_with_trailing_stop("AAPL", "buy", 5, "market", None, {})
     assert res is True
