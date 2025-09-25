@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any, Dict, List, Tuple
 import time
 import threading
 import pandas as pd
@@ -33,6 +34,7 @@ from utils.daily_risk import (
 from utils.order_tracker import record_trade_result
 from utils.orders import resolve_time_in_force
 from utils.daily_set import DailySet
+from utils.system_log import get_logger
 import os
 import csv
 import json
@@ -67,6 +69,8 @@ evaluated_longs_today_lock = evaluated_longs_today.lock
 TRAILING_ERROR_FILE = os.path.join(DATA_DIR, "trailing_error_symbols.json")
 trailing_error_symbols = DailySet(TRAILING_ERROR_FILE)
 
+log = get_logger("core.executor")
+
 # Locks for thread-safe access to the remaining sets
 open_positions_lock = threading.Lock()
 pending_opportunities_lock = threading.Lock()
@@ -76,6 +80,11 @@ MAX_POSITION_PCT = 0.10  # Máximo porcentaje de equity permitido por operación
 DAILY_MAX_LOSS_USD = 150.0  # Límite de pérdidas diarias
 STOP_PCT = float(os.getenv("STOP_PCT", "0.05"))  # Stop loss fijo por defecto 5%
 RISK_PCT = float(os.getenv("RISK_PCT", "0.01"))  # Riesgo máximo por operación 1%
+INITIAL_STOP_PCT = float(os.getenv("INITIAL_STOP_PCT", "0.02"))
+DUPLICATE_TTL_SECONDS = float(os.getenv("ORDER_DUP_TTL", "20"))
+
+_recent_intents: dict[tuple[str, str], tuple[float, str]] = {}
+_intent_by_coid: dict[str, tuple[str, str]] = {}
 
 # Mutex por símbolo para evitar condiciones de carrera
 _symbol_locks: dict[str, threading.Lock] = {}
@@ -90,16 +99,176 @@ def _get_symbol_lock(symbol: str) -> threading.Lock:
 
 
 # Generación determinística de client_order_id
-import hashlib
 import datetime as _dt
+import hashlib
 
 
-def make_client_order_id(symbol: str, side: str, nonce: str | None = None) -> str:
-    session = _dt.datetime.utcnow().strftime("%Y%m%d")
-    raw = f"{session}:{symbol}:{side}:{nonce or '0'}"
-    return "BOT-" + hashlib.sha1(raw.encode()).hexdigest()[:16]
+def make_client_order_id(
+    symbol: str,
+    side: str,
+    nonce: str | None = None,
+    *,
+    intent: str | None = None,
+    suffix: str | None = None,
+) -> str:
+    """Build a deterministic-yet-informative client order identifier.
+
+    The identifier embeds the strategy prefix, symbol and a nonce so it can be
+    traced easily from broker dashboards.  Optional ``intent`` and ``suffix``
+    fields let us tag bracket children (e.g. take-profit/stop-loss).
+    """
+
+    base_symbol = symbol.replace("/", "").replace("-", "").upper()
+    timestamp = nonce or _dt.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    parts = ["STRAT", base_symbol, timestamp]
+    if intent:
+        parts.append(intent.upper())
+    if suffix:
+        parts.append(suffix.upper())
+    coid = ".".join(parts)
+    return coid[:48]
 
 
+def round_price_for_equity(x: float) -> float:
+    """Round an equity price to two decimals avoiding floating artefacts."""
+
+    return float(f"{round(x + 1e-9, 2):.2f}")
+
+
+def can_open_long(client, sym: str) -> bool:
+    """Return ``True`` if no long position is currently open for ``sym``."""
+
+    try:  # pragma: no cover - network
+        position = client.get_position(sym)
+        return float(getattr(position, "qty", 0.0)) == 0.0
+    except Exception:
+        return True
+
+
+def cancel_symbol_orders(client, sym: str) -> None:
+    """Cancel any pending open orders for the provided symbol."""
+
+    try:  # pragma: no cover - network
+        open_orders = client.list_orders(status="open", limit=500)
+    except Exception as exc:  # pragma: no cover - defensive
+        log.warning(f"[CANCEL_FAIL] {sym} unable to list orders: {exc}")
+        return
+
+    for order in open_orders:
+        if getattr(order, "symbol", None) != sym:
+            continue
+        try:
+            client.cancel_order(order.id)
+            log.info(f"[CANCEL] {sym} order_id={order.id} status=pending_cancel")
+        except Exception as exc:  # pragma: no cover - defensive
+            log.warning(f"[CANCEL_FAIL] {sym} order_id={getattr(order, 'id', '?')} error={exc}")
+
+
+def reconcile_after_fill(client, symbol: str, order_id: str, logger) -> None:
+    """Log reconciliation details after a fill completes."""
+
+    try:  # pragma: no cover - network
+        pos = client.get_position(symbol)
+        cur_qty = float(getattr(pos, "qty", 0.0))
+        side = getattr(pos, "side", "unknown")
+        logger.info(f"[RECON] {symbol} pos_qty={cur_qty} side={side}")
+    except Exception:
+        cur_qty, side = 0.0, "flat"
+        logger.info(f"[RECON] {symbol} pos_qty=0 side=flat (no position)")
+
+    try:  # pragma: no cover - network
+        acts = client.get_activities(activity_types="FILL", page_size=200)
+    except Exception as exc:
+        logger.warning(f"[RECON_FILLS] {symbol} unable to fetch activities: {exc}")
+        return
+
+    fills = [a for a in acts if getattr(a, "symbol", None) == symbol]
+    fills.sort(key=lambda a: getattr(a, "transaction_time", ""))
+    timeline: List[Dict[str, Any]] = []
+    for activity in fills:
+        timeline.append(
+            {
+                "side": getattr(activity, "side", ""),
+                "qty": float(getattr(activity, "qty", 0) or 0),
+                "price": float(getattr(activity, "price", 0) or 0),
+                "time": str(getattr(activity, "transaction_time", "")),
+                "order_id": getattr(activity, "order_id", None),
+            }
+        )
+
+    logger.info(f"[RECON_FILLS] {symbol} {timeline}")
+
+    if cur_qty == 0 and len(timeline) >= 2:
+        last, prev = timeline[-1], timeline[-2]
+        if abs(last["qty"] - prev["qty"]) < 1e-6 and last["side"] != prev["side"]:
+            logger.warning(
+                f"[FLAT_IMMEDIATE] {symbol} posición cerrada por orden opuesta (stop/bracket/watchdog)."
+            )
+
+
+def log_audit_snapshot(client, logger) -> None:
+    """Emit a lightweight audit trail of positions and recent fills."""
+
+    try:  # pragma: no cover - network
+        positions = client.list_positions()
+    except Exception as exc:
+        logger.warning(f"[AUDIT_POS] unable to list positions: {exc}")
+        positions = []
+
+    payload: List[Dict[str, Any]] = []
+    for pos in positions or []:
+        try:
+            payload.append(
+                {
+                    "symbol": getattr(pos, "symbol", ""),
+                    "qty": float(getattr(pos, "qty", 0) or 0),
+                    "avg_entry": float(getattr(pos, "avg_entry_price", 0) or 0),
+                    "unrealized_pl": float(getattr(pos, "unrealized_pl", 0) or 0),
+                }
+            )
+        except Exception:
+            continue
+    logger.info(f"[AUDIT_POS] {payload}")
+
+    try:  # pragma: no cover - network
+        acts = client.get_activities(activity_types="FILL", page_size=200)
+    except Exception as exc:
+        logger.warning(f"[AUDIT_FILLS] unable to fetch fills: {exc}")
+        return
+
+    by_symbol: Dict[str, List[Any]] = {}
+    for act in acts or []:
+        sym = getattr(act, "symbol", None)
+        if not sym:
+            continue
+        by_symbol.setdefault(sym, []).append(act)
+
+    summary: List[Dict[str, Any]] = []
+    for sym, entries in by_symbol.items():
+        entries.sort(key=lambda a: getattr(a, "transaction_time", ""))
+        pnl = None
+        if len(entries) >= 2:
+            last = entries[-1]
+            prev = entries[-2]
+            qty = min(float(getattr(last, "qty", 0) or 0), float(getattr(prev, "qty", 0) or 0))
+            if qty:
+                last_price = float(getattr(last, "price", 0) or 0)
+                prev_price = float(getattr(prev, "price", 0) or 0)
+                if getattr(last, "side", "").lower() == "sell":
+                    pnl = (last_price - prev_price) * qty
+                elif getattr(last, "side", "").lower() == "buy":
+                    pnl = (prev_price - last_price) * qty
+        summary.append(
+            {
+                "symbol": sym,
+                "last_fill": getattr(entries[-1], "transaction_time", ""),
+                "qty": float(getattr(entries[-1], "qty", 0) or 0),
+                "price": float(getattr(entries[-1], "price", 0) or 0),
+                "pnl": pnl,
+            }
+        )
+
+    logger.info(f"[AUDIT_FILLS] {summary}")
 def _cfg_risk(cfg):
     r = (cfg or {}).get("risk", {})
     return {
@@ -353,6 +522,10 @@ def calculate_position_size_risk_based(
     """
     r = _cfg_risk(cfg)
 
+    equity = float(equity or 0.0)
+    price_val = float(price or 0.0)
+    atr_val = float(atr or 0.0)
+
     asset_class = detect_asset_class(symbol)
     if asset_class != "equity":
         return {
@@ -361,19 +534,21 @@ def calculate_position_size_risk_based(
             "stop_distance": None,
             "risk_budget": 0.0,
             "reason": f"unsupported_asset_class_{asset_class}",
+            "atr": atr_val,
+            "last_price": price_val,
         }
 
-    equity = float(equity or 0.0)
-    price = float(price or 0.0)
     min_equity = float(r.get("min_equity_usd", 0.0))
 
-    if equity <= 0 or price <= 0:
+    if equity <= 0 or price_val <= 0:
         return {
             "shares": 0,
             "notional": 0.0,
             "stop_distance": None,
             "risk_budget": 0.0,
             "reason": "invalid_inputs",
+            "atr": atr_val,
+            "last_price": price_val,
         }
 
     if min_equity > 0 and equity < min_equity:
@@ -383,6 +558,8 @@ def calculate_position_size_risk_based(
             "stop_distance": None,
             "risk_budget": 0.0,
             "reason": f"equity_below_min_{min_equity:.0f}",
+            "atr": atr_val,
+            "last_price": price_val,
         }
 
     if daily_realized_loss_pct >= r["max_daily_loss_pct"]:
@@ -392,10 +569,11 @@ def calculate_position_size_risk_based(
             "stop_distance": None,
             "risk_budget": 0.0,
             "reason": f"daily_loss_limit_reached_{daily_realized_loss_pct:.2f}%",
+            "atr": atr_val,
+            "last_price": price_val,
         }
 
-    atr_val = float(atr or 0.0)
-    stop_distance = max(r["atr_k"] * atr_val, r["min_stop_pct"] * price)
+    stop_distance = max(r["atr_k"] * atr_val, r["min_stop_pct"] * price_val)
     stop_distance = max(stop_distance, 1e-6)
 
     risk_budget = equity * (r["max_symbol_risk_pct"] / 100.0)
@@ -406,22 +584,22 @@ def calculate_position_size_risk_based(
     else:
         shares = math.floor(raw_shares)
 
-    notional = shares * price
+    notional = shares * price_val
 
     per_symbol_cap = 0.10 * equity
     if notional > per_symbol_cap:
         if r["allow_fractional"]:
-            shares = per_symbol_cap / price
+            shares = per_symbol_cap / price_val
         else:
-            shares = math.floor(per_symbol_cap / price)
-        notional = shares * price
+            shares = math.floor(per_symbol_cap / price_val)
+        notional = shares * price_val
 
     exposure = float(market_exposure_factor or 1.0)
     shares *= exposure
     if not r["allow_fractional"]:
         shares = math.floor(shares)
     shares = max(shares, 0.0)
-    notional = shares * price
+    notional = shares * price_val
 
     if notional <= 0 or shares <= 0:
         return {
@@ -430,6 +608,8 @@ def calculate_position_size_risk_based(
             "stop_distance": stop_distance,
             "risk_budget": risk_budget,
             "reason": "size_zero_after_caps_or_exposure",
+            "atr": atr_val,
+            "last_price": price_val,
         }
 
     return {
@@ -438,6 +618,8 @@ def calculate_position_size_risk_based(
         "stop_distance": stop_distance,
         "risk_budget": risk_budget,
         "reason": "ok",
+        "atr": atr_val,
+        "last_price": price_val,
     }
 
 
@@ -799,6 +981,14 @@ def wait_for_order_fill(order_id, symbol, timeout=60):
                         _realized_pnl_today += pnl
                         register_trade_pnl(symbol, pnl)
                         _save_investment_state()
+                if order.type in ("trailing_stop", "stop", "stop_limit"):
+                    component = "trailing" if order.type == "trailing_stop" else "watchdog"
+                    stop_price = getattr(order, "stop_price", getattr(order, "limit_price", None))
+                    log.info(
+                        f"[CLOSE_REASON] {symbol} by={component} reason=stop_hit otype={order.type} "
+                        f"qty={getattr(order, 'qty', '?')} stop@{stop_price}"
+                    )
+                reconcile_after_fill(api, symbol, getattr(order, "id", order_id), log)
                 return True
             elif order.status in ["canceled", "rejected"]:
                 reason = getattr(order, "reject_reason", "Sin motivo")
@@ -1291,6 +1481,10 @@ def _on_fill_success(symbol, coid, status, cfg):
             f"{symbol}: {filled_qty} unidades — ${amount_usd:.2f}"
         )
     log_event(f"FILL {symbol}: qty={filled_qty} avg={avg_price} coid={coid}")
+    reconcile_after_fill(api, symbol, getattr(status, "id", coid), log)
+    intent_ref = _intent_by_coid.pop(coid, None)
+    if intent_ref:
+        _recent_intents[intent_ref] = (time.time(), coid)
 
 
 def _reconcile_existing_order(symbol, coid, cfg):
@@ -1325,27 +1519,93 @@ def place_order_with_trailing_stop(
     entry_type: str = "market",
     price_ctx: dict | None = None,
     cfg=None,
+    intent: str | None = None,
 ):
-    """Place an order with idempotency, locking and reconciliation."""
+    """Place a long order using a bracket with attached stop/target."""
 
+    sizing: Dict[str, Any] = {}
+    side = side_or_sizing
     if isinstance(side_or_sizing, dict):
-        # Backward compatibility with previous signature using sizing dict
-        sizing = side_or_sizing
+        sizing = dict(side_or_sizing)
         side = "buy"
         shares = float(sizing.get("shares", 0))
-    else:
-        side = side_or_sizing
+        intent = sizing.get("intent") or intent
+
+    side = (side or "buy").lower()
+    if side != "buy":
+        log.warning(f"[BLOCKED] {symbol}: only long entries supported by bracket flow")
+        return False
+
     lock = _get_symbol_lock(symbol)
     if not lock.acquire(blocking=False):
         log_event(f"ORDER {symbol}: lock busy, skipping")
         return False
 
-    coid = make_client_order_id(symbol, side)
+    coid: str | None = None
     try:
+        trade_intent = intent or "enter_long"
+        intent_key = (symbol, trade_intent)
+        now = time.time()
+
+        if trade_intent != "reverse" and not can_open_long(api, symbol):
+            log.warning(f"[BLOCKED] {symbol}: intento de abrir long con posición existente.")
+            return False
+
+        if trade_intent == "reverse":
+            cancel_symbol_orders(api, symbol)
+
+        recent = _recent_intents.get(intent_key)
+        if recent and now - recent[0] < DUPLICATE_TTL_SECONDS:
+            log.warning(f"[BLOCKED] {symbol}: intento duplicado intent={trade_intent}")
+            return False
+
+        qty = float(shares or sizing.get("shares") or 0)
+        if qty <= 0:
+            log.warning(f"[BLOCKED] {symbol}: qty inválida intent={trade_intent}")
+            return False
+
+        last_price = float(sizing.get("last_price") or 0.0)
+        if last_price <= 0 and price_ctx:
+            last_price = float(price_ctx.get("limit_price", 0) or 0)
+        if last_price <= 0:
+            current_price = get_current_price(symbol)
+            last_price = float(current_price or 0)
+        if last_price <= 0:
+            log.warning(f"[BLOCKED] {symbol}: precio no disponible para calcular bracket")
+            return False
+
+        atr_val = float(sizing.get("atr", 0.0) or 0.0)
+        if atr_val <= 0:
+            stop_hint = float(sizing.get("stop_distance", 0.0) or 0.0)
+            atr_k = float((_cfg_risk(cfg).get("atr_k") if cfg else 2.0) or 2.0)
+            if stop_hint > 0 and atr_k > 0:
+                atr_val = stop_hint / max(atr_k, 1e-6)
+
+        stop_buffer = max(1.5 * atr_val if atr_val > 0 else 0.0, INITIAL_STOP_PCT * last_price)
+        if stop_buffer <= 0:
+            stop_buffer = max(0.02 * last_price, 0.01)
+        sl_price = round_price_for_equity(max(last_price - stop_buffer, 0.01))
+        if sl_price >= last_price:
+            sl_price = round_price_for_equity(max(last_price - 0.01, 0.01))
+
+        tp_buffer = max(stop_buffer * 2.0, 0.01 * last_price)
+        tp_price = round_price_for_equity(last_price + tp_buffer)
+
+        nonce = _dt.datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+        coid = make_client_order_id(symbol, side, nonce, intent=trade_intent)
+        tp_coid = make_client_order_id(symbol, side, nonce, intent=trade_intent, suffix="TP")
+        sl_coid = make_client_order_id(symbol, side, nonce, intent=trade_intent, suffix="SL")
+
+        payload = dict(price_ctx or {})
+        payload.update(
+            time_in_force=resolve_time_in_force(qty),
+            order_class="bracket",
+            take_profit={"limit_price": tp_price, "client_order_id": tp_coid},
+            stop_loss={"stop_price": sl_price, "client_order_id": sl_coid},
+        )
+
         if broker.order_exists(client_order_id=coid):
-            log_event(
-                f"ORDER {symbol}: already exists {coid}, reconciling instead of resending"
-            )
+            log.warning(f"[BLOCKED] {symbol}: orden duplicada {coid}")
             return _reconcile_existing_order(symbol, coid, cfg)
 
         StateManager.add_open_order(symbol, coid)
@@ -1353,17 +1613,20 @@ def place_order_with_trailing_stop(
         ok, broker_order_id = broker.submit_order(
             symbol=symbol,
             side=side,
-            qty=shares,
+            qty=qty,
             client_order_id=coid,
             order_type=entry_type,
-            price_ctx=price_ctx,
+            price_ctx=payload,
         )
         if not ok:
             StateManager.remove_open_order(symbol, coid)
             log_event(f"ORDER {symbol}: ❌ submit failed, cleaned open_orders")
             return False
 
+        orders_placed.inc()
         metrics.inc("ordered")
+        _recent_intents[intent_key] = (now, coid)
+        _intent_by_coid[coid] = intent_key
 
         status = _wait_for_fill_or_timeout(
             coid, timeout_sec=(cfg or {}).get("broker", {}).get("fill_timeout_sec", 20)
@@ -1377,13 +1640,20 @@ def place_order_with_trailing_stop(
             return True
         else:
             StateManager.remove_open_order(symbol, coid)
+            intent_ref = _intent_by_coid.pop(coid, None)
+            if intent_ref:
+                _recent_intents.pop(intent_ref, None)
             log_event(
                 f"ORDER {symbol}: ❌ state={getattr(status, 'state', None)}, removed from open_orders"
             )
             return False
     except Exception as e:
         log_event(f"ORDER {symbol}: ⛔ exception {e}")
-        _safe_reconcile_by_coid(symbol, coid, cfg)
+        intent_ref = _intent_by_coid.pop(coid, None) if coid else None
+        if intent_ref:
+            _recent_intents.pop(intent_ref, None)
+        if coid:
+            _safe_reconcile_by_coid(symbol, coid, cfg)
         return False
     finally:
         lock.release()
