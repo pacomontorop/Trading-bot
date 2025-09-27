@@ -1492,9 +1492,14 @@ def _reconcile_existing_order(symbol, coid, cfg):
     if not st:
         StateManager.remove_open_order(symbol, coid)
         return False, None
-    if st.state in ("filled", "partially_filled"):
+    if st.state == "filled":
         _on_fill_success(symbol, coid, st, cfg)
         return False, st.state
+    if st.state == "partially_filled":
+        _on_fill_success(symbol, coid, st, cfg)
+        StateManager.add_open_order(symbol, coid)
+        log_event(f"RECONCILE {symbol}: partially filled order remains open")
+        return True, st.state
     if st.state in ("new", "accepted", "open"):
         StateManager.add_open_order(symbol, coid)
         log_event(f"RECONCILE {symbol}: open order restored in StateManager")
@@ -1563,7 +1568,7 @@ def place_order_with_trailing_stop(
                     f"[BLOCKED] {symbol}: orden existente {recent_coid}, reconciliando"
                 )
                 return True
-            if state in ("filled", "partially_filled"):
+            if state == "filled":
                 _recent_intents.pop(intent_key, None)
             elif now - recent_ts < DUPLICATE_TTL_SECONDS:
                 log.warning(
