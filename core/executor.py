@@ -1555,9 +1555,19 @@ def place_order_with_trailing_stop(
             cancel_symbol_orders(api, symbol)
 
         recent = _recent_intents.get(intent_key)
-        if recent and now - recent[0] < DUPLICATE_TTL_SECONDS:
-            log.warning(f"[BLOCKED] {symbol}: intento duplicado intent={trade_intent}")
-            return False
+        if recent:
+            recent_ts, recent_coid = recent
+            if _safe_reconcile_by_coid(symbol, recent_coid, cfg):
+                log.warning(
+                    f"[BLOCKED] {symbol}: orden existente {recent_coid}, reconciliando"
+                )
+                return True
+            if now - recent_ts < DUPLICATE_TTL_SECONDS:
+                log.warning(
+                    f"[BLOCKED] {symbol}: intento duplicado intent={trade_intent}"
+                )
+                return False
+            _recent_intents.pop(intent_key, None)
 
         qty = float(shares or sizing.get("shares") or 0)
         if qty <= 0:
