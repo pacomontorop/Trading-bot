@@ -1491,17 +1491,17 @@ def _reconcile_existing_order(symbol, coid, cfg):
     st = broker.get_order_status_by_client_id(coid)
     if not st:
         StateManager.remove_open_order(symbol, coid)
-        return False
+        return False, None
     if st.state in ("filled", "partially_filled"):
         _on_fill_success(symbol, coid, st, cfg)
-        return True
+        return False, st.state
     if st.state in ("new", "accepted", "open"):
         StateManager.add_open_order(symbol, coid)
         log_event(f"RECONCILE {symbol}: open order restored in StateManager")
-        return True
+        return True, st.state
     StateManager.remove_open_order(symbol, coid)
     log_event(f"RECONCILE {symbol}: state={st.state}, cleaned")
-    return False
+    return False, st.state
 
 
 def _safe_reconcile_by_coid(symbol, coid, cfg):
@@ -1509,7 +1509,7 @@ def _safe_reconcile_by_coid(symbol, coid, cfg):
         return _reconcile_existing_order(symbol, coid, cfg)
     except Exception as e:  # pragma: no cover - defensive
         log_event(f"RECONCILE {symbol}: error {e}")
-        return False
+        return False, None
 
 
 def place_order_with_trailing_stop(
@@ -1557,17 +1557,21 @@ def place_order_with_trailing_stop(
         recent = _recent_intents.get(intent_key)
         if recent:
             recent_ts, recent_coid = recent
-            if _safe_reconcile_by_coid(symbol, recent_coid, cfg):
+            blocked, state = _safe_reconcile_by_coid(symbol, recent_coid, cfg)
+            if blocked:
                 log.warning(
                     f"[BLOCKED] {symbol}: orden existente {recent_coid}, reconciliando"
                 )
                 return True
-            if now - recent_ts < DUPLICATE_TTL_SECONDS:
+            if state in ("filled", "partially_filled"):
+                _recent_intents.pop(intent_key, None)
+            elif now - recent_ts < DUPLICATE_TTL_SECONDS:
                 log.warning(
                     f"[BLOCKED] {symbol}: intento duplicado intent={trade_intent}"
                 )
                 return False
-            _recent_intents.pop(intent_key, None)
+            else:
+                _recent_intents.pop(intent_key, None)
 
         qty = float(shares or sizing.get("shares") or 0)
         if qty <= 0:
@@ -1616,7 +1620,8 @@ def place_order_with_trailing_stop(
 
         if broker.order_exists(client_order_id=coid):
             log.warning(f"[BLOCKED] {symbol}: orden duplicada {coid}")
-            return _reconcile_existing_order(symbol, coid, cfg)
+            blocked, _ = _reconcile_existing_order(symbol, coid, cfg)
+            return blocked
 
         StateManager.add_open_order(symbol, coid)
 
