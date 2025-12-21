@@ -331,27 +331,43 @@ def _is_quiver_strong(symbol: str, cfg) -> bool:
     return (q_score >= float(score_th)) and fresh
 
 
-def _provider_votes(symbol: str, cfg) -> Dict[str, bool]:
+def _provider_votes(symbol: str, cfg) -> Dict[str, Optional[bool]]:
     """Devuelve votos de {Quiver, FinnhubAlpha, FMP} sin lanzar excepciones."""
-    votes = {"Quiver": False, "FinnhubAlpha": False, "FMP": False}
+    votes: Dict[str, Optional[bool]] = {"Quiver": False, "FinnhubAlpha": False, "FMP": False}
     try:
-        from signals.quiver_utils import get_all_quiver_signals, score_quiver_signals, has_recent_quiver_event
+        from signals.quiver_utils import (
+            QUIVER_API_KEY,
+            get_all_quiver_signals,
+            score_quiver_signals,
+            has_recent_quiver_event,
+        )
 
-        signals = get_all_quiver_signals(symbol)
-        q_score = score_quiver_signals(signals)
-        votes["Quiver"] = (q_score >= 5.0) and has_recent_quiver_event(symbol, days=2)
+        if not QUIVER_API_KEY:
+            votes["Quiver"] = None
+        else:
+            signals = get_all_quiver_signals(symbol)
+            q_score = score_quiver_signals(signals)
+            votes["Quiver"] = (q_score >= 5.0) and has_recent_quiver_event(symbol, days=2)
     except Exception:
         votes["Quiver"] = False
 
     try:
-        fh = is_approved_by_finnhub(symbol)
-        av = is_approved_by_alphavantage(symbol)
-        votes["FinnhubAlpha"] = fh and av
+        fh_key = os.getenv("FINNHUB_API_KEY")
+        av_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+        if not fh_key or not av_key:
+            votes["FinnhubAlpha"] = None
+        else:
+            fh = is_approved_by_finnhub(symbol)
+            av = is_approved_by_alphavantage(symbol)
+            votes["FinnhubAlpha"] = fh and av
     except Exception:
         votes["FinnhubAlpha"] = False
 
     try:
         from signals.fmp_signals import get_fmp_signal_score
+        if not FMP_API_KEY:
+            votes["FMP"] = None
+            return votes
 
         f = get_fmp_signal_score(symbol)
         votes["FMP"] = bool(
@@ -383,10 +399,24 @@ def is_symbol_approved(symbol: str, overall_score: int, cfg) -> bool:
                 return True
 
         votes = _provider_votes(symbol, cfg)
-        yes = sum(1 for v in votes.values() if v)
-        needed = int(cfg.get("approvals", {}).get("consensus_required", 2))
+        available_votes = {k: v for k, v in votes.items() if v is not None}
+        available = len(available_votes)
+        if available == 0:
+            log_event(
+                f"APPROVAL {symbol}: ⚠️ sin proveedores activos; se permite operar. overall_score={overall_score}"
+            )
+            metrics.inc("approved")
+            _APPROVAL_CACHE[symbol] = (True, now, {"mode": "no_providers"})
+            return True
+        yes = sum(1 for v in available_votes.values() if v)
+        needed = min(
+            int(cfg.get("approvals", {}).get("consensus_required", 2)),
+            available,
+        )
         ok = yes >= needed
-        detail = ", ".join([f"{k}:{'✓' if v else '×'}" for k, v in votes.items()])
+        detail = ", ".join(
+            [f"{k}:{'✓' if v else '×'}" for k, v in available_votes.items()]
+        )
         if ok:
             log_event(
                 f"APPROVAL {symbol}: ✅ Consenso {yes}/3 → {detail}. overall_score={overall_score}"

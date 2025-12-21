@@ -1,10 +1,12 @@
 #main.py
 
 from fastapi import FastAPI
+import os
 import threading
 import time
 from datetime import datetime
 
+import config
 from broker.alpaca import is_market_open
 from core.scheduler import start_schedulers
 from core.crypto_worker import crypto_worker
@@ -53,6 +55,10 @@ def stop_crypto_worker_thread():
 
 def manage_crypto_worker():
     while True:
+        if not is_crypto_enabled():
+            stop_crypto_worker_thread()
+            time.sleep(300)
+            continue
         if is_market_open():
             stop_crypto_worker_thread()
         else:
@@ -70,6 +76,15 @@ def await_market_open():
         time.sleep(60)
 
 
+def is_crypto_enabled() -> bool:
+    policy = getattr(config, "_policy", {}) or {}
+    crypto_cfg = (policy.get("crypto", {}) or {})
+    env_setting = os.getenv("ENABLE_CRYPTO")
+    if env_setting is not None:
+        return env_setting.lower() == "true"
+    return bool(crypto_cfg.get("enabled", True))
+
+
 @app.on_event("startup")
 def on_startup():
     start_metrics_server()
@@ -82,4 +97,7 @@ def on_startup():
         print("⛔ Mercado cerrado. Esperando apertura para acciones...", flush=True)
 
     threading.Thread(target=await_market_open, daemon=True).start()
-    threading.Thread(target=manage_crypto_worker, daemon=True).start()
+    if is_crypto_enabled():
+        threading.Thread(target=manage_crypto_worker, daemon=True).start()
+    else:
+        print("🪙 Trading cripto desactivado por configuración.", flush=True)
