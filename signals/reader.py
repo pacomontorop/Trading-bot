@@ -456,6 +456,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
         concurrency = int(cache_cfg.get("quiver_concurrency", 2))
         quiver_semaphore = asyncio.Semaphore(max(1, concurrency))
 
+    loop = asyncio.get_running_loop()
+    start_time = loop.time()
+    max_scan_seconds = 30
+
     exclude = set(exclude or [])
 
     log_event(
@@ -684,6 +688,13 @@ async def _get_top_signals_async(verbose=False, exclude=None):
 
         record_scan("equity", len(symbols_to_evaluate))
 
+        elapsed = loop.time() - start_time
+        if elapsed > max_scan_seconds:
+            print(
+                f"⏱️ Timeout alcanzado ({max_scan_seconds}s) sin símbolos aprobados. Abortando scan."
+            )
+            return []
+
         if not symbols_to_evaluate:
             print("🔄 Todos los símbolos evaluados. Reiniciando ciclo.")
             reset_symbol_rotation()
@@ -694,6 +705,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
             evaluated_symbols_today.add(s)
         _save_evaluated_symbols()
 
+        print(
+            f"🔍 Evaluando {len(symbols_to_evaluate)} símbolos en este ciclo.",
+            flush=True,
+        )
         tasks = [asyncio.create_task(evaluate_symbol(sym)) for sym in symbols_to_evaluate]
         results = []
         for coro in asyncio.as_completed(tasks):
@@ -711,6 +726,10 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     break
         if results:
             return results[:5]
+        print(
+            "⚠️ Ningún símbolo pasó todas las condiciones en este ciclo.",
+            flush=True,
+        )
 
     return []
 
