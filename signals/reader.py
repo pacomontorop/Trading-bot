@@ -5,7 +5,6 @@ import json
 import math
 from signals.filters import (
     is_position_open,
-    is_approved_by_finnhub_and_alphavantage,
     get_cached_positions,
 )
 import re
@@ -13,8 +12,6 @@ import sys
 try:
     from signals.quiver_utils import (
         _async_is_approved_by_quiver,
-        fetch_quiver_signals,
-        is_approved_by_quiver,
     )
     import signals.quiver_utils as _quiver_utils
 except ModuleNotFoundError:
@@ -24,8 +21,6 @@ except ModuleNotFoundError:
     _async_is_approved_by_quiver = getattr(
         _quiver_utils, "_async_is_approved_by_quiver", None
     )
-    fetch_quiver_signals = getattr(_quiver_utils, "fetch_quiver_signals", None)
-    is_approved_by_quiver = getattr(_quiver_utils, "is_approved_by_quiver", None)
 
 QUIVER_APPROVAL_THRESHOLD = getattr(_quiver_utils, "QUIVER_APPROVAL_THRESHOLD", 5)
 has_recent_quiver_event = getattr(
@@ -33,7 +28,6 @@ has_recent_quiver_event = getattr(
 )
 from signals.quiver_event_loop import run_in_quiver_loop
 import asyncio
-from broker.alpaca import api
 try:
     from signals.scoring import (
         fetch_yfinance_stock_data,
@@ -88,7 +82,6 @@ except ModuleNotFoundError:
 from signals.adaptive_bonus import apply_adaptive_bonus
 from signals.fmp_utils import get_fmp_grade_score
 from signals.fmp_signals import get_fmp_signal_score
-from libs.logging.approvals import approvals_log
 import yfinance as yf
 import os
 import pandas as pd
@@ -217,13 +210,6 @@ def fetch_symbols_from_csv(path="data/symbols.csv"):
         return local_sp500_symbols, stats
 
 
-
-def is_options_enabled(symbol):
-    try:
-        asset = api.get_asset(symbol)
-        return getattr(asset, 'options_enabled', False)
-    except:
-        return False
 
 def _format_exclusions(counter: Counter) -> str:
     ordered = {k: int(counter.get(k, 0)) for k in sorted(counter.keys())}
@@ -432,7 +418,7 @@ def reset_symbol_rotation():
     _save_evaluated_symbols()
 
 
-def get_top_signals(verbose=False, exclude=None):
+def get_top_signals(verbose=False, exclude=None, max_symbols: int = 50):
     """Return up to five top trading opportunities.
 
     Parameters
@@ -443,22 +429,20 @@ def get_top_signals(verbose=False, exclude=None):
         Symbols that should be ignored for this scan. Useful to avoid
         re-evaluating tickers that are already pending or have been
         executed earlier in the day.
+    max_symbols : int, optional
+        Maximum number of symbols to evaluate in this scan cycle.
     """
 
     print("🧩 Entrando en get_top_signals()...")  # 🔍 Diagnóstico
-    return run_in_quiver_loop(_get_top_signals_async(verbose, exclude))
+    return run_in_quiver_loop(_get_top_signals_async(verbose, exclude, max_symbols))
 
 
-async def _get_top_signals_async(verbose=False, exclude=None):
+async def _get_top_signals_async(verbose=False, exclude=None, max_symbols: int = 50):
     global evaluated_symbols_today, last_reset_date, quiver_semaphore, UNIVERSE_EXCLUDED
     if quiver_semaphore is None:
         cache_cfg = (getattr(config, "_policy", {}) or {}).get("cache", {})
         concurrency = int(cache_cfg.get("quiver_concurrency", 2))
         quiver_semaphore = asyncio.Semaphore(max(1, concurrency))
-
-    loop = asyncio.get_running_loop()
-    start_time = loop.time()
-    max_scan_seconds = 30
 
     exclude = set(exclude or [])
 
@@ -573,6 +557,19 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     symbol=symbol,
                 )
                 return (symbol, graded, "Quiver", current_price, atr)
+            reason = "quiver_unknown"
+            if not approved:
+                reason = "quiver_no_data"
+            elif not approved.get("active_signals"):
+                reason = "quiver_no_active_signals"
+            elif approved.get("score", 0) < QUIVER_APPROVAL_THRESHOLD:
+                reason = "quiver_score_below_threshold"
+            elif not approved.get("fresh"):
+                reason = "quiver_not_fresh"
+            log_event(
+                f"APPROVAL {symbol}: rejected reason={reason}",
+                event="APPROVAL",
+            )
             return None
 
         print(f"🔎 Checking {symbol}...", flush=True)
@@ -651,399 +648,91 @@ async def _get_top_signals_async(verbose=False, exclude=None):
                     symbol=symbol,
                 )
                 return (symbol, graded, "Quiver", current_price, atr)
+            reason = "quiver_unknown"
+            if not approved:
+                reason = "quiver_no_data"
+            elif not approved.get("active_signals"):
+                reason = "quiver_no_active_signals"
+            elif approved.get("score", 0) < QUIVER_APPROVAL_THRESHOLD:
+                reason = "quiver_score_below_threshold"
+            elif not approved.get("fresh"):
+                reason = "quiver_not_fresh"
+            log_event(
+                f"APPROVAL {symbol}: rejected reason={reason}",
+                event="APPROVAL",
+            )
         except Exception as e:
             print(f"⚠️ Error evaluando señales Quiver para {symbol}: {e}")
+            log_event(
+                f"APPROVAL {symbol}: rejected reason=quiver_error",
+                event="APPROVAL",
+            )
         return None
 
-    while True:
-        today = datetime.now().date()
-        if today != last_reset_date:
-            evaluated_symbols_today.clear()
-            quiver_approval_cache.clear()
-            last_reset_date = today
-            print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
-            _save_evaluated_symbols()
-
-        # Refresh positions cache once per cycle
-        get_cached_positions(refresh=True)
-
-        symbols_to_evaluate = [
-            s
-            for s in stock_assets
-            if s not in evaluated_symbols_today
-            and s not in exclude
-            and not is_position_open(s)
-        ]
-
-        filtered_symbols = []
-        for s in symbols_to_evaluate:
-            if is_blacklisted_recent_loser(s):
-                print(
-                    f"🚫 {s} descartado por pérdida reciente (lista negra temporal)"
-                )
-                continue
-            filtered_symbols.append(s)
-        symbols_to_evaluate = filtered_symbols[:100]
-        random.shuffle(symbols_to_evaluate)
-
-        record_scan("equity", len(symbols_to_evaluate))
-
-        elapsed = loop.time() - start_time
-        if elapsed > max_scan_seconds:
-            print(
-                f"⏱️ Timeout alcanzado ({max_scan_seconds}s) sin símbolos aprobados. Abortando scan."
-            )
-            return []
-
-        if not symbols_to_evaluate:
-            print("🔄 Todos los símbolos evaluados. Reiniciando ciclo.")
-            reset_symbol_rotation()
-            await asyncio.sleep(60)
-            continue
-
-        for s in symbols_to_evaluate:
-            evaluated_symbols_today.add(s)
+    today = datetime.now().date()
+    if today != last_reset_date:
+        evaluated_symbols_today.clear()
+        quiver_approval_cache.clear()
+        last_reset_date = today
+        print("🔁 Reiniciando símbolos evaluados: nuevo día detectado")
         _save_evaluated_symbols()
 
-        print(
-            f"🔍 Evaluando {len(symbols_to_evaluate)} símbolos en este ciclo.",
-            flush=True,
-        )
-        tasks = [asyncio.create_task(evaluate_symbol(sym)) for sym in symbols_to_evaluate]
-        results = []
-        for coro in asyncio.as_completed(tasks):
-            try:
-                r = await coro
-            except Exception as e:
-                print(f"⚠️ Tarea fallida: {e}")
-                continue
-            if r:
-                results.append(r)
-                if len(results) >= 5:
-                    for t in tasks:
-                        if not t.done():
-                            t.cancel()
-                    break
-        if results:
-            return results[:5]
-        print(
-            "⚠️ Ningún símbolo pasó todas las condiciones en este ciclo.",
-            flush=True,
-        )
-
-    return []
-
-def get_top_shorts(min_criteria=20, verbose=False, exclude=None):
-    global UNIVERSE_EXCLUDED
-    shorts = []
-    already_considered = set()
-    exclude = set(exclude or [])
-
-    log_event(
-        f"UNIVERSE equities size={len(stock_assets)} excluded={_format_exclusions(UNIVERSE_EXCLUDED)}",
-        event="SCAN",
-    )
-
-    # Refresh positions cache once before scanning
+    # Refresh positions cache once per cycle
     get_cached_positions(refresh=True)
 
-    for symbol in stock_assets:
-        if symbol in already_considered or symbol in exclude or is_position_open(symbol):
-            continue
-        if detect_asset_class(symbol) != "equity":
-            continue
-        metrics.inc("scanned")
-        record_scan("equity")
-        signals_count = 0
-        if is_blacklisted_recent_loser(symbol):
-            log_event(
-                f"🚫 {symbol} descartado por pérdida reciente (lista negra temporal)"
-            )
-            approvals_log(
-                symbol,
-                "REJECT",
-                "recent_loser_blacklist",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-        already_considered.add(symbol)
+    symbols_to_evaluate = [
+        s
+        for s in stock_assets
+        if s not in evaluated_symbols_today
+        and s not in exclude
+        and not is_position_open(s)
+    ]
 
-        try:
-            quiver_signals = fetch_quiver_signals(symbol)
-        except Exception as e:
-            log_event(f"⚠️ Error obteniendo señales 13F para {symbol}: {e}")
-            approvals_log(
-                symbol,
-                "REJECT",
-                "quiver_fetch_error",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-
-        def _is_active_signal(value):
-            if isinstance(value, dict):
-                return value.get("active", False)
-            return getattr(value, "active", bool(value))
-
-        def _signal_days(value):
-            if isinstance(value, dict):
-                return value.get("days")
-            return getattr(value, "days", None)
-
-        bullish_signals = {k for k, v in quiver_signals.items() if _is_active_signal(v)}
-        signals_count = len(bullish_signals)
-
-        def _is_strong_signal(name, days):
-            if name == "insider_buy_more_than_sell":
-                return True
-            if name == "has_recent_sec13f_activity":
-                return days is not None and days <= 7
-            if name == "bullish_price_target":
-                return days is not None and days <= 7
-            return False
-
-        strong_hits = sum(
-            1
-            for key, value in quiver_signals.items()
-            if _is_active_signal(value) and _is_strong_signal(key, _signal_days(value))
-        )
-
-        quiver_blocks = signals_count >= 2 or strong_hits >= 1
-
-        try:
-            data, price_history = fetch_yfinance_stock_data(symbol, return_history=True)
-        except SkipSymbol as exc:
-            log_event(
-                f"SCORE {symbol}: skip symbol ({exc})",
-                event="SCORE",
-                symbol=symbol,
-            )
-            approvals_log(
-                symbol,
-                "REJECT",
-                "skip_symbol",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-        except YFPricesMissingError as exc:
-            UNIVERSE_EXCLUDED["yahoo_missing"] += 1
-            log_event(
-                f"SCAN {symbol}: datos YF incompletos ({exc})",
-                event="SCAN",
-                symbol=symbol,
-            )
-            continue
-        except Exception as e:
-            print(f"❌ Error en short scan {symbol}: {e}")
-            approvals_log(
-                symbol,
-                "REJECT",
-                "data_error",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-
-        if not isinstance(data, tuple) or len(data) < 8:
-            if verbose:
-                print(f"⚠️ Datos incompletos para {symbol}. Se omite.")
-            approvals_log(
-                symbol,
-                "REJECT",
-                "insufficient_data",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-
-        (
-            market_cap,
-            volume,
-            weekly_change,
-            trend,
-            price_change_24h,
-            volume_7d_avg,
-            current_price,
-            atr,
-        ) = data
-
-        if price_history is None or getattr(price_history, "empty", True):
-            if verbose:
-                print(f"⚠️ Historial insuficiente para {symbol}. Se omite.")
-            approvals_log(
-                symbol,
-                "REJECT",
-                "insufficient_history",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-
-        close_series = _extract_close_series(price_history, symbol)
-        if close_series.empty or close_series.size < 3:
-            if verbose:
-                print(f"⚠️ Historial insuficiente para {symbol}. Se omite.")
-            approvals_log(
-                symbol,
-                "REJECT",
-                "insufficient_history",
-                score=None,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-            continue
-
-        ema20 = close_series.ewm(span=20, adjust=False).mean().iloc[-1]
-        ema50 = close_series.ewm(span=50, adjust=False).mean().iloc[-1]
-        last_close = close_series.iloc[-1]
-        try:
-            price_val = float(last_close)
-        except Exception:
-            price_val = None
-        if price_val is None or math.isnan(price_val) or price_val <= 0:
-            UNIVERSE_EXCLUDED["price_nan"] += 1
-            log_event(
-                f"SCAN {symbol}: precio de cierre inválido ({last_close})",
-                event="SCAN",
-                symbol=symbol,
-            )
-            continue
-        if price_val < 5.0:
-            UNIVERSE_EXCLUDED["penny_stock"] += 1
-            log_event(
-                f"SCAN {symbol}: descartado por penny_stock (price={price_val:.2f})",
-                event="SCAN",
-                symbol=symbol,
-            )
-            continue
-        changes = close_series.pct_change()
-        window = 4 if RELAX_BEAR_PATTERN else 3
-        recent = changes.tail(window)
-        recent_valid = recent.dropna()
-        down_days = int(recent_valid.tail(3).lt(0).sum())
-        missing = window - len(recent_valid.tail(3))
-        price_below_ema20 = not pd.isna(ema20) and last_close < ema20
-        if RELAX_BEAR_PATTERN:
-            down_ok = down_days >= 2 and price_below_ema20 and missing <= 1
-        else:
-            down_ok = down_days >= 2 and price_below_ema20 and missing == 0
-
-        rsi14 = _compute_rsi(close_series)
-        ema_stack = (
-            not pd.isna(ema20)
-            and not pd.isna(ema50)
-            and last_close < ema20 < ema50
-        )
-        momentum_override = (
-            ema_stack
-            and (rsi14 is not None and rsi14 > 30)
-            and (weekly_change is not None and weekly_change <= -3)
-        )
-
-        if not ((down_ok and not quiver_blocks) or momentum_override):
-            if quiver_blocks:
-                log_event(
-                    f"⛔ {symbol} bloqueado por Quiver (señales={signals_count}, fuertes={strong_hits})."
-                )
-                approvals_log(
-                    symbol,
-                    "REJECT",
-                    "quiver_block",
-                    score=None,
-                    signals_active=signals_count,
-                    side="SHORT",
-                    module="short_scanner",
-                )
-            else:
-                log_event(
-                    f"⛔ {symbol} sin patrón bajista (últimos3_down={down_days}, precio<EMA20={price_below_ema20})."
-                )
-                approvals_log(
-                    symbol,
-                    "REJECT",
-                    "no_downtrend",
-                    score=None,
-                    signals_active=signals_count,
-                    side="SHORT",
-                    module="short_scanner",
-                )
-            continue
-
-        score = 0
-        if market_cap > 500_000_000:
-            score += CRITERIA_WEIGHTS["market_cap"]
-        if volume > STRICTER_VOLUME_THRESHOLD:
-            score += CRITERIA_WEIGHTS["volume"]
-        if weekly_change < -STRICTER_WEEKLY_CHANGE_THRESHOLD:
-            score += CRITERIA_WEIGHTS["weekly_change_positive"]
-        if trend is False:
-            score += CRITERIA_WEIGHTS["trend_positive"]
-        if 0 < price_change_24h < 10:
-            score += CRITERIA_WEIGHTS["volatility_ok"]
-        if volume > volume_7d_avg:
-            score += CRITERIA_WEIGHTS["volume_growth"]
-
-        symbol_score = get_trade_history_score(symbol)
-        if symbol_score > 0:
+    filtered_symbols = []
+    for s in symbols_to_evaluate:
+        if is_blacklisted_recent_loser(s):
             print(
-                f"✅ {symbol} bonificado con {symbol_score} puntos por buen historial"
+                f"🚫 {s} descartado por pérdida reciente (lista negra temporal)"
             )
-        score += symbol_score
-
-        metrics.inc("scored")
-
-        if verbose:
-            print(
-                f"🔻 {symbol}: score={score} (SHORT) → weekly_change={weekly_change}, trend={trend}, price_24h={price_change_24h}"
+            log_event(
+                f"APPROVAL {s}: rejected reason=recent_loser_blacklist",
+                event="APPROVAL",
             )
+            continue
+        filtered_symbols.append(s)
+    symbols_to_evaluate = filtered_symbols[: max(1, int(max_symbols))]
+    random.shuffle(symbols_to_evaluate)
 
-        log_score = score
-        if score >= min_criteria and is_approved_by_finnhub_and_alphavantage(symbol):
-            adaptive_bonus = apply_adaptive_bonus(symbol, mode="short")
-            score += adaptive_bonus
-            shorts.append((symbol, score, "Técnico", current_price, atr))
-            metrics.inc("approved")
-            approvals_log(
-                symbol,
-                "APPROVE",
-                "momentum_override" if momentum_override else "all_checks_passed",
-                score=score,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
-        else:
-            if verbose:
-                print(f"⛔ {symbol} descartado (short): score={score} o no aprobado por Finnhub/AlphaVantage")
-            reason = "external_checks_failed" if log_score >= min_criteria else "score_threshold"
-            approvals_log(
-                symbol,
-                "REJECT",
-                reason,
-                score=score,
-                signals_active=signals_count,
-                side="SHORT",
-                module="short_scanner",
-            )
+    record_scan("equity", len(symbols_to_evaluate))
 
-    if not shorts:
+    if not symbols_to_evaluate:
+        print("🔄 Todos los símbolos evaluados. Reiniciando ciclo.")
+        reset_symbol_rotation()
         return []
 
-    shorts.sort(key=lambda x: x[1], reverse=True)
-    return shorts[:5]
+    for s in symbols_to_evaluate:
+        evaluated_symbols_today.add(s)
+    _save_evaluated_symbols()
+
+    print(
+        f"🔍 Evaluando {len(symbols_to_evaluate)} símbolos en este ciclo.",
+        flush=True,
+    )
+    tasks = [asyncio.create_task(evaluate_symbol(sym)) for sym in symbols_to_evaluate]
+    results = []
+    for coro in asyncio.as_completed(tasks):
+        try:
+            r = await coro
+        except Exception as e:
+            print(f"⚠️ Tarea fallida: {e}")
+            continue
+        if r:
+            results.append(r)
+            if len(results) >= 5:
+                for t in tasks:
+                    if not t.done():
+                        t.cancel()
+                break
+    if not results:
+        log_event("SCAN no symbols passed filters", event="SCAN")
+    return results[:5]

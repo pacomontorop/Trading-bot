@@ -9,7 +9,6 @@ import pandas as pd
 import yfinance as yf
 import math
 from broker.alpaca import api, get_current_price
-from core.market_gate import is_us_equity_market_open
 from broker import alpaca as broker
 from core.broker import get_tick_size, round_to_tick
 from libs.broker.ticks import round_stop_price, equity_tick_for, ceil_to_tick, floor_to_tick
@@ -19,8 +18,6 @@ from utils.state import already_executed_today, mark_executed
 from core.order_utils import alpaca_order_exists
 from config import STRATEGY_VER
 import config
-from signals.reader import get_top_shorts
-from data.providers import ALLOW_STALE_EQ_WHEN_CLOSED
 from utils.logger import log_event, log_dir, log_once
 from utils import metrics
 from utils.daily_risk import (
@@ -60,12 +57,8 @@ pending_trades = set()
 
 executed_symbols_today = DailySet(EXECUTED_STATE_FILE)
 executed_symbols_today_lock = executed_symbols_today.lock
-EVALUATED_SHORTS_FILE = os.path.join(DATA_DIR, "evaluated_shorts.json")
-evaluated_shorts_today = DailySet(EVALUATED_SHORTS_FILE)
-evaluated_shorts_today_lock = evaluated_shorts_today.lock
 EVALUATED_LONGS_FILE = os.path.join(DATA_DIR, "evaluated_longs.json")
 evaluated_longs_today = DailySet(EVALUATED_LONGS_FILE)
-evaluated_longs_today_lock = evaluated_longs_today.lock
 TRAILING_ERROR_FILE = os.path.join(DATA_DIR, "trailing_error_symbols.json")
 trailing_error_symbols = DailySet(TRAILING_ERROR_FILE)
 
@@ -1228,225 +1221,6 @@ def legacy_place_order_with_trailing_stop(symbol, sizing, trail_percent=1.0):
         return False
 
 
-def place_short_order_with_trailing_buy(symbol, sizing, trail_percent=1.0):
-    reset_daily_investment()
-    if is_risk_limit_exceeded():
-        log_event("⚠️ Límite de pérdidas diarias alcanzado. No se operará más hoy.")
-        return
-    if _realized_pnl_today < -DAILY_MAX_LOSS_USD:
-        log_event(
-            f"⛔ Límite diario de pérdidas alcanzado: {_realized_pnl_today:.2f} USD"
-        )
-        return
-    amount_usd = float(sizing.get("notional", 0.0))
-    shares = float(sizing.get("shares", 0.0))
-    stop_distance = sizing.get("stop_distance")
-    print(f"\n🚀 Iniciando proceso de short para {symbol} por ${amount_usd}...")
-    try:
-        if not is_symbol_approved(symbol, 0, config._policy):
-            print(f"❌ {symbol} no aprobado para short según criterios de análisis.")
-            return
-
-        print(f"✅ {symbol} pasó filtros iniciales para short. Obteniendo señales finales...")
-
-        from signals.quiver_utils import get_all_quiver_signals
-        quiver_signals_log[symbol] = [
-            k for k, v in get_all_quiver_signals(symbol).items() if v
-        ]
-
-        equity = get_account_equity_safe()
-        if not _equity_guard(equity, config._policy, "short"):
-            return
-
-        if invested_today_usd() + amount_usd > equity * DAILY_INVESTMENT_LIMIT_PCT:
-            print("⛔ Límite de inversión alcanzado para hoy.")
-            return
-
-        with open_positions_lock, executed_symbols_today_lock:
-            if symbol in open_positions or symbol in executed_symbols_today:
-                print(f"⚠️ {symbol} ya ejecutado o con posición abierta.")
-                return
-
-        if is_position_open(symbol):
-            print(f"⚠️ Ya hay una posición abierta en {symbol}. No se realiza nuevo short.")
-            return
-
-        current_price = get_current_price(symbol)
-        if not current_price:
-            print(f"❌ Precio no disponible para {symbol}")
-            return
-
-        qty = int(shares)
-        if qty <= 0:
-            log_event(f"SIZE {symbol}: ❌ fracciones no permitidas y shares<1")
-            return
-
-        print(
-            f"📉 Enviando orden SHORT para {symbol} por ${amount_usd} → {qty} unidades a ${current_price:.2f} cada una.")
-        order = api.submit_order(
-            symbol=symbol,
-            qty=qty,
-            side='sell',
-            type='market',
-            time_in_force=resolve_time_in_force(qty)
-        )
-        orders_placed.inc()
-        metrics.inc("ordered")
-
-        entry_data[symbol] = (None, shares, None, stop_distance)
-        if not wait_for_order_fill(order.id, symbol):
-            return
-        entry_price, filled_qty, _, stop_dist = entry_data.get(
-            symbol, (current_price, qty, None, stop_distance)
-        )
-        qty = float(filled_qty)
-
-        trail_price = max(get_adaptive_trail_price(symbol), entry_price * STOP_PCT)
-        if _tick_rounding_enabled(config._policy):
-            _, _, _, trail_price = _apply_tick_rounding(
-                symbol=symbol,
-                side="sell",
-                entry_price=entry_price,
-                asset_class=detect_asset_class(symbol),
-                trail_price=trail_price,
-                cfg=config._policy,
-            )
-        trail_order = api.submit_order(
-            symbol=symbol,
-            qty=qty,
-            side='buy',
-            type='trailing_stop',
-            time_in_force=resolve_time_in_force(qty),
-            trail_price=trail_price
-        )
-        orders_placed.inc()
-        threading.Thread(
-            target=wait_for_order_fill,
-            args=(trail_order.id, symbol, 7 * 24 * 3600),
-            daemon=True,
-        ).start()
-
-        register_open_position(symbol)
-        add_to_invested(amount_usd)
-        executed_symbols_today.add(symbol)
-        with pending_trades_lock:
-            pending_trades.add(f"{symbol} SHORT: {qty} unidades — ${amount_usd:.2f}")
-
-        log_event(
-            "short order placed",
-            event="ORDER",
-            symbol=symbol,
-            qty=f"{qty:.4f}",
-            notional=f"{amount_usd:.2f}",
-        )
-        return True
-
-    except Exception as e:
-        print(f"❌ Falló la orden para {symbol}: {e}", flush=True)
-        log_event(
-            f"Falló la orden: {e}",
-            event="ERROR",
-            symbol=symbol,
-        )
-        return False
-
-def short_scan():
-    print("🌀 short_scan iniciado.", flush=True)
-    while True:
-        evaluated_shorts_today.reset_if_new_day()
-        market_open = is_us_equity_market_open()
-        if not market_open and not ALLOW_STALE_EQ_WHEN_CLOSED:
-            log_event(
-                (
-                    "EQUITY_SCAN skipped reason=market_closed "
-                    f"mode=afterhours_allowed={ALLOW_STALE_EQ_WHEN_CLOSED}"
-                ),
-                event="SCAN",
-            )
-            time.sleep(60)
-            continue
-        mode = "regular" if market_open else "afterhours"
-        log_event(
-            (
-                f"EQUITY_SCAN running mode={mode}" +
-                (f" (stale_ok={ALLOW_STALE_EQ_WHEN_CLOSED})" if mode == "afterhours" else "")
-            ),
-            event="SCAN",
-        )
-        print("🔍 Buscando oportunidades en corto...", flush=True)
-        shorts = get_top_shorts(min_criteria=6, verbose=True, exclude=evaluated_shorts_today)
-        log_event(f"🔻 {len(shorts)} oportunidades encontradas para short (máx 5 por ciclo)")
-        MAX_SHORTS_PER_CYCLE = 1
-        if len(shorts) > MAX_SHORTS_PER_CYCLE:
-            print(
-                f"⚠️ Hay más de {MAX_SHORTS_PER_CYCLE} shorts válidos. Se ejecutan solo las primeras.",
-                flush=True,
-            )
-        for symbol, score, origin, current_price, current_atr in shorts[:MAX_SHORTS_PER_CYCLE]:
-            with executed_symbols_today_lock, evaluated_shorts_today_lock:
-                already_executed = symbol in executed_symbols_today
-                already_evaluated = symbol in evaluated_shorts_today
-            if already_executed or already_evaluated:
-                motivo = "ejecutado" if already_executed else "evaluado"
-                print(f"⏩ {symbol} ya {motivo} hoy. Se omite.", flush=True)
-                continue
-            evaluated_shorts_today.add(symbol)
-            try:
-                asset = api.get_asset(symbol)
-                if getattr(asset, "shortable", False):
-                    equity = get_account_equity_safe()
-                    if not _equity_guard(equity, config._policy, "short_scan"):
-                        continue
-                    exposure = get_market_exposure_factor(config._policy)
-                    sizing = calculate_position_size_risk_based(
-                        symbol=symbol,
-                        price=current_price,
-                        atr=current_atr,
-                        equity=equity,
-                        cfg=config._policy,
-                        market_exposure_factor=exposure,
-                    )
-                    if sizing["shares"] <= 0 or sizing["notional"] <= 0:
-                        log_event(f"SIZE {symbol}: ❌ sin tamaño ({sizing['reason']})")
-                        continue
-                    allowed, adj_notional, reason = _apply_event_and_cutoff_policies(
-                        symbol, sizing["notional"], config._policy
-                    )
-                    if not allowed or adj_notional <= 0:
-                        log_event(f"ENTRY {symbol}: ❌ veto por {reason}")
-                        continue
-                    if adj_notional != sizing["notional"]:
-                        price = current_price
-                        allow_frac = _cfg_risk(config._policy)["allow_fractional"]
-                        if allow_frac:
-                            new_shares = adj_notional / price
-                        else:
-                            new_shares = int(adj_notional // price)
-                        if new_shares <= 0:
-                            log_event(
-                                f"ENTRY {symbol}: ❌ tamaño tras reducción no válido ({reason})"
-                            )
-                            continue
-                        sizing["shares"] = new_shares
-                        sizing["notional"] = new_shares * price
-                        log_event(
-                            f"ENTRY {symbol}: ⚠️ tamaño reducido por {reason} -> shares={new_shares:.4f} notional=${sizing['notional']:.2f}"
-                        )
-                    log_event(
-                        f"SIZE {symbol}: ✅ shares={sizing['shares']:.4f} notional=${sizing['notional']:.2f} "
-                        f"stop_dist=${sizing['stop_distance']:.4f} risk_budget=${sizing['risk_budget']:.2f} exposure={exposure:.2f}"
-                    )
-                    success = place_short_order_with_trailing_buy(symbol, sizing, 1.0)
-                    if not success:
-                        log_event(f"❌ Falló la orden short para {symbol}")
-            except Exception as e:
-                print(f"❌ Error verificando shortabilidad de {symbol}: {e}", flush=True)
-        log_event(
-            f"🔻 Total invertido en este ciclo de shorts: {invested_today_usd():.2f} USD",
-        )
-        time.sleep(300)
-
-
 # ---------------------------------------------------------------------------
 # Nuevo flujo de ejecución robusta
 # ---------------------------------------------------------------------------
@@ -1515,6 +1289,16 @@ def _safe_reconcile_by_coid(symbol, coid, cfg):
     except Exception as e:  # pragma: no cover - defensive
         log_event(f"RECONCILE {symbol}: error {e}")
         return False, None
+
+
+def place_long_order(symbol: str, sizing: Dict[str, Any], cfg=None) -> bool:
+    """Place a long-only order using the standard bracket flow."""
+    return place_order_with_trailing_stop(
+        symbol,
+        sizing,
+        entry_type="market",
+        cfg=cfg,
+    )
 
 
 def place_order_with_trailing_stop(
