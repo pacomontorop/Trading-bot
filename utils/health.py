@@ -11,11 +11,11 @@ _price_lock = Lock()
 _scan_lock = Lock()
 
 _price_stats = Counter({"ok": 0, "stale": 0, "failed": 0})
-_scan_stats = Counter({"equity": 0, "crypto": 0})
+_scan_stats = Counter({"equity": 0})
 
 
 PriceStatus = Literal["ok", "stale", "failed"]
-AssetKind = Literal["equity", "crypto"]
+AssetKind = Literal["equity"]
 
 
 def record_price(status: PriceStatus) -> None:

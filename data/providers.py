@@ -1,4 +1,4 @@
-"""Live price retrieval with multi-provider fallback and freshness guards."""
+"""Live equity price retrieval with multi-provider fallback and freshness guards."""
 
 from __future__ import annotations
 
@@ -17,14 +17,11 @@ from core.broker import get_tick_size
 from libs.broker import ticks as tick_utils
 from utils.health import record_price
 from utils.logger import log_event
-from utils.symbols import detect_asset_class
 
 
 PriceTuple = Tuple[Optional[Decimal], Optional[datetime], Optional[str], bool, Optional[str]]
 
-
 PRICE_FRESHNESS_SEC_EQ = int(os.getenv("PRICE_FRESHNESS_SEC_EQ", "300"))
-PRICE_FRESHNESS_SEC_CRYPTO = int(os.getenv("PRICE_FRESHNESS_SEC_CRYPTO", "120"))
 ALLOW_STALE_EQ_WHEN_OPEN = os.getenv("ALLOW_STALE_EQ_WHEN_OPEN", "false").lower() in {
     "1",
     "true",
@@ -38,7 +35,6 @@ _CACHE_TTL = 2.0
 _cache: Dict[Tuple[str, str], Tuple[float, PriceTuple]] = {}
 
 _EQUITY_TIMEOUT = 2.5
-_CRYPTO_TIMEOUT = 1.5
 _RETRY_ATTEMPTS = 3
 _RETRY_BASE_DELAY = 0.2
 
@@ -51,12 +47,8 @@ def _now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _freshness_limit(kind: str) -> int:
-    return PRICE_FRESHNESS_SEC_CRYPTO if kind == "crypto" else PRICE_FRESHNESS_SEC_EQ
-
-
-def _timeout_for(kind: str) -> float:
-    return _CRYPTO_TIMEOUT if kind == "crypto" else _EQUITY_TIMEOUT
+def _timeout_for() -> float:
+    return _EQUITY_TIMEOUT
 
 
 def _decimal(value: float | Decimal | str | None) -> Optional[Decimal]:
@@ -70,11 +62,10 @@ def _decimal(value: float | Decimal | str | None) -> Optional[Decimal]:
         return None
 
 
-def _round_price(symbol: str, kind: str, price: Decimal | None) -> Optional[Decimal]:
+def _round_price(symbol: str, price: Decimal | None) -> Optional[Decimal]:
     if price is None:
         return None
-    tick_asset = "crypto" if kind == "crypto" else "us_equity"
-    tick_size = get_tick_size(symbol, tick_asset, float(price))
+    tick_size = get_tick_size(symbol, "us_equity", float(price))
     if not tick_size or tick_size <= 0:
         return price
     tick_dec = _decimal(tick_size)
@@ -102,14 +93,11 @@ def _retry_call(
     raise PriceProviderError(str(last_exc) if last_exc else "unknown_error")
 
 
-def _alpaca_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
+def _alpaca_price(symbol: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
     from broker import alpaca as alpaca_mod
 
     alpaca_api = alpaca_mod.api
-    if kind == "crypto":
-        bars = alpaca_api.get_crypto_bars(symbol, TimeFrame.Minute, limit=1)
-    else:
-        bars = alpaca_api.get_bars(symbol, TimeFrame.Minute, limit=1)
+    bars = alpaca_api.get_bars(symbol, TimeFrame.Minute, limit=1)
     df = getattr(bars, "df", None)
     if df is None or df.empty:
         return None, None
@@ -127,15 +115,12 @@ def _alpaca_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[d
     return price, ts
 
 
-def _polygon_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
+def _polygon_price(symbol: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
     key = os.getenv("POLYGON_API_KEY")
     if not key:
         raise PriceProviderError("missing_key")
-    if kind == "crypto":
-        endpoint = f"https://api.polygon.io/v1/last/crypto/{symbol.upper()}"
-    else:
-        endpoint = f"https://api.polygon.io/v2/last/trade/{symbol.upper()}"
-    timeout = _timeout_for(kind)
+    endpoint = f"https://api.polygon.io/v2/last/trade/{symbol.upper()}"
+    timeout = _timeout_for()
 
     def _call() -> Tuple[Optional[Decimal], Optional[datetime]]:
         resp = requests.get(endpoint, params={"apiKey": key}, timeout=timeout)
@@ -146,20 +131,17 @@ def _polygon_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[
             return None, None
         price = result.get("p") or result.get("price") or result.get("close")
         ts_ns = result.get("t") or result.get("timestamp")
-        if ts_ns is None:
-            ts = None
-        else:
-            ts = datetime.fromtimestamp(int(ts_ns) / 1_000_000_000, tz=timezone.utc)
+        ts = datetime.fromtimestamp(int(ts_ns) / 1_000_000_000, tz=timezone.utc) if ts_ns else None
         return _decimal(price), ts
 
     return _retry_call(_call, timeout)
 
 
-def _finnhub_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
+def _finnhub_price(symbol: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
     key = os.getenv("FINNHUB_API_KEY")
     if not key:
         raise PriceProviderError("missing_key")
-    timeout = _timeout_for(kind)
+    timeout = _timeout_for()
 
     def _call() -> Tuple[Optional[Decimal], Optional[datetime]]:
         resp = requests.get(
@@ -171,20 +153,17 @@ def _finnhub_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[
         data = resp.json()
         price = data.get("c")
         ts = data.get("t")
-        if ts:
-            ts_dt = datetime.fromtimestamp(int(ts), tz=timezone.utc)
-        else:
-            ts_dt = None
+        ts_dt = datetime.fromtimestamp(int(ts), tz=timezone.utc) if ts else None
         return _decimal(price), ts_dt
 
     return _retry_call(_call, timeout)
 
 
-def _alphavantage_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
+def _alphavantage_price(symbol: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
     key = os.getenv("ALPHAVANTAGE_API_KEY")
     if not key:
         raise PriceProviderError("missing_key")
-    timeout = _timeout_for(kind)
+    timeout = _timeout_for()
 
     def _call() -> Tuple[Optional[Decimal], Optional[datetime]]:
         resp = requests.get(
@@ -212,8 +191,8 @@ def _alphavantage_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Opti
     return _retry_call(_call, timeout)
 
 
-def _yahoo_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
-    timeout = _timeout_for(kind)
+def _yahoo_price(symbol: str) -> Tuple[Optional[Decimal], Optional[datetime]]:
+    timeout = _timeout_for()
 
     def _call() -> Tuple[Optional[Decimal], Optional[datetime]]:
         ticker = yf.Ticker(symbol)
@@ -237,7 +216,7 @@ def _yahoo_price(symbol: str, kind: str) -> Tuple[Optional[Decimal], Optional[da
     return _retry_call(_call, timeout)
 
 
-_PROVIDERS: Tuple[Tuple[str, Callable[[str, str], Tuple[Optional[Decimal], Optional[datetime]]]], ...] = (
+_PROVIDERS: Tuple[Tuple[str, Callable[[str], Tuple[Optional[Decimal], Optional[datetime]]]], ...] = (
     ("alpaca", _alpaca_price),
     ("polygon", _polygon_price),
     ("finnhub", _finnhub_price),
@@ -257,7 +236,6 @@ def _record_stat(price: Optional[Decimal], stale: bool) -> None:
 
 def get_price(
     symbol: str,
-    kind: str | None = None,
     *,
     market_open: Optional[bool] = None,
     allow_stale_open: Optional[bool] = None,
@@ -269,8 +247,7 @@ def get_price(
         return None, None, None, False, "symbol_empty"
 
     upper = symbol.upper()
-    inferred_kind = kind or detect_asset_class(upper)
-    inferred_kind = "crypto" if inferred_kind == "crypto" else "equity"
+    inferred_kind = "equity"
 
     cache_key = (upper, inferred_kind)
     now = time.time()
@@ -280,7 +257,7 @@ def get_price(
         _record_stat(price, stale)
         return price, ts, provider, stale, reason
 
-    if market_open is None and inferred_kind == "equity":
+    if market_open is None:
         try:
             from core.market_gate import is_us_equity_market_open
 
@@ -293,15 +270,15 @@ def get_price(
     if allow_stale_closed is None:
         allow_stale_closed = ALLOW_STALE_EQ_WHEN_CLOSED
 
-    max_age = _freshness_limit(inferred_kind)
+    max_age = PRICE_FRESHNESS_SEC_EQ
     reasons: Dict[str, str] = {}
 
     for name, provider in _PROVIDERS:
         try:
-            timeout = _timeout_for(inferred_kind)
+            timeout = _timeout_for()
 
             def _wrapped() -> Tuple[Optional[Decimal], Optional[datetime]]:
-                return provider(upper, inferred_kind)
+                return provider(upper)
 
             price, ts = _retry_call(_wrapped, timeout)
         except PriceProviderError as exc:
@@ -315,7 +292,7 @@ def get_price(
             reasons[name] = "no_data"
             continue
 
-        price = _round_price(upper, inferred_kind, price)
+        price = _round_price(upper, price)
         if price is None:
             reasons[name] = "rounding_failed"
             continue
@@ -332,7 +309,7 @@ def get_price(
         stale = bool(age > max_age)
         stale_reason = f"stale>{max_age}" if stale else None
 
-        if stale and inferred_kind == "equity":
+        if stale:
             allowed = (market_open is True and allow_stale_open) or (
                 market_open in (False, None) and allow_stale_closed
             )
