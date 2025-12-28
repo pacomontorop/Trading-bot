@@ -8,82 +8,18 @@ gate:
     - "(^|\\.)WLACU$|U$|\\-U$"
     - "W$|WS$|WSA$|WT$"
 
-score:
-  strong_recency_hours: 48
-  atr_z_penalty:
-    lookback_days: 20
-    z_threshold: 1.0
-    max_penalty: 10
-  gap_open_rejection:
-    lookback_minutes: 15
-    weakness_threshold_pct: -0.3
-    penalty: 5
-
-approvals:
-  quiver_override: true         # permite aprobar solo por Quiver fuerte
-  consensus_required: 2         # de {Quiver, FinnhubAlpha, FMP}
-  quiver_strong:
-    recency_hours: 48           # “fresco” para override
-    score_threshold: 8.0        # umbral de convicción Quiver (ajustable)
-    require_recent_event: true  # además de score, exige evento <= recency_hours
-
-cache:
-  macro_ttl_sec: 86400        # 1 día para régimen/macro
-  lot_ttl_sec: 900            # 15 min: Reddit/Tiingo/feeds por lote
-  symbol_ttl_sec: 600         # 10 min: señales por símbolo (Quiver/FMP)
-  approval_ttl_sec: 300       # 5 min: cache de aprobación
-  quiver_heavy_ttl_sec: 480   # 8 minutos para endpoints pesados
-  quiver_concurrency: 2
-  score_recalc_threshold: 50  # no pedir proveedores externos si overall_score < 50
+signals:
+  approval_threshold: 7.0
 
 risk:
-  max_daily_loss_pct: 0.7        # % de equity como pérdida diaria máxima antes de parar
-  max_symbol_risk_pct: 0.35      # % de equity arriesgado por operación
-  atr_k: 2.0                     # múltiplo de ATR para definir stop_distance
-  min_stop_pct: 0.05             # 5% del precio si ATR es pequeño
-  min_trailing_pct: 0.005        # 0.5% (se usará en #6)
-  max_trailing_pct: 0.05         # 5%   (se usará en #6)
-  allow_fractional: true         # habilitar compra fraccional si broker lo soporta
-  enforce_tick_rounding: true
+  max_symbol_risk_pct: 0.01
+  max_position_pct: 0.10
+  atr_k: 2.0
+  min_stop_pct: 0.05
+  allow_fractional: true
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
-  min_tick_crypto: 0.01
 
-exits:
-  use_partial_take_profit: true
-  partial_tp_at_R: 1.5          # vender 1/3 a +1.5R
-  partial_tp_fraction: 0.3333    # 1/3
-  trailing_mode: "chandelier"    # único modo por ahora
-  update_trailing_on_new_highs: true
-  allow_tp_and_trailing_same_bracket: false  # si el broker no lo soporta, usa órdenes separadas
-
-market:
-  default_exposure: 0.85
-  min_exposure: 0.6
-  max_exposure: 1.0
-  vix_percentile_windows: [1, 5, 20]
-  vix_high_pct: 80
-  vix_elevated_pct: 60
-  cache_ttl_sec: 3600
-  avoid_earnings_days: 3       # ventana ±días para bloquear/reducir
-  avoid_last_minutes: 20       # no abrir nuevas posiciones a X min del cierre
-  event_block_mode: "reduce"   # "block" | "reduce"
-  event_reduce_fraction: 0.5   # si "reduce", reduce tamaño al 50%
-  consider_dividends: true
-  consider_guidance: true
-
-crypto:
-  enabled: false
-
-reporting:
-  daily_time_utc: "20:30"          # hora del resumen
-  telegram_enabled: true
-  email_enabled: true
-  file_export_enabled: true
-  export_dir: "reports/"
-  include_cache_metrics: true
-  include_risk_metrics: true
-  funnel_fields: [scanned, gated, scored, approved, ordered, rejected]
-
-shorts:
-  enabled: false
+execution:
+  use_bracket: false
+  take_profit_r: 2.0

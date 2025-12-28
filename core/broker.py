@@ -12,7 +12,6 @@ TICK_DEFAULTS = {
     "equity_lt_1": 0.0001,
     "etf": 0.01,
     "option": 0.01,
-    "crypto": 0.01,
 }
 
 
@@ -23,7 +22,6 @@ def _policy_ticks() -> dict[str, float]:
         "equity_lt_1": float(risk_cfg.get("min_tick_equity_lt_1", TICK_DEFAULTS["equity_lt_1"])),
         "etf": float(risk_cfg.get("min_tick_etf", TICK_DEFAULTS["etf"])),
         "option": float(risk_cfg.get("min_tick_option", TICK_DEFAULTS["option"])),
-        "crypto": float(risk_cfg.get("min_tick_crypto", TICK_DEFAULTS["crypto"])),
     }
 
 
@@ -31,8 +29,6 @@ def get_tick_size(symbol: str, asset_class: Optional[str], price: Optional[float
     """Return the tick size to use for ``symbol`` at ``price``."""
 
     ticks = _policy_ticks()
-    if (asset_class or "").lower() == "crypto":
-        return ticks["crypto"]
     if price is None:
         return ticks["equity_ge_1"]
     if price < 1.0:
@@ -50,4 +46,3 @@ def round_to_tick(price: Optional[float], tick: Optional[float], mode: str = "ne
     if mode == "up":
         return math.ceil(price / tick) * tick
     return round(price / tick) * tick
-

@@ -5,10 +5,8 @@ import os
 import time
 import random
 import requests
-import asyncio
 import math
 from dataclasses import dataclass
-from .quiver_event_loop import run_in_quiver_loop
 from dotenv import load_dotenv
 from utils.logger import log_event, log_once
 from utils.cache import get as cache_get, set as cache_set
@@ -170,35 +168,6 @@ def recency_weight(days_since_event: Optional[float], k: float = 2.0, decay: flo
     return math.exp(-decay * (days_since_event - 2))
 
 
-async def _async_is_approved_by_quiver(symbol):  # pragma: no cover - backward compat
-    """Fetch and evaluate Quiver signals for ``symbol``.
-
-    Historically this function returned a boolean indicating approval. It now
-    returns a dictionary with scoring information so that approval decisions
-    can be made elsewhere.
-    """
-
-    print(f"🔎 Checking {symbol}...", flush=True)
-    try:
-        signals = await asyncio.to_thread(get_all_quiver_signals, symbol)
-        return evaluate_quiver_signals(signals, symbol)
-    except Exception as e:  # pragma: no cover - network/parse errors
-        msg = f"⛔ {symbol} no aprobado por Quiver debido a error: {e}"
-        print(msg)
-        log_event(msg)
-        return {"score": 0.0, "active_signals": []}
-
-
-def is_approved_by_quiver(symbol):  # pragma: no cover - backward compat
-    """Synchronous wrapper for :func:`_async_is_approved_by_quiver`.
-
-    Returns the same evaluation dictionary produced by
-    :func:`evaluate_quiver_signals`.
-    """
-
-    return run_in_quiver_loop(_async_is_approved_by_quiver(symbol))
-
-
 def get_all_quiver_signals(symbol):
     """Retrieve all Quiver signals along with their recency information."""
     basic_signals = get_quiver_signals(symbol)
@@ -239,68 +208,6 @@ def score_quiver_signals(signals):
             weight *= recency_weight(days)
             score += weight
     return score
-
-
-def get_adaptive_take_profit(
-    symbol: str, entry_price: float, quiver_score: float
-) -> Optional[float]:
-    """Calcula un take profit dinámico basado en el quiver_score."""
-    if quiver_score >= 10:
-        pct = 0.10
-    elif quiver_score >= 7:
-        pct = 0.07
-    elif quiver_score >= 5:
-        pct = 0.045
-    else:
-        return None
-
-    take_profit = round(entry_price * (1 + pct), 2)
-    print(
-        f"🎯 {symbol} take profit fijado en ${take_profit:.2f} (score {quiver_score})"
-    )
-    return take_profit
-
-
-# Use a short two-day lookback to ensure only very fresh events are considered
-def has_recent_quiver_event(symbol, days=2):
-    """Score recent activity for ``symbol`` across multiple Quiver endpoints."""
-    cutoff = datetime.utcnow() - timedelta(days=days)
-    score = 0
-
-    if has_recent_insider_trade(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["insider"]
-    if has_recent_house_purchase(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["house_trade"]
-    if has_recent_senate_trade(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["senate_trade"]
-    if has_recent_congress_trade(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["congress_trade"]
-    if has_historical_congress_trade(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["historical_congress"]
-    if has_historical_senate_trade(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["historical_senate"]
-    if has_recent_gov_contract(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["gov_contract"]
-    if has_recent_gov_contract_all(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["gov_contract_all"]
-    if has_recent_lobbying(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["lobbying"]
-    if has_recent_off_exchange(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["off_exchange"]
-    if has_recent_sec13f_activity(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["sec13f"]
-    if has_recent_sec13f_changes(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["sec13f_changes"]
-    if has_recent_price_target_news(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["price_target_news"]
-    if has_recent_patent_drift(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["patent_drift"]
-    if has_recent_patent_momentum(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["patent_momentum"]
-    if has_recent_patents(symbol, cutoff):
-        score += RECENT_EVENT_WEIGHTS["recent_patents"]
-
-    return score >= RECENT_EVENT_THRESHOLD
 
 
 def evaluate_quiver_signals(signals, symbol=""):
@@ -1033,5 +940,4 @@ def initialize_quiver_caches():
     _cached_heavy_endpoint("live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl)
     print("🔄 Descargando datos de app ratings...")
     _cached_heavy_endpoint("live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl)
-
 

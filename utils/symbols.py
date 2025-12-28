@@ -2,20 +2,16 @@
 
 from __future__ import annotations
 
-CRYPTO_SUFFIXES = ("USD", "USDT", "USDC")
-
 
 def detect_asset_class(symbol: str) -> str:
     """Return an asset class identifier for ``symbol``.
 
-    Asset classes currently recognized: ``equity``, ``crypto`` and ``preferred``.
+    Asset classes currently recognized: ``equity`` and ``preferred``.
     """
 
     if not symbol:
         return "equity"
     s = symbol.upper()
-    if any(s.endswith(suf) for suf in CRYPTO_SUFFIXES):
-        return "crypto"
     if ".PR" in s or ".PRA" in s or ".PRB" in s or ".PRC" in s:
         return "preferred"
     if "." in s:

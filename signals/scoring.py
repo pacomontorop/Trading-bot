@@ -104,8 +104,6 @@ def fetch_yfinance_stock_data(symbol, verbose: bool = False, return_history: boo
         return cached["data"]
     try:
         asset_class = detect_asset_class(symbol)
-        if asset_class == "crypto":
-            raise SkipSymbol("crypto_not_supported_in_yf")
         yf_symbol = normalize_for_yahoo(symbol) if asset_class == "preferred" else symbol
         ticker = yf.Ticker(yf_symbol)
         info = ticker.info
