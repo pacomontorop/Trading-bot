@@ -1,25 +1,18 @@
-#quiver_approval.py
+# quiver_approval.py
 
 """Convenient re-exports for Quiver utilities."""
 
 from . import quiver_utils as _quiver
 
-QUIVER_APPROVAL_THRESHOLD = _quiver.QUIVER_APPROVAL_THRESHOLD
-
 __all__ = [
     "is_approved_by_quiver",
     "evaluate_quiver_signals",
     "get_all_quiver_signals",
-    "QUIVER_APPROVAL_THRESHOLD",
 ]
 
 
 def is_approved_by_quiver(symbol: str) -> dict:
-    """Proxy to :func:`quiver_utils.is_approved_by_quiver`.
-
-    The function now returns a dictionary with signal/score information instead
-    of a boolean approval flag.
-    """
+    """Proxy to :func:`quiver_utils.is_approved_by_quiver`."""
 
     return _quiver.is_approved_by_quiver(symbol)
 

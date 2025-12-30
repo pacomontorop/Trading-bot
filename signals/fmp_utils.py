@@ -13,23 +13,7 @@ REQUEST_TIMEOUT = float(os.getenv("FMP_TIMEOUT", 30))
 
 # Minimum seconds between grade-news requests to avoid hitting FMP limits.
 GRADES_NEWS_MIN_INTERVAL = float(os.getenv("FMP_GRADES_NEWS_DELAY", 15))
-GRADES_CACHE_TTL = float(os.getenv("FMP_GRADES_CACHE_TTL", 86400))
 _last_grades_news_call = 0.0
-_grades_cache: dict[str, tuple[float | None, float]] = {}
-
-# Map textual grades to numeric scores for weighting/thresholding
-_GRADE_MAPPING = {
-    "strong buy": 2.0,
-    "buy": 1.0,
-    "outperform": 1.0,
-    "overweight": 1.0,
-    "hold": 0.0,
-    "neutral": 0.0,
-    "sell": -1.0,
-    "underperform": -1.0,
-    "underweight": -1.0,
-    "strong sell": -2.0,
-}
 
 def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
     key = os.getenv("FMP_API_KEY")
@@ -121,27 +105,6 @@ def grades_news(symbol: str, page: int = 0, limit: int = 1):
     params = {"symbol": symbol, "page": page, "limit": limit}
     # The FMP Stock Grade News endpoint expects the symbol as a query parameter.
     return _get("grades-news", params)
-
-
-def get_fmp_grade_score(symbol: str) -> float | None:
-    """Return numeric grade score for ``symbol`` with simple caching.
-
-    Positive numbers indicate bullish grades, negatives bearish. Results are
-    cached to avoid hitting FMP's rate limits when the function is called
-    repeatedly during scans.
-    """
-    now = time.time()
-    cached = _grades_cache.get(symbol)
-    if cached and now - cached[1] < GRADES_CACHE_TTL:
-        return cached[0]
-
-    data = grades_news(symbol, limit=1)
-    score: float | None = None
-    if data:
-        grade = (data[0].get("newGrade") or "").lower()
-        score = _GRADE_MAPPING.get(grade)
-    _grades_cache[symbol] = (score, now)
-    return score
 
 
 # --- Additional FMP helpers for deeper integration ---
