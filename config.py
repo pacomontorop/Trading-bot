@@ -19,3 +19,13 @@ MAX_TRADES_PER_DAY = 5
 STRATEGY_VER = "long_v2"
 ALLOW_MEDIUM_SIGNALS = True
 USE_REDIS = bool(os.getenv("REDIS_URL"))
+
+
+def _env_flag(name: str, default: str = "true") -> bool:
+    value = os.getenv(name, default).strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+ENABLE_QUIVER = _env_flag("ENABLE_QUIVER", "true")
+ENABLE_FMP = _env_flag("ENABLE_FMP", "true")
+ENABLE_YAHOO = _env_flag("ENABLE_YAHOO", "true")

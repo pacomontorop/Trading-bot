@@ -14,8 +14,7 @@ from utils.symbols import detect_asset_class
 SignalTuple = Tuple[str, float, float, float, float | None, float | None]
 
 
-FEATURE_WEIGHTS = {
-    # Quiver features
+QUIVER_FEATURE_WEIGHTS = {
     "quiver_insider_buy_count": 1.0,
     "quiver_insider_sell_count": -1.0,
     "quiver_gov_contract_total_amount": 0.000001,
@@ -28,20 +27,27 @@ FEATURE_WEIGHTS = {
     "quiver_twitter_latest_followers": 0.0001,
     "quiver_app_rating_latest": 0.5,
     "quiver_app_rating_latest_count": 0.05,
-    # FMP features
-    "fmp_grade_score": 1.0,
-    "fmp_rating_overall_score": 0.2,
-    "fmp_rsi_value": 0.01,
-    "fmp_news_bullish_count": 0.5,
-    "fmp_news_bearish_count": -0.5,
-    "fmp_articles_bullish_count": 0.25,
-    "fmp_articles_bearish_count": -0.25,
-    "fmp_price_target_upside_pct": 0.1,
-    # Yahoo features
+}
+
+FMP_FEATURE_WEIGHTS = {
+    # FMP booster only — intentionally minimal
+    "fmp_grade_score": 0.2,
+    "fmp_rating_overall_score": 0.05,
+}
+
+YAHOO_FEATURE_WEIGHTS = {
     "yahoo_weekly_change_pct": 0.05,
     "yahoo_price_change_24h_pct": 0.02,
     "yahoo_trend_positive": 0.1,
 }
+
+FEATURE_WEIGHTS: dict[str, float] = {}
+if config.ENABLE_QUIVER:
+    FEATURE_WEIGHTS.update(QUIVER_FEATURE_WEIGHTS)
+if config.ENABLE_FMP:
+    FEATURE_WEIGHTS.update(FMP_FEATURE_WEIGHTS)
+if config.ENABLE_YAHOO:
+    FEATURE_WEIGHTS.update(YAHOO_FEATURE_WEIGHTS)
 
 
 def _load_symbols(path: str = "data/symbols.csv") -> List[str]:
@@ -85,6 +91,14 @@ def get_top_signals(
     exclude: Iterable[str] | None = None,
 ) -> List[SignalTuple]:
     """Return a list of approved signals for the current scan cycle."""
+
+    log_event(
+        "PROVIDERS: "
+        f"QUIVER={'ON' if config.ENABLE_QUIVER else 'OFF'}, "
+        f"YAHOO={'ON' if config.ENABLE_YAHOO else 'OFF'}, "
+        f"FMP={'ON' if config.ENABLE_FMP else 'OFF'}",
+        event="SCAN",
+    )
 
     exclude_set = {s.upper() for s in (exclude or [])}
     symbols = _load_symbols()

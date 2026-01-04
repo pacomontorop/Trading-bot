@@ -1,3 +1,4 @@
+# Deprecated — kept for compatibility
 import argparse
 import time
 from datetime import datetime, timedelta

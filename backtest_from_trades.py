@@ -1,6 +1,6 @@
-#backtest_from_trades.py
-
 #!/usr/bin/env python3
+# Deprecated — kept for compatibility
+#backtest_from_trades.py
 """Analyze historical trades from a CSV file."""
 
 import argparse

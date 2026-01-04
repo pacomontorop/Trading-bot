@@ -4,6 +4,7 @@ These functions serve as backups when primary data sources fail."""
 import os
 import time
 import requests
+import config
 from signals.quiver_throttler import throttled_request
 
 BASE_URL = "https://financialmodelingprep.com/stable"
@@ -16,6 +17,8 @@ GRADES_NEWS_MIN_INTERVAL = float(os.getenv("FMP_GRADES_NEWS_DELAY", 15))
 _last_grades_news_call = 0.0
 
 def _get(endpoint: str, params: dict | None = None, max_retries: int = 3):
+    if not config.ENABLE_FMP:
+        return None
     key = os.getenv("FMP_API_KEY")
     if params is None:
         params = {}
@@ -96,6 +99,8 @@ def price_target_news(symbol: str, page: int = 0, limit: int = 10):
 
 def grades_news(symbol: str, page: int = 0, limit: int = 1):
     """Fetch latest analyst grade news with throttling to respect rate limits."""
+    if not config.ENABLE_FMP:
+        return None
     global _last_grades_news_call
     now = time.time()
     elapsed = now - _last_grades_news_call
@@ -107,6 +112,7 @@ def grades_news(symbol: str, page: int = 0, limit: int = 1):
     return _get("grades-news", params)
 
 
+# Deprecated — kept for compatibility
 # --- Additional FMP helpers for deeper integration ---
 
 def as_reported_income_statement(symbol: str, period: str = "annual", limit: int = 5):
