@@ -197,6 +197,8 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
 
 def fetch_quiver_signals(symbol: str) -> dict[str, float | int]:
     """Cached access to Quiver feature snapshots."""
+    if not config.ENABLE_QUIVER:
+        return {}
     ttl = _ttl_symbol()
     k = f"Q_SIG:{symbol.upper()}"
     v = cache_get(k, ttl)

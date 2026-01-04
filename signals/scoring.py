@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import yfinance as yf
 
+import config
 from utils.symbols import detect_asset_class, normalize_for_yahoo
 
 
@@ -20,6 +21,11 @@ class YFPricesMissingError(Exception):
 
 
 def fetch_yfinance_stock_data(symbol, verbose: bool = False, return_history: bool = False):
+    if not config.ENABLE_YAHOO:
+        data = (None, None, None, None, None, None, None, None)
+        if return_history:
+            return data, None
+        return data
     now = datetime.utcnow()
     cached = _stock_cache.get(symbol)
     if cached and (now - cached["ts"]) < _CACHE_TTL:
