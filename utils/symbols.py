@@ -32,3 +32,24 @@ def normalize_for_yahoo(symbol: str) -> str:
         if pr:
             return f"{base}-P{pr[0]}"
     return s
+
+
+def normalize_ticker(symbol: str) -> dict[str, str]:
+    """Return canonical/provider-specific ticker mappings for ``symbol``."""
+
+    canonical = (symbol or "").strip().upper()
+    if not canonical:
+        return {"canonical": "", "yahoo": "", "quiver": ""}
+
+    if "." in canonical:
+        yahoo = canonical.replace(".", "-")
+        quiver = canonical
+    else:
+        yahoo = canonical
+        quiver = canonical
+
+    return {
+        "canonical": canonical,
+        "yahoo": yahoo,
+        "quiver": quiver,
+    }

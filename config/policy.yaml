@@ -9,9 +9,51 @@ gate:
     - "W$|WS$|WSA$|WT$"
 
 signals:
-  approval_threshold: 7.0
+  approval_threshold: 2.0
+  allow_trade_without_quiver: false
+  freshness_days_quiver: 7
+  freshness_days_yahoo_prices: 2
+  rank_by: total_score
+  tie_breakers:
+    - quiver_strength
+    - liquidity
+    - lower_atr_pct
+
+market:
+  global_kill_switch: false
+
+yahoo_gate:
+  min_avg_volume_7d: 1000000
+  min_market_cap: 1000000000
+  max_atr_pct: 6.0
+  require_trend_positive: true
+  min_price: 5.0
+  max_price: 1000.0
+
+quiver_gate:
+  insider_buy_min_count_lookback: 1
+  gov_contract_min_total_amount: 2000000
+  gov_contract_min_count: 1
+  patent_momentum_min: 0.0
+  wsb_mentions_min: 25
+  sec13f_change_min_pct: 1.0
+  congresstrading_min_amount: 5000
+  lobbying_min_amount: 100000
 
 risk:
+  daily_max_spend_usd: 800
+  daily_max_new_positions: 3
+  max_total_open_positions: 10
+  max_position_size_usd: 500
+  min_position_size_usd: 100
+  max_exposure_pct_equity: 0.60
+  max_symbol_exposure_pct_equity: 0.12
+  max_sector_exposure_pct_equity: null
+  cash_buffer_pct: 0.10
+  symbol_cooldown_days: 5
+  if_position_open_skip: true
+  skip_if_order_pending: true
+  slippage_buffer_pct: 0.002
   max_symbol_risk_pct: 0.01
   max_position_pct: 0.10
   atr_k: 2.0
@@ -21,5 +63,18 @@ risk:
   min_tick_equity_lt_1: 0.0001
 
 execution:
-  use_bracket: false
+  use_bracket: true
+  stop_loss_atr_mult: 2.0
+  take_profit_atr_mult: 3.0
+  trailing_stop_atr_mult: 2.0
+  time_in_force: day
+  allow_partial_fills: true
+  min_rr_ratio: 1.2
   take_profit_r: 2.0
+
+cache:
+  quiver_heavy_ttl_sec: 86400
+  symbol_ttl_sec: 600
+
+universe:
+  mapping_failure_pct_block: 0.6

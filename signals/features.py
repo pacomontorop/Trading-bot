@@ -11,20 +11,6 @@ from typing import Any
 import config
 
 
-_GRADE_MAPPING = {
-    "strong buy": 2.0,
-    "buy": 1.0,
-    "outperform": 1.0,
-    "overweight": 1.0,
-    "hold": 0.0,
-    "neutral": 0.0,
-    "sell": -1.0,
-    "underperform": -1.0,
-    "underweight": -1.0,
-    "strong sell": -2.0,
-}
-
-
 def _to_numeric(value: Any) -> float:
     if value is None:
         return 0.0
@@ -35,40 +21,42 @@ def _to_numeric(value: Any) -> float:
     return 0.0
 
 
-def _grade_value(symbol: str) -> float:
-    from signals import fmp_utils
-
-    data = fmp_utils.grades_news(symbol, limit=1)
-    if not data:
-        return 0.0
-    grade = (data[0].get("newGrade") or "").lower()
-    return float(_GRADE_MAPPING.get(grade, 0.0))
-
-
-def get_symbol_features(symbol: str) -> dict[str, float]:
+def get_symbol_features(
+    symbol: str,
+    *,
+    yahoo_snapshot=None,
+    yahoo_symbol: str | None = None,
+    quiver_symbol: str | None = None,
+    quiver_fallback_symbol: str | None = None,
+) -> dict[str, float]:
     """Return a flat numeric feature dict for ``symbol`` from all providers."""
     features: dict[str, float | int | None] = {}
 
     if config.ENABLE_QUIVER:
         from signals import quiver_utils
 
-        quiver_features = quiver_utils.fetch_quiver_signals(symbol)
+        quiver_features = quiver_utils.fetch_quiver_signals(
+            quiver_symbol or symbol,
+            fallback_symbol=quiver_fallback_symbol,
+        )
         features.update(quiver_features or {})
 
     if config.ENABLE_FMP:
-        # FMP booster only — intentionally minimal
-        features["fmp_grade_score"] = _grade_value(symbol)
-
-        from signals import fmp_utils
-
-        rating = fmp_utils.ratings_snapshot(symbol)
-        if rating:
-            features["fmp_rating_overall_score"] = rating[0].get("overallScore")
+        # FMP is secondary. We keep it optional but do not use it for decisions.
+        features["fmp_grade_score"] = 0.0
+        features["fmp_rating_overall_score"] = 0.0
 
     if config.ENABLE_YAHOO:
-        from signals.scoring import fetch_yfinance_stock_data, SkipSymbol, YFPricesMissingError
+        from signals.scoring import fetch_yahoo_snapshot, SkipSymbol, YFPricesMissingError
 
         try:
+            if yahoo_snapshot is None:
+                snapshot = fetch_yahoo_snapshot(
+                    symbol,
+                    yahoo_symbol=yahoo_symbol,
+                    fallback_symbol=symbol if yahoo_symbol else None,
+                )
+                yahoo_snapshot = snapshot.data
             (
                 market_cap,
                 volume,
@@ -78,7 +66,7 @@ def get_symbol_features(symbol: str) -> dict[str, float]:
                 volume_7d,
                 current_price,
                 atr,
-            ) = fetch_yfinance_stock_data(symbol)
+            ) = yahoo_snapshot
         except (SkipSymbol, YFPricesMissingError):
             market_cap = (
                 volume
@@ -97,5 +85,9 @@ def get_symbol_features(symbol: str) -> dict[str, float]:
     features["yahoo_volume_7d_avg"] = volume_7d
     features["yahoo_current_price"] = current_price
     features["yahoo_atr"] = atr
+    if current_price and atr:
+        features["yahoo_atr_pct"] = (float(atr) / float(current_price)) * 100.0
+    else:
+        features["yahoo_atr_pct"] = 0.0
 
     return {key: _to_numeric(value) for key, value in features.items()}
