@@ -29,3 +29,4 @@ def _env_flag(name: str, default: str = "true") -> bool:
 ENABLE_QUIVER = _env_flag("ENABLE_QUIVER", "true")
 ENABLE_FMP = _env_flag("ENABLE_FMP", "true")
 ENABLE_YAHOO = _env_flag("ENABLE_YAHOO", "true")
+DRY_RUN = _env_flag("DRY_RUN", "false")

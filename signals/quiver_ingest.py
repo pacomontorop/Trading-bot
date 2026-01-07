@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 import config
 from signals.quiver_throttler import throttled_request
 from utils.cache import get as cache_get, set as cache_set
+from utils.persistent_cache import get as persist_get, set as persist_set
 from utils.logger import log_event, log_once
 
 
@@ -43,13 +44,22 @@ def _ttl_lot() -> int:
 def _ttl_heavy() -> int:
     cfg = getattr(config, "_policy", {}) or {}
     cache_cfg = cfg.get("cache") or {}
-    return int(cache_cfg.get("quiver_heavy_ttl_sec", _ttl_lot()))
+    return int(cache_cfg.get("quiver_heavy_ttl_sec", 86400))
+
+
+def _daily_cache_key(name: str) -> str:
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    return f"quiver:{name}:{today}"
 
 
 def _cached_heavy_endpoint(name: str, url: str, ttl: int):
-    key = f"HE_{name}"
+    key = _daily_cache_key(name)
     data = cache_get(key, ttl)
     if data is not None:
+        return data
+    data = persist_get(key, ttl)
+    if data is not None:
+        cache_set(key, data)
         return data
     now = time.time()
     suppressed_until = _ENDPOINT_SUPPRESS.get(name)
@@ -78,6 +88,7 @@ def _cached_heavy_endpoint(name: str, url: str, ttl: int):
         return None
     if isinstance(data, list):
         cache_set(key, data)
+        persist_set(key, data)
     return data
 
 

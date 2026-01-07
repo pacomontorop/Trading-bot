@@ -7,8 +7,8 @@ import os
 import time
 
 import config
-from broker.account import get_account_equity_safe
-from core.executor import calculate_position_size_risk_based, place_long_order
+from core.executor import place_long_order
+from core import risk_manager
 from core.market_gate import is_us_equity_market_open
 from signals.filters import is_position_open
 from signals.reader import get_top_signals
@@ -62,7 +62,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             time.sleep(interval_sec)
             continue
 
-        for symbol, total_score, quiver_score, fmp_score, price, atr in opportunities:
+        for symbol, total_score, quiver_score, fmp_score, price, atr, plan in opportunities:
             if is_position_open(symbol):
                 log_event(
                     f"APPROVAL {symbol}: rejected reason=position_open",
@@ -70,29 +70,19 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
                 )
                 continue
 
-            equity = get_account_equity_safe()
-            sizing = calculate_position_size_risk_based(
-                price=price,
-                atr=atr,
-                equity=equity,
-            )
-            if sizing.shares <= 0 or sizing.notional <= 0:
-                log_event(
-                    f"SIZE {symbol}: rejected reason={sizing.reason}",
-                    event="ORDER",
-                )
-                continue
-
             log_event(
                 (
                     f"ORDER {symbol}: attempt score={total_score:.2f} "
-                    f"quiver={quiver_score:.2f} fmp={fmp_score:.2f}"
+                    f"quiver={quiver_score:.2f} fmp={fmp_score:.2f} "
+                    f"qty={plan.get('qty')} notional={plan.get('notional'):.2f}"
                 ),
                 event="ORDER",
             )
-            success = place_long_order(symbol, sizing, price)
+            success = place_long_order(plan, dry_run=config.DRY_RUN)
             if success:
                 log_event(f"ORDER {symbol}: submitted", event="ORDER")
+                if not config.DRY_RUN:
+                    risk_manager.record_trade(plan)
             else:
                 log_event(f"ORDER {symbol}: failed", event="ORDER")
 

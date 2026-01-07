@@ -72,28 +72,40 @@ def _execution_cfg() -> dict:
     return (getattr(config, "_policy", {}) or {}).get("execution", {})
 
 
-def place_long_order(symbol: str, sizing: PositionSizing, price: float) -> bool:
+def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
     """Place a long-only order using Alpaca."""
 
     exec_cfg = _execution_cfg()
-    use_bracket = bool(exec_cfg.get("use_bracket", False))
-    rr_ratio = float(exec_cfg.get("take_profit_r", 2.0))
+    symbol = plan.get("symbol")
+    qty = float(plan.get("qty") or 0)
+    price = float(plan.get("price") or 0)
+    use_bracket = bool(plan.get("use_bracket", False))
+    time_in_force = plan.get("time_in_force", exec_cfg.get("time_in_force", "day"))
+    stop_loss = plan.get("stop_loss")
+    take_profit = plan.get("take_profit")
 
-    qty = sizing.shares
-    if qty <= 0:
+    if qty <= 0 or not symbol:
         log_event(f"ORDER {symbol}: rejected reason=zero_qty", event="ORDER")
         return False
 
     client_order_id = f"LONG.{symbol}.{int(price * 100)}"
 
-    if use_bracket:
-        take_profit = price + sizing.stop_distance * rr_ratio
-        stop_loss = price - sizing.stop_distance
-        take_profit = round_to_tick(take_profit, 0.01)
-        stop_loss = round_to_tick(stop_loss, 0.01)
+    if dry_run:
         log_event(
             (
-                f"ORDER {symbol}: bracket qty={qty:.4f} tp={take_profit} "
+                f"DRY_RUN ORDER {symbol}: qty={qty:.2f} "
+                f"price={price:.2f} tp={take_profit} sl={stop_loss}"
+            ),
+            event="ORDER",
+        )
+        return True
+
+    if use_bracket and stop_loss is not None and take_profit is not None:
+        take_profit = round_to_tick(float(take_profit), 0.01)
+        stop_loss = round_to_tick(float(stop_loss), 0.01)
+        log_event(
+            (
+                f"ORDER {symbol}: bracket qty={qty:.2f} tp={take_profit} "
                 f"sl={stop_loss}"
             ),
             event="ORDER",
@@ -104,7 +116,7 @@ def place_long_order(symbol: str, sizing: PositionSizing, price: float) -> bool:
                 qty=qty,
                 side="buy",
                 type="market",
-                time_in_force="day",
+                time_in_force=time_in_force,
                 order_class="bracket",
                 take_profit={"limit_price": take_profit},
                 stop_loss={"stop_price": stop_loss},
@@ -116,7 +128,7 @@ def place_long_order(symbol: str, sizing: PositionSizing, price: float) -> bool:
             return False
 
     log_event(
-        f"ORDER {symbol}: market qty={qty:.4f} notional=${sizing.notional:.2f}",
+        f"ORDER {symbol}: market qty={qty:.2f} notional=${float(plan.get('notional', 0.0)):.2f}",
         event="ORDER",
     )
     try:  # pragma: no cover - network
@@ -125,7 +137,7 @@ def place_long_order(symbol: str, sizing: PositionSizing, price: float) -> bool:
             qty=qty,
             side="buy",
             type="market",
-            time_in_force="day",
+            time_in_force=time_in_force,
             client_order_id=client_order_id,
         )
         return True
