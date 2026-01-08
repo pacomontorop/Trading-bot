@@ -62,7 +62,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             time.sleep(interval_sec)
             continue
 
-        for symbol, total_score, quiver_score, fmp_score, price, atr, plan in opportunities:
+        for symbol, total_score, quiver_score, price, atr, plan in opportunities:
             if is_position_open(symbol):
                 log_event(
                     f"APPROVAL {symbol}: rejected reason=position_open",
@@ -73,7 +73,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             log_event(
                 (
                     f"ORDER {symbol}: attempt score={total_score:.2f} "
-                    f"quiver={quiver_score:.2f} fmp={fmp_score:.2f} "
+                    f"quiver={quiver_score:.2f} "
                     f"qty={plan.get('qty')} notional={plan.get('notional'):.2f}"
                 ),
                 event="ORDER",
