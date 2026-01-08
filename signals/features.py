@@ -41,11 +41,6 @@ def get_symbol_features(
         )
         features.update(quiver_features or {})
 
-    if config.ENABLE_FMP:
-        # FMP is secondary. We keep it optional but do not use it for decisions.
-        features["fmp_grade_score"] = 0.0
-        features["fmp_rating_overall_score"] = 0.0
-
     if config.ENABLE_YAHOO:
         from signals.scoring import fetch_yahoo_snapshot, SkipSymbol, YFPricesMissingError
 

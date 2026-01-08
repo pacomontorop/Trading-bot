@@ -213,6 +213,8 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
     atr = float(candidate.get("atr") or 0.0)
     if price <= 0:
         return None, "invalid_price"
+    if atr <= 0:
+        return None, "atr_missing"
 
     equity = snapshot.get("equity", 0.0)
     cash = snapshot.get("cash", 0.0)
@@ -225,6 +227,9 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
     cash_buffer_pct = float(cfg.get("cash_buffer_pct", 0))
     max_symbol_exposure_pct = float(cfg.get("max_symbol_exposure_pct_equity", 1.0))
     slippage_buffer_pct = float(cfg.get("slippage_buffer_pct", 0.0))
+    risk_pct = float(cfg.get("max_symbol_risk_pct", 0.0))
+    atr_k = float(cfg.get("atr_k", 2.0))
+    min_stop_pct = float(cfg.get("min_stop_pct", 0.0))
 
     remaining_budget = daily_max_spend - state.spent_today_usd if daily_max_spend else cash
     cash_buffer = equity * cash_buffer_pct
@@ -241,29 +246,38 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
         return None, "size_below_min"
 
     size_usd *= max(0.0, 1 - slippage_buffer_pct)
-    qty = int(size_usd / price)
+    stop_distance = max(atr * atr_k, price * min_stop_pct)
+    if stop_distance <= 0:
+        return None, "invalid_stop_distance"
+
+    if risk_pct <= 0:
+        return None, "risk_pct_missing"
+
+    risk_budget = equity * risk_pct
+    risk_qty = int(risk_budget / stop_distance)
+    max_affordable_qty = int(size_usd / price)
+    qty = min(risk_qty, max_affordable_qty)
     if qty < 1:
         return None, "qty_below_one"
 
     notional = qty * price
     if notional <= 0:
         return None, "notional_invalid"
+    if notional < min_position_size:
+        return None, "size_below_min"
 
     use_bracket = bool(exec_cfg.get("use_bracket", False))
     stop_price = None
     take_profit = None
     trailing_stop = None
     rr_ratio = None
+    stop_price = price - stop_distance
+    if stop_price <= 0:
+        return None, "invalid_stop_price"
     if use_bracket:
-        stop_mult = float(exec_cfg.get("stop_loss_atr_mult", 2.0))
         tp_mult = float(exec_cfg.get("take_profit_atr_mult", 3.0))
         min_rr = float(exec_cfg.get("min_rr_ratio", 1.2))
-        if atr <= 0:
-            return None, "atr_missing"
-        stop_price = price - stop_mult * atr
         take_profit = price + tp_mult * atr
-        if stop_price <= 0:
-            return None, "invalid_stop_price"
         rr_ratio = (take_profit - price) / (price - stop_price) if price > stop_price else 0
         if rr_ratio < min_rr:
             return None, "rr_ratio_low"
@@ -276,7 +290,6 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
         "symbol": candidate["symbol"],
         "score_total": candidate["score_total"],
         "quiver_score": candidate["quiver_score"],
-        "fmp_score": candidate["fmp_score"],
         "price": price,
         "atr": atr,
         "qty": qty,

@@ -12,10 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
-def _set_flags(*, quiver: bool, yahoo: bool, fmp: bool) -> None:
+def _set_flags(*, quiver: bool, yahoo: bool) -> None:
     os.environ["ENABLE_QUIVER"] = "true" if quiver else "false"
     os.environ["ENABLE_YAHOO"] = "true" if yahoo else "false"
-    os.environ["ENABLE_FMP"] = "true" if fmp else "false"
 
 
 def _stub_providers(config_module) -> None:
@@ -36,15 +35,9 @@ def _stub_providers(config_module) -> None:
 
         scoring.fetch_yahoo_snapshot = _fake_fetch
 
-    if config_module.ENABLE_FMP:
-        from signals import fmp_utils
 
-        fmp_utils.grades_news = lambda symbol, page=0, limit=1: []
-        fmp_utils.ratings_snapshot = lambda symbol, limit=1: []
-
-
-def _run_case(name: str, *, quiver: bool, yahoo: bool, fmp: bool) -> None:
-    _set_flags(quiver=quiver, yahoo=yahoo, fmp=fmp)
+def _run_case(name: str, *, quiver: bool, yahoo: bool) -> None:
+    _set_flags(quiver=quiver, yahoo=yahoo)
     import config as config_module
 
     importlib.reload(config_module)
@@ -56,20 +49,17 @@ def _run_case(name: str, *, quiver: bool, yahoo: bool, fmp: bool) -> None:
     _stub_providers(config_module)
 
     feature_map = features.get_symbol_features("AAPL")
-    score, _, _ = reader._score_from_features(feature_map)
+    score, _ = reader._score_from_features(feature_map)
 
     assert isinstance(score, float), f"{name}: score not float"
-    if not config_module.ENABLE_FMP:
-        assert not any(k.startswith("fmp_") for k in feature_map), f"{name}: fmp key found"
-        assert not any(k.startswith("fmp_") for k in reader.FEATURE_WEIGHTS), f"{name}: fmp weight found"
     if not config_module.ENABLE_QUIVER:
-        assert not any(k.startswith("quiver_") for k in reader.FEATURE_WEIGHTS), f"{name}: quiver weight found"
+        assert not any(k.startswith("quiver_") for k in feature_map), f"{name}: quiver key found"
     if not config_module.ENABLE_YAHOO:
-        assert not any(k.startswith("yahoo_") for k in reader.FEATURE_WEIGHTS), f"{name}: yahoo weight found"
+        assert not any(k.startswith("yahoo_") for k in feature_map), f"{name}: yahoo key found"
 
 
 def _test_disable_quiver_import() -> None:
-    _set_flags(quiver=False, yahoo=True, fmp=False)
+    _set_flags(quiver=False, yahoo=True)
     import config as config_module
 
     importlib.reload(config_module)
@@ -83,7 +73,7 @@ def _test_disable_quiver_import() -> None:
 
 
 def _test_yahoo_disabled_no_trade() -> None:
-    _set_flags(quiver=True, yahoo=False, fmp=False)
+    _set_flags(quiver=True, yahoo=False)
     import config as config_module
 
     importlib.reload(config_module)
@@ -120,10 +110,9 @@ def _test_risk_limits_block() -> None:
 
 
 def main() -> None:
-    _run_case("A", quiver=True, yahoo=True, fmp=False)
-    _run_case("B", quiver=True, yahoo=False, fmp=False)
-    _run_case("C", quiver=False, yahoo=True, fmp=False)
-    _run_case("D", quiver=True, yahoo=True, fmp=True)
+    _run_case("A", quiver=True, yahoo=True)
+    _run_case("B", quiver=True, yahoo=False)
+    _run_case("C", quiver=False, yahoo=True)
     _test_disable_quiver_import()
     _test_yahoo_disabled_no_trade()
     _test_risk_limits_block()
