@@ -214,6 +214,8 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         reasons.append("quiver_gate_unconfigured")
     elif checks and not any(checks):
         reasons.append("quiver_min_signal")
+    elif active_types < 2:
+        reasons.append("quiver_min_types")
     return not reasons, reasons
 
 
@@ -359,6 +361,17 @@ def get_top_signals(
                 "score_total": round(total_score, 4),
             }
         )
+        approval_threshold = _signal_threshold()
+        if approval_threshold and total_score < approval_threshold:
+            rejected.append(f"{symbol}:score_threshold")
+            decision_trace["final_decision"] = "REJECT"
+            decision_trace["score_threshold"] = approval_threshold
+            decision_trace["score_reasons"] = ["score_below_threshold"]
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
 
         current_price = features.get("yahoo_current_price")
         atr = features.get("yahoo_atr")
