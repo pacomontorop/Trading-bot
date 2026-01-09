@@ -210,6 +210,18 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         configured = True
         checks.append(features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min)
 
+    active_types = 0
+    if features.get("quiver_insider_buy_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_gov_contract_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_patent_momentum_latest", 0) > 0:
+        active_types += 1
+    if features.get("quiver_sec13f_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
+        active_types += 1
+
     if not configured:
         reasons.append("quiver_gate_unconfigured")
     elif checks and not any(checks):
