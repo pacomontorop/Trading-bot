@@ -49,6 +49,10 @@ def _signal_cfg() -> dict:
     return _policy_section("signals")
 
 
+def _signal_threshold() -> float:
+    return float(_signal_cfg().get("approval_threshold", 0))
+
+
 def _market_cfg() -> dict:
     return _policy_section("market")
 
@@ -210,8 +214,20 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         configured = True
         checks.append(features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min)
 
+    active_types = 0
+    if features.get("quiver_insider_buy_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_gov_contract_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_patent_momentum_latest", 0) > 0:
+        active_types += 1
+    if features.get("quiver_sec13f_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
+        active_types += 1
+
     if not configured:
-        reasons.append("quiver_gate_unconfigured")
+        return True, []
     elif checks and not any(checks):
         reasons.append("quiver_min_signal")
     elif active_types < 2:
