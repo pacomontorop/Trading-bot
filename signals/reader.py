@@ -14,7 +14,7 @@ from signals.scoring import fetch_yahoo_snapshot
 from utils.logger import log_event
 from utils.universe import load_universe
 
-SignalTuple = Tuple[str, float, float, float, float | None, float | None, dict]
+SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 
 QUIVER_FEATURE_WEIGHTS = {
@@ -23,24 +23,13 @@ QUIVER_FEATURE_WEIGHTS = {
     "quiver_gov_contract_total_amount": 0.000001,
     "quiver_gov_contract_count": 0.5,
     "quiver_patent_momentum_latest": 1.0,
-    "quiver_wsb_recent_max_mentions": 0.1,
+    "quiver_wsb_recent_max_mentions": 0.05,
     "quiver_sec13f_count": 0.2,
     "quiver_sec13f_change_latest_pct": 0.1,
-    "quiver_house_purchase_count": 0.5,
-    "quiver_twitter_latest_followers": 0.0001,
-    "quiver_app_rating_latest": 0.5,
-    "quiver_app_rating_latest_count": 0.05,
+    "quiver_twitter_latest_followers": 0.00005,
+    "quiver_app_rating_latest": 0.2,
+    "quiver_app_rating_latest_count": 0.02,
 }
-
-YAHOO_FEATURE_WEIGHTS = {
-    "yahoo_trend_positive": 0.5,
-}
-
-FEATURE_WEIGHTS: dict[str, float] = {}
-if config.ENABLE_QUIVER:
-    FEATURE_WEIGHTS.update(QUIVER_FEATURE_WEIGHTS)
-if config.ENABLE_YAHOO:
-    FEATURE_WEIGHTS.update(YAHOO_FEATURE_WEIGHTS)
 
 _FEATURE_CAPS = {
     "quiver_gov_contract_total_amount": 200_000_000,
@@ -77,7 +66,7 @@ def _universe_cfg() -> dict:
 
 
 def _signal_threshold() -> float:
-    return float(_signal_cfg().get("approval_threshold", 7.0))
+    return float(_signal_cfg().get("approval_threshold", 0.0))
 
 
 def _normalize_feature_value(key: str, value: float) -> float:
@@ -90,17 +79,16 @@ def _normalize_feature_value(key: str, value: float) -> float:
     return numeric
 
 
-def _score_from_features(features: dict[str, float]) -> tuple[float, float, float]:
-    """Simple score computed from numeric features only."""
+def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
+    """Simple score computed from Quiver numeric features only."""
     score = 0.0
     quiver_score = 0.0
-    for key, weight in FEATURE_WEIGHTS.items():
+    for key, weight in QUIVER_FEATURE_WEIGHTS.items():
         value = _normalize_feature_value(key, float(features.get(key, 0.0)))
         contribution = weight * value
         score += contribution
-        if key.startswith("quiver_"):
-            quiver_score += contribution
-    return score, quiver_score, 0.0
+        quiver_score += contribution
+    return score, quiver_score
 
 
 def _compact_features(features: dict[str, float]) -> dict[str, float]:
@@ -197,32 +185,60 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     cfg = _quiver_gate_cfg()
     reasons: list[str] = []
     if not config.ENABLE_QUIVER:
-        if not bool(_signal_cfg().get("allow_trade_without_quiver", False)):
-            return False, ["quiver_disabled"]
-        return True, []
+        return False, ["quiver_disabled"]
 
     checks = []
+    active_types = 0
+    configured = False
     insider_min = float(cfg.get("insider_buy_min_count_lookback", 0))
     if insider_min > 0:
-        checks.append(features.get("quiver_insider_buy_count", 0) >= insider_min)
+        configured = True
+        passed = features.get("quiver_insider_buy_count", 0) >= insider_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
     gov_amount_min = float(cfg.get("gov_contract_min_total_amount", 0))
     if gov_amount_min > 0:
-        checks.append(features.get("quiver_gov_contract_total_amount", 0) >= gov_amount_min)
+        configured = True
+        passed = features.get("quiver_gov_contract_total_amount", 0) >= gov_amount_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
     gov_count_min = float(cfg.get("gov_contract_min_count", 0))
     if gov_count_min > 0:
-        checks.append(features.get("quiver_gov_contract_count", 0) >= gov_count_min)
+        configured = True
+        passed = features.get("quiver_gov_contract_count", 0) >= gov_count_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
     patent_min = float(cfg.get("patent_momentum_min", 0))
     if patent_min > 0:
-        checks.append(features.get("quiver_patent_momentum_latest", 0) >= patent_min)
-    wsb_min = float(cfg.get("wsb_mentions_min", 0))
-    if wsb_min > 0:
-        checks.append(features.get("quiver_wsb_recent_max_mentions", 0) >= wsb_min)
+        configured = True
+        passed = features.get("quiver_patent_momentum_latest", 0) >= patent_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
+    sec_count_min = float(cfg.get("sec13f_count_min", 0))
+    if sec_count_min > 0:
+        configured = True
+        passed = features.get("quiver_sec13f_count", 0) >= sec_count_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
     sec_change_min = float(cfg.get("sec13f_change_min_pct", 0))
     if sec_change_min > 0:
-        checks.append(features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min)
+        configured = True
+        passed = features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min
+        checks.append(passed)
+        if passed:
+            active_types += 1
 
-    if checks and not any(checks):
+    if not configured:
+        reasons.append("quiver_gate_unconfigured")
+    elif checks and not any(checks):
         reasons.append("quiver_min_signal")
+    elif active_types < 2:
+        reasons.append("quiver_min_types")
     return not reasons, reasons
 
 
@@ -246,8 +262,7 @@ def get_top_signals(
     log_event(
         "PROVIDERS: "
         f"QUIVER={'ON' if config.ENABLE_QUIVER else 'OFF'}, "
-        f"YAHOO={'ON' if config.ENABLE_YAHOO else 'OFF'}, "
-        f"FMP={'ON' if config.ENABLE_FMP else 'OFF'}",
+        f"YAHOO={'ON' if config.ENABLE_YAHOO else 'OFF'}",
         event="SCAN",
     )
 
@@ -341,7 +356,7 @@ def get_top_signals(
             )
             continue
 
-        total_score, quiver_score, fmp_score = _score_from_features(features)
+        total_score, quiver_score = _score_from_features(features)
         quiver_gate_ok, quiver_reasons = gate_quiver_minimum(features)
         decision_trace["gates_passed"]["quiver"] = quiver_gate_ok
 
@@ -369,6 +384,17 @@ def get_top_signals(
                 "score_total": round(total_score, 4),
             }
         )
+        approval_threshold = _signal_threshold()
+        if approval_threshold and total_score < approval_threshold:
+            rejected.append(f"{symbol}:score_threshold")
+            decision_trace["final_decision"] = "REJECT"
+            decision_trace["score_threshold"] = approval_threshold
+            decision_trace["score_reasons"] = ["score_below_threshold"]
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
 
         current_price = features.get("yahoo_current_price")
         atr = features.get("yahoo_atr")
@@ -380,7 +406,6 @@ def get_top_signals(
                 "symbol": symbol,
                 "score_total": total_score,
                 "quiver_score": quiver_score,
-                "fmp_score": fmp_score,
                 "price": current_price,
                 "atr": atr,
                 "atr_pct": atr_pct,
@@ -413,7 +438,6 @@ def get_top_signals(
             c["score_total"],
             c["quiver_strength"],
             c.get("volume_7d") or 0.0,
-            -(c.get("atr_pct") or 0.0),
         ),
         reverse=True,
     )
@@ -433,7 +457,6 @@ def get_top_signals(
                 plan["symbol"],
                 float(plan["score_total"]),
                 float(plan["quiver_score"]),
-                float(plan["fmp_score"]),
                 float(plan["price"]) if plan["price"] is not None else None,
                 float(plan["atr"]) if plan["atr"] is not None else None,
                 plan,
