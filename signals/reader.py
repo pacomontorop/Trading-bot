@@ -65,10 +65,6 @@ def _universe_cfg() -> dict:
     return _policy_section("universe")
 
 
-def _signal_threshold() -> float:
-    return float(_signal_cfg().get("approval_threshold", 0.0))
-
-
 def _normalize_feature_value(key: str, value: float) -> float:
     if value is None:
         return 0.0
@@ -188,50 +184,31 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         return False, ["quiver_disabled"]
 
     checks = []
-    active_types = 0
     configured = False
     insider_min = float(cfg.get("insider_buy_min_count_lookback", 0))
     if insider_min > 0:
         configured = True
-        passed = features.get("quiver_insider_buy_count", 0) >= insider_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_insider_buy_count", 0) >= insider_min)
     gov_amount_min = float(cfg.get("gov_contract_min_total_amount", 0))
     if gov_amount_min > 0:
         configured = True
-        passed = features.get("quiver_gov_contract_total_amount", 0) >= gov_amount_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_gov_contract_total_amount", 0) >= gov_amount_min)
     gov_count_min = float(cfg.get("gov_contract_min_count", 0))
     if gov_count_min > 0:
         configured = True
-        passed = features.get("quiver_gov_contract_count", 0) >= gov_count_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_gov_contract_count", 0) >= gov_count_min)
     patent_min = float(cfg.get("patent_momentum_min", 0))
     if patent_min > 0:
         configured = True
-        passed = features.get("quiver_patent_momentum_latest", 0) >= patent_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_patent_momentum_latest", 0) >= patent_min)
     sec_count_min = float(cfg.get("sec13f_count_min", 0))
     if sec_count_min > 0:
         configured = True
-        passed = features.get("quiver_sec13f_count", 0) >= sec_count_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_sec13f_count", 0) >= sec_count_min)
     sec_change_min = float(cfg.get("sec13f_change_min_pct", 0))
     if sec_change_min > 0:
         configured = True
-        passed = features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min
-        checks.append(passed)
-        if passed:
-            active_types += 1
+        checks.append(features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min)
 
     if not configured:
         reasons.append("quiver_gate_unconfigured")
