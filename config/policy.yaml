@@ -6,20 +6,20 @@ market:
   global_kill_switch: false
 
 yahoo_gate:
-  min_avg_volume_7d: 1000000
+  min_avg_volume_7d: 250000
   min_market_cap: 1000000000
   max_atr_pct: 6.0
-  require_trend_positive: true
+  require_trend_positive: false
   min_price: 5.0
   max_price: 1000.0
 
 quiver_gate:
   insider_buy_min_count_lookback: 1
-  gov_contract_min_total_amount: 1000000
-  gov_contract_min_count: 1
-  patent_momentum_min: 1.0
-  sec13f_count_min: 1
-  sec13f_change_min_pct: 0.5
+  gov_contract_min_total_amount: 0
+  gov_contract_min_count: 0
+  patent_momentum_min: 0
+  sec13f_count_min: 0
+  sec13f_change_min_pct: 0
 
 risk:
   daily_max_spend_usd: 800

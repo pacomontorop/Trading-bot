@@ -45,6 +45,11 @@ def _policy_section(name: str) -> dict:
     return (getattr(config, "_policy", {}) or {}).get(name, {}) or {}
 
 
+def _strict_gates_enabled() -> bool:
+    value = os.getenv("STRICT_GATES", "").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
 def _signal_cfg() -> dict:
     return _policy_section("signals")
 
@@ -58,11 +63,22 @@ def _market_cfg() -> dict:
 
 
 def _yahoo_gate_cfg() -> dict:
-    return _policy_section("yahoo_gate")
+    cfg = _policy_section("yahoo_gate").copy()
+    if _strict_gates_enabled():
+        cfg["min_avg_volume_7d"] = 1_000_000
+        cfg["require_trend_positive"] = True
+    return cfg
 
 
 def _quiver_gate_cfg() -> dict:
-    return _policy_section("quiver_gate")
+    cfg = _policy_section("quiver_gate").copy()
+    if _strict_gates_enabled():
+        cfg["gov_contract_min_total_amount"] = 1_000_000
+        cfg["gov_contract_min_count"] = 1
+        cfg["patent_momentum_min"] = 1.0
+        cfg["sec13f_count_min"] = 1
+        cfg["sec13f_change_min_pct"] = 0.5
+    return cfg
 
 
 def _universe_cfg() -> dict:
@@ -256,6 +272,16 @@ def get_top_signals(
         "PROVIDERS: "
         f"QUIVER={'ON' if config.ENABLE_QUIVER else 'OFF'}, "
         f"YAHOO={'ON' if config.ENABLE_YAHOO else 'OFF'}",
+        event="SCAN",
+    )
+    strict_gates = _strict_gates_enabled()
+    yahoo_gate_cfg = _yahoo_gate_cfg()
+    quiver_gate_cfg = _quiver_gate_cfg()
+    log_event(
+        "GATES effective "
+        f"yahoo_gate={json.dumps(yahoo_gate_cfg, separators=(',', ':'))} "
+        f"quiver_gate={json.dumps(quiver_gate_cfg, separators=(',', ':'))} "
+        f"strict={strict_gates}",
         event="SCAN",
     )
 
