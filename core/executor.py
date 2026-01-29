@@ -8,7 +8,8 @@ from typing import Dict
 import config
 from broker import alpaca as broker
 from broker.account import get_account_equity_safe
-from core.broker import round_to_tick
+from core.order_protection import compute_bracket_prices, stop_limit_price, validate_bracket_prices
+from core.safeguards import is_safeguards_active
 from utils.logger import log_event
 
 
@@ -76,16 +77,24 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
     """Place a long-only order using Alpaca."""
 
     exec_cfg = _execution_cfg()
+    risk_cfg = _risk_cfg()
     symbol = plan.get("symbol")
     qty = float(plan.get("qty") or 0)
     price = float(plan.get("price") or 0)
+    atr = plan.get("atr")
     use_bracket = bool(plan.get("use_bracket", False))
     time_in_force = plan.get("time_in_force", exec_cfg.get("time_in_force", "day"))
-    stop_loss = plan.get("stop_loss")
-    take_profit = plan.get("take_profit")
 
     if qty <= 0 or not symbol:
         log_event(f"ORDER {symbol}: rejected reason=zero_qty", event="ORDER")
+        return False
+
+    if not is_safeguards_active():
+        log_event(f"ORDER {symbol}: rejected reason=safeguards_inactive", event="ORDER")
+        return False
+
+    if not use_bracket:
+        log_event(f"ORDER {symbol}: rejected reason=unprotected_order", event="ORDER")
         return False
 
     client_order_id = f"LONG.{symbol}.{int(price * 100)}"
@@ -94,41 +103,39 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
         log_event(
             (
                 f"DRY_RUN ORDER {symbol}: qty={qty:.2f} "
-                f"price={price:.2f} tp={take_profit} sl={stop_loss}"
+                f"price={price:.2f}"
             ),
             event="ORDER",
         )
         return True
 
-    if use_bracket and stop_loss is not None and take_profit is not None:
-        take_profit = round_to_tick(float(take_profit), 0.01)
-        stop_loss = round_to_tick(float(stop_loss), 0.01)
-        log_event(
-            (
-                f"ORDER {symbol}: bracket qty={qty:.2f} tp={take_profit} "
-                f"sl={stop_loss}"
-            ),
-            event="ORDER",
-        )
-        try:  # pragma: no cover - network
-            broker.api.submit_order(
-                symbol=symbol,
-                qty=qty,
-                side="buy",
-                type="market",
-                time_in_force=time_in_force,
-                order_class="bracket",
-                take_profit={"limit_price": take_profit},
-                stop_loss={"stop_price": stop_loss},
-                client_order_id=client_order_id,
-            )
-            return True
-        except Exception as exc:  # pragma: no cover - network
-            log_event(f"ORDER {symbol}: failed {exc}", event="ORDER")
-            return False
+    bracket = compute_bracket_prices(
+        symbol=symbol,
+        entry_price=price,
+        atr=atr,
+        risk_cfg=risk_cfg,
+        exec_cfg=exec_cfg,
+    )
+    stop_loss = bracket["stop_price"]
+    take_profit = bracket["take_profit"]
+    tick = bracket["tick"]
+
+    if not validate_bracket_prices(price, stop_loss, take_profit):
+        log_event(f"ORDER {symbol}: rejected reason=invalid_bracket_prices", event="ORDER")
+        return False
+
+    stop_payload = {"stop_price": stop_loss}
+    stop_limit = stop_limit_price(stop_loss, symbol=symbol)
+    if stop_limit and stop_limit < stop_loss:
+        stop_payload["limit_price"] = stop_limit
 
     log_event(
-        f"ORDER {symbol}: market qty={qty:.2f} notional=${float(plan.get('notional', 0.0)):.2f}",
+        (
+            "ORDER_SUBMIT "
+            f"symbol={symbol} side=buy qty={qty:.2f} order_class=bracket "
+            f"entry={price:.2f} atr={float(atr or 0.0):.4f} sl={stop_loss:.4f} "
+            f"tp={take_profit:.4f} tick={tick}"
+        ),
         event="ORDER",
     )
     try:  # pragma: no cover - network
@@ -138,6 +145,9 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
             side="buy",
             type="market",
             time_in_force=time_in_force,
+            order_class="bracket",
+            take_profit={"limit_price": take_profit},
+            stop_loss=stop_payload,
             client_order_id=client_order_id,
         )
         return True

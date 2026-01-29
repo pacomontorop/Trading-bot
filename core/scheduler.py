@@ -8,6 +8,7 @@ import time
 
 import config
 from core.executor import place_long_order
+from core.safeguards import run_safeguards
 from core import risk_manager
 from core.market_gate import is_us_equity_market_open
 from signals.filters import is_position_open
@@ -55,6 +56,8 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             log_event("SCAN skipped reason=market_closed", event="SCAN")
             time.sleep(interval_sec)
             continue
+
+        run_safeguards()
 
         opportunities = get_top_signals(max_symbols=max_symbols)
         if not opportunities:
