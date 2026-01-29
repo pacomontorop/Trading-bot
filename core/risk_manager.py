@@ -11,6 +11,8 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 import config
+from core.order_protection import compute_bracket_prices, validate_bracket_prices
+from core.safeguards import is_safeguards_active
 from utils.logger import log_event
 
 
@@ -210,11 +212,10 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
     cfg = _risk_cfg()
     exec_cfg = _execution_cfg()
     price = float(candidate.get("price") or 0.0)
-    atr = float(candidate.get("atr") or 0.0)
+    atr = candidate.get("atr")
+    atr_val = float(atr or 0.0)
     if price <= 0:
         return None, "invalid_price"
-    if atr <= 0:
-        return None, "atr_missing"
 
     equity = snapshot.get("equity", 0.0)
     cash = snapshot.get("cash", 0.0)
@@ -246,7 +247,7 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
         return None, "size_below_min"
 
     size_usd *= max(0.0, 1 - slippage_buffer_pct)
-    stop_distance = max(atr * atr_k, price * min_stop_pct)
+    stop_distance = max(atr_val * atr_k, price * min_stop_pct)
     if stop_distance <= 0:
         return None, "invalid_stop_distance"
 
@@ -267,6 +268,8 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
         return None, "size_below_min"
 
     use_bracket = bool(exec_cfg.get("use_bracket", False))
+    if use_bracket and not is_safeguards_active():
+        return None, "safeguards_inactive"
     stop_price = None
     take_profit = None
     trailing_stop = None
@@ -275,23 +278,32 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
     if stop_price <= 0:
         return None, "invalid_stop_price"
     if use_bracket:
-        tp_mult = float(exec_cfg.get("take_profit_atr_mult", 3.0))
+        bracket = compute_bracket_prices(
+            symbol=candidate.get("symbol"),
+            entry_price=price,
+            atr=atr,
+            risk_cfg=cfg,
+            exec_cfg=exec_cfg,
+        )
+        stop_price = bracket["stop_price"]
+        take_profit = bracket["take_profit"]
+        rr_ratio = bracket["rr_ratio"]
+        if not validate_bracket_prices(price, stop_price, take_profit):
+            return None, "invalid_bracket_prices"
         min_rr = float(exec_cfg.get("min_rr_ratio", 1.2))
-        take_profit = price + tp_mult * atr
-        rr_ratio = (take_profit - price) / (price - stop_price) if price > stop_price else 0
         if rr_ratio < min_rr:
             return None, "rr_ratio_low"
 
     trailing_mult = exec_cfg.get("trailing_stop_atr_mult")
-    if trailing_mult and atr > 0:
-        trailing_stop = float(trailing_mult) * atr
+    if trailing_mult and atr_val > 0:
+        trailing_stop = float(trailing_mult) * atr_val
 
     plan = {
         "symbol": candidate["symbol"],
         "score_total": candidate["score_total"],
         "quiver_score": candidate["quiver_score"],
         "price": price,
-        "atr": atr,
+        "atr": atr_val if atr is not None else None,
         "qty": qty,
         "notional": notional,
         "stop_loss": stop_price,

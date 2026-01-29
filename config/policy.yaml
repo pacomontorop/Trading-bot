@@ -39,6 +39,7 @@ risk:
   min_stop_pct: 0.05
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
+  stop_limit_buffer_pct: 0.002
 
 execution:
   use_bracket: true
@@ -47,6 +48,14 @@ execution:
   time_in_force: day
   allow_partial_fills: true
   min_rr_ratio: 1.2
+
+safeguards:
+  enabled: true
+  ttl_days: 7
+  started_at_utc: "2026-01-29T00:00:00Z"
+  break_even_R: 1.0
+  break_even_buffer_pct: 0.001
+  trailing_enable: true
 
 cache:
   quiver_heavy_ttl_sec: 86400
