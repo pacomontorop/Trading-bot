@@ -25,8 +25,8 @@ class _GateState:
     ts: Optional[datetime] = None
     open: bool = False
     source: str = "alpaca"
-    session_open: Optional[datetime] = None
-    session_close: Optional[datetime] = None
+    next_open: Optional[datetime] = None
+    next_close: Optional[datetime] = None
     last_log: Optional[datetime] = None
 
 
@@ -41,24 +41,25 @@ def _log_state(now: datetime) -> None:
     if _STATE.last_log and (now - _STATE.last_log).total_seconds() < _LOG_INTERVAL:
         return
 
-    session = {
-        "open": _STATE.session_open.isoformat() if _STATE.session_open else None,
-        "close": _STATE.session_close.isoformat() if _STATE.session_close else None,
-    }
     log_event(
         (
-            f"MARKET_GATE open={_STATE.open} source={_STATE.source} "
-            f"now_utc={now.isoformat()} session={session}"
+            f"MARKET_GATE is_open_now={_STATE.open} source={_STATE.source} "
+            f"now_utc={now.isoformat()} "
+            f"next_open={_STATE.next_open.isoformat() if _STATE.next_open else None} "
+            f"next_close={_STATE.next_close.isoformat() if _STATE.next_close else None}"
         ),
         event="GATE",
     )
     _STATE.last_log = now
 
 
-def _fetch_alpaca_state(now: datetime) -> tuple[bool, str, Optional[datetime], Optional[datetime]]:
-    from broker import alpaca as _alpaca
+def _fetch_alpaca_state(
+    now: datetime, clock: Optional[object] = None
+) -> tuple[bool, str, Optional[datetime], Optional[datetime]]:
+    if clock is None:
+        from broker import alpaca as _alpaca
 
-    clock = _alpaca.api.get_clock()
+        clock = _alpaca.api.get_clock()
     open_now = bool(getattr(clock, "is_open", False))
 
     open_at = getattr(clock, "next_open", None)
@@ -90,25 +91,25 @@ def _fetch_calendar_state(now: datetime) -> tuple[bool, str, Optional[datetime],
         return False, "nyse_cal", None, None
 
     open_now = False
-    session_open: Optional[datetime] = None
-    session_close: Optional[datetime] = None
+    next_open: Optional[datetime] = None
+    next_close: Optional[datetime] = None
 
     for _, row in schedule.iterrows():
         open_dt = row["market_open"].tz_convert(timezone.utc)
         close_dt = row["market_close"].tz_convert(timezone.utc)
         if open_dt <= now <= close_dt:
             open_now = True
-            session_open = open_dt
-            session_close = close_dt
+            next_open = open_dt
+            next_close = close_dt
             break
         if now < open_dt:
-            session_open = open_dt
-            session_close = close_dt
+            next_open = open_dt
+            next_close = close_dt
             break
-        session_open = open_dt
-        session_close = close_dt
+        next_open = open_dt
+        next_close = close_dt
 
-    return open_now, "nyse_cal", session_open, session_close
+    return open_now, "nyse_cal", next_open, next_close
 
 
 def _update_state(now: datetime, refresh: bool = False) -> None:
@@ -117,10 +118,10 @@ def _update_state(now: datetime, refresh: bool = False) -> None:
         return
 
     try:
-        open_now, source, session_open, session_close = _fetch_alpaca_state(now)
+        open_now, source, next_open, next_close = _fetch_alpaca_state(now)
     except Exception as exc:  # pragma: no cover - network failure fallback
         try:
-            open_now, source, session_open, session_close = _fetch_calendar_state(now)
+            open_now, source, next_open, next_close = _fetch_calendar_state(now)
             log_event(
                 (
                     "MARKET_GATE fallback=nyse_cal "
@@ -141,8 +142,8 @@ def _update_state(now: datetime, refresh: bool = False) -> None:
     _STATE.ts = now
     _STATE.open = open_now
     _STATE.source = source
-    _STATE.session_open = session_open
-    _STATE.session_close = session_close
+    _STATE.next_open = next_open
+    _STATE.next_close = next_close
     _log_state(now)
 
 
@@ -163,7 +164,7 @@ def last_gate_state() -> _GateState:
             ts=_STATE.ts,
             open=_STATE.open,
             source=_STATE.source,
-            session_open=_STATE.session_open,
-            session_close=_STATE.session_close,
+            next_open=_STATE.next_open,
+            next_close=_STATE.next_close,
             last_log=_STATE.last_log,
         )
