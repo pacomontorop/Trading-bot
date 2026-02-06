@@ -130,10 +130,9 @@ def _compact_features(features: dict[str, float]) -> dict[str, float]:
     return dict(list(trimmed.items())[:8])
 
 
-def _prefilter_yahoo(symbol: str, yahoo_symbol: str) -> tuple[bool, list[str], tuple, dict]:
-    reasons: list[str] = []
+def _fetch_yahoo_snapshot(symbol: str, yahoo_symbol: str) -> tuple[tuple, object | None, dict]:
     if not config.ENABLE_YAHOO:
-        return False, ["yahoo_disabled"], (None, None, None, None, None, None, None, None), {
+        return (None, None, None, None, None, None, None, None), None, {
             "status": "disabled",
             "used_symbol": yahoo_symbol,
             "fallback_used": False,
@@ -144,13 +143,15 @@ def _prefilter_yahoo(symbol: str, yahoo_symbol: str) -> tuple[bool, list[str], t
         fallback_symbol=symbol if yahoo_symbol != symbol else None,
         return_history=True,
     )
-    if snapshot.status != "ok":
-        return False, ["yahoo_missing"], snapshot.data, {
-            "status": snapshot.status,
-            "used_symbol": snapshot.used_symbol,
-            "fallback_used": snapshot.fallback_used,
-        }
+    return snapshot.data, hist, {
+        "status": snapshot.status,
+        "used_symbol": snapshot.used_symbol,
+        "fallback_used": snapshot.fallback_used,
+    }
 
+
+def _yahoo_history_reasons(hist) -> list[str]:
+    reasons: list[str] = []
     freshness_days = int(_signal_cfg().get("freshness_days_yahoo_prices", 2))
     if hist is None or hist.empty:
         reasons.append("yahoo_history_missing")
@@ -161,7 +162,30 @@ def _prefilter_yahoo(symbol: str, yahoo_symbol: str) -> tuple[bool, list[str], t
             age_days = (datetime.now(timezone.utc) - last_dt).total_seconds() / 86400.0
             if age_days > freshness_days:
                 reasons.append("yahoo_stale")
+    return reasons
 
+
+def _yahoo_basic_price_reasons(current_price: float | None, min_price: float, max_price: float) -> list[str]:
+    reasons: list[str] = []
+    if not current_price or current_price <= 0:
+        reasons.append("invalid_price")
+        return reasons
+    if min_price and current_price < min_price:
+        reasons.append("price_below_min")
+    if max_price != float("inf") and current_price > max_price:
+        reasons.append("price_above_max")
+    return reasons
+
+
+def _yahoo_gate_reasons(
+    *,
+    snapshot_data: tuple,
+    min_market_cap: float,
+    min_avg_volume: float,
+    max_atr_pct: float,
+    require_trend: bool,
+) -> list[str]:
+    reasons: list[str] = []
     (
         market_cap,
         volume,
@@ -171,39 +195,43 @@ def _prefilter_yahoo(symbol: str, yahoo_symbol: str) -> tuple[bool, list[str], t
         volume_7d,
         current_price,
         atr,
-    ) = snapshot.data
-
-    gate_cfg = _yahoo_gate_cfg()
-    min_market_cap = float(gate_cfg.get("min_market_cap", 0))
-    min_avg_volume = float(gate_cfg.get("min_avg_volume_7d", 0))
-    min_price = float(gate_cfg.get("min_price", 0))
-    max_price = float(gate_cfg.get("max_price", float("inf")))
-    max_atr_pct = float(gate_cfg.get("max_atr_pct", float("inf")))
-    require_trend = bool(gate_cfg.get("require_trend_positive", False))
-
-    if not current_price or current_price <= 0:
-        reasons.append("invalid_price")
+    ) = snapshot_data
     if min_market_cap and (market_cap or 0) < min_market_cap:
         reasons.append("market_cap_low")
     if min_avg_volume and (volume_7d or 0) < min_avg_volume:
         reasons.append("volume_low")
-    if min_price and (current_price or 0) < min_price:
-        reasons.append("price_below_min")
-    if max_price != float("inf") and (current_price or 0) > max_price:
-        reasons.append("price_above_max")
     if current_price and atr:
         atr_pct = (float(atr) / float(current_price)) * 100.0
         if atr_pct > max_atr_pct:
             reasons.append("atr_pct_high")
     if require_trend and not trend_positive:
         reasons.append("trend_negative")
+    return reasons
 
-    ok = not reasons
-    return ok, reasons, snapshot.data, {
-        "status": snapshot.status,
-        "used_symbol": snapshot.used_symbol,
-        "fallback_used": snapshot.fallback_used,
+
+def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bool, list[str], dict]:
+    insider_min = float(cfg.get("insider_buy_strong_min_count_7d", 2))
+    gov_min = float(cfg.get("gov_contract_strong_min_total_30d", 1_000_000))
+    patent_min = float(cfg.get("patent_momentum_min_strong", 90))
+    insider_buys = float(features.get("quiver_insider_buy_count", 0))
+    gov_total = float(features.get("quiver_gov_contract_total_amount", 0))
+    patent_momentum = float(features.get("quiver_patent_momentum_latest", 0))
+    reasons: list[str] = []
+    if insider_buys >= insider_min:
+        reasons.append("insider_buys")
+    if gov_total >= gov_min:
+        reasons.append("gov_contracts")
+    if patent_momentum >= patent_min:
+        reasons.append("patent_momentum")
+    strong = bool(reasons)
+    summary = {
+        "insider_buys_7d": insider_buys,
+        "gov_contract_total_30d": gov_total,
+        "patent_momentum": patent_momentum,
+        "strong_signal_bool": strong,
+        "strong_reason": reasons,
     }
+    return strong, reasons, summary
 
 
 def gate_market_conditions() -> tuple[bool, list[str], dict]:
@@ -329,32 +357,74 @@ def get_top_signals(
         quiver_symbol = entry["ticker_map"]["quiver"]
         provider_fallback_used = False
 
-        yahoo_ok, yahoo_reasons, yahoo_snapshot, yahoo_meta = _prefilter_yahoo(symbol, yahoo_symbol)
+        yahoo_snapshot, yahoo_hist, yahoo_meta = _fetch_yahoo_snapshot(symbol, yahoo_symbol)
         if yahoo_meta.get("status") == "missing":
             yahoo_missing += 1
         if yahoo_meta.get("fallback_used"):
             provider_fallback_used = True
+
+        (
+            market_cap,
+            volume,
+            weekly_change,
+            trend_positive,
+            price_change_24h,
+            volume_7d,
+            current_price,
+            atr,
+        ) = yahoo_snapshot
+        atr_pct = (float(atr) / float(current_price)) * 100.0 if current_price and atr else 0.0
+
+        gate_cfg = _yahoo_gate_cfg()
+        min_price = float(gate_cfg.get("min_price", 0))
+        max_price = float(gate_cfg.get("max_price", float("inf")))
+        price_reasons = _yahoo_basic_price_reasons(current_price, min_price, max_price)
+
+        strict_thresholds = {
+            "min_market_cap": float(gate_cfg.get("min_market_cap", 0)),
+            "min_avg_volume_7d": float(gate_cfg.get("min_avg_volume_7d", 0)),
+            "max_atr_pct": float(gate_cfg.get("max_atr_pct", float("inf"))),
+            "min_price": min_price,
+            "max_price": max_price,
+            "require_trend_positive": bool(gate_cfg.get("require_trend_positive", False)),
+        }
 
         decision_trace = {
             "symbol": symbol,
             "yahoo_symbol_used": yahoo_meta.get("used_symbol"),
             "quiver_symbol_used": quiver_symbol,
             "provider_fallback_used": provider_fallback_used,
-            "yahoo_prefilter_pass": yahoo_ok,
-            "yahoo_prefilter_reasons": yahoo_reasons,
+            "yahoo_prefilter_pass": False,
+            "yahoo_prefilter_reasons": [],
             "market_reasons": market_reasons,
             "quiver_fetch_status": "disabled" if not config.ENABLE_QUIVER else "pending",
             "gates_passed": {
                 "market": market_ok,
-                "yahoo": yahoo_ok,
+                "yahoo": False,
                 "quiver": False,
             },
             "quiver_gate_reasons": ["quiver_disabled"] if quiver_gate_disabled else [],
+            "quiver_signal_summary": {
+                "insider_buys_7d": 0,
+                "gov_contract_total_30d": 0,
+                "patent_momentum": 0,
+                "strong_signal_bool": False,
+                "strong_reason": [],
+            },
+            "yahoo_metrics": {
+                "market_cap": market_cap,
+                "avg_volume_7d": volume_7d,
+                "atr_pct": atr_pct,
+                "price": current_price,
+            },
+            "yahoo_mode_used": "strict_default",
+            "yahoo_thresholds_used": strict_thresholds,
             "risk_check_passed": False,
             "final_decision": "REJECT",
         }
 
-        if not yahoo_ok:
+        if yahoo_meta.get("status") != "ok":
+            decision_trace["yahoo_prefilter_reasons"] = ["yahoo_disabled" if yahoo_meta.get("status") == "disabled" else "yahoo_missing"]
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
             log_event(
@@ -363,7 +433,15 @@ def get_top_signals(
             )
             continue
 
-        yahoo_prefilter_pass += 1
+        if price_reasons:
+            decision_trace["yahoo_prefilter_reasons"] = price_reasons
+            rejected.append(f"{symbol}:yahoo_prefilter")
+            rejection_counts["yahoo_prefilter"] += 1
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
 
         quiver_status = "disabled"
         if config.ENABLE_QUIVER:
@@ -382,6 +460,16 @@ def get_top_signals(
         except Exception as exc:
             decision_trace["quiver_fetch_status"] = "fail"
             decision_trace["final_decision"] = "REJECT"
+            strict_reasons = _yahoo_gate_reasons(
+                snapshot_data=yahoo_snapshot,
+                min_market_cap=strict_thresholds["min_market_cap"],
+                min_avg_volume=strict_thresholds["min_avg_volume_7d"],
+                max_atr_pct=strict_thresholds["max_atr_pct"],
+                require_trend=strict_thresholds["require_trend_positive"],
+            )
+            strict_reasons.extend(_yahoo_history_reasons(yahoo_hist))
+            strict_reasons.append("quiver_fetch_failed")
+            decision_trace["yahoo_prefilter_reasons"] = strict_reasons
             rejected.append(f"{symbol}:feature_error")
             rejection_counts["feature_error"] += 1
             log_event(
@@ -389,6 +477,61 @@ def get_top_signals(
                 event="TRACE",
             )
             continue
+
+        quiver_fast_lane_enabled = bool(quiver_gate_cfg.get("fast_lane_enabled", True))
+        strong_signal, _, quiver_summary = _quiver_fast_lane_summary(features, quiver_gate_cfg)
+        decision_trace["quiver_signal_summary"] = quiver_summary
+
+        if strong_signal and quiver_fast_lane_enabled:
+            relaxed_min_market_cap = float(gate_cfg.get("relaxed_min_market_cap", 300_000_000))
+            relaxed_min_avg_volume = float(gate_cfg.get("relaxed_min_avg_volume_7d", 50_000))
+            relaxed_max_atr_pct = float(gate_cfg.get("relaxed_max_atr_pct", 12.0))
+            yahoo_reasons = _yahoo_gate_reasons(
+                snapshot_data=yahoo_snapshot,
+                min_market_cap=relaxed_min_market_cap,
+                min_avg_volume=relaxed_min_avg_volume,
+                max_atr_pct=relaxed_max_atr_pct,
+                require_trend=False,
+            )
+            yahoo_thresholds = {
+                "min_market_cap": relaxed_min_market_cap,
+                "min_avg_volume_7d": relaxed_min_avg_volume,
+                "max_atr_pct": relaxed_max_atr_pct,
+            }
+            yahoo_mode_used = "relaxed_due_to_quiver"
+        else:
+            strict_min_market_cap = strict_thresholds["min_market_cap"]
+            strict_min_avg_volume = strict_thresholds["min_avg_volume_7d"]
+            strict_max_atr_pct = strict_thresholds["max_atr_pct"]
+            strict_require_trend = strict_thresholds["require_trend_positive"]
+            yahoo_reasons = _yahoo_gate_reasons(
+                snapshot_data=yahoo_snapshot,
+                min_market_cap=strict_min_market_cap,
+                min_avg_volume=strict_min_avg_volume,
+                max_atr_pct=strict_max_atr_pct,
+                require_trend=strict_require_trend,
+            )
+            yahoo_reasons.extend(_yahoo_history_reasons(yahoo_hist))
+            yahoo_thresholds = strict_thresholds
+            yahoo_mode_used = "strict_default"
+
+        yahoo_ok = not yahoo_reasons
+        decision_trace["yahoo_prefilter_pass"] = yahoo_ok
+        decision_trace["yahoo_prefilter_reasons"] = yahoo_reasons
+        decision_trace["gates_passed"]["yahoo"] = yahoo_ok
+        decision_trace["yahoo_mode_used"] = yahoo_mode_used
+        decision_trace["yahoo_thresholds_used"] = yahoo_thresholds
+
+        if not yahoo_ok:
+            rejected.append(f"{symbol}:yahoo_prefilter")
+            rejection_counts["yahoo_prefilter"] += 1
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
+
+        yahoo_prefilter_pass += 1
 
         total_score, quiver_score = _score_from_features(features)
         quiver_gate_ok, quiver_reasons = gate_quiver_minimum(features)
