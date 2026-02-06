@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from collections import Counter
 from datetime import datetime, timezone
 from typing import Iterable, List, Tuple
 
@@ -72,6 +73,7 @@ def _yahoo_gate_cfg() -> dict:
 
 def _quiver_gate_cfg() -> dict:
     cfg = _policy_section("quiver_gate").copy()
+    # Default to enabled, but auto-disable the gate when every threshold is zero.
     if _strict_gates_enabled():
         cfg["gov_contract_min_total_amount"] = 1_000_000
         cfg["gov_contract_min_count"] = 1
@@ -83,6 +85,21 @@ def _quiver_gate_cfg() -> dict:
 
 def _universe_cfg() -> dict:
     return _policy_section("universe")
+
+
+def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
+    cfg = cfg or _quiver_gate_cfg()
+    enabled = bool(cfg.get("enabled", True))
+    thresholds = [
+        float(cfg.get("insider_buy_min_count_lookback", 0)),
+        float(cfg.get("gov_contract_min_total_amount", 0)),
+        float(cfg.get("gov_contract_min_count", 0)),
+        float(cfg.get("patent_momentum_min", 0)),
+        float(cfg.get("sec13f_count_min", 0)),
+        float(cfg.get("sec13f_change_min_pct", 0)),
+    ]
+    any_threshold = any(value > 0 for value in thresholds)
+    return (not config.ENABLE_QUIVER) or (not enabled) or (not any_threshold)
 
 
 def _normalize_feature_value(key: str, value: float) -> float:
@@ -200,34 +217,27 @@ def gate_market_conditions() -> tuple[bool, list[str], dict]:
 def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     cfg = _quiver_gate_cfg()
     reasons: list[str] = []
-    if not config.ENABLE_QUIVER:
-        return False, ["quiver_disabled"]
+    if _quiver_gate_disabled(cfg):
+        return True, ["quiver_disabled"]
 
     checks = []
-    configured = False
     insider_min = float(cfg.get("insider_buy_min_count_lookback", 0))
     if insider_min > 0:
-        configured = True
         checks.append(features.get("quiver_insider_buy_count", 0) >= insider_min)
     gov_amount_min = float(cfg.get("gov_contract_min_total_amount", 0))
     if gov_amount_min > 0:
-        configured = True
         checks.append(features.get("quiver_gov_contract_total_amount", 0) >= gov_amount_min)
     gov_count_min = float(cfg.get("gov_contract_min_count", 0))
     if gov_count_min > 0:
-        configured = True
         checks.append(features.get("quiver_gov_contract_count", 0) >= gov_count_min)
     patent_min = float(cfg.get("patent_momentum_min", 0))
     if patent_min > 0:
-        configured = True
         checks.append(features.get("quiver_patent_momentum_latest", 0) >= patent_min)
     sec_count_min = float(cfg.get("sec13f_count_min", 0))
     if sec_count_min > 0:
-        configured = True
         checks.append(features.get("quiver_sec13f_count", 0) >= sec_count_min)
     sec_change_min = float(cfg.get("sec13f_change_min_pct", 0))
     if sec_change_min > 0:
-        configured = True
         checks.append(features.get("quiver_sec13f_change_latest_pct", 0) >= sec_change_min)
 
     active_types = 0
@@ -242,9 +252,7 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
 
-    if not configured:
-        return True, []
-    elif checks and not any(checks):
+    if checks and not any(checks):
         reasons.append("quiver_min_signal")
     elif active_types < 2:
         reasons.append("quiver_min_types")
@@ -297,11 +305,14 @@ def get_top_signals(
     evaluated: list[str] = []
     candidates: list[dict] = []
     rejected: list[str] = []
+    rejection_counts: Counter[str] = Counter()
     quiver_called = 0
     yahoo_prefilter_pass = 0
     yahoo_missing = 0
 
     market_ok, market_reasons, market_snapshot = gate_market_conditions()
+
+    quiver_gate_disabled = _quiver_gate_disabled(quiver_gate_cfg)
 
     for entry in universe:
         if len(evaluated) >= max_symbols:
@@ -309,6 +320,7 @@ def get_top_signals(
         symbol = entry["ticker_map"]["canonical"]
         if symbol in exclude_set:
             rejected.append(f"{symbol}:excluded")
+            rejection_counts["excluded"] += 1
             continue
 
         evaluated.append(symbol)
@@ -337,12 +349,14 @@ def get_top_signals(
                 "yahoo": yahoo_ok,
                 "quiver": False,
             },
+            "quiver_gate_reasons": ["quiver_disabled"] if quiver_gate_disabled else [],
             "risk_check_passed": False,
             "final_decision": "REJECT",
         }
 
         if not yahoo_ok:
             rejected.append(f"{symbol}:yahoo_prefilter")
+            rejection_counts["yahoo_prefilter"] += 1
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
@@ -369,6 +383,7 @@ def get_top_signals(
             decision_trace["quiver_fetch_status"] = "fail"
             decision_trace["final_decision"] = "REJECT"
             rejected.append(f"{symbol}:feature_error")
+            rejection_counts["feature_error"] += 1
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))} err={exc}",
                 event="TRACE",
@@ -378,9 +393,11 @@ def get_top_signals(
         total_score, quiver_score = _score_from_features(features)
         quiver_gate_ok, quiver_reasons = gate_quiver_minimum(features)
         decision_trace["gates_passed"]["quiver"] = quiver_gate_ok
+        decision_trace["quiver_gate_reasons"] = quiver_reasons
 
         if not market_ok:
             rejected.append(f"{symbol}:market_gate")
+            rejection_counts["market_gate"] += 1
             decision_trace["final_decision"] = "REJECT"
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
@@ -389,8 +406,8 @@ def get_top_signals(
             continue
         if not quiver_gate_ok:
             rejected.append(f"{symbol}:quiver_gate")
+            rejection_counts["quiver_gate"] += 1
             decision_trace["final_decision"] = "REJECT"
-            decision_trace["quiver_gate_reasons"] = quiver_reasons
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
@@ -406,6 +423,7 @@ def get_top_signals(
         approval_threshold = _signal_threshold()
         if approval_threshold and total_score < approval_threshold:
             rejected.append(f"{symbol}:score_threshold")
+            rejection_counts["score_threshold"] += 1
             decision_trace["final_decision"] = "REJECT"
             decision_trace["score_threshold"] = approval_threshold
             decision_trace["score_reasons"] = ["score_below_threshold"]
@@ -486,13 +504,17 @@ def get_top_signals(
         decision_trace = rejection.get("decision_trace", {})
         if decision_trace:
             decision_trace["risk_check_passed"] = False
-            decision_trace["risk_reasons"] = rejection.get("reasons", [])
+            risk_reasons = rejection.get("reasons", [])
+            decision_trace["risk_reasons"] = risk_reasons
             decision_trace["final_decision"] = "REJECT"
+            for reason in risk_reasons:
+                rejection_counts[f"risk_{reason}"] += 1
             log_event(
                 f"TRACE {rejection.get('symbol')} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
             )
 
+    top_rejected_by_reason = rejection_counts.most_common(5)
     log_event(
         (
             "SCAN summary "
@@ -504,7 +526,7 @@ def get_top_signals(
             f"market_gate={market_ok} "
             f"market_reasons={market_reasons} "
             f"mapping_fail_pct={mapping_fail_pct:.2f} "
-            f"rejected_top5={rejected[:5]}"
+            f"top_rejected_by_reason={top_rejected_by_reason}"
         ),
         event="SCAN",
     )
