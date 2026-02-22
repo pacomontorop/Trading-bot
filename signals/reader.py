@@ -534,7 +534,11 @@ def get_top_signals(
         yahoo_prefilter_pass += 1
 
         total_score, quiver_score = _score_from_features(features)
-        quiver_gate_ok, quiver_reasons = gate_quiver_minimum(features)
+        if strong_signal and quiver_fast_lane_enabled:
+            quiver_gate_ok = True
+            quiver_reasons = ["quiver_fast_lane"]
+        else:
+            quiver_gate_ok, quiver_reasons = gate_quiver_minimum(features)
         decision_trace["gates_passed"]["quiver"] = quiver_gate_ok
         decision_trace["quiver_gate_reasons"] = quiver_reasons
 

@@ -8,7 +8,7 @@ import time
 
 import config
 from core.executor import place_long_order
-from core.safeguards import run_safeguards
+from core.position_protector import tick_protect_positions
 from core import risk_manager
 from core.market_gate import is_us_equity_market_open
 from signals.filters import is_position_open
@@ -49,6 +49,8 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
     _ensure_symbols_csv()
     log_event("Scheduler loop started (equities, long-only)", event="SCAN")
 
+    last_protect_ts = 0.0
+
     while True:
         market_open = is_us_equity_market_open()
         log_event(f"Market gate check open={market_open}", event="GATE")
@@ -57,7 +59,14 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             time.sleep(interval_sec)
             continue
 
-        run_safeguards()
+        now_ts = time.time()
+        if now_ts - last_protect_ts >= 60:
+            try:
+                tick_protect_positions(dry_run=config.DRY_RUN)
+            except Exception as exc:
+                log_event(f"PROTECT loop_error err={exc}", event="PROTECT")
+            finally:
+                last_protect_ts = now_ts
 
         opportunities = get_top_signals(max_symbols=max_symbols)
         if not opportunities:

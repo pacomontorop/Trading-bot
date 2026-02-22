@@ -31,6 +31,7 @@ _PREFIXES = {
     "ERROR",
     "REPORT",
     "DEBUG",
+    "PROTECT",
 }
 
 _ALIAS_PREFIXES = {
