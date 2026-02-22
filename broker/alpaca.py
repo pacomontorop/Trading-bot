@@ -15,28 +15,54 @@ from utils.system_log import get_logger
 load_dotenv()
 log = get_logger("broker.alpaca")
 
-api = tradeapi.REST(
-    os.getenv("APCA_API_KEY_ID"),
-    os.getenv("APCA_API_SECRET_KEY"),
-    "https://paper-api.alpaca.markets",
-    api_version="v2",
-)
 
-# Configure basic retry logic on the underlying HTTP session
-retry = Retry(total=3, backoff_factor=3)
-adapter = HTTPAdapter(max_retries=retry)
-api._session.mount("https://", adapter)
-api._session.mount("http://", adapter)
+class _LazyREST:
+    """Lazy-initialised Alpaca REST client proxy.
 
-try:  # pragma: no cover - network dependent
-    base_url = getattr(api._session, "base_url", "")
-    log.info(f"[ALPACA_ENV] base_url={base_url} paper={getattr(api, '_use_paper', '?')}")
-    acct = api.get_account()
-    log.info(
-        f"[ALPACA] account_id={getattr(acct, 'id', 'unknown')} buying_power={getattr(acct, 'buying_power', '0')}"
-    )
-except Exception as exc:  # pragma: no cover - defensive logging
-    log.warning(f"[ALPACA_ENV] unable to fetch account details: {exc}")
+    The real ``tradeapi.REST`` instance is created on first attribute access,
+    so the module can be imported without valid API credentials (e.g. in
+    tests).  Set ``APCA_API_KEY_ID`` / ``APCA_API_SECRET_KEY`` in the
+    environment (or ``.env``) before any actual broker call is made.
+    """
+
+    _client: "tradeapi.REST | None" = None
+
+    def _init_client(self) -> "tradeapi.REST":
+        if self._client is not None:
+            return self._client
+
+        base_url = os.getenv("APCA_API_BASE_URL", "https://paper-api.alpaca.markets")
+        client = tradeapi.REST(
+            os.getenv("APCA_API_KEY_ID"),
+            os.getenv("APCA_API_SECRET_KEY"),
+            base_url,
+            api_version="v2",
+        )
+
+        # Configure retry logic on the underlying HTTP session
+        retry = Retry(total=3, backoff_factor=3)
+        adapter = HTTPAdapter(max_retries=retry)
+        client._session.mount("https://", adapter)
+        client._session.mount("http://", adapter)
+
+        try:  # pragma: no cover - network dependent
+            acct = client.get_account()
+            log.info(
+                f"[ALPACA] connected base_url={base_url} "
+                f"account_id={getattr(acct, 'id', 'unknown')} "
+                f"buying_power={getattr(acct, 'buying_power', '0')}"
+            )
+        except Exception as exc:  # pragma: no cover - defensive logging
+            log.warning(f"[ALPACA_ENV] unable to fetch account details: {exc}")
+
+        self._client = client
+        return client
+
+    def __getattr__(self, name: str):  # noqa: ANN001
+        return getattr(self._init_client(), name)
+
+
+api = _LazyREST()
 
 def supports_bracket_trailing() -> bool:
     """Return whether Alpaca allows trailing stops inside bracket orders."""

@@ -1,18 +1,51 @@
-#requirements.txt
+# requirements.txt
+#
+# Install order matters on constrained environments:
+#
+#   pip install --only-binary=:all: msgpack pytz numpy pandas aiohttp \
+#               prometheus-client praw pytest pytest-mock python-dotenv
+#   pip install --no-deps alpaca-trade-api yfinance pandas-market-calendars
+#   pip install deprecation==2.1.0 websockets websocket-client pytz \
+#               platformdirs peewee beautifulsoup4 lxml frozendict
+#
+# See CLAUDE.md for the full quick-start guide.
 
+# Broker
 alpaca-trade-api>=3.1.0
-python-dotenv
-colorama
-yfinance
+deprecation==2.1.0
+websockets>=9.0
+websocket-client
+
+# Data
+yfinance>=0.2.50
+pandas>=1.5.0
+numpy>=1.23.0
+pandas-market-calendars>=4.0.0
 lxml
-requests
-pandas
-numpy
-aiohttp>=3.8.3
-matplotlib
+beautifulsoup4
+frozendict
+
+# Signals / scraping
+praw>=7.0.0
+
+# Web / async
 fastapi
 uvicorn
-praw
+aiohttp>=3.8.3
+
+# Config / utilities
+python-dotenv
 PyYAML
+colorama
+requests
+pytz
+platformdirs
+peewee
+
+# Observability
 prometheus-client
-pandas-market-calendars
+matplotlib
+
+# Testing
+pytest
+pytest-mock
