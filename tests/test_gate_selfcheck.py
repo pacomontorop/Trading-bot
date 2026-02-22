@@ -60,18 +60,20 @@ def test_quiver_gate_enabled_rejects_without_signals() -> None:
 
 def test_market_gate_fetches_from_alpaca_clock() -> None:
     now = datetime(2025, 1, 1, tzinfo=timezone.utc)
-    next_open = datetime(2025, 1, 2, 14, 30, tzinfo=timezone.utc)
-    next_close = datetime(2025, 1, 2, 21, 0, tzinfo=timezone.utc)
+    _next_open = datetime(2025, 1, 2, 14, 30, tzinfo=timezone.utc)
+    _next_close = datetime(2025, 1, 2, 21, 0, tzinfo=timezone.utc)
 
+    # Note: class bodies cannot reference enclosing function locals by the same
+    # name, so we use prefixed names and assign them here.
     class StubClock:
         is_open = True
-        next_open = next_open
-        next_close = next_close
+        next_open = _next_open
+        next_close = _next_close
 
     open_now, source, returned_open, returned_close = market_gate._fetch_alpaca_state(
         now, clock=StubClock()
     )
     assert source == "alpaca"
     assert open_now is True
-    assert returned_open == next_open
-    assert returned_close == next_close
+    assert returned_open == _next_open
+    assert returned_close == _next_close
