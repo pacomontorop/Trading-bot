@@ -2,6 +2,7 @@ signals:
   freshness_days_quiver: 7
   freshness_days_gov_contracts: 90
   freshness_days_yahoo_prices: 2
+  approval_threshold: 1.5
 
 market:
   global_kill_switch: false
@@ -10,7 +11,7 @@ yahoo_gate:
   min_avg_volume_7d: 250000
   min_market_cap: 1000000000
   max_atr_pct: 6.0
-  require_trend_positive: false
+  require_trend_positive: true
   min_price: 5.0
   max_price: 1000.0
   relaxed_min_market_cap: 300000000
@@ -22,14 +23,14 @@ quiver_gate:
   fast_lane_enabled: true
   insider_buy_strong_min_count_7d: 2
   gov_contract_strong_min_total_30d: 1000000
-  patent_momentum_min_strong: 1.0
+  patent_momentum_min_strong: 3.0
   insider_buy_min_count_lookback: 1
   gov_contract_min_total_amount: 0
   gov_contract_min_count: 0
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  min_active_signal_types: 1
+  min_active_signal_types: 2
 
 risk:
   daily_max_spend_usd: 800
