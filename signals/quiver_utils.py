@@ -228,6 +228,49 @@ def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float
     return ({"latest_followers": latest_followers}, ages)
 
 
+def _senate_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+    data = quiver_ingest.fetch_live_senatetrading_cached()
+    count = 0
+    ages: list[float] = []
+    if isinstance(data, list):
+        for item in data:
+            if item.get("Ticker") != symbol.upper():
+                continue
+            transaction = (item.get("Transaction") or "").strip().lower()
+            if transaction not in ("purchase", "buy"):
+                continue
+            dt = _parse_dt(item.get("Date") or item.get("TransactionDate"))
+            if dt is not None:
+                age = _age_days(dt)
+                if age > freshness_days:
+                    continue
+                ages.append(age)
+            count += 1
+    return ({"count": float(count)}, ages)
+
+
+def _congress_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+    """Congress live endpoint uses TransactionDate (not Date) for the trade date."""
+    data = quiver_ingest.fetch_live_congresstrading_cached()
+    count = 0
+    ages: list[float] = []
+    if isinstance(data, list):
+        for item in data:
+            if item.get("Ticker") != symbol.upper():
+                continue
+            transaction = (item.get("Transaction") or "").strip().lower()
+            if transaction not in ("purchase", "buy"):
+                continue
+            dt = _parse_dt(item.get("TransactionDate") or item.get("Date"))
+            if dt is not None:
+                age = _age_days(dt)
+                if age > freshness_days:
+                    continue
+                ages.append(age)
+            count += 1
+    return ({"count": float(count)}, ages)
+
+
 def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
     data = quiver_ingest.fetch_live_appratings_cached()
     latest_rating = 0.0
@@ -262,6 +305,8 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
     sec13f, sec13f_ages = _sec13f_features(symbol, freshness_days)
     sec13f_changes, sec13f_change_ages = _sec13f_change_features(symbol, freshness_days)
     house, house_ages = _house_purchase_features(symbol, freshness_days)
+    senate, senate_ages = _senate_purchase_features(symbol, freshness_days)
+    congress, congress_ages = _congress_purchase_features(symbol, freshness_days)
     twitter, twitter_ages = _twitter_features(symbol, freshness_days)
     app_ratings, app_ratings_ages = _app_ratings_features(symbol, freshness_days)
     ages.extend(
@@ -272,6 +317,8 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         + sec13f_ages
         + sec13f_change_ages
         + house_ages
+        + senate_ages
+        + congress_ages
         + twitter_ages
         + app_ratings_ages
     )
@@ -287,6 +334,8 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         "quiver_sec13f_count": sec13f["count"],
         "quiver_sec13f_change_latest_pct": sec13f_changes["latest_change_pct"],
         "quiver_house_purchase_count": house["count"],
+        "quiver_senate_purchase_count": senate["count"],
+        "quiver_congress_purchase_count": congress["count"],
         "quiver_twitter_latest_followers": twitter["latest_followers"],
         "quiver_app_rating_latest": app_ratings["latest_rating"],
         "quiver_app_rating_latest_count": app_ratings["latest_count"],

@@ -200,11 +200,21 @@ def fetch_live_sec13fchanges_cached():
 
 
 def fetch_live_senatetrading():
-    return _request_or_default(f"{QUIVER_BASE_URL}/live/senatetrading")
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_senatetrading", f"{QUIVER_BASE_URL}/live/senatetrading", ttl)
+
+
+def fetch_live_senatetrading_cached():
+    return fetch_live_senatetrading()
 
 
 def fetch_live_congresstrading():
-    return _request_or_default(f"{QUIVER_BASE_URL}/live/congresstrading")
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_congresstrading", f"{QUIVER_BASE_URL}/live/congresstrading", ttl)
+
+
+def fetch_live_congresstrading_cached():
+    return fetch_live_congresstrading()
 
 
 def fetch_live_govcontractsall():
@@ -359,7 +369,17 @@ def initialize_quiver_caches():
     _cached_heavy_endpoint("live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl)
     print("🔄 Descargando datos de housetrading...")
     _cached_heavy_endpoint("live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl)
+    print("🔄 Descargando datos de senatetrading...")
+    _cached_heavy_endpoint("live_senatetrading", f"{QUIVER_BASE_URL}/live/senatetrading", ttl)
+    print("🔄 Descargando datos de congresstrading...")
+    _cached_heavy_endpoint("live_congresstrading", f"{QUIVER_BASE_URL}/live/congresstrading", ttl)
     print("🔄 Descargando datos de Twitter...")
     _cached_heavy_endpoint("live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl)
     print("🔄 Descargando datos de app ratings...")
     _cached_heavy_endpoint("live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl)
+    print("🔄 Descargando datos de patent momentum...")
+    _cached_heavy_endpoint("live_patentmomentum", f"{QUIVER_BASE_URL}/live/patentmomentum", ttl)
+    print("🔄 Descargando datos de SEC 13F...")
+    _cached_heavy_endpoint("live_sec13f", f"{QUIVER_BASE_URL}/live/sec13f", ttl)
+    print("🔄 Descargando datos de SEC 13F changes...")
+    _cached_heavy_endpoint("live_sec13fchanges", f"{QUIVER_BASE_URL}/live/sec13fchanges", ttl)
