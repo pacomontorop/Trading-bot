@@ -26,6 +26,11 @@ def _freshness_days() -> int:
     return int(((cfg.get("signals") or {}).get("freshness_days_quiver", 7)))
 
 
+def _freshness_days_gov_contracts() -> int:
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("signals") or {}).get("freshness_days_gov_contracts", 90)))
+
+
 def _age_days(dt: datetime) -> float:
     now = datetime.now(timezone.utc)
     delta = now - dt
@@ -112,7 +117,7 @@ def _gov_contract_features(symbol: str, freshness_days: int) -> tuple[dict[str, 
 
 
 def _patent_momentum_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_patentmomentum()
+    data = quiver_ingest.fetch_live_patentmomentum_cached()
     latest_value = 0.0
     ages: list[float] = []
     if isinstance(data, list):
@@ -150,7 +155,7 @@ def _wsb_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], l
 
 
 def _sec13f_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_sec13f()
+    data = quiver_ingest.fetch_live_sec13f_cached()
     count = 0
     ages: list[float] = []
     if isinstance(data, list):
@@ -168,7 +173,7 @@ def _sec13f_features(symbol: str, freshness_days: int) -> tuple[dict[str, float]
 
 
 def _sec13f_change_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_sec13fchanges()
+    data = quiver_ingest.fetch_live_sec13fchanges_cached()
     latest_change = 0.0
     ages: list[float] = []
     if isinstance(data, list):
@@ -224,7 +229,7 @@ def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float
 
 
 def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_appratings()
+    data = quiver_ingest.fetch_live_appratings_cached()
     latest_rating = 0.0
     latest_count = 0.0
     ages: list[float] = []
@@ -248,9 +253,10 @@ def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, f
 def get_quiver_features(symbol: str) -> dict[str, float | int]:
     """Return numeric Quiver features without scoring or thresholds."""
     freshness_days = _freshness_days()
+    freshness_days_gov = _freshness_days_gov_contracts()
     ages: list[float] = []
     insider, insider_ages = _insider_trade_features(symbol, freshness_days)
-    gov, gov_ages = _gov_contract_features(symbol, freshness_days)
+    gov, gov_ages = _gov_contract_features(symbol, freshness_days_gov)
     patent, patent_ages = _patent_momentum_features(symbol, freshness_days)
     wsb, wsb_ages = _wsb_features(symbol, freshness_days)
     sec13f, sec13f_ages = _sec13f_features(symbol, freshness_days)
