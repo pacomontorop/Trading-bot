@@ -2,7 +2,7 @@ signals:
   freshness_days_quiver: 7
   freshness_days_gov_contracts: 90
   freshness_days_yahoo_prices: 2
-  approval_threshold: 1.5
+  approval_threshold: 0
 
 market:
   global_kill_switch: false
@@ -29,14 +29,15 @@ quiver_gate:
   congress_purchase_strong_min: 1         # any congress member purchase → fast lane
   senate_purchase_strong_min: 1           # any senator purchase → fast lane
   house_purchase_strong_min: 2            # >= 2 house members purchasing → fast lane
-  # Hard gate thresholds — at least ONE non-zero threshold enables the Quiver gate
-  insider_buy_min_count_lookback: 1       # require >= 1 insider buy (unless fast lane)
+  # Hard gate thresholds — all zero = gate disabled; Yahoo gate is the primary filter
+  # Quiver signals are used for RANKING (score), not for hard blocking
+  insider_buy_min_count_lookback: 0
   gov_contract_min_total_amount: 0
   gov_contract_min_count: 0
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  min_active_signal_types: 2             # require >= 2 distinct signal types active
+  min_active_signal_types: 0
 
 risk:
   daily_max_spend_usd: 800

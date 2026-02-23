@@ -135,11 +135,18 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 qty = float(getattr(pos, "qty", 0) or 0)
                 side = str(getattr(pos, "side", "") or "").lower()
                 entry = float(getattr(pos, "avg_entry_price", 0) or 0)
+                asset_class = str(getattr(pos, "asset_class", "us_equity") or "us_equity").lower()
             except Exception:
                 continue
             if not symbol or qty <= 0 or entry <= 0:
                 continue
             if side and side != "long":
+                continue
+            if asset_class not in {"us_equity", "equity"}:
+                log_event(
+                    f"symbol={symbol} asset_class={asset_class} reason=skip_non_equity",
+                    event="PROTECT",
+                )
                 continue
 
             last = _price(symbol)

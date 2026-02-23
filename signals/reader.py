@@ -467,6 +467,7 @@ def get_top_signals(
 
         if yahoo_meta.get("status") != "ok":
             decision_trace["yahoo_prefilter_reasons"] = ["yahoo_disabled" if yahoo_meta.get("status") == "disabled" else "yahoo_missing"]
+            decision_trace["quiver_fetch_status"] = "skipped_yahoo"
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
             log_event(
@@ -477,6 +478,7 @@ def get_top_signals(
 
         if price_reasons:
             decision_trace["yahoo_prefilter_reasons"] = price_reasons
+            decision_trace["quiver_fetch_status"] = "skipped_price"
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
             log_event(
