@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 from collections import Counter
 from datetime import datetime, timezone
 from typing import Iterable, List, Tuple
@@ -329,6 +330,7 @@ def get_top_signals(
         log_event("SCAN no symbols to evaluate", event="SCAN")
         return []
 
+    random.shuffle(universe)
     sample_maps = [u["ticker_map"] for u in universe[:5]]
     log_event(f"SCAN ticker_map_sample={sample_maps}", event="SCAN")
 
