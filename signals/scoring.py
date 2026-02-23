@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Dict
 
 import pandas as pd
 import yfinance as yf
@@ -129,6 +130,93 @@ def fetch_yahoo_snapshot(
                 pass
         snapshot = YahooSnapshot((None, None, None, None, None, None, None, None), primary, False, "missing")
         return (snapshot, None) if return_history else snapshot
+
+
+def _rsi_signal_score(rsi: float) -> float:
+    """Convert RSI value to a 0–2 buy-signal score.
+
+    RSI 30–50  → recovering from oversold / healthy accumulation → 1.0–1.5
+    RSI 50–65  → trending up with momentum → 1.0
+    RSI 65–75  → extended but still OK → 0.5
+    RSI > 75   → overbought, avoid → 0.0
+    RSI < 30   → falling knife, weak bounce signal → 0.5
+    """
+    if rsi <= 0 or rsi >= 100 or math.isnan(rsi):
+        return 0.0
+    if rsi < 30:
+        return 0.5
+    if rsi <= 50:
+        # Linear scale 1.0 (at RSI=50) → 1.5 (at RSI=30)
+        return 1.0 + (50.0 - rsi) / 40.0
+    if rsi <= 65:
+        return 1.0
+    if rsi <= 75:
+        return 0.5
+    return 0.0
+
+
+def compute_technical_features(hist: pd.DataFrame, current_price: float) -> Dict[str, float]:
+    """Compute RSI, SMA, momentum and volume-spike features from 90-day OHLCV history.
+
+    Returns a flat dict of ``yahoo_*`` feature keys with float values.
+    All features default to 0.0 when there is insufficient data.
+    """
+    features: Dict[str, float] = {
+        "yahoo_rsi_14": 50.0,
+        "yahoo_rsi_signal": 0.0,
+        "yahoo_above_sma20": 0.0,
+        "yahoo_above_sma50": 0.0,
+        "yahoo_momentum_20d_pct": 0.0,
+        "yahoo_volume_spike_ratio": 1.0,
+    }
+
+    if hist is None or hist.empty or current_price <= 0:
+        return features
+
+    close = hist["Close"].dropna()
+    if len(close) < 2:
+        return features
+
+    # RSI-14
+    delta = close.diff()
+    gain = delta.clip(lower=0).rolling(14).mean()
+    loss = (-delta.clip(upper=0)).rolling(14).mean()
+    with pd.option_context("mode.use_inf_as_na", True):
+        rs = gain / loss
+    rsi_series = 100.0 - (100.0 / (1.0 + rs))
+    rsi_val = float(rsi_series.iloc[-1]) if not rsi_series.empty else 50.0
+    if math.isnan(rsi_val):
+        rsi_val = 50.0
+    features["yahoo_rsi_14"] = rsi_val
+    features["yahoo_rsi_signal"] = _rsi_signal_score(rsi_val)
+
+    # SMA-20 and SMA-50
+    if len(close) >= 20:
+        sma20 = float(close.rolling(20).mean().iloc[-1])
+        if not math.isnan(sma20) and sma20 > 0:
+            features["yahoo_above_sma20"] = 1.0 if current_price > sma20 else 0.0
+
+    if len(close) >= 50:
+        sma50 = float(close.rolling(50).mean().iloc[-1])
+        if not math.isnan(sma50) and sma50 > 0:
+            features["yahoo_above_sma50"] = 1.0 if current_price > sma50 else 0.0
+
+    # 20-day price momentum (%)
+    if len(close) >= 20:
+        price_20d_ago = float(close.iloc[-20])
+        if price_20d_ago > 0:
+            features["yahoo_momentum_20d_pct"] = (current_price - price_20d_ago) / price_20d_ago * 100.0
+
+    # Volume spike: recent 5-day average vs 90-day average
+    if "Volume" in hist.columns:
+        vol = hist["Volume"].dropna()
+        if len(vol) >= 5:
+            avg_vol = float(vol.mean())
+            recent_vol = float(vol.tail(5).mean())
+            if avg_vol > 0:
+                features["yahoo_volume_spike_ratio"] = recent_vol / avg_vol
+
+    return features
 
 
 def fetch_yfinance_stock_data(
