@@ -43,7 +43,7 @@ def _ensure_symbols_csv() -> None:
     generate_symbols_csv()
 
 
-def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None:
+def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> None:
     """Run the single equity scheduler loop."""
 
     _ensure_symbols_csv()
