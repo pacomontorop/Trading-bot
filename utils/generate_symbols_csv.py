@@ -27,7 +27,9 @@ def generate_symbols_csv(output_path="data/symbols.csv"):
                 "Marginable": a.marginable
             }
             for a in assets
-            if a.tradable and a.exchange in ["NASDAQ", "NYSE"]
+            if a.tradable
+            and a.exchange in ["NASDAQ", "NYSE"]
+            and getattr(a, "asset_class", "us_equity") == "us_equity"
         ]
         df = pd.DataFrame(symbols)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
