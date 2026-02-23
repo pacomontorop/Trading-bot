@@ -12,6 +12,7 @@ from broker.account import get_account_equity_safe
 from core.order_protection import compute_bracket_prices, stop_limit_price, validate_bracket_prices
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
+from utils.telegram_alert import send_telegram_alert
 
 
 @dataclass
@@ -24,6 +25,32 @@ class PositionSizing:
 
 def _risk_cfg() -> dict:
     return (getattr(config, "_policy", {}) or {}).get("risk", {})
+
+
+def _send_order_alert(
+    *,
+    symbol: str,
+    qty: float,
+    price: float,
+    stop_loss: float,
+    take_profit: float,
+    score: float,
+    rr_ratio: float | None,
+    dry_run: bool,
+) -> None:
+    mode = "DRY RUN" if dry_run else "PAPER"
+    sl_pct = ((stop_loss - price) / price) * 100 if price else 0.0
+    tp_pct = ((take_profit - price) / price) * 100 if price else 0.0
+    rr_str = f"{rr_ratio:.1f}" if rr_ratio is not None else "n/a"
+    msg = (
+        f"[{mode}] BUY ORDER\n"
+        f"Symbol: {symbol}\n"
+        f"Qty: {qty:.0f} @ ${price:.2f}  (~${qty * price:.0f})\n"
+        f"Stop Loss:   ${stop_loss:.2f} ({sl_pct:+.1f}%)\n"
+        f"Take Profit: ${take_profit:.2f} ({tp_pct:+.1f}%)\n"
+        f"R:R: {rr_str} | Score: {score:.2f}"
+    )
+    send_telegram_alert(msg)
 
 
 def calculate_position_size_risk_based(
@@ -108,6 +135,16 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
             ),
             event="ORDER",
         )
+        _send_order_alert(
+            symbol=symbol,
+            qty=qty,
+            price=price,
+            stop_loss=float(plan.get("stop_loss") or 0),
+            take_profit=float(plan.get("take_profit") or 0),
+            score=float(plan.get("score_total") or 0),
+            rr_ratio=plan.get("rr_ratio"),
+            dry_run=True,
+        )
         return True
 
     bracket = compute_bracket_prices(
@@ -150,6 +187,16 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
             take_profit={"limit_price": take_profit},
             stop_loss=stop_payload,
             client_order_id=client_order_id,
+        )
+        _send_order_alert(
+            symbol=symbol,
+            qty=qty,
+            price=price,
+            stop_loss=stop_loss,
+            take_profit=take_profit,
+            score=float(plan.get("score_total") or 0),
+            rr_ratio=bracket.get("rr_ratio"),
+            dry_run=False,
         )
         return True
     except Exception as exc:  # pragma: no cover - network
