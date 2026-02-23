@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import threading
 import time
 from typing import Optional
@@ -10,6 +11,7 @@ import yfinance as yf
 
 import config
 from broker import alpaca as broker
+from core.broker import round_to_tick
 from core.order_protection import stop_limit_price
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
@@ -17,6 +19,10 @@ from utils.logger import log_event
 _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
+
+# Crypto pairs on Alpaca use the format XXXUSD (e.g., BTCUSD, DOGEUSD, ETHUSD).
+# This bot is equity-only — skip all crypto positions.
+_CRYPTO_SYMBOL_RE = re.compile(r"^[A-Z]{2,10}USD$")
 
 _PRICE_TTL_SEC = 15.0
 _ATR_TTL_SEC = 300.0
@@ -142,6 +148,11 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             if side and side != "long":
                 continue
 
+            # Skip crypto positions (asset_class=crypto or XXXUSD symbol pattern)
+            _asset_class = str(getattr(pos, "asset_class", "") or "").lower()
+            if _asset_class == "crypto" or _CRYPTO_SYMBOL_RE.match(symbol):
+                continue
+
             last = _price(symbol)
             atr = _atr(symbol)
             stop_order, old_stop = _best_open_stop_for_symbol(open_orders, symbol)
@@ -210,6 +221,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
+            # Round stop price to valid tick increment to prevent sub-penny rejection
+            new_stop = round_to_tick(new_stop, tick, mode="down") or new_stop
             stop_payload = {"stop_price": float(new_stop)}
             limit = stop_limit_price(float(new_stop), symbol=symbol)
             order_type = "stop"

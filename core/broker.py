@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from decimal import ROUND_DOWN, ROUND_HALF_UP, ROUND_UP, Decimal
 from typing import Optional
 
 import config
@@ -37,12 +38,20 @@ def get_tick_size(symbol: str, asset_class: Optional[str], price: Optional[float
 
 
 def round_to_tick(price: Optional[float], tick: Optional[float], mode: str = "nearest") -> Optional[float]:
-    """Round ``price`` to the nearest valid ``tick`` according to ``mode``."""
+    """Round ``price`` to the nearest valid ``tick`` according to ``mode``.
+
+    Uses Decimal arithmetic to avoid float representation errors (e.g., 36.91
+    becoming 36.910000000000004 after IEEE-754 multiplication).
+    """
 
     if price is None or tick is None or tick <= 0:
         return price
+    d_price = Decimal(str(price))
+    d_tick = Decimal(str(tick))
     if mode == "down":
-        return math.floor(price / tick) * tick
-    if mode == "up":
-        return math.ceil(price / tick) * tick
-    return round(price / tick) * tick
+        result = (d_price / d_tick).to_integral_value(ROUND_DOWN) * d_tick
+    elif mode == "up":
+        result = (d_price / d_tick).to_integral_value(ROUND_UP) * d_tick
+    else:
+        result = (d_price / d_tick).to_integral_value(ROUND_HALF_UP) * d_tick
+    return float(result)
