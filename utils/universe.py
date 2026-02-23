@@ -26,6 +26,10 @@ def load_universe(path: str) -> list[dict[str, Any]]:
                     continue
                 if detect_asset_class(symbol) != "equity":
                     continue
+                _name_lower = (row.get("Name") or "").lower()
+                _CRYPTO_KW = {"bitcoin", "ethereum", "crypto"}
+                if any(kw in _name_lower for kw in _CRYPTO_KW):
+                    continue
                 tradable = parse_bool(row.get("Tradable"))
                 if not tradable:
                     continue
