@@ -21,16 +21,22 @@ yahoo_gate:
 quiver_gate:
   enabled: true
   fast_lane_enabled: true
-  insider_buy_strong_min_count_7d: 2
-  gov_contract_strong_min_total_30d: 1000000
-  patent_momentum_min_strong: 3.0
-  insider_buy_min_count_lookback: 1
+  # Fast-lane thresholds — when any of these fire, Yahoo Finance gates are relaxed
+  # and the Quiver gate itself is bypassed (the score threshold still applies)
+  insider_buy_strong_min_count_7d: 2      # >= 2 insider buys in 7d → fast lane
+  gov_contract_strong_min_total_30d: 1000000  # >= $1M contracts in 30d → fast lane
+  patent_momentum_min_strong: 3.0         # patent momentum >= 3.0 → fast lane
+  congress_purchase_strong_min: 1         # any congress member purchase → fast lane
+  senate_purchase_strong_min: 1           # any senator purchase → fast lane
+  house_purchase_strong_min: 2            # >= 2 house members purchasing → fast lane
+  # Hard gate thresholds — at least ONE non-zero threshold enables the Quiver gate
+  insider_buy_min_count_lookback: 1       # require >= 1 insider buy (unless fast lane)
   gov_contract_min_total_amount: 0
   gov_contract_min_count: 0
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  min_active_signal_types: 2
+  min_active_signal_types: 2             # require >= 2 distinct signal types active
 
 risk:
   daily_max_spend_usd: 800

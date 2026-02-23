@@ -20,14 +20,24 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 
 QUIVER_FEATURE_WEIGHTS = {
+    # Insider trading — direct skin-in-the-game signal
     "quiver_insider_buy_count": 1.0,
     "quiver_insider_sell_count": -1.0,
-    "quiver_gov_contract_total_amount": 0.000001,
+    # Government contracts — revenue visibility signal
+    "quiver_gov_contract_total_amount": 0.000001,   # per-dollar weight; capped at $200M → max 200
     "quiver_gov_contract_count": 0.5,
+    # Congressional / Senate / House trading — smart-money signal
+    # A single congress/senate purchase scores 2.0 → passes approval_threshold alone
+    "quiver_congress_purchase_count": 2.0,
+    "quiver_senate_purchase_count": 2.0,
+    "quiver_house_purchase_count": 1.2,
+    # Patent innovation signal
     "quiver_patent_momentum_latest": 1.0,
-    "quiver_wsb_recent_max_mentions": 0.05,
+    # Institutional accumulation signals
     "quiver_sec13f_count": 0.2,
     "quiver_sec13f_change_latest_pct": 0.1,
+    # Retail / social sentiment (supporting, not primary)
+    "quiver_wsb_recent_max_mentions": 0.05,
     "quiver_twitter_latest_followers": 0.00005,
     "quiver_app_rating_latest": 0.2,
     "quiver_app_rating_latest_count": 0.02,
@@ -42,6 +52,10 @@ _FEATURE_CAPS = {
     "quiver_patent_momentum_latest": 5,
     "quiver_twitter_latest_followers": 10_000_000,
     "quiver_app_rating_latest_count": 100_000,
+    # Congressional / Senate / House caps — beyond 3-5 members buying, marginal value
+    "quiver_congress_purchase_count": 3,
+    "quiver_senate_purchase_count": 3,
+    "quiver_house_purchase_count": 5,
 }
 
 
@@ -216,9 +230,17 @@ def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bo
     insider_min = float(cfg.get("insider_buy_strong_min_count_7d", 2))
     gov_min = float(cfg.get("gov_contract_strong_min_total_30d", 1_000_000))
     patent_min = float(cfg.get("patent_momentum_min_strong", 90))
+    congress_min = float(cfg.get("congress_purchase_strong_min", 1))
+    senate_min = float(cfg.get("senate_purchase_strong_min", 1))
+    house_min = float(cfg.get("house_purchase_strong_min", 2))
+
     insider_buys = float(features.get("quiver_insider_buy_count", 0))
     gov_total = float(features.get("quiver_gov_contract_total_amount", 0))
     patent_momentum = float(features.get("quiver_patent_momentum_latest", 0))
+    congress_purchases = float(features.get("quiver_congress_purchase_count", 0))
+    senate_purchases = float(features.get("quiver_senate_purchase_count", 0))
+    house_purchases = float(features.get("quiver_house_purchase_count", 0))
+
     reasons: list[str] = []
     if insider_buys >= insider_min:
         reasons.append("insider_buys")
@@ -226,11 +248,20 @@ def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bo
         reasons.append("gov_contracts")
     if patent_momentum >= patent_min:
         reasons.append("patent_momentum")
+    if congress_purchases >= congress_min:
+        reasons.append("congress_purchase")
+    if senate_purchases >= senate_min:
+        reasons.append("senate_purchase")
+    if house_purchases >= house_min:
+        reasons.append("house_purchase")
+
     strong = bool(reasons)
     summary = {
         "insider_buys_7d": insider_buys,
         "gov_contract_total_30d": gov_total,
         "patent_momentum": patent_momentum,
+        "congress_purchases": congress_purchases,
+        "senate_purchases": senate_purchases,
         "strong_signal_bool": strong,
         "strong_reason": reasons,
     }
@@ -281,6 +312,12 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     if features.get("quiver_sec13f_count", 0) > 0:
         active_types += 1
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
+        active_types += 1
+    if features.get("quiver_congress_purchase_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_senate_purchase_count", 0) > 0:
+        active_types += 1
+    if features.get("quiver_house_purchase_count", 0) > 0:
         active_types += 1
 
     min_types = int(cfg.get("min_active_signal_types", 2))
