@@ -43,6 +43,17 @@ QUIVER_FEATURE_WEIGHTS = {
     "quiver_app_rating_latest_count": 0.02,
 }
 
+# Yahoo technical weights — primary scoring when Quiver data is absent or weak.
+# A stock trending above SMA20 (2.0) already clears the 1.0 approval_threshold.
+# Good RSI + volume spike adds further confidence.
+YAHOO_TECHNICAL_WEIGHTS = {
+    "yahoo_above_sma20": 2.0,          # price > 20-day SMA = short-term trend up
+    "yahoo_above_sma50": 1.0,          # price > 50-day SMA = medium-term trend up
+    "yahoo_rsi_signal": 1.0,           # pre-computed 0-2 score (peak at RSI ≈ 35)
+    "yahoo_volume_spike_ratio": 0.5,   # recent vol / avg vol; 1.5× avg = +0.75
+    "yahoo_momentum_20d_pct": 0.08,    # 10% 20-day gain → +0.8 pts
+}
+
 _FEATURE_CAPS = {
     "quiver_gov_contract_total_amount": 200_000_000,
     "quiver_wsb_recent_max_mentions": 500,
@@ -56,6 +67,12 @@ _FEATURE_CAPS = {
     "quiver_congress_purchase_count": 3,
     "quiver_senate_purchase_count": 3,
     "quiver_house_purchase_count": 5,
+    # Yahoo technical caps
+    "yahoo_above_sma20": 1.0,          # binary
+    "yahoo_above_sma50": 1.0,          # binary
+    "yahoo_rsi_signal": 2.0,           # pre-computed 0-2
+    "yahoo_volume_spike_ratio": 3.0,   # cap at 3× average volume
+    "yahoo_momentum_20d_pct": 20.0,    # cap at 20% 20-day gain
 }
 
 
@@ -130,7 +147,11 @@ def _normalize_feature_value(key: str, value: float) -> float:
 
 
 def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
-    """Simple score computed from Quiver numeric features only."""
+    """Score computed from Quiver signals and Yahoo technical indicators.
+
+    Returns (total_score, quiver_score).  Yahoo technical score is included in
+    total_score but tracked separately so callers can inspect both components.
+    """
     score = 0.0
     quiver_score = 0.0
     for key, weight in QUIVER_FEATURE_WEIGHTS.items():
@@ -138,6 +159,11 @@ def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
         contribution = weight * value
         score += contribution
         quiver_score += contribution
+
+    for key, weight in YAHOO_TECHNICAL_WEIGHTS.items():
+        value = _normalize_feature_value(key, float(features.get(key, 0.0)))
+        score += weight * value
+
     return score, quiver_score
 
 
@@ -496,6 +522,7 @@ def get_top_signals(
             features = get_symbol_features(
                 symbol,
                 yahoo_snapshot=yahoo_snapshot,
+                yahoo_hist=yahoo_hist,
                 yahoo_symbol=yahoo_symbol,
                 quiver_symbol=quiver_symbol,
                 quiver_fallback_symbol=yahoo_symbol if quiver_symbol != yahoo_symbol else None,

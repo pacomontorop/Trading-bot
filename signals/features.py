@@ -25,6 +25,7 @@ def get_symbol_features(
     symbol: str,
     *,
     yahoo_snapshot=None,
+    yahoo_hist=None,
     yahoo_symbol: str | None = None,
     quiver_symbol: str | None = None,
     quiver_fallback_symbol: str | None = None,
@@ -84,5 +85,12 @@ def get_symbol_features(
         features["yahoo_atr_pct"] = (float(atr) / float(current_price)) * 100.0
     else:
         features["yahoo_atr_pct"] = 0.0
+
+    # Technical indicators: RSI, SMA crossovers, momentum, volume spike.
+    # These provide buy signals when Quiver data is absent or weak.
+    if config.ENABLE_YAHOO and yahoo_hist is not None and current_price:
+        from signals.scoring import compute_technical_features
+        tech = compute_technical_features(yahoo_hist, float(current_price))
+        features.update(tech)
 
     return {key: _to_numeric(value) for key, value in features.items()}

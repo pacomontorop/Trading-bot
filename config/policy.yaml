@@ -2,21 +2,26 @@ signals:
   freshness_days_quiver: 7
   freshness_days_gov_contracts: 90
   freshness_days_yahoo_prices: 2
-  approval_threshold: 0
+  # Require at least some positive signal to trade (Yahoo technical or Quiver).
+  # A stock above SMA20 (2.0) or any congress buy (2.0) easily clears this.
+  approval_threshold: 1.0
 
 market:
   global_kill_switch: false
 
 yahoo_gate:
-  min_avg_volume_7d: 250000
-  min_market_cap: 1000000000
-  max_atr_pct: 6.0
-  require_trend_positive: true
+  # Standard gate — applied to all stocks without a strong Quiver signal.
+  # Lowered thresholds so mid-cap and moderately volatile stocks are considered.
+  min_avg_volume_7d: 100000          # was 250000 — mid-cap stocks are tradeable
+  min_market_cap: 300000000          # was 1_000_000_000 — $300M+ (was $1B)
+  max_atr_pct: 10.0                  # was 6.0 — allow moderate volatility
+  require_trend_positive: false      # was true — technical score handles trend
   min_price: 5.0
   max_price: 1000.0
-  relaxed_min_market_cap: 300000000
-  relaxed_min_avg_volume_7d: 50000
-  relaxed_max_atr_pct: 12.0
+  # Relaxed gate — applied when a strong Quiver signal (fast-lane) is detected.
+  relaxed_min_market_cap: 100000000  # was 300000000 — $100M with strong signal
+  relaxed_min_avg_volume_7d: 20000   # was 50000
+  relaxed_max_atr_pct: 15.0          # was 12.0
 
 quiver_gate:
   enabled: true
