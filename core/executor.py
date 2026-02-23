@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import Dict
 
@@ -97,7 +98,7 @@ def place_long_order(plan: dict, *, dry_run: bool = False) -> bool:
         log_event(f"ORDER {symbol}: rejected reason=unprotected_order", event="ORDER")
         return False
 
-    client_order_id = f"LONG.{symbol}.{int(price * 100)}"
+    client_order_id = f"LONG.{symbol}.{int(price * 100)}.{int(time.time())}"
 
     if dry_run:
         log_event(

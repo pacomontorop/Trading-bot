@@ -39,6 +39,8 @@ _FEATURE_CAPS = {
     "quiver_gov_contract_count": 5,
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
+    "quiver_twitter_latest_followers": 10_000_000,
+    "quiver_app_rating_latest_count": 100_000,
 }
 
 
@@ -280,9 +282,10 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
 
+    min_types = int(cfg.get("min_active_signal_types", 2))
     if checks and not any(checks):
         reasons.append("quiver_min_signal")
-    elif active_types < 2:
+    elif active_types < min_types:
         reasons.append("quiver_min_types")
     return not reasons, reasons
 

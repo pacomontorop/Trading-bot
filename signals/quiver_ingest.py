@@ -223,6 +223,11 @@ def fetch_live_patentmomentum():
     return _request_or_default(f"{QUIVER_BASE_URL}/live/patentmomentum")
 
 
+def fetch_live_patentmomentum_cached():
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_patentmomentum", f"{QUIVER_BASE_URL}/live/patentmomentum", ttl)
+
+
 def fetch_live_patentdrift(symbol: str):
     return _request_or_default(
         f"{QUIVER_BASE_URL}/live/patentdrift?ticker={symbol.upper()}&latest=true"

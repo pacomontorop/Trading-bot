@@ -56,7 +56,7 @@ def _fetch_yahoo_data(symbol: str, return_history: bool = False):
         if len(hist) >= 2
         else None
     )
-    volume_7d_avg = hist["Volume"].mean() if not hist["Volume"].isna().all() else None
+    volume_7d_avg = hist["Volume"].tail(7).mean() if not hist["Volume"].isna().all() else None
 
     current_price = hist["Close"].iloc[-1] if not hist.empty else None
     if current_price is None or (isinstance(current_price, float) and math.isnan(current_price)):
