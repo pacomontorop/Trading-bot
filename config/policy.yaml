@@ -1,6 +1,9 @@
 signals:
   freshness_days_quiver: 7
   freshness_days_gov_contracts: 90
+  # Congress/Senate/House disclosures have up to 45 days legal delay (STOCK Act).
+  # Use 30 days to capture most real signals without pulling stale trades.
+  freshness_days_congress: 30
   freshness_days_yahoo_prices: 2
   # Require at least some positive signal to trade (Yahoo technical or Quiver).
   # A stock above SMA20 (2.0) or any congress buy (2.0) easily clears this.

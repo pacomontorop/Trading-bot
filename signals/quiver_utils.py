@@ -31,6 +31,13 @@ def _freshness_days_gov_contracts() -> int:
     return int(((cfg.get("signals") or {}).get("freshness_days_gov_contracts", 90)))
 
 
+def _freshness_days_congress() -> int:
+    """Congress/Senate/House disclosures have up to 45 days legal delay (STOCK Act).
+    Default to 30 days so we capture most real signals without pulling stale trades."""
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("signals") or {}).get("freshness_days_congress", 30)))
+
+
 def _age_days(dt: datetime) -> float:
     now = datetime.now(timezone.utc)
     delta = now - dt
@@ -140,7 +147,15 @@ def _wsb_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], l
     max_mentions = 0.0
     ages: list[float] = []
     if isinstance(data, list):
-        for item in data[-5:]:
+        # Sort descending by date so we always inspect the 5 most recent entries,
+        # regardless of the order the API returns historical records.
+        _epoch = datetime.min.replace(tzinfo=timezone.utc)
+        dated = sorted(
+            data,
+            key=lambda x: _parse_dt(x.get("Date") or x.get("date")) or _epoch,
+            reverse=True,
+        )
+        for item in dated[:5]:
             mentions = item.get("Mentions")
             if isinstance(mentions, (int, float)):
                 dt = _parse_dt(item.get("Date") or item.get("date"))
@@ -191,7 +206,8 @@ def _sec13f_change_features(symbol: str, freshness_days: int) -> tuple[dict[str,
     return ({"latest_change_pct": latest_change}, ages)
 
 
-def _house_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+def _house_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict[str, float], list[float]]:
+    freshness_days = freshness_days or _freshness_days_congress()
     data = quiver_ingest.fetch_live_housetrading()
     count = 0
     ages: list[float] = []
@@ -228,7 +244,8 @@ def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float
     return ({"latest_followers": latest_followers}, ages)
 
 
-def _senate_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+def _senate_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict[str, float], list[float]]:
+    freshness_days = freshness_days or _freshness_days_congress()
     data = quiver_ingest.fetch_live_senatetrading_cached()
     count = 0
     ages: list[float] = []
@@ -249,8 +266,9 @@ def _senate_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[st
     return ({"count": float(count)}, ages)
 
 
-def _congress_purchase_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+def _congress_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict[str, float], list[float]]:
     """Congress live endpoint uses TransactionDate (not Date) for the trade date."""
+    freshness_days = freshness_days or _freshness_days_congress()
     data = quiver_ingest.fetch_live_congresstrading_cached()
     count = 0
     ages: list[float] = []

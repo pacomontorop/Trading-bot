@@ -22,7 +22,8 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 QUIVER_FEATURE_WEIGHTS = {
     # Insider trading — direct skin-in-the-game signal
     "quiver_insider_buy_count": 1.0,
-    "quiver_insider_sell_count": -1.0,
+    # Sells are routine (options exercise, diversification, estate). Much weaker signal.
+    "quiver_insider_sell_count": -0.4,
     # Government contracts — revenue visibility signal
     "quiver_gov_contract_total_amount": 0.000001,   # per-dollar weight; capped at $200M → max 200
     "quiver_gov_contract_count": 0.5,
@@ -38,9 +39,11 @@ QUIVER_FEATURE_WEIGHTS = {
     "quiver_sec13f_change_latest_pct": 0.1,
     # Retail / social sentiment (supporting, not primary)
     "quiver_wsb_recent_max_mentions": 0.05,
-    "quiver_twitter_latest_followers": 0.00005,
+    # Twitter followers and app-rating count are market-cap proxies, not directional
+    # signals. Weights kept tiny so they only break ties, never dominate scoring.
+    "quiver_twitter_latest_followers": 0.0000002,   # 10M followers → +2 pts max
     "quiver_app_rating_latest": 0.2,
-    "quiver_app_rating_latest_count": 0.02,
+    "quiver_app_rating_latest_count": 0.000002,     # 100K reviews → +0.2 pts max
 }
 
 # Yahoo technical weights — primary scoring when Quiver data is absent or weak.
@@ -59,6 +62,7 @@ _FEATURE_CAPS = {
     "quiver_wsb_recent_max_mentions": 500,
     "quiver_insider_buy_count": 5,
     "quiver_gov_contract_count": 5,
+    "quiver_sec13f_count": 20,             # 20 filings × 0.2 = +4 pts max
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
     "quiver_twitter_latest_followers": 10_000_000,
