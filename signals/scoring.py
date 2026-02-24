@@ -181,8 +181,7 @@ def compute_technical_features(hist: pd.DataFrame, current_price: float) -> Dict
     delta = close.diff()
     gain = delta.clip(lower=0).rolling(14).mean()
     loss = (-delta.clip(upper=0)).rolling(14).mean()
-    with pd.option_context("mode.use_inf_as_na", True):
-        rs = gain / loss
+    rs = (gain / loss).replace([float("inf"), float("-inf")], float("nan"))
     rsi_series = 100.0 - (100.0 / (1.0 + rs))
     rsi_val = float(rsi_series.iloc[-1]) if not rsi_series.empty else 50.0
     if math.isnan(rsi_val):
