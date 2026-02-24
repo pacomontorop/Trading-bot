@@ -65,24 +65,68 @@ def _execution_cfg() -> dict:
     return (getattr(config, "_policy", {}) or {}).get("execution", {}) or {}
 
 
+def _load_state_from_alpaca(today: str, state: DailyRiskState) -> DailyRiskState:
+    """Overwrite daily counters with ground-truth data from Alpaca order history.
+
+    Queries Alpaca for today's filled buy orders and recomputes
+    ``spent_today_usd``, ``new_positions_today``, and
+    ``symbols_traded_today`` so the values survive service restarts.
+    ``symbol_last_trade`` (used for cooldowns) is preserved from the file.
+    Falls back to the file-based state silently if the API call fails.
+    """
+    try:
+        from broker.alpaca import get_todays_filled_buy_orders
+
+        orders = get_todays_filled_buy_orders(today)
+        if orders is None:
+            log_event("RISK Alpaca order fetch failed; using file-based counters", event="RISK")
+            return state
+
+        spent = sum(
+            float(getattr(o, "filled_qty", 0) or 0)
+            * float(getattr(o, "filled_avg_price", 0) or 0)
+            for o in orders
+        )
+        symbols: list[str] = list(
+            dict.fromkeys(
+                getattr(o, "symbol", "") for o in orders if getattr(o, "symbol", "")
+            )
+        )
+        state.spent_today_usd = spent
+        state.new_positions_today = len(symbols)
+        state.symbols_traded_today = symbols
+        log_event(
+            f"RISK state rebuilt from Alpaca: spent={spent:.2f} "
+            f"positions={len(symbols)} symbols={symbols}",
+            event="RISK",
+        )
+    except Exception as exc:
+        log_event(f"RISK Alpaca state rebuild error err={exc}; using file", event="RISK")
+    return state
+
+
 def load_daily_state(path: str = "data/risk_state.json") -> DailyRiskState:
     today = _today_nyse()
-    if not os.path.exists(path):
-        return DailyRiskState(date=today)
-    try:
-        with open(path, "r", encoding="utf-8") as handle:
-            payload = json.load(handle) or {}
-    except Exception:
-        return DailyRiskState(date=today)
 
-    stored_date = payload.get("date")
-    state = DailyRiskState.from_dict(payload, date=today)
-    if stored_date != today:
-        state.spent_today_usd = 0.0
-        state.new_positions_today = 0
-        state.symbols_traded_today = []
-        state.blocked_reason = None
-    return state
+    # Load file primarily for symbol_last_trade (cooldown history).
+    state = DailyRiskState(date=today)
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                payload = json.load(handle) or {}
+            stored_date = payload.get("date")
+            state = DailyRiskState.from_dict(payload, date=today)
+            if stored_date != today:
+                state.spent_today_usd = 0.0
+                state.new_positions_today = 0
+                state.symbols_traded_today = []
+                state.blocked_reason = None
+        except Exception:
+            pass
+
+    # Always override daily counters with Alpaca ground truth so restarts
+    # cannot reset the spend/position counters.
+    return _load_state_from_alpaca(today, state)
 
 
 def save_daily_state(state: DailyRiskState, path: str = "data/risk_state.json") -> None:
