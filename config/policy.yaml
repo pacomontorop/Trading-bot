@@ -48,7 +48,8 @@ quiver_gate:
   min_active_signal_types: 0
 
 risk:
-  daily_max_spend_usd: 800
+  daily_max_spend_usd: 0             # disabled — pct cap below is used instead
+  daily_max_spend_pct_buying_power: 0.25  # 25% of Alpaca buying_power each day
   daily_max_new_positions: 0
   max_total_open_positions: 50
   max_position_size_usd: 500

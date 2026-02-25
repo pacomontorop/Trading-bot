@@ -82,7 +82,7 @@ def _load_state_from_alpaca(today: str, state: DailyRiskState) -> DailyRiskState
             log_event("RISK Alpaca order fetch failed; using file-based counters", event="RISK")
             return state
 
-        spent = sum(
+        alpaca_spent = sum(
             float(getattr(o, "filled_qty", 0) or 0)
             * float(getattr(o, "filled_avg_price", 0) or 0)
             for o in orders
@@ -92,12 +92,30 @@ def _load_state_from_alpaca(today: str, state: DailyRiskState) -> DailyRiskState
                 getattr(o, "symbol", "") for o in orders if getattr(o, "symbol", "")
             )
         )
+
+        # Guard: if Alpaca reports less than the file value, recently submitted
+        # orders have not yet settled.  Keep the higher (more conservative) value
+        # so the spend limit is not inadvertently reset between ticks.
+        file_spent = state.spent_today_usd
+        spent = max(alpaca_spent, file_spent)
+        if alpaca_spent < file_spent:
+            log_event(
+                f"RISK Alpaca spent={alpaca_spent:.2f} < file={file_spent:.2f}; "
+                "pending fills not settled yet, keeping file value",
+                event="RISK",
+            )
+
         state.spent_today_usd = spent
-        state.new_positions_today = len(symbols)
+        state.new_positions_today = max(len(symbols), state.new_positions_today)
+        # Merge: keep any locally-tracked symbols not yet confirmed in Alpaca
+        for sym in state.symbols_traded_today:
+            if sym not in symbols:
+                symbols.append(sym)
         state.symbols_traded_today = symbols
         log_event(
             f"RISK state rebuilt from Alpaca: spent={spent:.2f} "
-            f"positions={len(symbols)} symbols={symbols}",
+            f"(alpaca={alpaca_spent:.2f} file={file_spent:.2f}) "
+            f"positions={state.new_positions_today} symbols={symbols}",
             event="RISK",
         )
     except Exception as exc:
@@ -162,14 +180,44 @@ def _get_account_snapshot() -> dict | None:
         except Exception:
             continue
 
+    buying_power = 0.0
+    try:  # pragma: no cover - network
+        buying_power = float(getattr(account, "buying_power", 0) or 0)
+    except Exception:
+        buying_power = cash
+
     return {
         "equity": equity,
         "cash": cash,
+        "buying_power": buying_power,
         "positions": positions,
         "orders": orders,
         "total_exposure": total_exposure,
         "symbol_exposure": symbol_exposure,
     }
+
+
+def _effective_daily_max(cfg: dict, snapshot: dict) -> float:
+    """Return the effective daily spend cap.
+
+    Combines the hard USD cap (``risk.daily_max_spend_usd``) with an optional
+    percentage-of-buying-power cap (``risk.daily_max_spend_pct_buying_power``).
+
+    Rules:
+    - If only the USD cap is set  → use it directly.
+    - If only the pct cap is set  → use ``buying_power × pct``.
+    - If both are set             → use the *lower* of the two (more conservative).
+    - If neither is set           → return 0.0 (no cap, use cash).
+    """
+    hard_usd = float(cfg.get("daily_max_spend_usd", 0) or 0)
+    pct = float(cfg.get("daily_max_spend_pct_buying_power", 0) or 0)
+    if pct > 0:
+        buying_power = float(snapshot.get("buying_power", 0) or 0)
+        pct_cap = buying_power * pct
+        if hard_usd > 0:
+            return min(hard_usd, pct_cap)
+        return pct_cap
+    return hard_usd
 
 
 def _symbol_in_open_orders(symbol: str, orders) -> bool:
@@ -189,7 +237,7 @@ def check_risk_limits(
     cfg = _risk_cfg()
     reasons: list[str] = []
 
-    daily_max_spend = float(cfg.get("daily_max_spend_usd", 0))
+    daily_max_spend = _effective_daily_max(cfg, snapshot)
     daily_max_new_positions = int(cfg.get("daily_max_new_positions", 0))
     max_total_open_positions = int(cfg.get("max_total_open_positions", 0))
     max_exposure_pct = float(cfg.get("max_exposure_pct_equity", 1.0))
@@ -266,7 +314,7 @@ def _compute_order_plan(candidate: dict, state: DailyRiskState, snapshot: dict) 
     if equity <= 0:
         return None, "invalid_equity"
 
-    daily_max_spend = float(cfg.get("daily_max_spend_usd", 0))
+    daily_max_spend = _effective_daily_max(cfg, snapshot)
     max_position_size = float(cfg.get("max_position_size_usd", 0))
     min_position_size = float(cfg.get("min_position_size_usd", 0))
     cash_buffer_pct = float(cfg.get("cash_buffer_pct", 0))
