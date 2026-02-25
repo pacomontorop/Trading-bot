@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import threading
 import time
 from typing import Optional
@@ -217,11 +218,24 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
-            stop_payload = {"stop_price": float(new_stop)}
-            limit = stop_limit_price(float(new_stop), symbol=symbol)
+            # Round to the valid tick increment before submission.
+            # Alpaca enforces sub-penny rules: prices must be exact multiples of
+            # $0.01 for equities >= $1.  Raw ATR arithmetic leaves fractional
+            # cents that Alpaca rejects.  Round down so the stop is never tighter
+            # than intended, then strip float-representation artifacts
+            # (e.g. math.floor(x/0.01)*0.01 can yield 120.83000000000001).
+            _decimals = 2 if new_stop >= 1.0 else 4
+            price_tick = tick_ge_1 if new_stop >= 1.0 else tick_lt_1
+            new_stop_clean = round(math.floor(new_stop / price_tick) * price_tick, _decimals)
+
+            stop_payload = {"stop_price": new_stop_clean}
+            limit = stop_limit_price(new_stop_clean, symbol=symbol)
             order_type = "stop"
-            if limit and limit < new_stop:
-                stop_payload["limit_price"] = float(limit)
+            if limit and limit < new_stop_clean:
+                _lim_dec = 2 if limit >= 1.0 else 4
+                lim_tick = tick_ge_1 if limit >= 1.0 else tick_lt_1
+                limit_clean = round(math.floor(limit / lim_tick) * lim_tick, _lim_dec)
+                stop_payload["limit_price"] = limit_clean
                 order_type = "stop_limit"
 
             client_order_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}"
