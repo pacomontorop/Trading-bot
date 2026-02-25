@@ -82,7 +82,7 @@ def _load_state_from_alpaca(today: str, state: DailyRiskState) -> DailyRiskState
             log_event("RISK Alpaca order fetch failed; using file-based counters", event="RISK")
             return state
 
-        spent = sum(
+        alpaca_spent = sum(
             float(getattr(o, "filled_qty", 0) or 0)
             * float(getattr(o, "filled_avg_price", 0) or 0)
             for o in orders
@@ -92,12 +92,30 @@ def _load_state_from_alpaca(today: str, state: DailyRiskState) -> DailyRiskState
                 getattr(o, "symbol", "") for o in orders if getattr(o, "symbol", "")
             )
         )
+
+        # Guard: if Alpaca reports less than the file value, recently submitted
+        # orders have not yet settled.  Keep the higher (more conservative) value
+        # so the spend limit is not inadvertently reset between ticks.
+        file_spent = state.spent_today_usd
+        spent = max(alpaca_spent, file_spent)
+        if alpaca_spent < file_spent:
+            log_event(
+                f"RISK Alpaca spent={alpaca_spent:.2f} < file={file_spent:.2f}; "
+                "pending fills not settled yet, keeping file value",
+                event="RISK",
+            )
+
         state.spent_today_usd = spent
-        state.new_positions_today = len(symbols)
+        state.new_positions_today = max(len(symbols), state.new_positions_today)
+        # Merge: keep any locally-tracked symbols not yet confirmed in Alpaca
+        for sym in state.symbols_traded_today:
+            if sym not in symbols:
+                symbols.append(sym)
         state.symbols_traded_today = symbols
         log_event(
             f"RISK state rebuilt from Alpaca: spent={spent:.2f} "
-            f"positions={len(symbols)} symbols={symbols}",
+            f"(alpaca={alpaca_spent:.2f} file={file_spent:.2f}) "
+            f"positions={state.new_positions_today} symbols={symbols}",
             event="RISK",
         )
     except Exception as exc:
