@@ -39,9 +39,11 @@ QUIVER_FEATURE_WEIGHTS = {
     "quiver_sec13f_change_latest_pct": 0.1,
     # Retail / social sentiment (supporting, not primary)
     "quiver_wsb_recent_max_mentions": 0.05,
-    # Twitter followers and app-rating count are market-cap proxies, not directional
-    # signals. Weights kept tiny so they only break ties, never dominate scoring.
-    "quiver_twitter_latest_followers": 0.0000002,   # 10M followers → +2 pts max
+    # Off-exchange short interest — NEGATIVE signal.
+    # High DPI means informed traders are shorting; penalise to avoid crowded shorts.
+    # DPI=0 → 0, DPI=0.5 → -0.5, DPI=1.0 → -1.0 (capped)
+    "quiver_offexchange_dpi": -1.0,
+    # App ratings are sector-specific and a weak proxy. Keep weight tiny.
     "quiver_app_rating_latest": 0.2,
     "quiver_app_rating_latest_count": 0.000002,     # 100K reviews → +0.2 pts max
 }
@@ -65,7 +67,7 @@ _FEATURE_CAPS = {
     "quiver_sec13f_count": 20,             # 20 filings × 0.2 = +4 pts max
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
-    "quiver_twitter_latest_followers": 10_000_000,
+    "quiver_offexchange_dpi": 1.0,         # ratio 0-1; -1.0 weight → max penalty -1.0
     "quiver_app_rating_latest_count": 100_000,
     # Congressional / Senate / House caps — beyond 3-5 members buying, marginal value
     "quiver_congress_purchase_count": 3,
@@ -135,6 +137,8 @@ def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
         float(cfg.get("patent_momentum_min", 0)),
         float(cfg.get("sec13f_count_min", 0)),
         float(cfg.get("sec13f_change_min_pct", 0)),
+        # min_active_signal_types > 0 also counts as an active threshold
+        float(cfg.get("min_active_signal_types", 0)),
     ]
     any_threshold = any(value > 0 for value in thresholds)
     return (not config.ENABLE_QUIVER) or (not enabled) or (not any_threshold)

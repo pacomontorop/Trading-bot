@@ -5,9 +5,10 @@ signals:
   # Use 30 days to capture most real signals without pulling stale trades.
   freshness_days_congress: 30
   freshness_days_yahoo_prices: 2
-  # Require at least some positive signal to trade (Yahoo technical or Quiver).
-  # A stock above SMA20 (2.0) or any congress buy (2.0) easily clears this.
-  approval_threshold: 1.0
+  # Require score >= threshold to trade.
+  # yahoo_above_sma20 alone = 2.0, so threshold > 2.0 forces at least one extra signal.
+  # congress/senate buy = 2.0 → passes alone (strong enough).
+  approval_threshold: 2.5
 
 market:
   global_kill_switch: false
@@ -45,7 +46,9 @@ quiver_gate:
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  min_active_signal_types: 0
+  # Require at least 1 active Quiver signal type when Quiver is enabled.
+  # Stocks with zero signal across ALL sources are rejected.
+  min_active_signal_types: 1
 
 risk:
   daily_max_spend_usd: 0             # disabled — pct cap below is used instead
@@ -72,7 +75,8 @@ execution:
   use_bracket: true
   take_profit_atr_mult: 3.0
   trailing_stop_atr_mult: 2.0
-  time_in_force: day
+  time_in_force: day             # entry market orders must be day (Alpaca rule)
+  protect_time_in_force: gtc     # protective stops persist overnight
   allow_partial_fills: true
   min_rr_ratio: 1.2
 
