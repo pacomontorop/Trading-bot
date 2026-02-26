@@ -117,7 +117,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         break_even_r = float(safeguards_cfg.get("break_even_R", 1.0))
         break_even_buffer = float(safeguards_cfg.get("break_even_buffer_pct", 0.0))
         trailing_enable = bool(safeguards_cfg.get("trailing_enable", True))
-        trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 1.5))
+        trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 2.0))
+        trailing_profit_mult = float(exec_cfg.get("trailing_stop_profit_atr_mult", 1.0))
+        trailing_tighten_at_r = float(exec_cfg.get("trailing_tighten_at_R", 0.5))
         atr_k = float(risk_cfg.get("atr_k", 2.0))
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
         tick_ge_1 = float(risk_cfg.get("min_tick_equity_ge_1", 0.01))
@@ -180,13 +182,19 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     reasons.append("break_even")
 
             if trailing_enable:
+                # Cuando la posición lleva >= trailing_tighten_at_r de ganancia,
+                # apretamos el trailing para asegurar el beneficio acumulado.
+                in_profit = r_multiple >= trailing_tighten_at_r
+                effective_mult = trailing_profit_mult if in_profit else trailing_mult
                 if atr and atr > 0:
-                    trail_stop = last - atr * trailing_mult
+                    trail_stop = last - atr * effective_mult
                 else:
-                    trail_stop = last * (1 - 0.03)
+                    # Fallback sin ATR: 2% si en ganancia, 3% si todavía no
+                    fallback_pct = 0.02 if in_profit else 0.03
+                    trail_stop = last * (1 - fallback_pct)
                 if trail_stop > new_stop + tick:
                     new_stop = trail_stop
-                    reasons.append("trailing")
+                    reasons.append("trailing_profit" if in_profit else "trailing")
 
             if new_stop <= old_stop + tick:
                 log_event(

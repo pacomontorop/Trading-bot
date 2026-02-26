@@ -74,7 +74,9 @@ risk:
 execution:
   use_bracket: true
   take_profit_atr_mult: 3.0
-  trailing_stop_atr_mult: 2.0
+  trailing_stop_atr_mult: 2.0          # baseline (antes de tener ganancia significativa)
+  trailing_stop_profit_atr_mult: 1.0   # apretado: cuando ya hay ganancia >= tighten_at_R
+  trailing_tighten_at_R: 0.5           # empieza a apretar el trailing desde 0.5R de ganancia
   time_in_force: day             # entry market orders must be day (Alpaca rule)
   protect_time_in_force: gtc     # protective stops persist overnight
   allow_partial_fills: true
