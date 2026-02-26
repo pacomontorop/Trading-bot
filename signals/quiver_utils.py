@@ -100,7 +100,11 @@ def _insider_trade_features(symbol: str, freshness_days: int) -> tuple[dict[str,
 
 
 def _gov_contract_features(symbol: str, freshness_days: int) -> tuple[dict[str, float | int], list[float]]:
-    data = quiver_ingest.fetch_live_govcontracts()
+    # Prefer govcontractsall (individual contracts with exact dates) for precise
+    # freshness filtering. Fall back to quarterly govcontracts if unavailable.
+    data = quiver_ingest.fetch_live_govcontractsall_cached()
+    if not data:
+        data = quiver_ingest.fetch_live_govcontracts()
     total_amount = 0.0
     count = 0
     ages: list[float] = []
@@ -108,7 +112,11 @@ def _gov_contract_features(symbol: str, freshness_days: int) -> tuple[dict[str, 
         for item in data:
             if item.get("Ticker") != symbol.upper():
                 continue
-            dt = _parse_dt(item.get("Date") or item.get("AnnouncementDate"))
+            dt = _parse_dt(
+                item.get("Date")
+                or item.get("action_date")
+                or item.get("AnnouncementDate")
+            )
             if dt is not None:
                 age = _age_days(dt)
                 if age > freshness_days:
@@ -225,23 +233,24 @@ def _house_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict
     return ({"count": float(count)}, ages)
 
 
-def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_twitter()
-    latest_followers = 0.0
+def _offexchange_features(symbol: str) -> tuple[dict[str, float], list[float]]:
+    """Return off-exchange short ratio (DPI).  High DPI = high short pressure = bearish."""
+    data = quiver_ingest.fetch_live_offexchange_cached()
+    latest_dpi = 0.0
     ages: list[float] = []
     if isinstance(data, list):
         items = [item for item in data if item.get("Ticker") == symbol.upper()]
         latest = _latest_item(items, ("Date", "date"))
-        if latest and isinstance(latest.get("Followers"), (int, float)):
+        if latest and isinstance(latest.get("DPI"), (int, float)):
             dt = _parse_dt(latest.get("Date") or latest.get("date"))
             if dt is None:
-                latest_followers = float(latest.get("Followers"))
+                latest_dpi = float(latest.get("DPI"))
             else:
                 age = _age_days(dt)
-                if age <= freshness_days:
-                    latest_followers = float(latest.get("Followers"))
+                if age <= 5:  # off-exchange data is published daily; 5 days is fresh
+                    latest_dpi = float(latest.get("DPI"))
                     ages.append(age)
-    return ({"latest_followers": latest_followers}, ages)
+    return ({"latest_dpi": latest_dpi}, ages)
 
 
 def _senate_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict[str, float], list[float]]:
@@ -325,7 +334,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
     house, house_ages = _house_purchase_features(symbol, freshness_days)
     senate, senate_ages = _senate_purchase_features(symbol, freshness_days)
     congress, congress_ages = _congress_purchase_features(symbol, freshness_days)
-    twitter, twitter_ages = _twitter_features(symbol, freshness_days)
+    offexchange, offexchange_ages = _offexchange_features(symbol)
     app_ratings, app_ratings_ages = _app_ratings_features(symbol, freshness_days)
     ages.extend(
         insider_ages
@@ -337,7 +346,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         + house_ages
         + senate_ages
         + congress_ages
-        + twitter_ages
+        + offexchange_ages
         + app_ratings_ages
     )
     age_min = min(ages) if ages else 0.0
@@ -354,7 +363,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         "quiver_house_purchase_count": house["count"],
         "quiver_senate_purchase_count": senate["count"],
         "quiver_congress_purchase_count": congress["count"],
-        "quiver_twitter_latest_followers": twitter["latest_followers"],
+        "quiver_offexchange_dpi": offexchange["latest_dpi"],
         "quiver_app_rating_latest": app_ratings["latest_rating"],
         "quiver_app_rating_latest_count": app_ratings["latest_count"],
         "quiver_signal_age_days_min": age_min,
