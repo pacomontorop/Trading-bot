@@ -128,7 +128,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
         tick_ge_1 = float(risk_cfg.get("min_tick_equity_ge_1", 0.01))
         tick_lt_1 = float(risk_cfg.get("min_tick_equity_lt_1", 0.0001))
-        protect_min_improve_pct = float(exec_cfg.get("protect_min_improvement_pct", 0.005))
+        protect_min_improve_pct = float(exec_cfg.get("protect_min_improvement_pct", 0.01))
+        protect_min_improve_usd = float(exec_cfg.get("protect_min_improvement_usd", 0.10))
         # Protective stops must survive overnight; entry orders use "day"
         # because Alpaca market orders cannot be GTC.
         tif = exec_cfg.get("protect_time_in_force", "gtc")
@@ -205,9 +206,17 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     reasons.append("trailing_profit" if in_profit else "trailing")
 
             # Only replace the order if the improvement is meaningful.
-            # Using just 1 tick ($0.01) causes order spam every 60-second tick
-            # as the trailing stop moves by a few cents on each price update.
-            min_improve = max(tick, old_stop * protect_min_improve_pct) if old_stop > 0 else tick
+            # Three-way max: tick size floor, percentage of stop, and absolute
+            # dollar floor.  The dollar floor prevents cheap stocks (e.g. TROX
+            # at $6) from spamming updates because 0.5% of $6 is only $0.03 —
+            # barely above the tick — while the trailing stop moves $0.03-$0.04
+            # per minute.  With a $0.10 floor, TROX needs ~1h of price movement
+            # before the stop is worth replacing.
+            min_improve = (
+                max(tick, old_stop * protect_min_improve_pct, protect_min_improve_usd)
+                if old_stop > 0
+                else tick
+            )
             if new_stop <= old_stop + min_improve:
                 log_event(
                     f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=skip_no_improve",

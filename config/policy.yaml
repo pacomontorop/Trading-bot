@@ -93,9 +93,12 @@ execution:
   allow_partial_fills: true
   min_rr_ratio: 1.2
   # Minimum stop improvement before canceling and resubmitting a protective order.
-  # Prevents order spam on every 60-second tick. 0.5% means AEM ($224 stop)
-  # won't update unless stop moves >$1.12. Set to 0.0 to disable (not recommended).
-  protect_min_improvement_pct: 0.005
+  # Three-way max: tick size, percentage of stop price, and absolute dollar floor.
+  # The dollar floor is the critical one for cheap stocks: TROX at $6 has a
+  # 1% threshold of only $0.06, so without the floor it updates every few minutes.
+  # With $0.10 floor: ~1h of average movement needed before a replace fires.
+  protect_min_improvement_pct: 0.01    # 1% of stop price
+  protect_min_improvement_usd: 0.10   # hard floor in dollars (dominates for cheap stocks)
 
 safeguards:
   enabled: true
