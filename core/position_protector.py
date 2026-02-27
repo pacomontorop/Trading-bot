@@ -18,6 +18,10 @@ from utils.logger import log_event
 _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
+# Symbols whose shares are committed to an existing bracket stop.
+# Suppressed for 30 min so we don't spam "insufficient qty" every tick.
+_BRACKET_SUPPRESS: dict[str, float] = {}
+_BRACKET_SUPPRESS_SEC = 1800
 
 _PRICE_TTL_SEC = 15.0
 _ATR_TTL_SEC = 300.0
@@ -148,6 +152,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
             if side and side != "long":
                 continue
+            # Skip symbols whose shares are locked in a bracket stop order.
+            if time.monotonic() < _BRACKET_SUPPRESS.get(symbol, 0):
+                continue
             if asset_class not in {"us_equity", "equity"}:
                 log_event(
                     f"symbol={symbol} asset_class={asset_class} reason=skip_non_equity",
@@ -253,7 +260,10 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 stop_payload["limit_price"] = limit_clean
                 order_type = "stop_limit"
 
-            client_order_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}"
+            # Include millisecond timestamp so each submission has a unique ID.
+            # Using only the stop price caused "client_order_id must be unique"
+            # errors when two ticks computed the same new_stop.
+            client_order_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
             try:
                 broker.api.submit_order(
                     symbol=symbol,
@@ -269,9 +279,19 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     event="PROTECT",
                 )
             except Exception as exc:
-                log_event(
-                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
-                    event="PROTECT",
-                )
+                err_str = str(exc)
+                if "insufficient qty" in err_str:
+                    # Shares are committed to an existing bracket stop order.
+                    # Suppress this symbol for 30 min to avoid spam every tick.
+                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=30",
+                        event="PROTECT",
+                    )
+                else:
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
+                        event="PROTECT",
+                    )
     finally:
         _PROTECT_LOCK.release()
