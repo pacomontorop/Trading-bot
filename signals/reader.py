@@ -228,6 +228,29 @@ def _yahoo_basic_price_reasons(current_price: float | None, min_price: float, ma
     return reasons
 
 
+def _yahoo_downtrend_reasons(hist, max_consecutive_down_days: int) -> list[str]:
+    """Reject a symbol that has closed lower for N consecutive sessions.
+
+    Uses daily close prices from the Yahoo Finance history DataFrame.
+    A stock in a sustained downtrend is avoided regardless of Quiver signals.
+    Returns ["consecutive_down_days"] if the filter fires, else [].
+    """
+    if max_consecutive_down_days <= 0:
+        return []
+    if hist is None or hist.empty or "Close" not in hist.columns:
+        return []
+    closes = hist["Close"].dropna()
+    # Need at least N+1 closes to compare N consecutive pairs
+    if len(closes) < max_consecutive_down_days + 1:
+        return []
+    recent = closes.iloc[-(max_consecutive_down_days + 1):]
+    all_down = all(
+        float(recent.iloc[i]) < float(recent.iloc[i - 1])
+        for i in range(1, len(recent))
+    )
+    return ["consecutive_down_days"] if all_down else []
+
+
 def _yahoo_gate_reasons(
     *,
     snapshot_data: tuple,
@@ -291,11 +314,20 @@ def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bo
 
     strong = bool(reasons)
     summary = {
+        # Fast-lane (strong signal) fields
         "insider_buys_7d": insider_buys,
         "gov_contract_total_30d": gov_total,
         "patent_momentum": patent_momentum,
         "congress_purchases": congress_purchases,
         "senate_purchases": senate_purchases,
+        # Additional Quiver signals (scoring, not fast-lane)
+        "house_purchases": float(features.get("quiver_house_purchase_count", 0)),
+        "wsb_mentions": float(features.get("quiver_wsb_recent_max_mentions", 0)),
+        "sec13f_holders": float(features.get("quiver_sec13f_count", 0)),
+        "sec13f_change_pct": float(features.get("quiver_sec13f_change_latest_pct", 0)),
+        "app_rating": float(features.get("quiver_app_rating_latest", 0)),
+        "offexchange_dpi": float(features.get("quiver_offexchange_dpi", 0)),
+        "insider_sells_7d": float(features.get("quiver_insider_sell_count", 0)),
         "strong_signal_bool": strong,
         "strong_reason": reasons,
     }
@@ -352,6 +384,13 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     if features.get("quiver_senate_purchase_count", 0) > 0:
         active_types += 1
     if features.get("quiver_house_purchase_count", 0) > 0:
+        active_types += 1
+    # App ratings and institutional flow changes are also valid Quiver signals
+    # (positive weight in scoring). Include them so app-heavy or
+    # institutionally-active stocks qualify even without insider/gov/congress data.
+    if features.get("quiver_app_rating_latest", 0) > 0:
+        active_types += 1
+    if features.get("quiver_sec13f_change_latest_pct", 0) > 0:
         active_types += 1
 
     min_types = int(cfg.get("min_active_signal_types", 2))
@@ -593,6 +632,10 @@ def get_top_signals(
             yahoo_reasons.extend(_yahoo_history_reasons(yahoo_hist))
             yahoo_thresholds = strict_thresholds
             yahoo_mode_used = "strict_default"
+
+        # Downtrend guard: reject symbols with N consecutive lower closes.
+        max_down_days = int(gate_cfg.get("max_consecutive_down_days", 0))
+        yahoo_reasons.extend(_yahoo_downtrend_reasons(yahoo_hist, max_down_days))
 
         yahoo_ok = not yahoo_reasons
         decision_trace["yahoo_prefilter_pass"] = yahoo_ok

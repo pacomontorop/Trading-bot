@@ -26,6 +26,9 @@ yahoo_gate:
   relaxed_min_market_cap: 100000000  # was 300000000 — $100M with strong signal
   relaxed_min_avg_volume_7d: 20000   # was 50000
   relaxed_max_atr_pct: 15.0          # was 12.0
+  # Reject symbols falling for N consecutive closes. 0 = disabled.
+  # Avoids entering stocks in a sustained downtrend regardless of Quiver signals.
+  max_consecutive_down_days: 5
 
 quiver_gate:
   enabled: true
@@ -46,8 +49,12 @@ quiver_gate:
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  # Require at least 1 active Quiver signal type when Quiver is enabled.
-  # Stocks with zero signal across ALL sources are rejected.
+  # Require N active Quiver signal types (out of 10 checked) when Quiver is enabled.
+  # 0 = disabled. 1 = at least one of: insider_buys, gov_contracts, patent_momentum,
+  # sec13f_holders, wsb_mentions, congress/senate/house purchases, app_rating,
+  # sec13f_change. Popular stocks have wsb_mentions; app companies have app_rating;
+  # stocks with patent activity pass via patent_momentum. Only stocks Quiver
+  # has no data on at all are blocked — which is usually the right call.
   min_active_signal_types: 1
 
 risk:
@@ -69,7 +76,11 @@ risk:
   min_stop_pct: 0.05
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
-  stop_limit_buffer_pct: 0.002
+  # Buffer below stop trigger at which the limit price is set.
+  # 0.002 (0.2%) was too tight — a gap-down of >$0.20 on a $100 stop left the
+  # position unprotected. 1% covers most intraday gaps while still preventing
+  # catastrophic fills in a flash crash.
+  stop_limit_buffer_pct: 0.01
 
 execution:
   use_bracket: true
@@ -82,9 +93,12 @@ execution:
   allow_partial_fills: true
   min_rr_ratio: 1.2
   # Minimum stop improvement before canceling and resubmitting a protective order.
-  # Prevents order spam on every 60-second tick. 0.5% means AEM ($224 stop)
-  # won't update unless stop moves >$1.12. Set to 0.0 to disable (not recommended).
-  protect_min_improvement_pct: 0.005
+  # Three-way max: tick size, percentage of stop price, and absolute dollar floor.
+  # The dollar floor is the critical one for cheap stocks: TROX at $6 has a
+  # 1% threshold of only $0.06, so without the floor it updates every few minutes.
+  # With $0.10 floor: ~1h of average movement needed before a replace fires.
+  protect_min_improvement_pct: 0.01    # 1% of stop price
+  protect_min_improvement_usd: 0.10   # hard floor in dollars (dominates for cheap stocks)
 
 safeguards:
   enabled: true
