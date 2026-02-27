@@ -26,6 +26,9 @@ yahoo_gate:
   relaxed_min_market_cap: 100000000  # was 300000000 — $100M with strong signal
   relaxed_min_avg_volume_7d: 20000   # was 50000
   relaxed_max_atr_pct: 15.0          # was 12.0
+  # Reject symbols falling for N consecutive closes. 0 = disabled.
+  # Avoids entering stocks in a sustained downtrend regardless of Quiver signals.
+  max_consecutive_down_days: 5
 
 quiver_gate:
   enabled: true
@@ -46,9 +49,11 @@ quiver_gate:
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  # Require at least 1 active Quiver signal type when Quiver is enabled.
-  # Stocks with zero signal across ALL sources are rejected.
-  min_active_signal_types: 1
+  # Require N active Quiver signal types when Quiver is enabled.
+  # 0 = disabled: Yahoo gate is the primary filter; Quiver signals only affect score.
+  # 1 = blocks stocks with zero signals across ALL Quiver sources (too strict when
+  #     Quiver data is dry — blocks all buys during low-signal periods).
+  min_active_signal_types: 0
 
 risk:
   daily_max_spend_usd: 0             # disabled — pct cap below is used instead
@@ -69,7 +74,11 @@ risk:
   min_stop_pct: 0.05
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
-  stop_limit_buffer_pct: 0.002
+  # Buffer below stop trigger at which the limit price is set.
+  # 0.002 (0.2%) was too tight — a gap-down of >$0.20 on a $100 stop left the
+  # position unprotected. 1% covers most intraday gaps while still preventing
+  # catastrophic fills in a flash crash.
+  stop_limit_buffer_pct: 0.01
 
 execution:
   use_bracket: true
