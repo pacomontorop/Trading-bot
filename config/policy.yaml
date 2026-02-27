@@ -49,11 +49,13 @@ quiver_gate:
   patent_momentum_min: 0
   sec13f_count_min: 0
   sec13f_change_min_pct: 0
-  # Require N active Quiver signal types when Quiver is enabled.
-  # 0 = disabled: Yahoo gate is the primary filter; Quiver signals only affect score.
-  # 1 = blocks stocks with zero signals across ALL Quiver sources (too strict when
-  #     Quiver data is dry — blocks all buys during low-signal periods).
-  min_active_signal_types: 0
+  # Require N active Quiver signal types (out of 10 checked) when Quiver is enabled.
+  # 0 = disabled. 1 = at least one of: insider_buys, gov_contracts, patent_momentum,
+  # sec13f_holders, wsb_mentions, congress/senate/house purchases, app_rating,
+  # sec13f_change. Popular stocks have wsb_mentions; app companies have app_rating;
+  # stocks with patent activity pass via patent_momentum. Only stocks Quiver
+  # has no data on at all are blocked — which is usually the right call.
+  min_active_signal_types: 1
 
 risk:
   daily_max_spend_usd: 0             # disabled — pct cap below is used instead
