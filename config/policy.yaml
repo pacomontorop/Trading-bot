@@ -81,6 +81,10 @@ execution:
   protect_time_in_force: gtc     # protective stops persist overnight
   allow_partial_fills: true
   min_rr_ratio: 1.2
+  # Minimum stop improvement before canceling and resubmitting a protective order.
+  # Prevents order spam on every 60-second tick. 0.5% means AEM ($224 stop)
+  # won't update unless stop moves >$1.12. Set to 0.0 to disable (not recommended).
+  protect_min_improvement_pct: 0.005
 
 safeguards:
   enabled: true
