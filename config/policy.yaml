@@ -4,6 +4,10 @@ signals:
 
 market:
   global_kill_switch: false
+  # Pause new entries when CBOE VIX exceeds this level.
+  # 0 = disabled.  Levels: calm <20, elevated 20-28, fear >28, crisis >35.
+  # Existing positions continue to be monitored regardless.
+  vix_pause_threshold: 28
 
 yahoo_gate:
   min_avg_volume_7d: 250000

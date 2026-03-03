@@ -10,7 +10,7 @@ import config
 from core.executor import place_long_order
 from core.position_protector import tick_protect_positions
 from core import risk_manager
-from core.market_gate import is_us_equity_market_open
+from core.market_gate import is_us_equity_market_open, get_vix_level
 from signals.filters import is_position_open
 from signals.reader import get_top_signals
 from utils.generate_symbols_csv import generate_symbols_csv
@@ -67,6 +67,17 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
                 log_event(f"PROTECT loop_error err={exc}", event="PROTECT")
             finally:
                 last_protect_ts = now_ts
+
+        # VIX fear gate — pause new entries when market fear is elevated.
+        # Existing positions are always protected above regardless.
+        vix_level, vix_elevated = get_vix_level()
+        if vix_elevated:
+            log_event(
+                f"SCAN skipped reason=high_vix vix={vix_level:.1f}",
+                event="SCAN",
+            )
+            time.sleep(interval_sec)
+            continue
 
         opportunities = get_top_signals(max_symbols=max_symbols)
         if not opportunities:

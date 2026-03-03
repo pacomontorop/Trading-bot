@@ -75,6 +75,14 @@ python -m pytest tests/ -v
 - `execution.trailing_stop_atr_mult`: Trailing stop in ATR multiples (default 2.0)
 - `execution.min_rr_ratio`: Minimum reward/risk to accept trade (default 1.2)
 
+### Market / Macro
+- `market.global_kill_switch`: Hard stop — set `true` to halt all new orders immediately
+- `market.vix_pause_threshold`: Pause new entries when CBOE VIX exceeds this level
+  - `0` = disabled (default behaviour, no VIX check)
+  - Typical levels: calm < 20 · elevated 20–28 · fear > 28 · crisis > 35
+  - Existing positions continue to be protected (trailing stops, break-even) regardless
+  - VIX is fetched from Yahoo Finance (`^VIX`) and cached for 10 minutes
+
 ### Safeguards
 - `safeguards.enabled`: Must be `true` for orders to execute
 - `safeguards.ttl_days`: Days safeguards stay active after `started_at_utc`
