@@ -10,7 +10,7 @@ import config
 from broker.alpaca_live import is_live_enabled
 from core.executor import place_long_order
 from core.live_executor import place_live_order, tick_protect_live_positions
-from core.live_risk_manager import compute_live_plan, record_live_trade
+from core.live_risk_manager import compute_live_plan, get_live_snapshot, load_live_state, record_live_trade
 from core.position_protector import tick_protect_positions
 from core import risk_manager
 from core.market_gate import is_us_equity_market_open, get_vix_level
@@ -103,8 +103,26 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
             continue
 
         live_active = is_live_enabled()
+
+        # ── Pre-fetch live account state once for the whole cycle ───────────
+        # Avoids N broker API calls (account + positions + orders) when there
+        # are N approved signals.  The snapshot is read-only within the loop;
+        # record_live_trade() updates the on-disk state file after each fill.
+        live_snapshot = None
+        live_state = None
         if live_active:
-            log_event("LIVE trading active for this scan cycle", event="LIVE")
+            try:
+                live_snapshot = get_live_snapshot()
+                live_state = load_live_state()
+                log_event(
+                    f"LIVE trading active for this cycle "
+                    f"cash={live_snapshot['cash']:.0f} "
+                    f"open_positions={len(live_snapshot['positions'])}",
+                    event="LIVE",
+                )
+            except Exception as exc:
+                log_event(f"LIVE snapshot fetch failed err={exc} — skipping live this cycle", event="LIVE")
+                live_active = False
 
         for symbol, total_score, quiver_score, price, atr, plan in opportunities:
             # ── Paper account trade ─────────────────────────────────────────
@@ -131,11 +149,17 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 30) -> None
                     log_event(f"ORDER {symbol}: failed", event="ORDER")
 
             # ── Live account trade (same signal, independent sizing) ────────
+            # Snapshot and state are reused from the pre-fetch above —
+            # no extra broker API calls per symbol.
             if not live_active:
                 continue
             try:
                 live_plan, reason = compute_live_plan(
-                    symbol=symbol, price=price or 0.0, atr=atr
+                    symbol=symbol,
+                    price=price or 0.0,
+                    atr=atr,
+                    snapshot=live_snapshot,
+                    state=live_state,
                 )
                 if live_plan is None:
                     log_event(

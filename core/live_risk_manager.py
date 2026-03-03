@@ -96,6 +96,15 @@ def save_live_state(state: LiveDailyState) -> None:
         log_event(f"LIVE_RISK state save failed err={exc}", event="LIVE")
 
 
+def get_live_snapshot() -> dict | None:
+    """Fetch live account equity, cash, positions and orders in one call.
+
+    Call this **once per scheduler cycle** and pass the result to
+    :func:`compute_live_plan` to avoid redundant broker API calls.
+    """
+    return _get_live_snapshot()
+
+
 def _get_live_snapshot() -> dict | None:
     from broker.alpaca_live import live_api, list_live_positions, list_live_open_orders
 
@@ -135,12 +144,17 @@ def compute_live_plan(
     symbol: str,
     price: float,
     atr: float | None,
+    snapshot: dict | None = None,
+    state: "LiveDailyState | None" = None,
 ) -> tuple[dict | None, str]:
     """Compute a conservative order plan sized for the live account.
 
     Position notional is capped at:
     - ``max_cash_pct * available_cash`` (default 20 % of cash), AND
     - ``max_position_size_usd`` (hard cap, default $200)
+
+    ``snapshot`` and ``state`` can be provided by the caller to avoid
+    redundant network/disk I/O when evaluating multiple symbols in one cycle.
 
     Returns ``(plan, reason)``; ``plan`` is ``None`` when the trade is
     rejected and ``reason`` explains why.
@@ -162,8 +176,10 @@ def compute_live_plan(
     if price <= 0:
         return None, "invalid_price"
 
-    state = load_live_state()
-    snapshot = _get_live_snapshot()
+    if state is None:
+        state = load_live_state()
+    if snapshot is None:
+        snapshot = _get_live_snapshot()
     if snapshot is None:
         return None, "live_account_unavailable"
 
