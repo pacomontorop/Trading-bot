@@ -75,3 +75,16 @@ cache:
 
 universe:
   mapping_failure_pct_block: 0.6
+
+live_account:
+  # Real-money Alpaca account (APCA_API_KEY_ID_REAL / APCA_API_SECRET_KEY_REAL).
+  # Activated only when ENABLE_LIVE_TRADING=true is set in the environment.
+  # Paper trading runs unchanged regardless of this section.
+  #
+  # Position sizing:  min(max_cash_pct × available_cash, max_position_size_usd)
+  max_cash_pct: 0.20           # max fraction of live cash to deploy per session
+  max_position_size_usd: 200   # hard cap per position (real money — keep conservative)
+  min_position_size_usd: 50    # minimum viable position
+  daily_max_new_positions: 2   # max new live trades per day
+  max_total_open_positions: 5  # max simultaneous live positions
+  symbol_cooldown_days: 5      # days before re-trading the same symbol
