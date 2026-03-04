@@ -1,4 +1,10 @@
-"""Centralized market open gate with caching and Alpaca/NYSE fallback."""
+"""Centralized market open gate with caching and Alpaca/NYSE fallback.
+
+Also provides a VIX-based fear gate: :func:`get_vix_level` returns the current
+CBOE VIX reading (cached for 10 minutes) and whether it exceeds the configured
+``market.vix_pause_threshold`` in ``config/policy.yaml``.  Set the threshold
+to ``0`` (default) to disable the gate entirely.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import config
 from utils.logger import log_event
 
 try:  # pragma: no cover - optional dependency used for calendar fallback
@@ -168,3 +175,74 @@ def last_gate_state() -> _GateState:
             next_close=_STATE.next_close,
             last_log=_STATE.last_log,
         )
+
+
+# ---------------------------------------------------------------------------
+# VIX fear gate
+# ---------------------------------------------------------------------------
+
+_VIX_LOCK = threading.Lock()
+_VIX_TTL = 600  # seconds — refresh at most every 10 minutes
+
+
+@dataclass
+class _VixState:
+    ts: Optional[datetime] = None
+    level: float = 0.0
+    elevated: bool = False
+
+
+_VIX_STATE = _VixState()
+
+
+def _vix_threshold() -> float:
+    """Return the configured VIX pause threshold (0 = disabled)."""
+    market_cfg = (getattr(config, "_policy", {}) or {}).get("market", {}) or {}
+    return float(market_cfg.get("vix_pause_threshold", 0))
+
+
+def _fetch_vix() -> float:
+    """Fetch the latest VIX close from Yahoo Finance. Returns 0.0 on failure."""
+    try:
+        import yfinance as yf  # noqa: PLC0415 — optional, imported lazily
+
+        hist = yf.Ticker("^VIX").history(period="5d")
+        if hist.empty:
+            return 0.0
+        return float(hist["Close"].dropna().iloc[-1])
+    except Exception as exc:  # pragma: no cover - network dependent
+        log_event(f"VIX fetch failed err={exc}", event="GATE")
+        return 0.0
+
+
+def get_vix_level(force_refresh: bool = False) -> tuple[float, bool]:
+    """Return ``(vix_level, elevated)``.
+
+    *vix_level* is the latest CBOE VIX reading (0.0 if unavailable).
+    *elevated* is ``True`` when the threshold is configured (> 0) and the VIX
+    exceeds it — signalling that the bot should pause new entries.
+
+    Results are cached for :data:`_VIX_TTL` seconds.
+    """
+    now = datetime.now(timezone.utc)
+    threshold = _vix_threshold()
+
+    with _VIX_LOCK:
+        cache_ok = (
+            _VIX_STATE.ts is not None
+            and (now - _VIX_STATE.ts).total_seconds() < _VIX_TTL
+            and not force_refresh
+        )
+        if not cache_ok:
+            level = _fetch_vix()
+            _VIX_STATE.ts = now
+            _VIX_STATE.level = level
+            _VIX_STATE.elevated = threshold > 0 and level > threshold
+            if level > 0:
+                log_event(
+                    f"VIX level={level:.1f} threshold={threshold:.0f} "
+                    f"elevated={_VIX_STATE.elevated}",
+                    event="GATE",
+                )
+
+        return _VIX_STATE.level, _VIX_STATE.elevated

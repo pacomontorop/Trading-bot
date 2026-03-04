@@ -8,15 +8,20 @@ Designed for automated bracket-order execution with ATR-based risk management.
 ## Architecture
 
 ```
-main.py / start.py          ← entry points
-core/scheduler.py           ← main trading loop (60-second tick)
-signals/reader.py           ← signal aggregation & scoring
-core/risk_manager.py        ← position sizing, daily limits
-core/executor.py            ← order placement via Alpaca
-core/position_protector.py  ← trailing-stop & break-even logic
-broker/alpaca.py            ← lazy-initialised Alpaca REST wrapper
-config/policy.yaml          ← all tunable parameters (no code changes needed)
-.env                        ← secrets (never committed)
+main.py / start.py              ← entry points
+core/scheduler.py               ← main trading loop (60-second tick)
+signals/reader.py               ← signal aggregation & scoring
+core/risk_manager.py            ← paper account position sizing, daily limits
+core/executor.py                ← paper account order placement
+core/position_protector.py      ← paper account trailing-stop & break-even
+broker/alpaca.py                ← lazy Alpaca REST wrapper (paper account)
+
+core/live_risk_manager.py       ← live account position sizing, daily limits
+core/live_executor.py           ← live account order placement & protection
+broker/alpaca_live.py           ← lazy Alpaca REST wrapper (live account)
+
+config/policy.yaml              ← all tunable parameters (no code changes needed)
+.env                            ← secrets (never committed)
 ```
 
 ## Quick Start
@@ -42,11 +47,14 @@ python -m pytest tests/ -v
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `APCA_API_KEY_ID` | **YES** | — | Alpaca API key |
-| `APCA_API_SECRET_KEY` | **YES** | — | Alpaca API secret |
-| `APCA_API_BASE_URL` | no | paper URL | Set to live URL for real trading |
+| `APCA_API_KEY_ID` | **YES** | — | Alpaca paper account API key |
+| `APCA_API_SECRET_KEY` | **YES** | — | Alpaca paper account API secret |
+| `APCA_API_BASE_URL` | no | paper URL | Paper URL by default |
+| `APCA_API_KEY_ID_REAL` | if live | — | Alpaca **live** account API key |
+| `APCA_API_SECRET_KEY_REAL` | if live | — | Alpaca **live** account API secret |
+| `ENABLE_LIVE_TRADING` | no | false | Activate parallel live account trading |
 | `DAILY_RISK_LIMIT` | no | -200 | Max daily loss in USD (negative) |
-| `DRY_RUN` | no | false | Simulate without placing orders |
+| `DRY_RUN` | no | false | Simulate without placing orders (both accounts) |
 | `ENABLE_QUIVER` | no | true | Use QuiverQuant signals |
 | `ENABLE_YAHOO` | no | true | Use Yahoo Finance data |
 | `ENABLE_FMP` | no | false | Use Financial Modeling Prep |
@@ -75,11 +83,35 @@ python -m pytest tests/ -v
 - `execution.trailing_stop_atr_mult`: Trailing stop in ATR multiples (default 2.0)
 - `execution.min_rr_ratio`: Minimum reward/risk to accept trade (default 1.2)
 
+### Market / Macro
+- `market.global_kill_switch`: Hard stop — set `true` to halt all new orders immediately
+- `market.vix_pause_threshold`: Pause new entries when CBOE VIX exceeds this level
+  - `0` = disabled (default behaviour, no VIX check)
+  - Typical levels: calm < 20 · elevated 20–28 · fear > 28 · crisis > 35
+  - Existing positions continue to be protected (trailing stops, break-even) regardless
+  - VIX is fetched from Yahoo Finance (`^VIX`) and cached for 10 minutes
+
 ### Safeguards
 - `safeguards.enabled`: Must be `true` for orders to execute
 - `safeguards.ttl_days`: Days safeguards stay active after `started_at_utc`
 - `safeguards.started_at_utc`: ISO-8601 timestamp of last deployment/reset
 - **Keep `started_at_utc` current** — if TTL expires, all orders are blocked
+
+### Live Account (`live_account.*`)
+Controls the parallel real-money account (activated via `ENABLE_LIVE_TRADING=true`).
+Paper trading is completely unaffected by these settings.
+
+- `live_account.max_cash_pct`: Fraction of live cash to deploy per session (default 0.20 = 20 %)
+- `live_account.max_position_size_usd`: Hard cap per live position (default $200)
+- `live_account.min_position_size_usd`: Minimum viable live position (default $50)
+- `live_account.daily_max_new_positions`: Max new live trades per day (default 2)
+- `live_account.max_total_open_positions`: Max simultaneous live positions (default 5)
+- `live_account.symbol_cooldown_days`: Days before re-trading a symbol on live (default 5)
+
+**How it works**: the scheduler reuses the same gate-approved signals from the paper scan.
+For each approved signal a separate, conservatively sized plan is computed for the live
+account using the limits above.  Live orders are placed on `https://api.alpaca.markets`.
+Live daily state is persisted in `data/risk_state_live.json`.
 
 ## Common Issues & Fixes
 
@@ -146,3 +178,11 @@ All tests are network-isolated (mocked). No real API keys needed for tests.
 4. **Requirements pinned** — `requirements.txt` lists exact working versions
    for this Python 3.11 environment.
 5. **`.env.example` expanded** — documents all environment variables.
+6. **VIX fear gate** — `core/market_gate.get_vix_level()` pauses new entries
+   when CBOE VIX exceeds `market.vix_pause_threshold` (default 28).
+   Existing positions always continue to be protected.
+7. **Parallel live account trading** — `broker/alpaca_live.py`,
+   `core/live_risk_manager.py`, and `core/live_executor.py` add an optional
+   real-money trading pass in the same scheduler loop.  Activated by setting
+   `ENABLE_LIVE_TRADING=true` with `APCA_API_KEY_ID_REAL`/`APCA_API_SECRET_KEY_REAL`
+   in the environment.  Paper trading remains fully operational regardless.
