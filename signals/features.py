@@ -21,6 +21,33 @@ def _to_numeric(value: Any) -> float:
     return 0.0
 
 
+def compute_rsi_from_hist(hist, period: int = 14) -> float | None:
+    """Compute RSI from an already-fetched yfinance history DataFrame.
+
+    Reuses data already downloaded by scoring.py — no extra API call.
+    Returns None if there is insufficient data.
+    """
+    if hist is None or hist.empty or len(hist) < period + 1:
+        return None
+    try:
+        import pandas as pd  # noqa: PLC0415
+
+        close = hist["Close"].astype(float)
+        delta = close.diff().dropna()
+        gain = delta.where(delta > 0, 0.0)
+        loss = -delta.where(delta < 0, 0.0)
+        avg_gain = gain.rolling(window=period).mean()
+        avg_loss = loss.rolling(window=period).mean()
+        rs = avg_gain / avg_loss
+        rsi = 100 - (100 / (1 + rs))
+        latest = rsi.iloc[-1]
+        if isinstance(latest, pd.Series):
+            latest = latest.iloc[0]
+        return float(latest) if not __import__("math").isnan(float(latest)) else None
+    except Exception:
+        return None
+
+
 def get_symbol_features(
     symbol: str,
     *,
@@ -28,6 +55,7 @@ def get_symbol_features(
     yahoo_symbol: str | None = None,
     quiver_symbol: str | None = None,
     quiver_fallback_symbol: str | None = None,
+    yahoo_hist=None,
 ) -> dict[str, float]:
     """Return a flat numeric feature dict for ``symbol`` from all providers."""
     features: dict[str, float | int | None] = {}
@@ -84,5 +112,14 @@ def get_symbol_features(
         features["yahoo_atr_pct"] = (float(atr) / float(current_price)) * 100.0
     else:
         features["yahoo_atr_pct"] = 0.0
+
+    # RSI — computed from already-fetched history (no extra API call)
+    rsi = compute_rsi_from_hist(yahoo_hist)
+    features["yahoo_rsi_14"] = rsi if rsi is not None else 0.0
+
+    # Insider net: positive = more buys than sells (cleaner long signal)
+    buy_count = _to_numeric(features.get("quiver_insider_buy_count"))
+    sell_count = _to_numeric(features.get("quiver_insider_sell_count"))
+    features["quiver_insider_net_count"] = buy_count - sell_count
 
     return {key: _to_numeric(value) for key, value in features.items()}

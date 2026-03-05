@@ -1,6 +1,8 @@
 signals:
   freshness_days_quiver: 7
   freshness_days_yahoo_prices: 2
+  max_symbols_per_scan: 100   # universe sample size per scan cycle (rotates daily)
+  approval_threshold: 0       # min total score to approve (0 = no floor)
 
 market:
   global_kill_switch: false
@@ -13,25 +15,35 @@ yahoo_gate:
   min_avg_volume_7d: 250000
   min_market_cap: 1000000000
   max_atr_pct: 6.0
-  require_trend_positive: false
+  require_trend_positive: true   # long-only: only buy stocks in uptrend vs 90d start
   min_price: 5.0
   max_price: 1000.0
   relaxed_min_market_cap: 300000000
   relaxed_min_avg_volume_7d: 50000
   relaxed_max_atr_pct: 12.0
 
+technicals:
+  # RSI gate applied after yahoo data fetch (uses already-fetched 90d history, no extra API call)
+  # long-only sweet spot: avoid deeply oversold downtrends and overbought tops
+  rsi_period: 14
+  min_rsi: 40     # below 40 = likely in downtrend, avoid
+  max_rsi: 75     # above 75 = overbought, high reversal risk
+  require_rsi: false   # if true, reject symbols where RSI cannot be computed
+
 quiver_gate:
   enabled: true
   fast_lane_enabled: true
-  insider_buy_strong_min_count_7d: 2
-  gov_contract_strong_min_total_30d: 1000000
-  patent_momentum_min_strong: 1.0
-  insider_buy_min_count_lookback: 1
-  gov_contract_min_total_amount: 0
-  gov_contract_min_count: 0
-  patent_momentum_min: 0
-  sec13f_count_min: 0
-  sec13f_change_min_pct: 0
+  # Fast lane: strong single signal bypasses yahoo strict thresholds
+  insider_buy_strong_min_count_7d: 2        # >= 2 insider buys in 7d = strong
+  gov_contract_strong_min_total_30d: 1000000  # >= $1M gov contracts in 30d = strong
+  patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
+  # Minimum gate: at least ONE of these must be met for non-fast-lane symbols
+  insider_buy_min_count_lookback: 1         # at least 1 insider buy in freshness window
+  gov_contract_min_total_amount: 100000     # at least $100k in gov contracts
+  gov_contract_min_count: 1                 # at least 1 gov contract
+  patent_momentum_min: 0                    # 0 = disabled (patent data sparse)
+  sec13f_count_min: 1                       # at least 1 institutional 13F filing
+  sec13f_change_min_pct: 0                  # 0 = disabled (directional check via sec13f_count)
 
 risk:
   daily_max_spend_usd: 800

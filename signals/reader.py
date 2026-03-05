@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import os
+import random
+import datetime as _dt
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import timezone
 from typing import Iterable, List, Tuple
 
 import config
 from core import risk_manager
-from signals.features import get_symbol_features
+from signals.features import get_symbol_features, compute_rsi_from_hist
 from signals.scoring import fetch_yahoo_snapshot
 from utils.logger import log_event
 from utils.universe import load_universe
@@ -19,14 +21,23 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 
 QUIVER_FEATURE_WEIGHTS = {
-    "quiver_insider_buy_count": 1.0,
-    "quiver_insider_sell_count": -1.0,
-    "quiver_gov_contract_total_amount": 0.000001,
+    # Insider activity — net count is the primary signal (buys - sells)
+    "quiver_insider_net_count": 1.5,        # net insider buys: strongest long signal
+    "quiver_insider_buy_count": 0.5,        # raw buys still contribute
+    "quiver_insider_sell_count": -1.0,      # raw sells penalize
+    # Government contracts
+    "quiver_gov_contract_total_amount": 0.000001,  # capped at $200M → max 0.2 pts
     "quiver_gov_contract_count": 0.5,
+    # Congressional purchases (data from Quiver house trading)
+    "quiver_house_purchase_count": 1.0,    # congress members buying = meaningful signal
+    # Innovation / IP
     "quiver_patent_momentum_latest": 1.0,
-    "quiver_wsb_recent_max_mentions": 0.05,
-    "quiver_sec13f_count": 0.2,
-    "quiver_sec13f_change_latest_pct": 0.1,
+    # Institutional interest (13F filings)
+    "quiver_sec13f_count": 0.3,
+    "quiver_sec13f_change_latest_pct": 0.15,
+    # Retail sentiment — lower weight, noisy
+    "quiver_wsb_recent_max_mentions": 0.03,
+    # Social / app signals — minor
     "quiver_twitter_latest_followers": 0.00005,
     "quiver_app_rating_latest": 0.2,
     "quiver_app_rating_latest_count": 0.02,
@@ -36,7 +47,9 @@ _FEATURE_CAPS = {
     "quiver_gov_contract_total_amount": 200_000_000,
     "quiver_wsb_recent_max_mentions": 500,
     "quiver_insider_buy_count": 5,
+    "quiver_insider_net_count": 5,
     "quiver_gov_contract_count": 5,
+    "quiver_house_purchase_count": 5,
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
 }
@@ -85,6 +98,37 @@ def _quiver_gate_cfg() -> dict:
 
 def _universe_cfg() -> dict:
     return _policy_section("universe")
+
+
+def _technicals_cfg() -> dict:
+    return _policy_section("technicals")
+
+
+def _rsi_gate_reasons(rsi: float | None, cfg: dict) -> list[str]:
+    """Return rejection reasons based on RSI bounds. Empty list = pass."""
+    reasons: list[str] = []
+    min_rsi = float(cfg.get("min_rsi", 0))
+    max_rsi = float(cfg.get("max_rsi", 100))
+    require_rsi = bool(cfg.get("require_rsi", False))
+    if rsi is None or rsi == 0.0:
+        if require_rsi:
+            reasons.append("rsi_missing")
+        return reasons
+    if min_rsi > 0 and rsi < min_rsi:
+        reasons.append("rsi_below_min")
+    if max_rsi < 100 and rsi > max_rsi:
+        reasons.append("rsi_above_max")
+    return reasons
+
+
+def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
+    """Shuffle the universe with a daily seed so every scan cycle of the same
+    day sees the same order (reproducible) but different days rotate coverage."""
+    today = _dt.date.today().isoformat()
+    rng = random.Random(today)
+    shuffled = universe.copy()
+    rng.shuffle(shuffled)
+    return shuffled
 
 
 def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
@@ -299,7 +343,7 @@ def _load_universe(path: str = "data/symbols.csv") -> List[dict]:
 
 def get_top_signals(
     *,
-    max_symbols: int = 30,
+    max_symbols: int | None = None,
     exclude: Iterable[str] | None = None,
 ) -> List[SignalTuple]:
     """Return a list of approved signals for the current scan cycle."""
@@ -313,10 +357,18 @@ def get_top_signals(
     strict_gates = _strict_gates_enabled()
     yahoo_gate_cfg = _yahoo_gate_cfg()
     quiver_gate_cfg = _quiver_gate_cfg()
+    technicals_cfg = _technicals_cfg()
+
+    # max_symbols: caller can override; otherwise read from policy; fallback 100
+    if max_symbols is None:
+        max_symbols = int(_signal_cfg().get("max_symbols_per_scan", 100))
+
     log_event(
         "GATES effective "
         f"yahoo_gate={json.dumps(yahoo_gate_cfg, separators=(',', ':'))} "
         f"quiver_gate={json.dumps(quiver_gate_cfg, separators=(',', ':'))} "
+        f"technicals_gate={json.dumps(technicals_cfg, separators=(',', ':'))} "
+        f"max_symbols={max_symbols} "
         f"strict={strict_gates}",
         event="SCAN",
     )
@@ -325,6 +377,9 @@ def get_top_signals(
     if not universe:
         log_event("SCAN no symbols to evaluate", event="SCAN")
         return []
+
+    # Rotate daily so different symbols get evaluated across days
+    universe = _daily_shuffled_universe(universe)
 
     sample_maps = [u["ticker_map"] for u in universe[:5]]
     log_event(f"SCAN ticker_map_sample={sample_maps}", event="SCAN")
@@ -417,6 +472,8 @@ def get_top_signals(
                 "atr_pct": atr_pct,
                 "price": current_price,
             },
+            "rsi": None,
+            "rsi_reasons": [],
             "yahoo_mode_used": "strict_default",
             "yahoo_thresholds_used": strict_thresholds,
             "risk_check_passed": False,
@@ -455,6 +512,7 @@ def get_top_signals(
                 yahoo_symbol=yahoo_symbol,
                 quiver_symbol=quiver_symbol,
                 quiver_fallback_symbol=yahoo_symbol if quiver_symbol != yahoo_symbol else None,
+                yahoo_hist=yahoo_hist,
             )
             decision_trace["quiver_fetch_status"] = quiver_status
         except Exception as exc:
@@ -525,6 +583,23 @@ def get_top_signals(
         if not yahoo_ok:
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
+
+        # RSI gate — uses RSI computed from already-fetched yahoo_hist (no extra call)
+        rsi_value = features.get("yahoo_rsi_14") or None
+        if rsi_value == 0.0:
+            rsi_value = None  # 0.0 is sentinel for "not available"
+        rsi_reasons = _rsi_gate_reasons(rsi_value, technicals_cfg)
+        decision_trace["rsi"] = round(rsi_value, 1) if rsi_value is not None else None
+        decision_trace["rsi_reasons"] = rsi_reasons
+        if rsi_reasons:
+            rejected.append(f"{symbol}:rsi_gate")
+            rejection_counts["rsi_gate"] += 1
+            decision_trace["final_decision"] = "REJECT"
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
