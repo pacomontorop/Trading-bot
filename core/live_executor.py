@@ -22,6 +22,19 @@ _LIVE_PROTECT_LOCK = threading.Lock()
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_TTL_SEC = 300.0
 
+# Crypto symbols (e.g. BTCUSD, ETHUSD) are not managed by this bot's equity logic.
+# Alpaca crypto tickers typically end in USD with length >= 6, or contain "/".
+_CRYPTO_SUFFIXES = {"USD", "BTC", "ETH", "USDT", "USDC"}
+
+
+def _is_crypto_symbol(symbol: str) -> bool:
+    if "/" in symbol:
+        return True
+    for suffix in _CRYPTO_SUFFIXES:
+        if symbol.endswith(suffix) and len(symbol) > len(suffix):
+            return True
+    return False
+
 
 def _atr(symbol: str) -> Optional[float]:
     """Fetch ATR for ``symbol`` with a 5-minute cache."""
@@ -173,6 +186,12 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             if not symbol or qty <= 0 or entry <= 0:
                 continue
             if side and side != "long":
+                continue
+            if _is_crypto_symbol(symbol):
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} reason=skip_crypto",
+                    event="LIVE",
+                )
                 continue
 
             last = get_current_price(symbol)
