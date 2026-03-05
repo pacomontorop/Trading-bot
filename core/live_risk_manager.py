@@ -166,11 +166,12 @@ def compute_live_plan(
     risk_cfg = _risk_cfg()
     exec_cfg = _exec_cfg()
 
-    max_cash_pct = float(live_cfg.get("max_cash_pct", 0.20))
+    max_cash_pct = float(live_cfg.get("max_cash_pct", 0.10))
     max_pos_usd = float(live_cfg.get("max_position_size_usd", 200))
     min_pos_usd = float(live_cfg.get("min_position_size_usd", 50))
-    daily_max_new = int(live_cfg.get("daily_max_new_positions", 2))
-    max_total_open = int(live_cfg.get("max_total_open_positions", 5))
+    daily_max_cash_pct = float(live_cfg.get("daily_max_cash_pct", 0.0))
+    daily_max_new = int(live_cfg.get("daily_max_new_positions", 0))
+    max_total_open = int(live_cfg.get("max_total_open_positions", 10))
     cooldown_days = int(live_cfg.get("symbol_cooldown_days", 5))
 
     if price <= 0:
@@ -191,9 +192,15 @@ def compute_live_plan(
     if equity <= 0:
         return None, "invalid_equity"
 
-    # Daily position count limit
+    # Daily position count limit (optional — 0 means unlimited, use cash budget instead)
     if daily_max_new and state.new_positions_today >= daily_max_new:
         return None, "live_daily_positions_exceeded"
+
+    # Daily cash budget limit
+    if daily_max_cash_pct > 0:
+        daily_cash_budget = cash * daily_max_cash_pct
+        if state.spent_today_usd >= daily_cash_budget:
+            return None, "live_daily_cash_budget_exceeded"
 
     # Total open position limit
     if max_total_open and len(positions) >= max_total_open:
@@ -223,10 +230,13 @@ def compute_live_plan(
             except Exception:
                 pass
 
-    # Budget: cash_pct cap, hard cap, and remaining session budget
+    # Budget: per-position cash_pct cap, hard cap, and remaining daily cash budget
     cash_budget = cash * max_cash_pct
     already_committed = state.spent_today_usd
-    remaining_session = (max_pos_usd * daily_max_new) - already_committed
+    if daily_max_cash_pct > 0:
+        remaining_session = (cash * daily_max_cash_pct) - already_committed
+    else:
+        remaining_session = cash_budget  # no daily cap: per-position cap is the only limit
     budget = min(cash_budget, max_pos_usd, max(remaining_session, 0))
 
     if budget < min_pos_usd:

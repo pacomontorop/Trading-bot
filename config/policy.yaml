@@ -124,10 +124,13 @@ live_account:
   # Activated only when ENABLE_LIVE_TRADING=true is set in the environment.
   # Paper trading runs unchanged regardless of this section.
   #
-  # Position sizing:  min(max_cash_pct × available_cash, max_position_size_usd)
-  max_cash_pct: 0.20           # max fraction of live cash to deploy per session
+  # Position sizing per order:  min(max_cash_pct × cash, max_position_size_usd)
+  # Daily budget across orders:  daily_max_cash_pct × cash  (0 = unlimited)
+  # Hard count limit per day:    daily_max_new_positions     (0 = no count limit)
+  max_cash_pct: 0.10           # max fraction of live cash per individual position (10 %)
   max_position_size_usd: 200   # hard cap per position (real money — keep conservative)
-  min_position_size_usd: 50    # minimum viable position
-  daily_max_new_positions: 2   # max new live trades per day
-  max_total_open_positions: 3  # max simultaneous live positions
+  min_position_size_usd: 25    # minimum viable position
+  daily_max_cash_pct: 0.30     # max fraction of live cash across all positions today (30 %)
+  daily_max_new_positions: 0   # max new live trades per day (0 = no count limit)
+  max_total_open_positions: 10 # max simultaneous live positions
   symbol_cooldown_days: 5      # days before re-trading the same symbol
