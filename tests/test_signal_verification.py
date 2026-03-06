@@ -239,12 +239,19 @@ class TestQuiverEndpointParsing:
         with patch.multiple("signals.quiver_ingest",
                             fetch_live_insiders=MagicMock(return_value=endpoint_mocks.get("insiders", [])),
                             fetch_live_govcontracts=MagicMock(return_value=endpoint_mocks.get("govcontracts", [])),
+                            fetch_live_govcontractsall_cached=MagicMock(return_value=endpoint_mocks.get("govcontracts", [])),
                             fetch_live_housetrading=MagicMock(return_value=endpoint_mocks.get("housetrading", [])),
                             fetch_live_patentmomentum=MagicMock(return_value=endpoint_mocks.get("patentmomentum", [])),
+                            fetch_live_patentmomentum_cached=MagicMock(return_value=endpoint_mocks.get("patentmomentum", [])),
                             fetch_live_sec13f=MagicMock(return_value=endpoint_mocks.get("sec13f", [])),
+                            fetch_live_sec13f_cached=MagicMock(return_value=endpoint_mocks.get("sec13f", [])),
                             fetch_live_sec13fchanges=MagicMock(return_value=endpoint_mocks.get("sec13fchanges", [])),
+                            fetch_live_sec13fchanges_cached=MagicMock(return_value=endpoint_mocks.get("sec13fchanges", [])),
                             fetch_live_twitter=MagicMock(return_value=endpoint_mocks.get("twitter", [])),
                             fetch_live_appratings=MagicMock(return_value=endpoint_mocks.get("appratings", [])),
+                            fetch_live_offexchange_cached=MagicMock(return_value=[]),
+                            fetch_live_senatetrading_cached=MagicMock(return_value=endpoint_mocks.get("senate", [])),
+                            fetch_live_congresstrading_cached=MagicMock(return_value=endpoint_mocks.get("congress", [])),
                             fetch_historical_wallstreetbets=MagicMock(return_value=endpoint_mocks.get("wsb", []))):
             return quiver_utils.get_quiver_features(self.SYMBOL)
 

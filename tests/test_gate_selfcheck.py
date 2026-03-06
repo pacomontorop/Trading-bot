@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import datetime as _dt
+import pandas as pd
 from datetime import datetime, timezone
 
 import config
@@ -56,6 +58,28 @@ def test_quiver_gate_enabled_rejects_without_signals() -> None:
         assert "quiver_min_signal" in reasons
 
     _with_policy(policy, _check)
+
+
+def test_yahoo_history_reasons_fresh_data() -> None:
+    """Regression: _yahoo_history_reasons must not raise NameError/TypeError for datetime."""
+    now = _dt.datetime.now(_dt.timezone.utc)
+    idx = pd.DatetimeIndex([now])
+    hist = pd.DataFrame({"Close": [100.0]}, index=idx)
+    reasons = signals_reader._yahoo_history_reasons(hist)
+    assert reasons == [], f"Fresh history should produce no reasons, got: {reasons}"
+
+
+def test_yahoo_history_reasons_none_hist() -> None:
+    reasons = signals_reader._yahoo_history_reasons(None)
+    assert "yahoo_history_missing" in reasons
+
+
+def test_yahoo_history_reasons_stale_data() -> None:
+    old_ts = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=10)
+    idx = pd.DatetimeIndex([old_ts])
+    hist = pd.DataFrame({"Close": [100.0]}, index=idx)
+    reasons = signals_reader._yahoo_history_reasons(hist)
+    assert "yahoo_stale" in reasons
 
 
 def test_market_gate_fetches_from_alpaca_clock() -> None:
