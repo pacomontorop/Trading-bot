@@ -1,10 +1,14 @@
 import math
+import warnings
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Dict
 
 import pandas as pd
 import yfinance as yf
+
+# yfinance uses pd.Timestamp.utcnow() internally; suppress the deprecation noise
+warnings.filterwarnings("ignore", message="Timestamp.utcnow", category=FutureWarning)
 
 import config
 from utils.symbols import detect_asset_class, normalize_for_yahoo
