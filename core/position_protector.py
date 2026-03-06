@@ -181,7 +181,11 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             denom = max(entry - initial_stop, entry * min_stop_pct)
             r_multiple = (last - entry) / denom if denom > 0 else 0.0
 
-            new_stop = old_stop
+            # Never allow the stop to fall below the initial ATR-based floor.
+            # When bracket orders expire overnight (day TIF) old_stop resets to 0;
+            # without this guard the protector would place a fresh stop based on
+            # the current (lower) price, effectively chasing the stock down.
+            new_stop = max(old_stop, initial_stop)
             reasons: list[str] = []
 
             if r_multiple >= break_even_r:

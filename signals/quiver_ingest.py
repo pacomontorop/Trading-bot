@@ -31,7 +31,7 @@ load_dotenv()
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
-QUIVER_TIMEOUT = int(os.getenv("QUIVER_TIMEOUT", "30"))
+QUIVER_TIMEOUT = int(os.getenv("QUIVER_TIMEOUT", "8"))
 
 _ENDPOINT_SUPPRESS: dict[str, float] = {}
 
@@ -92,7 +92,7 @@ def _cached_heavy_endpoint(name: str, url: str, ttl: int):
     return data
 
 
-def safe_quiver_request(url, retries=5, delay=4):
+def safe_quiver_request(url, retries=3, delay=4):
     if QUIVER_API_KEY:
         log_once(
             "quiver_api_key_present",
