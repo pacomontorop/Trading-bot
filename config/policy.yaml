@@ -1,14 +1,10 @@
 signals:
   freshness_days_quiver: 7
-  freshness_days_gov_contracts: 90
-  # Congress/Senate/House disclosures have up to 45 days legal delay (STOCK Act).
-  # Use 30 days to capture most real signals without pulling stale trades.
-  freshness_days_congress: 30
   freshness_days_yahoo_prices: 2
-  # Require score >= threshold to trade.
-  # yahoo_above_sma20 alone = 2.0, so threshold > 2.0 forces at least one extra signal.
-  # congress/senate buy = 2.0 → passes alone (strong enough).
-  approval_threshold: 2.5
+  max_symbols_per_scan: 100   # universe sample size per scan cycle (rotates daily)
+  approval_threshold: 0.5     # min total score to approve; 0 = no floor
+                              # 0.5 blocks symbols with no net positive signal (e.g. sell-heavy insiders)
+                              # typical scores: 1 insider buy=2.0, $100k gov=0.1, 1 congress=1.0
 
 market:
   global_kill_switch: false
@@ -18,54 +14,47 @@ market:
   vix_pause_threshold: 28
 
 yahoo_gate:
-  # Standard gate — applied to all stocks without a strong Quiver signal.
-  # Lowered thresholds so mid-cap and moderately volatile stocks are considered.
-  min_avg_volume_7d: 100000          # was 250000 — mid-cap stocks are tradeable
-  min_market_cap: 300000000          # was 1_000_000_000 — $300M+ (was $1B)
-  max_atr_pct: 10.0                  # was 6.0 — allow moderate volatility
-  require_trend_positive: false      # was true — technical score handles trend
+  min_avg_volume_7d: 250000
+  min_market_cap: 1000000000
+  max_atr_pct: 6.0
+  require_trend_positive: true   # long-only: only buy stocks in uptrend vs 90d start
   min_price: 5.0
   max_price: 1000.0
-  # Relaxed gate — applied when a strong Quiver signal (fast-lane) is detected.
-  relaxed_min_market_cap: 100000000  # was 300000000 — $100M with strong signal
-  relaxed_min_avg_volume_7d: 20000   # was 50000
-  relaxed_max_atr_pct: 15.0          # was 12.0
-  # Reject symbols falling for N consecutive closes. 0 = disabled.
-  # Avoids entering stocks in a sustained downtrend regardless of Quiver signals.
-  max_consecutive_down_days: 5
+  relaxed_min_market_cap: 300000000
+  relaxed_min_avg_volume_7d: 50000
+  relaxed_max_atr_pct: 12.0
+
+technicals:
+  # RSI gate applied after yahoo data fetch (uses already-fetched 90d history, no extra API call)
+  # long-only sweet spot: avoid deeply oversold downtrends and overbought tops
+  rsi_period: 14
+  min_rsi: 40     # below 40 = likely in downtrend, avoid
+  max_rsi: 75     # above 75 = overbought, high reversal risk
+  require_rsi: false   # if true, reject symbols where RSI cannot be computed
 
 quiver_gate:
   enabled: true
   fast_lane_enabled: true
-  # Fast-lane thresholds — when any of these fire, Yahoo Finance gates are relaxed
-  # and the Quiver gate itself is bypassed (the score threshold still applies)
-  insider_buy_strong_min_count_7d: 2      # >= 2 insider buys in 7d → fast lane
-  gov_contract_strong_min_total_30d: 1000000  # >= $1M contracts in 30d → fast lane
-  patent_momentum_min_strong: 3.0         # patent momentum >= 3.0 → fast lane
-  congress_purchase_strong_min: 1         # any congress member purchase → fast lane
-  senate_purchase_strong_min: 1           # any senator purchase → fast lane
-  house_purchase_strong_min: 2            # >= 2 house members purchasing → fast lane
-  # Hard gate thresholds — all zero = gate disabled; Yahoo gate is the primary filter
-  # Quiver signals are used for RANKING (score), not for hard blocking
-  insider_buy_min_count_lookback: 0
-  gov_contract_min_total_amount: 0
-  gov_contract_min_count: 0
-  patent_momentum_min: 0
-  sec13f_count_min: 0
-  sec13f_change_min_pct: 0
-  # Require N active Quiver signal types (out of 10 checked) when Quiver is enabled.
-  # 0 = disabled. 1 = at least one of: insider_buys, gov_contracts, patent_momentum,
-  # sec13f_holders, wsb_mentions, congress/senate/house purchases, app_rating,
-  # sec13f_change. Popular stocks have wsb_mentions; app companies have app_rating;
-  # stocks with patent activity pass via patent_momentum. Only stocks Quiver
-  # has no data on at all are blocked — which is usually the right call.
+  # Fast lane: strong single signal bypasses yahoo strict thresholds
+  insider_buy_strong_min_count_7d: 2        # >= 2 insider buys in 7d = strong
+  gov_contract_strong_min_total_30d: 1000000  # >= $1M gov contracts in 30d = strong
+  patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
+  # Minimum gate: at least ONE of these must be met for a symbol to pass
+  # Set all to 0 to disable the gate entirely (quiver becomes scoring-only)
+  insider_buy_min_count_lookback: 1         # at least 1 insider buy in freshness window
+  gov_contract_min_total_amount: 100000     # at least $100k in gov contracts
+  gov_contract_min_count: 0                 # 0 = disabled (amount threshold is sufficient)
+  patent_momentum_min: 0                    # 0 = disabled (patent data sparse)
+  sec13f_count_min: 0                       # 0 = disabled (13F filings are quarterly, not weekly)
+  sec13f_change_min_pct: 0                  # 0 = disabled
+  house_purchase_min_count: 0               # 0 = disabled (congressional buys as alternative gate)
+  # How many distinct signal types must be non-zero (1 = any single signal is enough)
   min_active_signal_types: 1
 
 risk:
-  daily_max_spend_usd: 0             # disabled — pct cap below is used instead
-  daily_max_spend_pct_buying_power: 0.25  # 25% of Alpaca buying_power each day
-  daily_max_new_positions: 0
-  max_total_open_positions: 60
+  daily_max_spend_usd: 800
+  daily_max_new_positions: 3
+  max_total_open_positions: 10
   max_position_size_usd: 500
   min_position_size_usd: 100
   max_exposure_pct_equity: 0.60
@@ -80,29 +69,15 @@ risk:
   min_stop_pct: 0.05
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
-  # Buffer below stop trigger at which the limit price is set.
-  # 0.002 (0.2%) was too tight — a gap-down of >$0.20 on a $100 stop left the
-  # position unprotected. 1% covers most intraday gaps while still preventing
-  # catastrophic fills in a flash crash.
-  stop_limit_buffer_pct: 0.01
+  stop_limit_buffer_pct: 0.002
 
 execution:
   use_bracket: true
   take_profit_atr_mult: 3.0
-  trailing_stop_atr_mult: 2.0          # baseline (antes de tener ganancia significativa)
-  trailing_stop_profit_atr_mult: 1.0   # apretado: cuando ya hay ganancia >= tighten_at_R
-  trailing_tighten_at_R: 0.5           # empieza a apretar el trailing desde 0.5R de ganancia
-  time_in_force: day             # entry market orders must be day (Alpaca rule)
-  protect_time_in_force: gtc     # protective stops persist overnight
+  trailing_stop_atr_mult: 2.0
+  time_in_force: day
   allow_partial_fills: true
   min_rr_ratio: 1.2
-  # Minimum stop improvement before canceling and resubmitting a protective order.
-  # Three-way max: tick size, percentage of stop price, and absolute dollar floor.
-  # The dollar floor is the critical one for cheap stocks: TROX at $6 has a
-  # 1% threshold of only $0.06, so without the floor it updates every few minutes.
-  # With $0.10 floor: ~1h of average movement needed before a replace fires.
-  protect_min_improvement_pct: 0.01    # 1% of stop price
-  protect_min_improvement_usd: 0.10   # hard floor in dollars (dominates for cheap stocks)
 
 safeguards:
   enabled: true

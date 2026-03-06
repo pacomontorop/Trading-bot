@@ -5,13 +5,14 @@ from __future__ import annotations
 import json
 import os
 import random
+import datetime as _dt
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import timezone
 from typing import Iterable, List, Tuple
 
 import config
 from core import risk_manager
-from signals.features import get_symbol_features
+from signals.features import get_symbol_features, compute_rsi_from_hist
 from signals.scoring import fetch_yahoo_snapshot
 from utils.logger import log_event
 from utils.universe import load_universe
@@ -20,65 +21,39 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 
 QUIVER_FEATURE_WEIGHTS = {
-    # Insider trading — direct skin-in-the-game signal
-    "quiver_insider_buy_count": 1.0,
-    # Sells are routine (options exercise, diversification, estate). Much weaker signal.
-    "quiver_insider_sell_count": -0.4,
-    # Government contracts — revenue visibility signal
-    "quiver_gov_contract_total_amount": 0.000001,   # per-dollar weight; capped at $200M → max 200
-    "quiver_gov_contract_count": 0.5,
-    # Congressional / Senate / House trading — smart-money signal
-    # A single congress/senate purchase scores 2.0 → passes approval_threshold alone
-    "quiver_congress_purchase_count": 2.0,
-    "quiver_senate_purchase_count": 2.0,
-    "quiver_house_purchase_count": 1.2,
-    # Patent innovation signal
-    "quiver_patent_momentum_latest": 1.0,
-    # Institutional accumulation signals
-    "quiver_sec13f_count": 0.2,
-    "quiver_sec13f_change_latest_pct": 0.1,
-    # Retail / social sentiment (supporting, not primary)
-    "quiver_wsb_recent_max_mentions": 0.05,
-    # Off-exchange short interest — NEGATIVE signal.
-    # High DPI means informed traders are shorting; penalise to avoid crowded shorts.
-    # DPI=0 → 0, DPI=0.5 → -0.5, DPI=1.0 → -1.0 (capped)
-    "quiver_offexchange_dpi": -1.0,
-    # App ratings are sector-specific and a weak proxy. Keep weight tiny.
-    "quiver_app_rating_latest": 0.2,
-    "quiver_app_rating_latest_count": 0.000002,     # 100K reviews → +0.2 pts max
-}
-
-# Yahoo technical weights — primary scoring when Quiver data is absent or weak.
-# A stock trending above SMA20 (2.0) already clears the 1.0 approval_threshold.
-# Good RSI + volume spike adds further confidence.
-YAHOO_TECHNICAL_WEIGHTS = {
-    "yahoo_above_sma20": 2.0,          # price > 20-day SMA = short-term trend up
-    "yahoo_above_sma50": 1.0,          # price > 50-day SMA = medium-term trend up
-    "yahoo_rsi_signal": 1.0,           # pre-computed 0-2 score (peak at RSI ≈ 35)
-    "yahoo_volume_spike_ratio": 0.5,   # recent vol / avg vol; 1.5× avg = +0.75
-    "yahoo_momentum_20d_pct": 0.08,    # 10% 20-day gain → +0.8 pts
+    # Insider activity — net count is the primary signal (buys - sells)
+    "quiver_insider_net_count": 1.5,        # net insider buys: strongest long signal; max 5×1.5 = 7.5 pts
+    "quiver_insider_buy_count": 0.5,        # raw buys still contribute; max 5×0.5 = 2.5 pts
+    "quiver_insider_sell_count": -1.0,      # raw sells penalize; max -5×1.0 = -5 pts
+    # Government contracts
+    "quiver_gov_contract_total_amount": 0.000001,  # capped at $5M → max 5 pts
+    "quiver_gov_contract_count": 0.5,              # max 5×0.5 = 2.5 pts
+    # Congressional purchases (data from Quiver house trading)
+    "quiver_house_purchase_count": 1.0,     # congress members buying = meaningful; max 5×1.0 = 5 pts
+    # Innovation / IP
+    "quiver_patent_momentum_latest": 1.0,   # max 5×1.0 = 5 pts
+    # Institutional interest (13F filings)
+    "quiver_sec13f_count": 0.3,             # max 5×0.3 = 1.5 pts (minor confirmation)
+    "quiver_sec13f_change_latest_pct": 0.15,# max 20×0.15 = 3 pts
+    # Retail sentiment — noisy, kept low
+    "quiver_wsb_recent_max_mentions": 0.01, # reduced: max 500×0.01 = 5 pts (was 15)
+    # Social / app signals — minor
+    "quiver_twitter_latest_followers": 0.00005,       # max ~5M×0.00005 = 250 → capped at 0.5 pts
+    "quiver_app_rating_latest": 0.2,                  # max 5.0×0.2 = 1.0 pts
+    "quiver_app_rating_latest_count": 0.02,           # capped at 100 → max 2 pts (was uncapped = 100+ pts)
 }
 
 _FEATURE_CAPS = {
-    "quiver_gov_contract_total_amount": 200_000_000,
+    "quiver_gov_contract_total_amount": 5_000_000,   # $5M cap → max 5 pts (was $200M → 200 pts)
     "quiver_wsb_recent_max_mentions": 500,
     "quiver_insider_buy_count": 5,
+    "quiver_insider_net_count": 5,
     "quiver_gov_contract_count": 5,
-    "quiver_sec13f_count": 20,             # 20 filings × 0.2 = +4 pts max
+    "quiver_house_purchase_count": 5,
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
-    "quiver_offexchange_dpi": 1.0,         # ratio 0-1; -1.0 weight → max penalty -1.0
-    "quiver_app_rating_latest_count": 100_000,
-    # Congressional / Senate / House caps — beyond 3-5 members buying, marginal value
-    "quiver_congress_purchase_count": 3,
-    "quiver_senate_purchase_count": 3,
-    "quiver_house_purchase_count": 5,
-    # Yahoo technical caps
-    "yahoo_above_sma20": 1.0,          # binary
-    "yahoo_above_sma50": 1.0,          # binary
-    "yahoo_rsi_signal": 2.0,           # pre-computed 0-2
-    "yahoo_volume_spike_ratio": 3.0,   # cap at 3× average volume
-    "yahoo_momentum_20d_pct": 20.0,    # cap at 20% 20-day gain
+    "quiver_app_rating_latest_count": 100,            # cap: 100 reviews max (added — was uncapped)
+    "quiver_twitter_latest_followers": 10_000_000,    # cap: 10M followers → 0.5 pts max
 }
 
 
@@ -127,6 +102,37 @@ def _universe_cfg() -> dict:
     return _policy_section("universe")
 
 
+def _technicals_cfg() -> dict:
+    return _policy_section("technicals")
+
+
+def _rsi_gate_reasons(rsi: float | None, cfg: dict) -> list[str]:
+    """Return rejection reasons based on RSI bounds. Empty list = pass."""
+    reasons: list[str] = []
+    min_rsi = float(cfg.get("min_rsi", 0))
+    max_rsi = float(cfg.get("max_rsi", 100))
+    require_rsi = bool(cfg.get("require_rsi", False))
+    if rsi is None or rsi == 0.0:
+        if require_rsi:
+            reasons.append("rsi_missing")
+        return reasons
+    if min_rsi > 0 and rsi < min_rsi:
+        reasons.append("rsi_below_min")
+    if max_rsi < 100 and rsi > max_rsi:
+        reasons.append("rsi_above_max")
+    return reasons
+
+
+def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
+    """Shuffle the universe with a daily seed so every scan cycle of the same
+    day sees the same order (reproducible) but different days rotate coverage."""
+    today = _dt.date.today().isoformat()
+    rng = random.Random(today)
+    shuffled = universe.copy()
+    rng.shuffle(shuffled)
+    return shuffled
+
+
 def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
     cfg = cfg or _quiver_gate_cfg()
     enabled = bool(cfg.get("enabled", True))
@@ -137,8 +143,6 @@ def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
         float(cfg.get("patent_momentum_min", 0)),
         float(cfg.get("sec13f_count_min", 0)),
         float(cfg.get("sec13f_change_min_pct", 0)),
-        # min_active_signal_types > 0 also counts as an active threshold
-        float(cfg.get("min_active_signal_types", 0)),
     ]
     any_threshold = any(value > 0 for value in thresholds)
     return (not config.ENABLE_QUIVER) or (not enabled) or (not any_threshold)
@@ -155,11 +159,7 @@ def _normalize_feature_value(key: str, value: float) -> float:
 
 
 def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
-    """Score computed from Quiver signals and Yahoo technical indicators.
-
-    Returns (total_score, quiver_score).  Yahoo technical score is included in
-    total_score but tracked separately so callers can inspect both components.
-    """
+    """Simple score computed from Quiver numeric features only."""
     score = 0.0
     quiver_score = 0.0
     for key, weight in QUIVER_FEATURE_WEIGHTS.items():
@@ -167,11 +167,6 @@ def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
         contribution = weight * value
         score += contribution
         quiver_score += contribution
-
-    for key, weight in YAHOO_TECHNICAL_WEIGHTS.items():
-        value = _normalize_feature_value(key, float(features.get(key, 0.0)))
-        score += weight * value
-
     return score, quiver_score
 
 
@@ -228,29 +223,6 @@ def _yahoo_basic_price_reasons(current_price: float | None, min_price: float, ma
     return reasons
 
 
-def _yahoo_downtrend_reasons(hist, max_consecutive_down_days: int) -> list[str]:
-    """Reject a symbol that has closed lower for N consecutive sessions.
-
-    Uses daily close prices from the Yahoo Finance history DataFrame.
-    A stock in a sustained downtrend is avoided regardless of Quiver signals.
-    Returns ["consecutive_down_days"] if the filter fires, else [].
-    """
-    if max_consecutive_down_days <= 0:
-        return []
-    if hist is None or hist.empty or "Close" not in hist.columns:
-        return []
-    closes = hist["Close"].dropna()
-    # Need at least N+1 closes to compare N consecutive pairs
-    if len(closes) < max_consecutive_down_days + 1:
-        return []
-    recent = closes.iloc[-(max_consecutive_down_days + 1):]
-    all_down = all(
-        float(recent.iloc[i]) < float(recent.iloc[i - 1])
-        for i in range(1, len(recent))
-    )
-    return ["consecutive_down_days"] if all_down else []
-
-
 def _yahoo_gate_reasons(
     *,
     snapshot_data: tuple,
@@ -287,17 +259,9 @@ def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bo
     insider_min = float(cfg.get("insider_buy_strong_min_count_7d", 2))
     gov_min = float(cfg.get("gov_contract_strong_min_total_30d", 1_000_000))
     patent_min = float(cfg.get("patent_momentum_min_strong", 90))
-    congress_min = float(cfg.get("congress_purchase_strong_min", 1))
-    senate_min = float(cfg.get("senate_purchase_strong_min", 1))
-    house_min = float(cfg.get("house_purchase_strong_min", 2))
-
     insider_buys = float(features.get("quiver_insider_buy_count", 0))
     gov_total = float(features.get("quiver_gov_contract_total_amount", 0))
     patent_momentum = float(features.get("quiver_patent_momentum_latest", 0))
-    congress_purchases = float(features.get("quiver_congress_purchase_count", 0))
-    senate_purchases = float(features.get("quiver_senate_purchase_count", 0))
-    house_purchases = float(features.get("quiver_house_purchase_count", 0))
-
     reasons: list[str] = []
     if insider_buys >= insider_min:
         reasons.append("insider_buys")
@@ -305,29 +269,11 @@ def _quiver_fast_lane_summary(features: dict[str, float], cfg: dict) -> tuple[bo
         reasons.append("gov_contracts")
     if patent_momentum >= patent_min:
         reasons.append("patent_momentum")
-    if congress_purchases >= congress_min:
-        reasons.append("congress_purchase")
-    if senate_purchases >= senate_min:
-        reasons.append("senate_purchase")
-    if house_purchases >= house_min:
-        reasons.append("house_purchase")
-
     strong = bool(reasons)
     summary = {
-        # Fast-lane (strong signal) fields
         "insider_buys_7d": insider_buys,
         "gov_contract_total_30d": gov_total,
         "patent_momentum": patent_momentum,
-        "congress_purchases": congress_purchases,
-        "senate_purchases": senate_purchases,
-        # Additional Quiver signals (scoring, not fast-lane)
-        "house_purchases": float(features.get("quiver_house_purchase_count", 0)),
-        "wsb_mentions": float(features.get("quiver_wsb_recent_max_mentions", 0)),
-        "sec13f_holders": float(features.get("quiver_sec13f_count", 0)),
-        "sec13f_change_pct": float(features.get("quiver_sec13f_change_latest_pct", 0)),
-        "app_rating": float(features.get("quiver_app_rating_latest", 0)),
-        "offexchange_dpi": float(features.get("quiver_offexchange_dpi", 0)),
-        "insider_sells_7d": float(features.get("quiver_insider_sell_count", 0)),
         "strong_signal_bool": strong,
         "strong_reason": reasons,
     }
@@ -371,7 +317,7 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     active_types = 0
     if features.get("quiver_insider_buy_count", 0) > 0:
         active_types += 1
-    if features.get("quiver_gov_contract_count", 0) > 0:
+    if features.get("quiver_gov_contract_count", 0) > 0 or features.get("quiver_gov_contract_total_amount", 0) > 0:
         active_types += 1
     if features.get("quiver_patent_momentum_latest", 0) > 0:
         active_types += 1
@@ -379,21 +325,10 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         active_types += 1
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
-    if features.get("quiver_congress_purchase_count", 0) > 0:
-        active_types += 1
-    if features.get("quiver_senate_purchase_count", 0) > 0:
-        active_types += 1
     if features.get("quiver_house_purchase_count", 0) > 0:
         active_types += 1
-    # App ratings and institutional flow changes are also valid Quiver signals
-    # (positive weight in scoring). Include them so app-heavy or
-    # institutionally-active stocks qualify even without insider/gov/congress data.
-    if features.get("quiver_app_rating_latest", 0) > 0:
-        active_types += 1
-    if features.get("quiver_sec13f_change_latest_pct", 0) > 0:
-        active_types += 1
 
-    min_types = int(cfg.get("min_active_signal_types", 2))
+    min_types = int(cfg.get("min_active_signal_types", 1))
     if checks and not any(checks):
         reasons.append("quiver_min_signal")
     elif active_types < min_types:
@@ -413,7 +348,7 @@ def _load_universe(path: str = "data/symbols.csv") -> List[dict]:
 
 def get_top_signals(
     *,
-    max_symbols: int = 30,
+    max_symbols: int | None = None,
     exclude: Iterable[str] | None = None,
 ) -> List[SignalTuple]:
     """Return a list of approved signals for the current scan cycle."""
@@ -427,10 +362,18 @@ def get_top_signals(
     strict_gates = _strict_gates_enabled()
     yahoo_gate_cfg = _yahoo_gate_cfg()
     quiver_gate_cfg = _quiver_gate_cfg()
+    technicals_cfg = _technicals_cfg()
+
+    # max_symbols: caller can override; otherwise read from policy; fallback 100
+    if max_symbols is None:
+        max_symbols = int(_signal_cfg().get("max_symbols_per_scan", 100))
+
     log_event(
         "GATES effective "
         f"yahoo_gate={json.dumps(yahoo_gate_cfg, separators=(',', ':'))} "
         f"quiver_gate={json.dumps(quiver_gate_cfg, separators=(',', ':'))} "
+        f"technicals_gate={json.dumps(technicals_cfg, separators=(',', ':'))} "
+        f"max_symbols={max_symbols} "
         f"strict={strict_gates}",
         event="SCAN",
     )
@@ -440,7 +383,9 @@ def get_top_signals(
         log_event("SCAN no symbols to evaluate", event="SCAN")
         return []
 
-    random.shuffle(universe)
+    # Rotate daily so different symbols get evaluated across days
+    universe = _daily_shuffled_universe(universe)
+
     sample_maps = [u["ticker_map"] for u in universe[:5]]
     log_event(f"SCAN ticker_map_sample={sample_maps}", event="SCAN")
 
@@ -532,6 +477,8 @@ def get_top_signals(
                 "atr_pct": atr_pct,
                 "price": current_price,
             },
+            "rsi": None,
+            "rsi_reasons": [],
             "yahoo_mode_used": "strict_default",
             "yahoo_thresholds_used": strict_thresholds,
             "risk_check_passed": False,
@@ -540,7 +487,6 @@ def get_top_signals(
 
         if yahoo_meta.get("status") != "ok":
             decision_trace["yahoo_prefilter_reasons"] = ["yahoo_disabled" if yahoo_meta.get("status") == "disabled" else "yahoo_missing"]
-            decision_trace["quiver_fetch_status"] = "skipped_yahoo"
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
             log_event(
@@ -551,7 +497,6 @@ def get_top_signals(
 
         if price_reasons:
             decision_trace["yahoo_prefilter_reasons"] = price_reasons
-            decision_trace["quiver_fetch_status"] = "skipped_price"
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
             log_event(
@@ -569,10 +514,10 @@ def get_top_signals(
             features = get_symbol_features(
                 symbol,
                 yahoo_snapshot=yahoo_snapshot,
-                yahoo_hist=yahoo_hist,
                 yahoo_symbol=yahoo_symbol,
                 quiver_symbol=quiver_symbol,
                 quiver_fallback_symbol=yahoo_symbol if quiver_symbol != yahoo_symbol else None,
+                yahoo_hist=yahoo_hist,
             )
             decision_trace["quiver_fetch_status"] = quiver_status
         except Exception as exc:
@@ -633,10 +578,6 @@ def get_top_signals(
             yahoo_thresholds = strict_thresholds
             yahoo_mode_used = "strict_default"
 
-        # Downtrend guard: reject symbols with N consecutive lower closes.
-        max_down_days = int(gate_cfg.get("max_consecutive_down_days", 0))
-        yahoo_reasons.extend(_yahoo_downtrend_reasons(yahoo_hist, max_down_days))
-
         yahoo_ok = not yahoo_reasons
         decision_trace["yahoo_prefilter_pass"] = yahoo_ok
         decision_trace["yahoo_prefilter_reasons"] = yahoo_reasons
@@ -647,6 +588,23 @@ def get_top_signals(
         if not yahoo_ok:
             rejected.append(f"{symbol}:yahoo_prefilter")
             rejection_counts["yahoo_prefilter"] += 1
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
+
+        # RSI gate — uses RSI computed from already-fetched yahoo_hist (no extra call)
+        rsi_value = features.get("yahoo_rsi_14") or None
+        if rsi_value == 0.0:
+            rsi_value = None  # 0.0 is sentinel for "not available"
+        rsi_reasons = _rsi_gate_reasons(rsi_value, technicals_cfg)
+        decision_trace["rsi"] = round(rsi_value, 1) if rsi_value is not None else None
+        decision_trace["rsi_reasons"] = rsi_reasons
+        if rsi_reasons:
+            rejected.append(f"{symbol}:rsi_gate")
+            rejection_counts["rsi_gate"] += 1
+            decision_trace["final_decision"] = "REJECT"
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
