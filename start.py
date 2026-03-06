@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import threading
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
+warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 
 from fastapi import FastAPI
 

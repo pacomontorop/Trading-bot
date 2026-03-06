@@ -200,15 +200,33 @@ def fetch_live_sec13fchanges_cached():
 
 
 def fetch_live_senatetrading():
-    return _request_or_default(f"{QUIVER_BASE_URL}/live/senatetrading")
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_senatetrading", f"{QUIVER_BASE_URL}/live/senatetrading", ttl)
+
+
+def fetch_live_senatetrading_cached():
+    return fetch_live_senatetrading()
 
 
 def fetch_live_congresstrading():
-    return _request_or_default(f"{QUIVER_BASE_URL}/live/congresstrading")
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_congresstrading", f"{QUIVER_BASE_URL}/live/congresstrading", ttl)
+
+
+def fetch_live_congresstrading_cached():
+    return fetch_live_congresstrading()
 
 
 def fetch_live_govcontractsall():
     return _request_or_default(f"{QUIVER_BASE_URL}/live/govcontractsall")
+
+
+def fetch_live_govcontractsall_cached():
+    """Individual contracts with exact dates — better than quarterly aggregates."""
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint(
+        "live_govcontractsall", f"{QUIVER_BASE_URL}/live/govcontractsall", ttl
+    )
 
 
 def fetch_live_lobbying():
@@ -219,8 +237,21 @@ def fetch_live_offexchange():
     return _request_or_default(f"{QUIVER_BASE_URL}/live/offexchange")
 
 
+def fetch_live_offexchange_cached():
+    """Yesterday's off-exchange short activity (DPI = % shares short)."""
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint(
+        "live_offexchange", f"{QUIVER_BASE_URL}/live/offexchange", ttl
+    )
+
+
 def fetch_live_patentmomentum():
     return _request_or_default(f"{QUIVER_BASE_URL}/live/patentmomentum")
+
+
+def fetch_live_patentmomentum_cached():
+    ttl = _ttl_heavy()
+    return _cached_heavy_endpoint("live_patentmomentum", f"{QUIVER_BASE_URL}/live/patentmomentum", ttl)
 
 
 def fetch_live_patentdrift(symbol: str):
@@ -348,13 +379,25 @@ def ingest_symbol_payload(symbol: str) -> dict[str, dict[str, list[dict]]]:
 
 def initialize_quiver_caches():
     ttl = _ttl_heavy()
-    print("🔄 Descargando datos de insiders...")
+    print("Descargando datos de insiders...")
     _cached_heavy_endpoint("live_insiders", f"{QUIVER_BASE_URL}/live/insiders", ttl)
-    print("🔄 Descargando datos de contratos gubernamentales...")
+    print("Descargando contratos gubernamentales individuales (govcontractsall)...")
+    _cached_heavy_endpoint("live_govcontractsall", f"{QUIVER_BASE_URL}/live/govcontractsall", ttl)
+    print("Descargando contratos gubernamentales trimestrales (govcontracts)...")
     _cached_heavy_endpoint("live_govcontracts", f"{QUIVER_BASE_URL}/live/govcontracts", ttl)
-    print("🔄 Descargando datos de housetrading...")
+    print("Descargando datos de housetrading...")
     _cached_heavy_endpoint("live_housetrading", f"{QUIVER_BASE_URL}/live/housetrading", ttl)
-    print("🔄 Descargando datos de Twitter...")
-    _cached_heavy_endpoint("live_twitter", f"{QUIVER_BASE_URL}/live/twitter", ttl)
-    print("🔄 Descargando datos de app ratings...")
+    print("Descargando datos de senatetrading...")
+    _cached_heavy_endpoint("live_senatetrading", f"{QUIVER_BASE_URL}/live/senatetrading", ttl)
+    print("Descargando datos de congresstrading...")
+    _cached_heavy_endpoint("live_congresstrading", f"{QUIVER_BASE_URL}/live/congresstrading", ttl)
+    print("Descargando datos de app ratings...")
     _cached_heavy_endpoint("live_appratings", f"{QUIVER_BASE_URL}/live/appratings", ttl)
+    print("Descargando datos de patent momentum...")
+    _cached_heavy_endpoint("live_patentmomentum", f"{QUIVER_BASE_URL}/live/patentmomentum", ttl)
+    print("Descargando actividad off-exchange (short interest)...")
+    _cached_heavy_endpoint("live_offexchange", f"{QUIVER_BASE_URL}/live/offexchange", ttl)
+    print("Descargando datos de SEC 13F...")
+    _cached_heavy_endpoint("live_sec13f", f"{QUIVER_BASE_URL}/live/sec13f", ttl)
+    print("Descargando datos de SEC 13F changes...")
+    _cached_heavy_endpoint("live_sec13fchanges", f"{QUIVER_BASE_URL}/live/sec13fchanges", ttl)

@@ -6,7 +6,7 @@ from __future__ import annotations
 def detect_asset_class(symbol: str) -> str:
     """Return an asset class identifier for ``symbol``.
 
-    Asset classes currently recognized: ``equity`` and ``preferred``.
+    Asset classes currently recognized: ``equity``, ``preferred``.
     """
 
     if not symbol:

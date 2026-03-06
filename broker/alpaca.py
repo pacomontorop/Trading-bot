@@ -165,3 +165,37 @@ def list_positions():
     except Exception:
         return []
 
+
+def get_todays_filled_buy_orders(ny_date: str) -> list | None:
+    """Return today's filled buy orders from Alpaca.
+
+    Queries Alpaca for all orders since midnight NY time on ``ny_date`` and
+    returns only filled buy-side orders.  Returns ``None`` if the API call
+    fails so callers can distinguish "no orders" from "call failed".
+
+    Args:
+        ny_date: Date string ``'YYYY-MM-DD'`` in New York timezone.
+    """
+    try:  # pragma: no cover - network call
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+
+        ny_tz = ZoneInfo("America/New_York")
+        midnight = datetime.strptime(ny_date, "%Y-%m-%d").replace(
+            hour=0, minute=0, second=0, tzinfo=ny_tz
+        )
+        orders = api.list_orders(
+            status="all",
+            after=midnight.isoformat(),
+            direction="asc",
+            limit=500,
+        )
+        return [
+            o
+            for o in (orders or [])
+            if getattr(o, "side", "") == "buy"
+            and getattr(o, "status", "") == "filled"
+        ]
+    except Exception:
+        return None
+

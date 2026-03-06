@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import threading
 import time
 from typing import Optional
@@ -17,6 +18,10 @@ from utils.logger import log_event
 _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
+# Symbols whose shares are committed to an existing bracket stop.
+# Suppressed for 30 min so we don't spam "insufficient qty" every tick.
+_BRACKET_SUPPRESS: dict[str, float] = {}
+_BRACKET_SUPPRESS_SEC = 1800
 
 _PRICE_TTL_SEC = 15.0
 _ATR_TTL_SEC = 300.0
@@ -116,12 +121,18 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         break_even_r = float(safeguards_cfg.get("break_even_R", 1.0))
         break_even_buffer = float(safeguards_cfg.get("break_even_buffer_pct", 0.0))
         trailing_enable = bool(safeguards_cfg.get("trailing_enable", True))
-        trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 1.5))
+        trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 2.0))
+        trailing_profit_mult = float(exec_cfg.get("trailing_stop_profit_atr_mult", 1.0))
+        trailing_tighten_at_r = float(exec_cfg.get("trailing_tighten_at_R", 0.5))
         atr_k = float(risk_cfg.get("atr_k", 2.0))
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
         tick_ge_1 = float(risk_cfg.get("min_tick_equity_ge_1", 0.01))
         tick_lt_1 = float(risk_cfg.get("min_tick_equity_lt_1", 0.0001))
-        tif = exec_cfg.get("time_in_force", "day")
+        protect_min_improve_pct = float(exec_cfg.get("protect_min_improvement_pct", 0.01))
+        protect_min_improve_usd = float(exec_cfg.get("protect_min_improvement_usd", 0.10))
+        # Protective stops must survive overnight; entry orders use "day"
+        # because Alpaca market orders cannot be GTC.
+        tif = exec_cfg.get("protect_time_in_force", "gtc")
 
         positions = broker.list_positions()
         try:
@@ -135,11 +146,21 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 qty = float(getattr(pos, "qty", 0) or 0)
                 side = str(getattr(pos, "side", "") or "").lower()
                 entry = float(getattr(pos, "avg_entry_price", 0) or 0)
+                asset_class = str(getattr(pos, "asset_class", "us_equity") or "us_equity").lower()
             except Exception:
                 continue
             if not symbol or qty <= 0 or entry <= 0:
                 continue
             if side and side != "long":
+                continue
+            # Skip symbols whose shares are locked in a bracket stop order.
+            if time.monotonic() < _BRACKET_SUPPRESS.get(symbol, 0):
+                continue
+            if asset_class not in {"us_equity", "equity"}:
+                log_event(
+                    f"symbol={symbol} asset_class={asset_class} reason=skip_non_equity",
+                    event="PROTECT",
+                )
                 continue
 
             last = _price(symbol)
@@ -170,15 +191,33 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     reasons.append("break_even")
 
             if trailing_enable:
+                # Cuando la posición lleva >= trailing_tighten_at_r de ganancia,
+                # apretamos el trailing para asegurar el beneficio acumulado.
+                in_profit = r_multiple >= trailing_tighten_at_r
+                effective_mult = trailing_profit_mult if in_profit else trailing_mult
                 if atr and atr > 0:
-                    trail_stop = last - atr * trailing_mult
+                    trail_stop = last - atr * effective_mult
                 else:
-                    trail_stop = last * (1 - 0.03)
+                    # Fallback sin ATR: 2% si en ganancia, 3% si todavía no
+                    fallback_pct = 0.02 if in_profit else 0.03
+                    trail_stop = last * (1 - fallback_pct)
                 if trail_stop > new_stop + tick:
                     new_stop = trail_stop
-                    reasons.append("trailing")
+                    reasons.append("trailing_profit" if in_profit else "trailing")
 
-            if new_stop <= old_stop + tick:
+            # Only replace the order if the improvement is meaningful.
+            # Three-way max: tick size floor, percentage of stop, and absolute
+            # dollar floor.  The dollar floor prevents cheap stocks (e.g. TROX
+            # at $6) from spamming updates because 0.5% of $6 is only $0.03 —
+            # barely above the tick — while the trailing stop moves $0.03-$0.04
+            # per minute.  With a $0.10 floor, TROX needs ~1h of price movement
+            # before the stop is worth replacing.
+            min_improve = (
+                max(tick, old_stop * protect_min_improve_pct, protect_min_improve_usd)
+                if old_stop > 0
+                else tick
+            )
+            if new_stop <= old_stop + min_improve:
                 log_event(
                     f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=skip_no_improve",
                     event="PROTECT",
@@ -210,14 +249,30 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
-            stop_payload = {"stop_price": float(new_stop)}
-            limit = stop_limit_price(float(new_stop), symbol=symbol)
+            # Round to the valid tick increment before submission.
+            # Alpaca enforces sub-penny rules: prices must be exact multiples of
+            # $0.01 for equities >= $1.  Raw ATR arithmetic leaves fractional
+            # cents that Alpaca rejects.  Round down so the stop is never tighter
+            # than intended, then strip float-representation artifacts
+            # (e.g. math.floor(x/0.01)*0.01 can yield 120.83000000000001).
+            _decimals = 2 if new_stop >= 1.0 else 4
+            price_tick = tick_ge_1 if new_stop >= 1.0 else tick_lt_1
+            new_stop_clean = round(math.floor(new_stop / price_tick) * price_tick, _decimals)
+
+            stop_payload = {"stop_price": new_stop_clean}
+            limit = stop_limit_price(new_stop_clean, symbol=symbol)
             order_type = "stop"
-            if limit and limit < new_stop:
-                stop_payload["limit_price"] = float(limit)
+            if limit and limit < new_stop_clean:
+                _lim_dec = 2 if limit >= 1.0 else 4
+                lim_tick = tick_ge_1 if limit >= 1.0 else tick_lt_1
+                limit_clean = round(math.floor(limit / lim_tick) * lim_tick, _lim_dec)
+                stop_payload["limit_price"] = limit_clean
                 order_type = "stop_limit"
 
-            client_order_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}"
+            # Include millisecond timestamp so each submission has a unique ID.
+            # Using only the stop price caused "client_order_id must be unique"
+            # errors when two ticks computed the same new_stop.
+            client_order_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
             try:
                 broker.api.submit_order(
                     symbol=symbol,
@@ -233,9 +288,19 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     event="PROTECT",
                 )
             except Exception as exc:
-                log_event(
-                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
-                    event="PROTECT",
-                )
+                err_str = str(exc)
+                if "insufficient qty" in err_str:
+                    # Shares are committed to an existing bracket stop order.
+                    # Suppress this symbol for 30 min to avoid spam every tick.
+                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=30",
+                        event="PROTECT",
+                    )
+                else:
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
+                        event="PROTECT",
+                    )
     finally:
         _PROTECT_LOCK.release()
