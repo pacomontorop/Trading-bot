@@ -134,21 +134,24 @@ def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Intra-day rotation state — advances offset each cycle so every symbol in
-# the universe is evaluated at least once per trading day.
+# Intra-day rotation state — each cycle gets the next unseen batch of symbols.
+# A symbol is never evaluated twice in the same trading day.
 # ---------------------------------------------------------------------------
 _rot_date: str = ""
 _rot_universe: list[dict] = []
 _rot_offset: int = 0
+_rot_seen_today: set[str] = set()
 
 
 def _cycle_batch(batch_size: int) -> list[dict]:
-    """Return the next *batch_size* symbols from the daily-shuffled universe.
+    """Return the next *batch_size* unseen symbols for today.
 
-    Wraps around at end-of-universe so no symbols are permanently skipped.
-    State resets automatically at midnight (new date = new shuffle).
+    Advances through the daily-shuffled universe; each symbol is yielded at
+    most once per calendar day.  Returns [] when the full universe has been
+    covered — the scheduler will skip new-entry scanning for remaining cycles
+    while position protection continues normally.
     """
-    global _rot_date, _rot_universe, _rot_offset
+    global _rot_date, _rot_universe, _rot_offset, _rot_seen_today
 
     today = _dt.date.today().isoformat()
     if _rot_date != today:
@@ -156,21 +159,26 @@ def _cycle_batch(batch_size: int) -> list[dict]:
         _rot_universe = _daily_shuffled_universe(raw)
         _rot_date = today
         _rot_offset = 0
+        _rot_seen_today = set()
 
     total = len(_rot_universe)
     if total == 0:
         return []
 
-    start = _rot_offset % total
-    end = start + batch_size
-    if end <= total:
-        batch = _rot_universe[start:end]
-    else:
-        batch = _rot_universe[start:] + _rot_universe[: end - total]
+    batch: list[dict] = []
+    checked = 0
+    while len(batch) < batch_size and checked < total:
+        entry = _rot_universe[_rot_offset % total]
+        _rot_offset = (_rot_offset + 1) % total
+        checked += 1
+        symbol = entry["ticker_map"]["canonical"]
+        if symbol not in _rot_seen_today:
+            _rot_seen_today.add(symbol)
+            batch.append(entry)
 
-    _rot_offset = (start + batch_size) % total
+    remaining = total - len(_rot_seen_today)
     log_event(
-        f"SCAN rotation offset={start}->{_rot_offset} total_universe={total} batch={len(batch)}",
+        f"SCAN rotation seen={len(_rot_seen_today)}/{total} remaining={remaining} batch={len(batch)}",
         event="SCAN",
     )
     return batch

@@ -47,6 +47,7 @@ def generate_symbols_csv(output_path="data/symbols.csv"):
             }
             for a in assets
             if a.tradable
+            and a.shortable          # shortable = liquid enough for institutional lending → quality proxy
             and a.exchange in ["NASDAQ", "NYSE"]
             and getattr(a, "asset_class", "us_equity") == "us_equity"
             and not _is_junk(a)
