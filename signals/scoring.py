@@ -38,9 +38,18 @@ def _fetch_yahoo_data(symbol: str, return_history: bool = False):
             return cached["data"], cached.get("history")
         return cached["data"]
     ticker = yf.Ticker(symbol)
-    info = ticker.info
-    market_cap = info.get("marketCap")
-    volume = info.get("volume")
+    market_cap = None
+    volume = None
+    try:
+        info = ticker.info
+        market_cap = info.get("marketCap")
+        volume = info.get("volume")
+    except Exception:
+        try:
+            fi = ticker.fast_info
+            market_cap = getattr(fi, "market_cap", None)
+        except Exception:
+            pass
     hist = ticker.history(period="90d", interval="1d")
     if hist.empty or hist["Close"].dropna().empty:
         raise YFPricesMissingError("history_empty")

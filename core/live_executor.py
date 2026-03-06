@@ -14,6 +14,7 @@ from typing import Optional
 import config
 from broker.alpaca import get_current_price
 from broker.alpaca_live import live_api, list_live_positions, list_live_open_orders
+from core.broker import get_tick_size, round_to_tick
 from core.order_protection import compute_bracket_prices, stop_limit_price, validate_bracket_prices
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
@@ -261,6 +262,10 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     event="LIVE",
                 )
                 continue
+
+            # Round new_stop to tick size before submitting to Alpaca
+            tick_size = get_tick_size(symbol, "us_equity", last)
+            new_stop = round_to_tick(float(new_stop), tick_size, mode="down") or new_stop
 
             reason_txt = "+".join(reasons) if reasons else "update"
             if dry_run:
