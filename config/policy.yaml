@@ -37,13 +37,17 @@ quiver_gate:
   insider_buy_strong_min_count_7d: 2        # >= 2 insider buys in 7d = strong
   gov_contract_strong_min_total_30d: 1000000  # >= $1M gov contracts in 30d = strong
   patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
-  # Minimum gate: at least ONE of these must be met for non-fast-lane symbols
+  # Minimum gate: at least ONE of these must be met for a symbol to pass
+  # Set all to 0 to disable the gate entirely (quiver becomes scoring-only)
   insider_buy_min_count_lookback: 1         # at least 1 insider buy in freshness window
   gov_contract_min_total_amount: 100000     # at least $100k in gov contracts
-  gov_contract_min_count: 1                 # at least 1 gov contract
+  gov_contract_min_count: 0                 # 0 = disabled (amount threshold is sufficient)
   patent_momentum_min: 0                    # 0 = disabled (patent data sparse)
-  sec13f_count_min: 1                       # at least 1 institutional 13F filing
-  sec13f_change_min_pct: 0                  # 0 = disabled (directional check via sec13f_count)
+  sec13f_count_min: 0                       # 0 = disabled (13F filings are quarterly, not weekly)
+  sec13f_change_min_pct: 0                  # 0 = disabled
+  house_purchase_min_count: 0               # 0 = disabled (congressional buys as alternative gate)
+  # How many distinct signal types must be non-zero (1 = any single signal is enough)
+  min_active_signal_types: 1
 
 risk:
   daily_max_spend_usd: 800

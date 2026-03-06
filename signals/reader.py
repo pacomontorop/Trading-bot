@@ -315,7 +315,7 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
     active_types = 0
     if features.get("quiver_insider_buy_count", 0) > 0:
         active_types += 1
-    if features.get("quiver_gov_contract_count", 0) > 0:
+    if features.get("quiver_gov_contract_count", 0) > 0 or features.get("quiver_gov_contract_total_amount", 0) > 0:
         active_types += 1
     if features.get("quiver_patent_momentum_latest", 0) > 0:
         active_types += 1
@@ -323,10 +323,13 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         active_types += 1
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
+    if features.get("quiver_house_purchase_count", 0) > 0:
+        active_types += 1
 
+    min_types = int(cfg.get("min_active_signal_types", 1))
     if checks and not any(checks):
         reasons.append("quiver_min_signal")
-    elif active_types < 2:
+    elif active_types < min_types:
         reasons.append("quiver_min_types")
     return not reasons, reasons
 

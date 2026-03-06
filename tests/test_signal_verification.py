@@ -421,57 +421,64 @@ class TestQuiverEndpointParsing:
 # ============================================================================
 
 class TestQuiverGateThresholds:
-    """Verify the new non-zero thresholds actually filter."""
+    """Verify gate thresholds filter correctly without over-blocking."""
+
+    # Default policy matching current policy.yaml: min_types=1, sec13f disabled
+    _BASE_POLICY = {
+        "quiver_gate": {
+            "enabled": True,
+            "insider_buy_min_count_lookback": 1,
+            "gov_contract_min_total_amount": 100_000,
+            "gov_contract_min_count": 0,      # disabled — amount threshold is sufficient
+            "patent_momentum_min": 0,
+            "sec13f_count_min": 0,             # disabled — 13F filings are quarterly
+            "sec13f_change_min_pct": 0,
+            "min_active_signal_types": 1,      # a single strong signal is enough
+        }
+    }
 
     def _gate(self, features: dict, policy_overrides: dict = None):
         from signals.reader import gate_quiver_minimum
-        policy = {
-            "quiver_gate": {
-                "enabled": True,
-                "insider_buy_min_count_lookback": 1,
-                "gov_contract_min_total_amount": 100_000,
-                "gov_contract_min_count": 1,
-                "patent_momentum_min": 0,
-                "sec13f_count_min": 1,
-                "sec13f_change_min_pct": 0,
-            }
-        }
+        import copy
+        policy = copy.deepcopy(self._BASE_POLICY)
         if policy_overrides:
             policy["quiver_gate"].update(policy_overrides)
         return _with_policy(policy, lambda: gate_quiver_minimum(features))
 
-    def test_passes_with_insider_buy(self):
-        ok, reasons = self._gate({"quiver_insider_buy_count": 1, "quiver_sec13f_count": 1})
-        assert ok, f"Should pass with 1 insider buy + 1 13F, got reasons: {reasons}"
+    def test_single_insider_buy_passes_alone(self):
+        """A single insider buy should pass — no second signal type required."""
+        ok, reasons = self._gate({"quiver_insider_buy_count": 1})
+        assert ok, f"1 insider buy alone should pass (min_types=1), got: {reasons}"
+
+    def test_house_purchase_alone_passes(self):
+        """Congressional purchase alone should pass (counted as 1 active type)."""
+        ok, reasons = self._gate({"quiver_house_purchase_count": 1,
+                                   "quiver_gov_contract_total_amount": 150_000})
+        assert ok, f"House purchase + gov contract should pass, got: {reasons}"
 
     def test_passes_with_gov_contract_above_threshold(self):
-        ok, reasons = self._gate({
-            "quiver_gov_contract_total_amount": 200_000,
-            "quiver_gov_contract_count": 1,
-            "quiver_insider_buy_count": 1,
-        })
-        assert ok, f"Should pass with $200k gov contract, got {reasons}"
+        ok, reasons = self._gate({"quiver_gov_contract_total_amount": 200_000})
+        assert ok, f"$200k gov contract should pass, got {reasons}"
 
-    def test_rejects_gov_contract_below_threshold(self):
-        # Only gov contract signal, below $100k threshold — but insider present
+    def test_rejects_gov_contract_below_amount_threshold(self):
         ok, reasons = self._gate({
-            "quiver_gov_contract_total_amount": 50_000,
-            "quiver_gov_contract_count": 0,
+            "quiver_gov_contract_total_amount": 50_000,   # below $100k
             "quiver_insider_buy_count": 0,
-            "quiver_sec13f_count": 0,
         })
-        assert not ok, "Should reject when all signals below thresholds"
-
-    def test_passes_with_sec13f_only(self):
-        ok, reasons = self._gate({
-            "quiver_sec13f_count": 2,
-            "quiver_insider_buy_count": 1,
-        })
-        assert ok
+        assert not ok, "All checks below thresholds should reject"
 
     def test_rejects_empty_features(self):
         ok, reasons = self._gate({})
         assert not ok, f"Empty features should be rejected, got ok={ok}"
+
+    def test_strictly_two_types_required_when_configured(self):
+        """When min_active_signal_types=2, a single insider buy alone is rejected."""
+        ok, reasons = self._gate(
+            {"quiver_insider_buy_count": 1},
+            policy_overrides={"min_active_signal_types": 2},
+        )
+        assert not ok, f"Should reject with only 1 signal type when min_types=2, got ok={ok}"
+        assert "quiver_min_types" in reasons
 
     def test_gate_disabled_when_all_zero(self):
         from signals.reader import gate_quiver_minimum
@@ -483,6 +490,7 @@ class TestQuiverGateThresholds:
             "patent_momentum_min": 0,
             "sec13f_count_min": 0,
             "sec13f_change_min_pct": 0,
+            "min_active_signal_types": 1,
         }}
         ok, reasons = _with_policy(policy, lambda: gate_quiver_minimum({}))
         assert ok
