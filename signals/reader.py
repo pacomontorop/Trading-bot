@@ -203,9 +203,9 @@ def _yahoo_history_reasons(hist) -> list[str]:
         reasons.append("yahoo_history_missing")
     else:
         last_dt = hist.index[-1]
-        if isinstance(last_dt, datetime):
+        if isinstance(last_dt, datetime.datetime):
             last_dt = last_dt.tz_localize(timezone.utc) if last_dt.tzinfo is None else last_dt
-            age_days = (datetime.now(timezone.utc) - last_dt).total_seconds() / 86400.0
+            age_days = (datetime.datetime.now(timezone.utc) - last_dt).total_seconds() / 86400.0
             if age_days > freshness_days:
                 reasons.append("yahoo_stale")
     return reasons
