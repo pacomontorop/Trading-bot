@@ -294,7 +294,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 stop_payload["limit_price"] = float(limit)
                 order_type = "stop_limit"
 
-            client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}"
+            client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
             try:  # pragma: no cover - network
                 live_api.submit_order(
                     symbol=symbol,
