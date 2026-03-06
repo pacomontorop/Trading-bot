@@ -134,24 +134,37 @@ def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Intra-day rotation state — each cycle gets the next unseen batch of symbols.
-# A symbol is never evaluated twice in the same trading day.
+# Intra-day rotation state — time-based per-symbol cooldown.
+#
+# Each symbol can be re-evaluated after `symbol_rescan_cooldown_hours` hours
+# (default 4h, configurable in policy.yaml → signals.symbol_rescan_cooldown_hours).
+# This allows 2-3 full sweeps per trading day so afternoon signals (new
+# government contracts, post-open insider filings) are never missed, while
+# still avoiding hammering the same symbol every 60 seconds.
 # ---------------------------------------------------------------------------
 _rot_date: str = ""
 _rot_universe: list[dict] = []
 _rot_offset: int = 0
-_rot_seen_today: set[str] = set()
+_rot_last_seen: dict[str, float] = {}   # symbol → epoch seconds of last evaluation
+
+
+def _rescan_cooldown_seconds() -> float:
+    hours = float(
+        (_signal_cfg() or {}).get("symbol_rescan_cooldown_hours", 4)
+    )
+    return hours * 3600
 
 
 def _cycle_batch(batch_size: int) -> list[dict]:
-    """Return the next *batch_size* unseen symbols for today.
+    """Return the next *batch_size* symbols that are past their rescan cooldown.
 
-    Advances through the daily-shuffled universe; each symbol is yielded at
-    most once per calendar day.  Returns [] when the full universe has been
-    covered — the scheduler will skip new-entry scanning for remaining cycles
-    while position protection continues normally.
+    Advances through the daily-shuffled universe; a symbol is skipped if it
+    was evaluated within the last ``symbol_rescan_cooldown_hours`` hours.
+    The universe order resets each calendar day (new shuffle seed).
+    Returns [] only when every symbol in the universe is still in cooldown —
+    the scheduler protects positions and retries next cycle.
     """
-    global _rot_date, _rot_universe, _rot_offset, _rot_seen_today
+    global _rot_date, _rot_universe, _rot_offset, _rot_last_seen
 
     today = _dt.date.today().isoformat()
     if _rot_date != today:
@@ -159,11 +172,14 @@ def _cycle_batch(batch_size: int) -> list[dict]:
         _rot_universe = _daily_shuffled_universe(raw)
         _rot_date = today
         _rot_offset = 0
-        _rot_seen_today = set()
+        _rot_last_seen = {}
 
     total = len(_rot_universe)
     if total == 0:
         return []
+
+    cooldown = _rescan_cooldown_seconds()
+    now = _dt.datetime.now(tz=timezone.utc).timestamp()
 
     batch: list[dict] = []
     checked = 0
@@ -172,13 +188,14 @@ def _cycle_batch(batch_size: int) -> list[dict]:
         _rot_offset = (_rot_offset + 1) % total
         checked += 1
         symbol = entry["ticker_map"]["canonical"]
-        if symbol not in _rot_seen_today:
-            _rot_seen_today.add(symbol)
+        last = _rot_last_seen.get(symbol, 0.0)
+        if now - last >= cooldown:
+            _rot_last_seen[symbol] = now
             batch.append(entry)
 
-    remaining = total - len(_rot_seen_today)
+    cold = sum(1 for t in _rot_last_seen.values() if now - t < cooldown)
     log_event(
-        f"SCAN rotation seen={len(_rot_seen_today)}/{total} remaining={remaining} batch={len(batch)}",
+        f"SCAN rotation in_cooldown={cold}/{total} batch={len(batch)}",
         event="SCAN",
     )
     return batch
