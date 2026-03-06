@@ -5,6 +5,7 @@ import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
+warnings.filterwarnings("ignore", message="Timestamp.utcnow")
 
 from fastapi import FastAPI
 
