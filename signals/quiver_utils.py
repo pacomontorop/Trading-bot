@@ -317,7 +317,7 @@ def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float
 
 
 def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_appratings()
+    data = quiver_ingest.fetch_live_appratings_cached()
     latest_rating = 0.0
     latest_count = 0.0
     ages: list[float] = []
