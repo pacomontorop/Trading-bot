@@ -160,7 +160,9 @@ def _cycle_batch(batch_size: int) -> list[dict]:
 
     Advances through the daily-shuffled universe; a symbol is skipped if it
     was evaluated within the last ``symbol_rescan_cooldown_hours`` hours.
-    The universe order resets each calendar day (new shuffle seed).
+    The universe order reshuffles each calendar day (new seed) but the offset
+    carries over so coverage continues from where the previous session left off,
+    guaranteeing every symbol is seen before any symbol repeats across days.
     Returns [] only when every symbol in the universe is still in cooldown —
     the scheduler protects positions and retries next cycle.
     """
@@ -171,8 +173,16 @@ def _cycle_batch(batch_size: int) -> list[dict]:
         raw = _load_universe()
         _rot_universe = _daily_shuffled_universe(raw)
         _rot_date = today
-        _rot_offset = 0
-        _rot_last_seen = {}
+        # Offset carries over from the previous session so we continue from
+        # where yesterday's scan stopped rather than restarting at 0.
+        # Clamp to the new universe length in case the CSV was regenerated
+        # with a different number of symbols.
+        new_total = len(_rot_universe)
+        if new_total:
+            _rot_offset = _rot_offset % new_total
+        else:
+            _rot_offset = 0
+        _rot_last_seen = {}  # cooldowns reset each morning
 
     total = len(_rot_universe)
     if total == 0:
