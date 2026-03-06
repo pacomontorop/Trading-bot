@@ -657,11 +657,28 @@ class TestScoringCaps:
         assert normalized == float(cap), \
             f"insider_net should be capped at {cap}, got {normalized}"
 
-    def test_gov_contract_cap(self):
+    def test_gov_contract_cap_at_5m(self):
         from signals.reader import _normalize_feature_value, _FEATURE_CAPS
         cap = _FEATURE_CAPS["quiver_gov_contract_total_amount"]
+        assert cap == 5_000_000, f"gov_contract cap should be $5M, got {cap}"
         val = _normalize_feature_value("quiver_gov_contract_total_amount", 999_999_999)
         assert val == float(cap)
+
+    def test_app_rating_count_cap_prevents_domination(self):
+        """App rating count must not produce runaway scores."""
+        from signals.reader import _score_from_features, _FEATURE_CAPS
+        cap = _FEATURE_CAPS.get("quiver_app_rating_latest_count")
+        assert cap is not None, "quiver_app_rating_latest_count needs a cap"
+        assert cap <= 1000, f"cap {cap} still too high — allows count to dominate"
+        f = {"quiver_app_rating_latest": 5.0, "quiver_app_rating_latest_count": 1_000_000}
+        score, _ = _score_from_features(f)
+        assert score < 10, f"App ratings should not exceed 10 pts, got {score:.1f}"
+
+    def test_wsb_max_contribution_reasonable(self):
+        from signals.reader import _score_from_features
+        f = {"quiver_wsb_recent_max_mentions": 999_999}  # capped at 500
+        score, _ = _score_from_features(f)
+        assert score <= 6, f"WSB max contribution should be <=6 pts, got {score:.1f}"
 
     def test_sell_count_penalizes_score(self):
         from signals.reader import _score_from_features

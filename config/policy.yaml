@@ -2,7 +2,9 @@ signals:
   freshness_days_quiver: 7
   freshness_days_yahoo_prices: 2
   max_symbols_per_scan: 100   # universe sample size per scan cycle (rotates daily)
-  approval_threshold: 0       # min total score to approve (0 = no floor)
+  approval_threshold: 0.5     # min total score to approve; 0 = no floor
+                              # 0.5 blocks symbols with no net positive signal (e.g. sell-heavy insiders)
+                              # typical scores: 1 insider buy=2.0, $100k gov=0.1, 1 congress=1.0
 
 market:
   global_kill_switch: false

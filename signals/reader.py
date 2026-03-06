@@ -22,29 +22,29 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 QUIVER_FEATURE_WEIGHTS = {
     # Insider activity — net count is the primary signal (buys - sells)
-    "quiver_insider_net_count": 1.5,        # net insider buys: strongest long signal
-    "quiver_insider_buy_count": 0.5,        # raw buys still contribute
-    "quiver_insider_sell_count": -1.0,      # raw sells penalize
+    "quiver_insider_net_count": 1.5,        # net insider buys: strongest long signal; max 5×1.5 = 7.5 pts
+    "quiver_insider_buy_count": 0.5,        # raw buys still contribute; max 5×0.5 = 2.5 pts
+    "quiver_insider_sell_count": -1.0,      # raw sells penalize; max -5×1.0 = -5 pts
     # Government contracts
-    "quiver_gov_contract_total_amount": 0.000001,  # capped at $200M → max 0.2 pts
-    "quiver_gov_contract_count": 0.5,
+    "quiver_gov_contract_total_amount": 0.000001,  # capped at $5M → max 5 pts
+    "quiver_gov_contract_count": 0.5,              # max 5×0.5 = 2.5 pts
     # Congressional purchases (data from Quiver house trading)
-    "quiver_house_purchase_count": 1.0,    # congress members buying = meaningful signal
+    "quiver_house_purchase_count": 1.0,     # congress members buying = meaningful; max 5×1.0 = 5 pts
     # Innovation / IP
-    "quiver_patent_momentum_latest": 1.0,
+    "quiver_patent_momentum_latest": 1.0,   # max 5×1.0 = 5 pts
     # Institutional interest (13F filings)
-    "quiver_sec13f_count": 0.3,
-    "quiver_sec13f_change_latest_pct": 0.15,
-    # Retail sentiment — lower weight, noisy
-    "quiver_wsb_recent_max_mentions": 0.03,
+    "quiver_sec13f_count": 0.3,             # max 5×0.3 = 1.5 pts (minor confirmation)
+    "quiver_sec13f_change_latest_pct": 0.15,# max 20×0.15 = 3 pts
+    # Retail sentiment — noisy, kept low
+    "quiver_wsb_recent_max_mentions": 0.01, # reduced: max 500×0.01 = 5 pts (was 15)
     # Social / app signals — minor
-    "quiver_twitter_latest_followers": 0.00005,
-    "quiver_app_rating_latest": 0.2,
-    "quiver_app_rating_latest_count": 0.02,
+    "quiver_twitter_latest_followers": 0.00005,       # max ~5M×0.00005 = 250 → capped at 0.5 pts
+    "quiver_app_rating_latest": 0.2,                  # max 5.0×0.2 = 1.0 pts
+    "quiver_app_rating_latest_count": 0.02,           # capped at 100 → max 2 pts (was uncapped = 100+ pts)
 }
 
 _FEATURE_CAPS = {
-    "quiver_gov_contract_total_amount": 200_000_000,
+    "quiver_gov_contract_total_amount": 5_000_000,   # $5M cap → max 5 pts (was $200M → 200 pts)
     "quiver_wsb_recent_max_mentions": 500,
     "quiver_insider_buy_count": 5,
     "quiver_insider_net_count": 5,
@@ -52,6 +52,8 @@ _FEATURE_CAPS = {
     "quiver_house_purchase_count": 5,
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
+    "quiver_app_rating_latest_count": 100,            # cap: 100 reviews max (added — was uncapped)
+    "quiver_twitter_latest_followers": 10_000_000,    # cap: 10M followers → 0.5 pts max
 }
 
 
