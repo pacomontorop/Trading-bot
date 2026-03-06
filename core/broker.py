@@ -42,7 +42,11 @@ def round_to_tick(price: Optional[float], tick: Optional[float], mode: str = "ne
     if price is None or tick is None or tick <= 0:
         return price
     if mode == "down":
-        return math.floor(price / tick) * tick
-    if mode == "up":
-        return math.ceil(price / tick) * tick
-    return round(price / tick) * tick
+        raw = math.floor(price / tick) * tick
+    elif mode == "up":
+        raw = math.ceil(price / tick) * tick
+    else:
+        raw = round(price / tick) * tick
+    # Eliminate floating-point artifacts (e.g. 14.870000000000001 → 14.87)
+    decimals = max(0, round(-math.log10(tick))) if tick < 1.0 else 0
+    return round(raw, decimals)
