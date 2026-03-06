@@ -5,6 +5,8 @@ from __future__ import annotations
 import csv
 import os
 import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import config
 from broker.alpaca_live import is_live_enabled
@@ -21,6 +23,7 @@ from utils.logger import log_event
 
 
 SYMBOLS_PATH = os.path.join("data", "symbols.csv")
+_NY_TZ = ZoneInfo("America/New_York")
 
 
 def _symbols_csv_valid(path: str) -> bool:
@@ -55,13 +58,53 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
     last_protect_ts = 0.0
     last_live_protect_ts = 0.0
 
+    # ── Session tracking ────────────────────────────────────────────────────
+    _prev_market_open: bool = False
+    _summary_sent_date: str | None = None
+    _session_stats: dict = {}
+
+    def _reset_session_stats(today: str) -> dict:
+        return {
+            "date": today,
+            "cycles_run": 0,
+            "symbols_scanned_max": max_symbols,
+            "signals_approved_total": 0,
+            "no_signals_cycles": 0,
+            "skips_vix": 0,
+            "vix_last": 0.0,
+            "orders_placed": 0,
+            "orders_position_open": 0,
+            "orders_failed": 0,
+            "live_orders_placed": 0,
+            "live_orders_rejected": 0,
+            "live_rejection_counts": {},
+        }
+
     while True:
+        _today = datetime.now(tz=_NY_TZ).strftime("%Y-%m-%d")
+        if _session_stats.get("date") != _today:
+            _session_stats = _reset_session_stats(_today)
+            if _summary_sent_date != _today:
+                _summary_sent_date = None  # allow fresh send for the new day
+
         market_open = is_us_equity_market_open()
         log_event(f"Market gate check open={market_open}", event="GATE")
         if not market_open:
+            # Detect close transition: market just shut — send summary once.
+            if _prev_market_open and _session_stats.get("cycles_run", 0) > 0 and _summary_sent_date != _today:
+                _summary_sent_date = _today
+                try:
+                    from utils.daily_summary import send_session_summary
+                    send_session_summary(_session_stats)
+                except Exception as _exc:
+                    log_event(f"SESSION_SUMMARY trigger failed err={_exc}", event="SUMMARY")
+            _prev_market_open = False
             log_event("SCAN skipped reason=market_closed", event="SCAN")
             time.sleep(interval_sec)
             continue
+
+        _prev_market_open = True
+        _session_stats["cycles_run"] += 1
 
         now_ts = time.time()
 
@@ -88,7 +131,10 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
         # VIX fear gate — pause new entries when market fear is elevated.
         # Existing positions are always protected above regardless.
         vix_level, vix_elevated = get_vix_level()
+        if vix_level > 0:
+            _session_stats["vix_last"] = vix_level
         if vix_elevated:
+            _session_stats["skips_vix"] += 1
             log_event(
                 f"SCAN skipped reason=high_vix vix={vix_level:.1f}",
                 event="SCAN",
@@ -98,9 +144,12 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
 
         opportunities = get_top_signals(max_symbols=max_symbols)
         if not opportunities:
+            _session_stats["no_signals_cycles"] += 1
             log_event("SCAN end: no approved signals", event="SCAN")
             time.sleep(interval_sec)
             continue
+
+        _session_stats["signals_approved_total"] += len(opportunities)
 
         live_active = is_live_enabled()
 
@@ -127,6 +176,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
         for symbol, total_score, quiver_score, price, atr, plan in opportunities:
             # ── Paper account trade ─────────────────────────────────────────
             if is_position_open(symbol):
+                _session_stats["orders_position_open"] += 1
                 log_event(
                     f"APPROVAL {symbol}: rejected reason=position_open",
                     event="APPROVAL",
@@ -142,10 +192,12 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
                 )
                 success = place_long_order(plan, dry_run=config.DRY_RUN)
                 if success:
+                    _session_stats["orders_placed"] += 1
                     log_event(f"ORDER {symbol}: submitted", event="ORDER")
                     if not config.DRY_RUN:
                         risk_manager.record_trade(plan)
                 else:
+                    _session_stats["orders_failed"] += 1
                     log_event(f"ORDER {symbol}: failed", event="ORDER")
 
             # ── Live account trade (same signal, independent sizing) ────────
@@ -162,6 +214,11 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
                     state=live_state,
                 )
                 if live_plan is None:
+                    _session_stats["live_orders_rejected"] += 1
+                    _rej = reason or "unknown"
+                    _session_stats["live_rejection_counts"][_rej] = (
+                        _session_stats["live_rejection_counts"].get(_rej, 0) + 1
+                    )
                     log_event(
                         f"LIVE ORDER {symbol}: rejected reason={reason}",
                         event="LIVE",
@@ -176,6 +233,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
                 )
                 live_success = place_live_order(live_plan, dry_run=config.DRY_RUN)
                 if live_success:
+                    _session_stats["live_orders_placed"] += 1
                     log_event(f"LIVE ORDER {symbol}: submitted", event="LIVE")
                     if not config.DRY_RUN:
                         record_live_trade(live_plan)
