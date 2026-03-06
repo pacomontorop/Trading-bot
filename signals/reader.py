@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import random
-import datetime
+import datetime as _dt
 from collections import Counter
 from datetime import timezone
 from typing import Iterable, List, Tuple
@@ -126,7 +126,7 @@ def _rsi_gate_reasons(rsi: float | None, cfg: dict) -> list[str]:
 def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
     """Shuffle the universe with a daily seed so every scan cycle of the same
     day sees the same order (reproducible) but different days rotate coverage."""
-    today = datetime.date.today().isoformat()
+    today = _dt.date.today().isoformat()
     rng = random.Random(today)
     shuffled = universe.copy()
     rng.shuffle(shuffled)
@@ -203,9 +203,9 @@ def _yahoo_history_reasons(hist) -> list[str]:
         reasons.append("yahoo_history_missing")
     else:
         last_dt = hist.index[-1]
-        if isinstance(last_dt, datetime.datetime):
+        if isinstance(last_dt, _dt.datetime):
             last_dt = last_dt.tz_localize(timezone.utc) if last_dt.tzinfo is None else last_dt
-            age_days = (datetime.datetime.now(timezone.utc) - last_dt).total_seconds() / 86400.0
+            age_days = (_dt.datetime.now(timezone.utc) - last_dt).total_seconds() / 86400.0
             if age_days > freshness_days:
                 reasons.append("yahoo_stale")
     return reasons
