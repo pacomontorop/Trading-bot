@@ -298,8 +298,26 @@ def _congress_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[d
     return ({"count": float(count)}, ages)
 
 
+def _twitter_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
+    data = quiver_ingest.fetch_live_twitter()
+    latest_followers = 0.0
+    ages: list[float] = []
+    if isinstance(data, list):
+        items = [item for item in data if item.get("Ticker") == symbol.upper()]
+        latest = _latest_item(items, ("Date", "date"))
+        if latest:
+            followers = latest.get("Followers")
+            dt = _parse_dt(latest.get("Date") or latest.get("date"))
+            if dt is None or _age_days(dt) <= freshness_days:
+                if isinstance(followers, (int, float)):
+                    latest_followers = float(followers)
+                if dt is not None:
+                    ages.append(_age_days(dt))
+    return ({"latest_followers": latest_followers}, ages)
+
+
 def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, float], list[float]]:
-    data = quiver_ingest.fetch_live_appratings_cached()
+    data = quiver_ingest.fetch_live_appratings()
     latest_rating = 0.0
     latest_count = 0.0
     ages: list[float] = []
@@ -336,6 +354,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
     congress, congress_ages = _congress_purchase_features(symbol, freshness_days)
     offexchange, offexchange_ages = _offexchange_features(symbol)
     app_ratings, app_ratings_ages = _app_ratings_features(symbol, freshness_days)
+    twitter, twitter_ages = _twitter_features(symbol, freshness_days)
     ages.extend(
         insider_ages
         + gov_ages
@@ -348,6 +367,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         + congress_ages
         + offexchange_ages
         + app_ratings_ages
+        + twitter_ages
     )
     age_min = min(ages) if ages else 0.0
 
@@ -366,6 +386,7 @@ def get_quiver_features(symbol: str) -> dict[str, float | int]:
         "quiver_offexchange_dpi": offexchange["latest_dpi"],
         "quiver_app_rating_latest": app_ratings["latest_rating"],
         "quiver_app_rating_latest_count": app_ratings["latest_count"],
+        "quiver_twitter_latest_followers": twitter["latest_followers"],
         "quiver_signal_age_days_min": age_min,
     }
 
