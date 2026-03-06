@@ -143,6 +143,16 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
             continue
 
         opportunities = get_top_signals(max_symbols=max_symbols)
+
+        # Track universe size after first _cycle_batch() call (independent of results)
+        if not _session_stats["symbols_scanned_max"]:
+            try:
+                from signals.reader import _rot_universe
+                if _rot_universe:
+                    _session_stats["symbols_scanned_max"] = len(_rot_universe)
+            except Exception:
+                pass
+
         if not opportunities:
             _session_stats["no_signals_cycles"] += 1
             log_event("SCAN end: no approved signals", event="SCAN")
@@ -150,11 +160,6 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
             continue
 
         _session_stats["signals_approved_total"] += len(opportunities)
-
-        # Reflect full universe size (populated by _cycle_batch on first call)
-        from signals.reader import _rot_universe
-        if _rot_universe and not _session_stats["symbols_scanned_max"]:
-            _session_stats["symbols_scanned_max"] = len(_rot_universe)
 
         live_active = is_live_enabled()
 
