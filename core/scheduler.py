@@ -67,7 +67,7 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
         return {
             "date": today,
             "cycles_run": 0,
-            "symbols_scanned_max": max_symbols,
+            "symbols_scanned_max": 0,  # filled from reader rotation state
             "signals_approved_total": 0,
             "no_signals_cycles": 0,
             "skips_vix": 0,
@@ -150,6 +150,11 @@ def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> Non
             continue
 
         _session_stats["signals_approved_total"] += len(opportunities)
+
+        # Reflect full universe size (populated by _cycle_batch on first call)
+        from signals.reader import _rot_universe
+        if _rot_universe and not _session_stats["symbols_scanned_max"]:
+            _session_stats["symbols_scanned_max"] = len(_rot_universe)
 
         live_active = is_live_enabled()
 

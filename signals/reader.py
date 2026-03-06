@@ -133,6 +133,49 @@ def _daily_shuffled_universe(universe: list[dict]) -> list[dict]:
     return shuffled
 
 
+# ---------------------------------------------------------------------------
+# Intra-day rotation state — advances offset each cycle so every symbol in
+# the universe is evaluated at least once per trading day.
+# ---------------------------------------------------------------------------
+_rot_date: str = ""
+_rot_universe: list[dict] = []
+_rot_offset: int = 0
+
+
+def _cycle_batch(batch_size: int) -> list[dict]:
+    """Return the next *batch_size* symbols from the daily-shuffled universe.
+
+    Wraps around at end-of-universe so no symbols are permanently skipped.
+    State resets automatically at midnight (new date = new shuffle).
+    """
+    global _rot_date, _rot_universe, _rot_offset
+
+    today = _dt.date.today().isoformat()
+    if _rot_date != today:
+        raw = _load_universe()
+        _rot_universe = _daily_shuffled_universe(raw)
+        _rot_date = today
+        _rot_offset = 0
+
+    total = len(_rot_universe)
+    if total == 0:
+        return []
+
+    start = _rot_offset % total
+    end = start + batch_size
+    if end <= total:
+        batch = _rot_universe[start:end]
+    else:
+        batch = _rot_universe[start:] + _rot_universe[: end - total]
+
+    _rot_offset = (start + batch_size) % total
+    log_event(
+        f"SCAN rotation offset={start}->{_rot_offset} total_universe={total} batch={len(batch)}",
+        event="SCAN",
+    )
+    return batch
+
+
 def _quiver_gate_disabled(cfg: dict | None = None) -> bool:
     cfg = cfg or _quiver_gate_cfg()
     enabled = bool(cfg.get("enabled", True))
@@ -378,13 +421,10 @@ def get_top_signals(
         event="SCAN",
     )
 
-    universe = _load_universe()
+    universe = _cycle_batch(max_symbols)
     if not universe:
         log_event("SCAN no symbols to evaluate", event="SCAN")
         return []
-
-    # Rotate daily so different symbols get evaluated across days
-    universe = _daily_shuffled_universe(universe)
 
     sample_maps = [u["ticker_map"] for u in universe[:5]]
     log_event(f"SCAN ticker_map_sample={sample_maps}", event="SCAN")
@@ -403,8 +443,6 @@ def get_top_signals(
     quiver_gate_disabled = _quiver_gate_disabled(quiver_gate_cfg)
 
     for entry in universe:
-        if len(evaluated) >= max_symbols:
-            break
         symbol = entry["ticker_map"]["canonical"]
         if symbol in exclude_set:
             rejected.append(f"{symbol}:excluded")
