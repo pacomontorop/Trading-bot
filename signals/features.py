@@ -113,9 +113,16 @@ def get_symbol_features(
     else:
         features["yahoo_atr_pct"] = 0.0
 
-    # RSI — computed from already-fetched history (no extra API call)
+    # Technical features — computed from already-fetched history (no extra API call)
     rsi = compute_rsi_from_hist(yahoo_hist)
     features["yahoo_rsi_14"] = rsi if rsi is not None else 0.0
+
+    if config.ENABLE_YAHOO and yahoo_hist is not None:
+        from signals.scoring import compute_technical_features
+        cp = _to_numeric(current_price)
+        if cp > 0:
+            tech = compute_technical_features(yahoo_hist, cp)
+            features.update(tech)
 
     # Insider net: positive = more buys than sells (cleaner long signal)
     buy_count = _to_numeric(features.get("quiver_insider_buy_count"))
