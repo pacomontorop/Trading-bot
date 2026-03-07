@@ -42,7 +42,8 @@ def _make_hist(n_days: int = 90, trend: str = "up") -> pd.DataFrame:
     import numpy as np
 
     base = 100.0
-    dates = pd.date_range(end=datetime.date.today(), periods=n_days, freq="B")
+    # Fixed Monday start avoids weekend boundary issues (end=today fails on Sat/Sun)
+    dates = pd.date_range(start=datetime.date(2020, 1, 6), periods=n_days, freq="B")
     if trend == "up":
         close = [base + i * 0.5 for i in range(n_days)]
     elif trend == "down":

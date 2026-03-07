@@ -691,13 +691,18 @@ def get_top_signals(
             continue
 
         # RSI gate — uses RSI computed from already-fetched yahoo_hist (no extra call)
+        # Fast-lane bypass: when Quiver emits a strong signal (heavy insider cluster or
+        # large gov contract), an oversold RSI is exactly the contrarian entry we want.
+        # require_trend_positive is already bypassed in the yahoo gate above for fast-lane.
         rsi_value = features.get("yahoo_rsi_14") or None
         if rsi_value == 0.0:
             rsi_value = None  # 0.0 is sentinel for "not available"
         rsi_reasons = _rsi_gate_reasons(rsi_value, technicals_cfg)
         decision_trace["rsi"] = round(rsi_value, 1) if rsi_value is not None else None
         decision_trace["rsi_reasons"] = rsi_reasons
-        if rsi_reasons:
+        rsi_bypassed = bool(strong_signal and quiver_fast_lane_enabled and rsi_reasons)
+        decision_trace["rsi_fast_lane_bypass"] = rsi_bypassed
+        if rsi_reasons and not rsi_bypassed:
             rejected.append(f"{symbol}:rsi_gate")
             rejection_counts["rsi_gate"] += 1
             decision_trace["final_decision"] = "REJECT"

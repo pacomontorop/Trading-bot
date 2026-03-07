@@ -1,7 +1,12 @@
 signals:
   freshness_days_quiver: 7
   freshness_days_yahoo_prices: 2
-  max_symbols_per_scan: 200          # symbols evaluated per 60-s cycle
+  max_symbols_per_scan: 30           # symbols evaluated per scan cycle
+                                     # Yahoo fetches are sequential (~2-5s/symbol):
+                                     # 30 symbols ≈ 1.5-2.5 min scan + 15s sleep ≈ 2 min/cycle
+                                     # 4900 symbols / 30 per cycle = 163 cycles × ~2 min = ~5.5h
+                                     # → covers full universe 1.2-1.5x per trading day (6.5h session)
+                                     # fresh signals (insider filings, gov contracts) caught same day
   symbol_rescan_cooldown_hours: 4    # hours before a symbol can be re-evaluated (0 = no cooldown)
                                      # 4h → ~2-3 full sweeps/day; catches afternoon filings & contracts
   approval_threshold: 9.8     # min total score to approve
@@ -58,8 +63,10 @@ quiver_gate:
   min_active_signal_types: 1
 
 risk:
-  daily_max_spend_usd: 800
-  daily_max_new_positions: 3
+  daily_max_spend_usd: 800          # hard budget cap — limits to ~1-4 positions at $200-500 each
+  daily_max_new_positions: 0        # 0 = no count limit; budget above is the real limiter
+                                    # count limit caused late high-scorers (RTX-type) to be blocked
+                                    # by earlier mediocre approvals due to sequential universe scan
   max_total_open_positions: 10
   max_position_size_usd: 500
   min_position_size_usd: 100
@@ -87,7 +94,7 @@ execution:
 
 safeguards:
   enabled: true
-  ttl_days: 30
+  ttl_days: 90                               # extended: expires ~2026-06-02
   started_at_utc: "2026-03-04T00:00:00Z"
   break_even_R: 1.0
   break_even_buffer_pct: 0.001
