@@ -339,7 +339,7 @@ def ingest_symbol_payload(symbol: str) -> dict[str, dict[str, list[dict]]]:
             "rating": item.get("Rating"),
             "count": item.get("Count"),
         }
-        for item in (fetch_live_appratings() or [])
+        for item in (fetch_live_appratings_cached() or [])
         if item.get("Ticker") == sym
     ]
     patent_momentum = [

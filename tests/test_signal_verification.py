@@ -225,6 +225,7 @@ class TestQuiverEndpointParsing:
             "signals.quiver_ingest.fetch_live_sec13fchanges": endpoint_mocks.get("sec13fchanges", []),
             "signals.quiver_ingest.fetch_live_twitter": endpoint_mocks.get("twitter", []),
             "signals.quiver_ingest.fetch_live_appratings": endpoint_mocks.get("appratings", []),
+            "signals.quiver_ingest.fetch_live_appratings_cached": endpoint_mocks.get("appratings", []),
             "signals.quiver_ingest.fetch_historical_wallstreetbets": endpoint_mocks.get("wsb", []),
         }
         patches = []
@@ -249,6 +250,7 @@ class TestQuiverEndpointParsing:
                             fetch_live_sec13fchanges_cached=MagicMock(return_value=endpoint_mocks.get("sec13fchanges", [])),
                             fetch_live_twitter=MagicMock(return_value=endpoint_mocks.get("twitter", [])),
                             fetch_live_appratings=MagicMock(return_value=endpoint_mocks.get("appratings", [])),
+                            fetch_live_appratings_cached=MagicMock(return_value=endpoint_mocks.get("appratings", [])),
                             fetch_live_offexchange_cached=MagicMock(return_value=[]),
                             fetch_live_senatetrading_cached=MagicMock(return_value=endpoint_mocks.get("senate", [])),
                             fetch_live_congresstrading_cached=MagicMock(return_value=endpoint_mocks.get("congress", [])),
