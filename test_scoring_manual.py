@@ -32,18 +32,30 @@ from signals.reader import (
 from signals.scoring import fetch_yahoo_snapshot
 
 # ── Test universe ────────────────────────────────────────────────────────────
-# Mix of: tech, defense (gov contracts), financial, consumer — good coverage
+# Mix of: tech, defense (gov contracts), financial, consumer, congressional buys
+# Congressional signals: +3-5% annual alpha vs S&P (Grok 2026 analysis)
 TEST_SYMBOLS = [
-    "ANET",   # Arista — patent momentum, tech
-    "PLTR",   # Palantir — gov contracts, insider activity
+    # Defense / gov contracts (Quiver govcontracts signal)
     "LMT",    # Lockheed — heavy gov contracts
     "GEV",    # GE Vernova — defense/energy gov contracts
-    "CAKE",   # Cheesecake Factory — app ratings, consumer
+    "RTX",    # Raytheon — defense contracts + insider buys
+    # Congressional buys (Quiver house/senate/congress signal)
+    "UBER",   # Uber — frequent congressional purchase target
+    "META",   # Meta — congressional buys + insider activity
     "FOUR",   # Shift4 Payments — congressional buy candidate
-    "WRB",    # W.R. Berkley — financial, possible insider
+    "THRY",   # Thryv Holdings — small congressional buy
+    # Insider buys (net positive)
+    "WRB",    # W.R. Berkley — financial, insider buys
     "NRP",    # Natural Resource Partners — gov/commodities
-    "RDN",    # Radian Group — financial
-    "HOFT",   # Hooker Furnishings — small cap consumer
+    # Tech / patent momentum
+    "ANET",   # Arista — patent momentum, tech (insiders sell → reference reject)
+    # Consumer / app ratings
+    "CAKE",   # Cheesecake Factory — app ratings
+    # Financial
+    "RDN",    # Radian Group
+    "HOFT",   # Hooker Furnishings — small cap
+    # High insider sell reference (should reject with strong Quiver score)
+    "PLTR",   # Palantir — gov contracts but heavy insider selling
 ]
 
 # ── Score helpers (mirror reader.py logic) ───────────────────────────────────
