@@ -52,6 +52,11 @@ def _daily_cache_key(name: str) -> str:
     return f"quiver:{name}:{today}"
 
 
+# Endpoints that consistently time out get fewer retries to avoid multi-minute startup delays.
+# sec13f/sec13fchanges are quarterly data with weight ≤0.4 — not worth 3×15s per failure.
+_FLAKY_ENDPOINTS = {"live_sec13f", "live_sec13fchanges"}
+
+
 def _cached_heavy_endpoint(name: str, url: str, ttl: int):
     key = _daily_cache_key(name)
     data = cache_get(key, ttl)
@@ -70,8 +75,9 @@ def _cached_heavy_endpoint(name: str, url: str, ttl: int):
             min_interval_sec=60,
         )
         return None
+    retries = 1 if name in _FLAKY_ENDPOINTS else 3
     try:
-        data = safe_quiver_request(url)
+        data = safe_quiver_request(url, retries=retries)
     except QuiverRateLimitError:
         _ENDPOINT_SUPPRESS[name] = now + ttl
         log_event(
