@@ -21,39 +21,53 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 
 QUIVER_FEATURE_WEIGHTS = {
-    # Insider activity — net count is the primary signal (buys - sells)
-    "quiver_insider_net_count": 1.5,        # net insider buys: strongest long signal; max 5×1.5 = 7.5 pts
-    "quiver_insider_buy_count": 0.5,        # raw buys still contribute; max 5×0.5 = 2.5 pts
-    "quiver_insider_sell_count": -1.0,      # raw sells penalize; max -5×1.0 = -5 pts
-    # Government contracts
-    "quiver_gov_contract_total_amount": 0.000001,  # capped at $5M → max 5 pts
-    "quiver_gov_contract_count": 0.5,              # max 5×0.5 = 2.5 pts
-    # Congressional purchases (data from Quiver house trading)
-    "quiver_house_purchase_count": 1.0,     # congress members buying = meaningful; max 5×1.0 = 5 pts
-    # Innovation / IP
-    "quiver_patent_momentum_latest": 1.0,   # max 5×1.0 = 5 pts
+    # Congressional / Senate — top alpha signal (Grok 2026: +3-5% annual vs S&P)
+    "quiver_senate_purchase_count":      2.0,   # Senate: best info asymmetry; max 5×2.0 = 10 pts
+    "quiver_congress_purchase_count":    1.8,   # Congress unified feed; max 5×1.8 = 9 pts
+    "quiver_house_purchase_count":       1.2,   # House only; max 5×1.2 = 6 pts
+    # Insider activity — net count primary signal (buys - sells)
+    "quiver_insider_net_count":          2.0,   # net insider buys; max 5×2.0 = 10 pts
+    "quiver_insider_buy_count":          0.8,   # raw buys contribute; max 5×0.8 = 4 pts
+    "quiver_insider_sell_count":        -1.2,   # raw sells penalize; max -5×1.2 = -6 pts
+    # Innovation / IP — ~100 bp/month alpha (Kogan/Qiu)
+    "quiver_patent_momentum_latest":     1.5,   # max 5×1.5 = 7.5 pts
+    # Government contracts — post-announcement drift
+    "quiver_gov_contract_total_amount":  0.000002,  # cap $5M → max 10 pts
+    "quiver_gov_contract_count":         0.8,   # max 5×0.8 = 4 pts
     # Institutional interest (13F filings)
-    "quiver_sec13f_count": 0.3,             # max 5×0.3 = 1.5 pts (minor confirmation)
-    "quiver_sec13f_change_latest_pct": 0.15,# max 20×0.15 = 3 pts
-    # Retail sentiment — noisy, kept low
-    "quiver_wsb_recent_max_mentions": 0.01, # reduced: max 500×0.01 = 5 pts (was 15)
-    # Social / app signals — minor
-    "quiver_twitter_latest_followers": 0.00005,       # max ~5M×0.00005 = 250 → capped at 0.5 pts
-    "quiver_app_rating_latest": 0.2,                  # max 5.0×0.2 = 1.0 pts
-    "quiver_app_rating_latest_count": 0.02,           # capped at 100 → max 2 pts (was uncapped = 100+ pts)
+    "quiver_sec13f_count":               0.4,   # max 5×0.4 = 2 pts
+    "quiver_sec13f_change_latest_pct":   0.25,  # max 20×0.25 = 5 pts
+    # Off-exchange short interest — bearish signal → negative weight
+    "quiver_offexchange_dpi":           -0.5,   # high short interest = bearish
+    # Retail sentiment — noisy, kept minimal
+    "quiver_wsb_recent_max_mentions":    0.005, # max 500×0.005 = 2.5 pts (reduced)
+    # Social / app signals — minor confirmation
+    "quiver_app_rating_latest":          0.1,   # max 5.0×0.1 = 0.5 pts
+    "quiver_app_rating_latest_count":    0.01,  # max 100×0.01 = 1 pt
+    "quiver_twitter_latest_followers":   0.00002,  # max 10M×0.00002 = 200 → capped at 0.4 pts
+}
+
+# Yahoo technical features — confirm trend/momentum (max ~15-20% of total score)
+YAHOO_FEATURE_WEIGHTS = {
+    "yahoo_above_sma50":        2.5,   # binary 0/1 — strong trend filter
+    "yahoo_rsi_signal":         1.2,   # 0-1.5 score (best in 30-50 RSI zone)
+    "yahoo_momentum_20d_pct":   0.08,  # scale: 10% move = 0.8 pts, 20% = 1.6 pts
 }
 
 _FEATURE_CAPS = {
-    "quiver_gov_contract_total_amount": 5_000_000,   # $5M cap → max 5 pts (was $200M → 200 pts)
+    "quiver_gov_contract_total_amount": 5_000_000,   # $5M cap → max 10 pts
     "quiver_wsb_recent_max_mentions": 500,
     "quiver_insider_buy_count": 5,
     "quiver_insider_net_count": 5,
     "quiver_gov_contract_count": 5,
     "quiver_house_purchase_count": 5,
+    "quiver_senate_purchase_count": 5,
+    "quiver_congress_purchase_count": 5,
     "quiver_sec13f_change_latest_pct": 20,
     "quiver_patent_momentum_latest": 5,
-    "quiver_app_rating_latest_count": 100,            # cap: 100 reviews max (added — was uncapped)
-    "quiver_twitter_latest_followers": 10_000_000,    # cap: 10M followers → 0.5 pts max
+    "quiver_app_rating_latest_count": 100,
+    "quiver_twitter_latest_followers": 10_000_000,
+    "yahoo_momentum_20d_pct": 30.0,  # cap at 30% move to avoid outliers
 }
 
 
@@ -237,7 +251,7 @@ def _normalize_feature_value(key: str, value: float) -> float:
 
 
 def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
-    """Simple score computed from Quiver numeric features only."""
+    """Score from Quiver features (primary) + Yahoo technical features (confirmation)."""
     score = 0.0
     quiver_score = 0.0
     for key, weight in QUIVER_FEATURE_WEIGHTS.items():
@@ -245,6 +259,9 @@ def _score_from_features(features: dict[str, float]) -> tuple[float, float]:
         contribution = weight * value
         score += contribution
         quiver_score += contribution
+    for key, weight in YAHOO_FEATURE_WEIGHTS.items():
+        value = _normalize_feature_value(key, float(features.get(key, 0.0)))
+        score += weight * value
     return score, quiver_score
 
 
