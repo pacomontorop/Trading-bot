@@ -49,8 +49,13 @@ def _ensure_symbols_csv() -> None:
     generate_symbols_csv()
 
 
-def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int = 100) -> None:
-    """Run the single equity scheduler loop."""
+def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int | None = None) -> None:
+    """Run the single equity scheduler loop.
+
+    max_symbols: symbols to evaluate per cycle. None = read from policy.yaml
+    (signals.max_symbols_per_scan, default 100).  Policy wins over the old
+    hard-coded 100 default so the YAML is the single source of truth.
+    """
 
     _ensure_symbols_csv()
     log_event("Scheduler loop started (equities, long-only)", event="SCAN")
