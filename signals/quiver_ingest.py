@@ -31,7 +31,7 @@ load_dotenv()
 QUIVER_API_KEY = os.getenv("QUIVER_API_KEY")
 QUIVER_BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"Authorization": f"Bearer {QUIVER_API_KEY}"}
-QUIVER_TIMEOUT = int(os.getenv("QUIVER_TIMEOUT", "8"))
+QUIVER_TIMEOUT = int(os.getenv("QUIVER_TIMEOUT", "15"))
 
 _ENDPOINT_SUPPRESS: dict[str, float] = {}
 
