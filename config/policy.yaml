@@ -4,9 +4,10 @@ signals:
   max_symbols_per_scan: 200          # symbols evaluated per 60-s cycle
   symbol_rescan_cooldown_hours: 4    # hours before a symbol can be re-evaluated (0 = no cooldown)
                                      # 4h → ~2-3 full sweeps/day; catches afternoon filings & contracts
-  approval_threshold: 0.5     # min total score to approve; 0 = no floor
-                              # 0.5 blocks symbols with no net positive signal (e.g. sell-heavy insiders)
+  approval_threshold: 10.0    # min total score to approve; 0 = no floor
+                              # 10.0 → only high-conviction signals pass (RTX/WRB/THRY/LMT tier)
                               # typical scores: 1 insider buy=2.0, $100k gov=0.1, 1 congress=1.0
+                              # test 2026-03-07: threshold 10 → 4/14 approved (RTX 17.4, WRB 14.9, THRY 13.9, LMT 10.2)
 
 market:
   global_kill_switch: false
