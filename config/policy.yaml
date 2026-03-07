@@ -1,11 +1,12 @@
 signals:
   freshness_days_quiver: 7
   freshness_days_yahoo_prices: 2
-  max_symbols_per_scan: 50           # symbols evaluated per scan cycle
+  max_symbols_per_scan: 30           # symbols evaluated per scan cycle
                                      # Yahoo fetches are sequential (~2-5s/symbol):
-                                     # 50 symbols ≈ 2-4 min scan + 60s sleep = ~3-5 min/cycle
-                                     # 4900 symbols / 50 per cycle = 98 cycles × ~4 min = ~6.5h
-                                     # → covers full universe exactly once per trading day
+                                     # 30 symbols ≈ 1.5-2.5 min scan + 15s sleep ≈ 2 min/cycle
+                                     # 4900 symbols / 30 per cycle = 163 cycles × ~2 min = ~5.5h
+                                     # → covers full universe 1.2-1.5x per trading day (6.5h session)
+                                     # fresh signals (insider filings, gov contracts) caught same day
   symbol_rescan_cooldown_hours: 4    # hours before a symbol can be re-evaluated (0 = no cooldown)
                                      # 4h → ~2-3 full sweeps/day; catches afternoon filings & contracts
   approval_threshold: 9.8     # min total score to approve

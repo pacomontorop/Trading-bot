@@ -49,9 +49,12 @@ def _ensure_symbols_csv() -> None:
     generate_symbols_csv()
 
 
-def equity_scheduler_loop(interval_sec: int = 60, max_symbols: int | None = None) -> None:
+def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None) -> None:
     """Run the single equity scheduler loop.
 
+    interval_sec: sleep between cycles. The scan itself takes ~1.5-3 min
+    (30 symbols × ~3s Yahoo each). 15s sleep adds minimal overhead while
+    avoiding a tight loop if all symbols are in cooldown / cache-hit.
     max_symbols: symbols to evaluate per cycle. None = read from policy.yaml
     (signals.max_symbols_per_scan, default 100).  Policy wins over the old
     hard-coded 100 default so the YAML is the single source of truth.
