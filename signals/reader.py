@@ -22,7 +22,7 @@ SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
 
 QUIVER_FEATURE_WEIGHTS = {
     # Congressional / Senate — top alpha signal (Grok 2026: +3-5% annual vs S&P)
-    "quiver_senate_purchase_count":      2.0,   # Senate: best info asymmetry; max 5×2.0 = 10 pts
+    "quiver_senate_purchase_count":      2.2,   # Senate: best info asymmetry; max 5×2.2 = 11 pts
     "quiver_congress_purchase_count":    1.8,   # Congress unified feed; max 5×1.8 = 9 pts
     "quiver_house_purchase_count":       1.2,   # House only; max 5×1.2 = 6 pts
     # Insider activity — net count primary signal (buys - sells)
@@ -86,6 +86,10 @@ def _signal_cfg() -> dict:
 
 def _signal_threshold() -> float:
     return float(_signal_cfg().get("approval_threshold", 0))
+
+
+def _min_quiver_score() -> float:
+    return float(_signal_cfg().get("min_quiver_score", 0))
 
 
 def _market_cfg() -> dict:
@@ -746,6 +750,19 @@ def get_top_signals(
             decision_trace["final_decision"] = "REJECT"
             decision_trace["score_threshold"] = approval_threshold
             decision_trace["score_reasons"] = ["score_below_threshold"]
+            log_event(
+                f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
+                event="TRACE",
+            )
+            continue
+
+        min_qs = _min_quiver_score()
+        if min_qs and quiver_score < min_qs:
+            rejected.append(f"{symbol}:quiver_score_below_min")
+            rejection_counts["quiver_score_below_min"] = rejection_counts.get("quiver_score_below_min", 0) + 1
+            decision_trace["final_decision"] = "REJECT"
+            decision_trace["min_quiver_score"] = min_qs
+            decision_trace["score_reasons"] = ["quiver_score_below_min"]
             log_event(
                 f"TRACE {symbol} {json.dumps(decision_trace, separators=(',', ':'))}",
                 event="TRACE",
