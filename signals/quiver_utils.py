@@ -28,7 +28,18 @@ def _freshness_days() -> int:
 
 def _freshness_days_gov_contracts() -> int:
     cfg = getattr(config, "_policy", {}) or {}
-    return int(((cfg.get("signals") or {}).get("freshness_days_gov_contracts", 90)))
+    return int(((cfg.get("signals") or {}).get("freshness_days_gov_contracts", 45)))
+
+
+def _freshness_days_gov_contracts_large() -> int:
+    """Large contracts (>= threshold) stay relevant longer: multi-year execution."""
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("signals") or {}).get("freshness_days_gov_contracts_large", 90)))
+
+
+def _gov_contract_large_threshold() -> float:
+    cfg = getattr(config, "_policy", {}) or {}
+    return float(((cfg.get("signals") or {}).get("gov_contract_large_threshold_usd", 50_000_000)))
 
 
 def _freshness_days_congress() -> int:
@@ -108,10 +119,19 @@ def _gov_contract_features(symbol: str, freshness_days: int) -> tuple[dict[str, 
     total_amount = 0.0
     count = 0
     ages: list[float] = []
+    large_threshold = _gov_contract_large_threshold()
+    freshness_large = _freshness_days_gov_contracts_large()
     if isinstance(data, list):
         for item in data:
             if item.get("Ticker") != symbol.upper():
                 continue
+            try:
+                amt = float(str(item.get("Amount", "0")).replace("$", "").replace(",", ""))
+            except Exception:
+                amt = 0.0
+            # Large contracts (multi-year execution) get a longer freshness window
+            # because their revenue impact is spread over quarters, not yet discounted.
+            effective_freshness = freshness_large if amt >= large_threshold else freshness_days
             dt = _parse_dt(
                 item.get("Date")
                 or item.get("action_date")
@@ -119,13 +139,9 @@ def _gov_contract_features(symbol: str, freshness_days: int) -> tuple[dict[str, 
             )
             if dt is not None:
                 age = _age_days(dt)
-                if age > freshness_days:
+                if age > effective_freshness:
                     continue
                 ages.append(age)
-            try:
-                amt = float(str(item.get("Amount", "0")).replace("$", "").replace(",", ""))
-            except Exception:
-                amt = 0.0
             total_amount += amt
             count += 1
     return ({"total_amount": total_amount, "count": count}, ages)
