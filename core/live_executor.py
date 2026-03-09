@@ -261,6 +261,24 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         f"reason=blown_stop_detected",
                         event="LIVE",
                     )
+                    # Guard against double-sell after process restart: check Alpaca for
+                    # any pending market sell order (in-memory suppress resets on restart).
+                    _pending_sell = any(
+                        getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                        and str(
+                            getattr(o, "type", "") or getattr(o, "order_type", "")
+                        ).lower() == "market"
+                        for o in (open_orders or [])
+                    )
+                    if _pending_sell:
+                        _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={best_stop:.4f} reason=blown_stop_already_pending",
+                            event="LIVE",
+                        )
+                        continue
                     if not dry_run:
                         try:
                             live_api.cancel_order(getattr(best_order, "id"))
