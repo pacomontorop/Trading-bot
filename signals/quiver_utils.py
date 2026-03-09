@@ -249,9 +249,13 @@ def _house_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict
     ages: list[float] = []
     if isinstance(data, list):
         for item in data:
-            if item.get("Ticker") != symbol.upper() or item.get("Transaction") != "Purchase":
+            if item.get("Ticker") != symbol.upper():
                 continue
-            dt = _parse_dt(item.get("Date"))
+            if (item.get("Transaction") or "").strip().lower() != "purchase":
+                continue
+            # ReportDate = when disclosure became public (STOCK Act); use for freshness.
+            # Fallback to Date (transaction date) if ReportDate absent.
+            dt = _parse_dt(item.get("ReportDate") or item.get("Date"))
             if dt is not None:
                 age = _age_days(dt)
                 if age > freshness_days:
@@ -293,7 +297,9 @@ def _senate_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dic
             transaction = (item.get("Transaction") or "").strip().lower()
             if transaction not in ("purchase", "buy"):
                 continue
-            dt = _parse_dt(item.get("Date") or item.get("TransactionDate"))
+            # ReportDate = when disclosure became public (STOCK Act); use for freshness.
+            # Fallback to Date/TransactionDate if ReportDate absent.
+            dt = _parse_dt(item.get("ReportDate") or item.get("Date") or item.get("TransactionDate"))
             if dt is not None:
                 age = _age_days(dt)
                 if age > freshness_days:
@@ -304,7 +310,8 @@ def _senate_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dic
 
 
 def _congress_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[dict[str, float], list[float]]:
-    """Congress live endpoint uses TransactionDate (not Date) for the trade date."""
+    """Congress live endpoint: filter freshness by ReportDate (STOCK Act disclosure date),
+    not TransactionDate (when the trade occurred)."""
     freshness_days = freshness_days or _freshness_days_congress()
     data = quiver_ingest.fetch_live_congresstrading_cached()
     count = 0
@@ -316,7 +323,9 @@ def _congress_purchase_features(symbol: str, freshness_days: int = 0) -> tuple[d
             transaction = (item.get("Transaction") or "").strip().lower()
             if transaction not in ("purchase", "buy"):
                 continue
-            dt = _parse_dt(item.get("TransactionDate") or item.get("Date"))
+            # ReportDate = when disclosure became public (STOCK Act); use for freshness.
+            # Fallback to TransactionDate/Date if ReportDate absent.
+            dt = _parse_dt(item.get("ReportDate") or item.get("TransactionDate") or item.get("Date"))
             if dt is not None:
                 age = _age_days(dt)
                 if age > freshness_days:

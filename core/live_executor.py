@@ -227,6 +227,60 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
+            # --- Blown stop detection ---
+            # A stop-limit is "blown" when price has gapped below the stop level
+            # while the order is still open (limit never filled).
+            # Only act when gap > blown_stop_gap_atr_multiplier × ATR so small
+            # dips that may self-correct are not acted on prematurely.
+            blown_gap_mult = float(risk_cfg.get("blown_stop_gap_atr_multiplier", 0.0))
+            if best_stop > 0 and last < best_stop and best_order is not None:
+                order_type_str = str(
+                    getattr(best_order, "type", "") or getattr(best_order, "order_type", "")
+                ).lower()
+                if order_type_str == "stop_limit":
+                    gap = best_stop - last
+                    atr_threshold = (atr_val or 0.0) * blown_gap_mult
+                    if blown_gap_mult > 0 and atr_threshold > 0 and gap < atr_threshold:
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={best_stop:.4f} gap={gap:.4f} atr={float(atr_val or 0):.4f} "
+                            f"threshold={atr_threshold:.4f} reason=blown_stop_gap_too_small",
+                            event="LIVE",
+                        )
+                        continue
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"old_stop={best_stop:.4f} gap={gap:.4f} atr={float(atr_val or 0):.4f} "
+                        f"reason=blown_stop_detected",
+                        event="LIVE",
+                    )
+                    if not dry_run:
+                        try:
+                            live_api.cancel_order(getattr(best_order, "id"))
+                        except Exception:
+                            pass
+                        try:
+                            client_order_id = f"LIVE.BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                            live_api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type="market",
+                                time_in_force="day",
+                                client_order_id=client_order_id,
+                            )
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"old_stop={best_stop:.4f} reason=blown_stop_market_sell",
+                                event="LIVE",
+                            )
+                        except Exception as exc:
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
+                                event="LIVE",
+                            )
+                    continue
+
             tick = tick_ge_1 if last >= 1 else tick_lt_1
             initial_stop_dist = max((atr_val or 0.0) * atr_k, entry * min_stop_pct)
             denom = max(initial_stop_dist, entry * min_stop_pct)

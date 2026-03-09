@@ -175,6 +175,63 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
+            # --- Blown stop detection ---
+            # A stop-limit is "blown" when price has already gapped below the
+            # stop level while the order is still open (limit not filled).
+            # We only act when the gap exceeds blown_stop_gap_atr_multiplier × ATR
+            # so that tiny sub-cent dips (which could self-correct) are ignored.
+            # If ATR is unavailable we treat any gap as blown (fail-safe).
+            blown_gap_mult = float(risk_cfg.get("blown_stop_gap_atr_multiplier", 0.0))
+            if old_stop > 0 and last < old_stop and stop_order is not None:
+                order_type_str = str(
+                    getattr(stop_order, "type", "") or getattr(stop_order, "order_type", "")
+                ).lower()
+                if order_type_str == "stop_limit":
+                    gap = old_stop - last
+                    atr_threshold = (atr or 0.0) * blown_gap_mult
+                    if blown_gap_mult > 0 and atr_threshold > 0 and gap < atr_threshold:
+                        # Gap is smaller than threshold — stop-limit may still fill
+                        # on a price bounce; skip and revisit next cycle.
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={old_stop:.4f} gap={gap:.4f} atr={float(atr or 0):.4f} "
+                            f"threshold={atr_threshold:.4f} reason=blown_stop_gap_too_small",
+                            event="PROTECT",
+                        )
+                        continue
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"old_stop={old_stop:.4f} gap={gap:.4f} atr={float(atr or 0):.4f} "
+                        f"reason=blown_stop_detected",
+                        event="PROTECT",
+                    )
+                    if not dry_run:
+                        try:
+                            broker.api.cancel_order(getattr(stop_order, "id"))
+                        except Exception:
+                            pass
+                        try:
+                            client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                            broker.api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type="market",
+                                time_in_force="day",
+                                client_order_id=client_order_id,
+                            )
+                            log_event(
+                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"old_stop={old_stop:.4f} reason=blown_stop_market_sell",
+                                event="PROTECT",
+                            )
+                        except Exception as exc:
+                            log_event(
+                                f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
+                                event="PROTECT",
+                            )
+                    continue
+
             tick = tick_ge_1 if last >= 1 else tick_lt_1
             initial_stop_distance = max((atr or 0.0) * atr_k, entry * min_stop_pct)
             initial_stop = entry - initial_stop_distance
