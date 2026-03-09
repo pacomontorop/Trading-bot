@@ -84,15 +84,27 @@ class TestBlownStopPaper:
 
     def test_blown_stop_cancels_and_market_sells(self):
         """When gap > threshold, cancel stop-limit and market-sell immediately."""
-        # SW: entry=46.40, stop=42.40, ATR=1.5, mult=1.5, threshold=2.25
-        # gap=42.40-39.90=2.50 > 2.25 → blown
+        # SW real-world 2026-03-09: entry=46.40, stop=42.49, ATR=2.02, mult=0.5
+        # gap=42.49-40.88=1.61 > 0.5×2.02=1.01 → blown → sell
         pos = _make_position("SW", entry=46.40, qty=10.0)
-        stop_order = _make_stop_limit_order("SW", stop_price=42.40, order_id="ord-sw")
+        stop_order = _make_stop_limit_order("SW", stop_price=42.49, order_id="ord-sw")
 
-        mock_api = _run_protect(pos, stop_order, last_price=39.90, atr=1.5, blown_gap_mult=1.5)
+        mock_api = _run_protect(pos, stop_order, last_price=40.88, atr=2.02, blown_gap_mult=0.5)
 
         mock_api.cancel_order.assert_called_once_with("ord-sw")
         _assert_market_sell(mock_api, "SW")
+
+    def test_blown_stop_sw_would_miss_with_1_5_multiplier(self):
+        """With mult=1.5 (old default), SW's gap was below threshold — would NOT sell.
+        This is why we lowered blown_stop_gap_atr_multiplier to 0.5."""
+        # SW: gap=1.61, threshold=1.5×2.02=3.03 → gap < threshold → skip
+        pos = _make_position("SW", entry=46.40, qty=10.0)
+        stop_order = _make_stop_limit_order("SW", stop_price=42.49, order_id="ord-sw")
+
+        mock_api = _run_protect(pos, stop_order, last_price=40.88, atr=2.02, blown_gap_mult=1.5)
+
+        mock_api.cancel_order.assert_not_called()
+        mock_api.submit_order.assert_not_called()
 
     def test_blown_stop_gap_too_small_skips_market_sell(self):
         """When gap < threshold, stop-limit may still recover — do not act."""
