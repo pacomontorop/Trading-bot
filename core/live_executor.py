@@ -228,17 +228,30 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 continue
 
             # --- Blown stop detection ---
-            # If last price is already below the existing stop-limit order and
-            # the order is still open, the stop was bypassed (price gapped).
-            # Cancel the stuck stop-limit and place an immediate market sell.
+            # A stop-limit is "blown" when price has gapped below the stop level
+            # while the order is still open (limit never filled).
+            # Only act when gap > blown_stop_gap_atr_multiplier × ATR so small
+            # dips that may self-correct are not acted on prematurely.
+            blown_gap_mult = float(risk_cfg.get("blown_stop_gap_atr_multiplier", 0.0))
             if best_stop > 0 and last < best_stop and best_order is not None:
                 order_type_str = str(
                     getattr(best_order, "type", "") or getattr(best_order, "order_type", "")
                 ).lower()
                 if order_type_str == "stop_limit":
+                    gap = best_stop - last
+                    atr_threshold = (atr_val or 0.0) * blown_gap_mult
+                    if blown_gap_mult > 0 and atr_threshold > 0 and gap < atr_threshold:
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={best_stop:.4f} gap={gap:.4f} atr={float(atr_val or 0):.4f} "
+                            f"threshold={atr_threshold:.4f} reason=blown_stop_gap_too_small",
+                            event="LIVE",
+                        )
+                        continue
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                        f"old_stop={best_stop:.4f} reason=blown_stop_detected",
+                        f"old_stop={best_stop:.4f} gap={gap:.4f} atr={float(atr_val or 0):.4f} "
+                        f"reason=blown_stop_detected",
                         event="LIVE",
                     )
                     if not dry_run:

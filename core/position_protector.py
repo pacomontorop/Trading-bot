@@ -176,19 +176,33 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
 
             # --- Blown stop detection ---
-            # If last price is already below the existing stop-limit order and
-            # the order is still open (not filled), the stop was bypassed —
-            # the price gapped below the limit without trading at it.
-            # Action: cancel the stuck stop-limit and place an immediate market
-            # sell to exit at the best available price.
+            # A stop-limit is "blown" when price has already gapped below the
+            # stop level while the order is still open (limit not filled).
+            # We only act when the gap exceeds blown_stop_gap_atr_multiplier × ATR
+            # so that tiny sub-cent dips (which could self-correct) are ignored.
+            # If ATR is unavailable we treat any gap as blown (fail-safe).
+            blown_gap_mult = float(risk_cfg.get("blown_stop_gap_atr_multiplier", 0.0))
             if old_stop > 0 and last < old_stop and stop_order is not None:
                 order_type_str = str(
                     getattr(stop_order, "type", "") or getattr(stop_order, "order_type", "")
                 ).lower()
                 if order_type_str == "stop_limit":
+                    gap = old_stop - last
+                    atr_threshold = (atr or 0.0) * blown_gap_mult
+                    if blown_gap_mult > 0 and atr_threshold > 0 and gap < atr_threshold:
+                        # Gap is smaller than threshold — stop-limit may still fill
+                        # on a price bounce; skip and revisit next cycle.
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={old_stop:.4f} gap={gap:.4f} atr={float(atr or 0):.4f} "
+                            f"threshold={atr_threshold:.4f} reason=blown_stop_gap_too_small",
+                            event="PROTECT",
+                        )
+                        continue
                     log_event(
                         f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                        f"old_stop={old_stop:.4f} reason=blown_stop_detected",
+                        f"old_stop={old_stop:.4f} gap={gap:.4f} atr={float(atr or 0):.4f} "
+                        f"reason=blown_stop_detected",
                         event="PROTECT",
                     )
                     if not dry_run:

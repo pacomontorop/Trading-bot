@@ -89,6 +89,7 @@ risk:
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
   stop_limit_buffer_pct: 0.002
+  blown_stop_gap_atr_multiplier: 1.5  # market-sell only if gap > N×ATR (0 = any gap)
 
 execution:
   use_bracket: true
