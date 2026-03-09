@@ -175,6 +175,49 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
+            # --- Blown stop detection ---
+            # If last price is already below the existing stop-limit order and
+            # the order is still open (not filled), the stop was bypassed —
+            # the price gapped below the limit without trading at it.
+            # Action: cancel the stuck stop-limit and place an immediate market
+            # sell to exit at the best available price.
+            if old_stop > 0 and last < old_stop and stop_order is not None:
+                order_type_str = str(
+                    getattr(stop_order, "type", "") or getattr(stop_order, "order_type", "")
+                ).lower()
+                if order_type_str == "stop_limit":
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"old_stop={old_stop:.4f} reason=blown_stop_detected",
+                        event="PROTECT",
+                    )
+                    if not dry_run:
+                        try:
+                            broker.api.cancel_order(getattr(stop_order, "id"))
+                        except Exception:
+                            pass
+                        try:
+                            client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                            broker.api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type="market",
+                                time_in_force="day",
+                                client_order_id=client_order_id,
+                            )
+                            log_event(
+                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"old_stop={old_stop:.4f} reason=blown_stop_market_sell",
+                                event="PROTECT",
+                            )
+                        except Exception as exc:
+                            log_event(
+                                f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
+                                event="PROTECT",
+                            )
+                    continue
+
             tick = tick_ge_1 if last >= 1 else tick_lt_1
             initial_stop_distance = max((atr or 0.0) * atr_k, entry * min_stop_pct)
             initial_stop = entry - initial_stop_distance
