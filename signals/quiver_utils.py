@@ -42,11 +42,23 @@ def _gov_contract_large_threshold() -> float:
     return float(((cfg.get("signals") or {}).get("gov_contract_large_threshold_usd", 50_000_000)))
 
 
+def _freshness_days_insider() -> int:
+    """Insider trades: 10d captures buy clusters (Form 4 has 2-day legal lag + clusters span ~week)."""
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("signals") or {}).get("freshness_days_insider", 10)))
+
+
+def _freshness_days_sec13f() -> int:
+    """SEC 13F filings arrive in 1-2 days after quarter-end → 6d still captures fresh filings."""
+    cfg = getattr(config, "_policy", {}) or {}
+    return int(((cfg.get("signals") or {}).get("freshness_days_sec13f", 6)))
+
+
 def _freshness_days_congress() -> int:
     """Congress/Senate/House disclosures have up to 45 days legal delay (STOCK Act).
-    Default to 30 days so we capture most real signals without pulling stale trades."""
+    40 days captures ~95% of valid signals without pulling stale trades."""
     cfg = getattr(config, "_policy", {}) or {}
-    return int(((cfg.get("signals") or {}).get("freshness_days_congress", 30)))
+    return int(((cfg.get("signals") or {}).get("freshness_days_congress", 40)))
 
 
 def _age_days(dt: datetime) -> float:
@@ -357,17 +369,20 @@ def _app_ratings_features(symbol: str, freshness_days: int) -> tuple[dict[str, f
 def get_quiver_features(symbol: str) -> dict[str, float | int]:
     """Return numeric Quiver features without scoring or thresholds."""
     freshness_days = _freshness_days()
+    freshness_days_insider = _freshness_days_insider()
+    freshness_days_sec13f = _freshness_days_sec13f()
+    freshness_days_congress = _freshness_days_congress()
     freshness_days_gov = _freshness_days_gov_contracts()
     ages: list[float] = []
-    insider, insider_ages = _insider_trade_features(symbol, freshness_days)
+    insider, insider_ages = _insider_trade_features(symbol, freshness_days_insider)
     gov, gov_ages = _gov_contract_features(symbol, freshness_days_gov)
     patent, patent_ages = _patent_momentum_features(symbol, freshness_days)
     wsb, wsb_ages = _wsb_features(symbol, freshness_days)
-    sec13f, sec13f_ages = _sec13f_features(symbol, freshness_days)
-    sec13f_changes, sec13f_change_ages = _sec13f_change_features(symbol, freshness_days)
-    house, house_ages = _house_purchase_features(symbol, freshness_days)
-    senate, senate_ages = _senate_purchase_features(symbol, freshness_days)
-    congress, congress_ages = _congress_purchase_features(symbol, freshness_days)
+    sec13f, sec13f_ages = _sec13f_features(symbol, freshness_days_sec13f)
+    sec13f_changes, sec13f_change_ages = _sec13f_change_features(symbol, freshness_days_sec13f)
+    house, house_ages = _house_purchase_features(symbol, freshness_days_congress)
+    senate, senate_ages = _senate_purchase_features(symbol, freshness_days_congress)
+    congress, congress_ages = _congress_purchase_features(symbol, freshness_days_congress)
     offexchange, offexchange_ages = _offexchange_features(symbol)
     app_ratings, app_ratings_ages = _app_ratings_features(symbol, freshness_days)
     twitter, twitter_ages = _twitter_features(symbol, freshness_days)
