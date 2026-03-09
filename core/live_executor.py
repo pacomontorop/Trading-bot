@@ -171,6 +171,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         break_even_buffer = float(safeguards_cfg.get("break_even_buffer_pct", 0.0))
         trailing_enable = bool(safeguards_cfg.get("trailing_enable", True))
         trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 1.5))
+        trailing_profit_mult = float(exec_cfg.get("trailing_stop_profit_atr_mult", 1.5))
+        trailing_tighten_at_r = float(exec_cfg.get("trailing_tighten_at_R", 0.3))
+        min_profit_lock_pct = float(exec_cfg.get("min_profit_lock_pct", 0.0))
         atr_k = float(risk_cfg.get("atr_k", 2.0))
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
         tick_ge_1 = float(risk_cfg.get("min_tick_equity_ge_1", 0.01))
@@ -321,11 +324,23 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     new_stop = be_stop
                     reasons.append("break_even")
 
+            # ATR-independent profit lock: once price is up >= min_profit_lock_pct %
+            # from entry, force stop to at least break-even (entry + buffer).
+            if min_profit_lock_pct > 0 and entry > 0:
+                gain_pct = (last - entry) / entry * 100
+                if gain_pct >= min_profit_lock_pct:
+                    lock_stop = entry * (1 + break_even_buffer)
+                    if lock_stop > new_stop + tick:
+                        new_stop = lock_stop
+                        reasons.append("profit_lock")
+
             if trailing_enable:
-                trail_stop = last - (atr_val or last * 0.03) * trailing_mult
+                in_profit = r_multiple >= trailing_tighten_at_r
+                effective_mult = trailing_profit_mult if in_profit else trailing_mult
+                trail_stop = last - (atr_val or last * 0.03) * effective_mult
                 if trail_stop > new_stop + tick:
                     new_stop = trail_stop
-                    reasons.append("trailing")
+                    reasons.append("trailing_profit" if in_profit else "trailing")
 
             if new_stop <= best_stop + tick:
                 log_event(

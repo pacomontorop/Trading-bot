@@ -93,7 +93,12 @@ risk:
 execution:
   use_bracket: true
   take_profit_atr_mult: 3.0
-  trailing_stop_atr_mult: 2.0
+  trailing_stop_atr_mult: 2.0        # trailing distance at entry (2×ATR below price)
+  trailing_tighten_at_R: 0.3         # aprieta trailing cuando ganas 0.3R
+  trailing_stop_profit_atr_mult: 1.5 # trailing ceñido en ganancia (1.5×ATR)
+  protect_min_improvement_pct: 0.005 # 0.5% mínimo para actualizar stop (reduce spam)
+  protect_min_improvement_usd: 0.10  # $0.10 mínimo absoluto para actualizar stop
+  min_profit_lock_pct: 0.5           # si ganas >=0.5% → forzar stop a break-even
   time_in_force: day
   allow_partial_fills: true
   min_rr_ratio: 1.2
@@ -102,7 +107,7 @@ safeguards:
   enabled: true
   ttl_days: 90                               # extended: expires ~2026-06-02
   started_at_utc: "2026-03-04T00:00:00Z"
-  break_even_R: 0.5
+  break_even_R: 0.3
   break_even_buffer_pct: 0.001
   trailing_enable: true
 
