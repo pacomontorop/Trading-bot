@@ -22,6 +22,10 @@ _ATR_CACHE: dict[str, tuple[float, float]] = {}
 # Suppressed for 30 min so we don't spam "insufficient qty" every tick.
 _BRACKET_SUPPRESS: dict[str, float] = {}
 _BRACKET_SUPPRESS_SEC = 1800
+# Symbols for which a blown-stop market-sell has already been submitted.
+# Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
+_BLOWN_STOP_SUPPRESS: dict[str, float] = {}
+_BLOWN_STOP_SUPPRESS_SEC = 300
 
 _PRICE_TTL_SEC = 15.0
 _ATR_TTL_SEC = 300.0
@@ -156,6 +160,10 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             # Skip symbols whose shares are locked in a bracket stop order.
             if time.monotonic() < _BRACKET_SUPPRESS.get(symbol, 0):
                 continue
+            # Skip symbols where a blown-stop market-sell was already submitted.
+            # Prevents double-selling before Alpaca reflects the closed position.
+            if time.monotonic() < _BLOWN_STOP_SUPPRESS.get(symbol, 0):
+                continue
             if asset_class not in {"us_equity", "equity"}:
                 log_event(
                     f"symbol={symbol} asset_class={asset_class} reason=skip_non_equity",
@@ -220,6 +228,7 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 time_in_force="day",
                                 client_order_id=client_order_id,
                             )
+                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
                             log_event(
                                 f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
                                 f"old_stop={old_stop:.4f} reason=blown_stop_market_sell",

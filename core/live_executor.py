@@ -22,6 +22,10 @@ from utils.logger import log_event
 _LIVE_PROTECT_LOCK = threading.Lock()
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_TTL_SEC = 300.0
+# Symbols for which a blown-stop market-sell has already been submitted.
+# Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
+_LIVE_BLOWN_STOP_SUPPRESS: dict[str, float] = {}
+_LIVE_BLOWN_STOP_SUPPRESS_SEC = 300
 
 # Crypto symbols (e.g. BTCUSD, ETHUSD) are not managed by this bot's equity logic.
 # Alpaca crypto tickers typically end in USD with length >= 6, or contain "/".
@@ -188,6 +192,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 continue
             if side and side != "long":
                 continue
+            # Skip symbols where a blown-stop market-sell was already submitted.
+            if time.monotonic() < _LIVE_BLOWN_STOP_SUPPRESS.get(symbol, 0):
+                continue
             if _is_crypto_symbol(symbol):
                 log_event(
                     f"LIVE_PROTECT symbol={symbol} reason=skip_crypto",
@@ -269,6 +276,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 time_in_force="day",
                                 client_order_id=client_order_id,
                             )
+                            _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
                             log_event(
                                 f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                                 f"old_stop={best_stop:.4f} reason=blown_stop_market_sell",
