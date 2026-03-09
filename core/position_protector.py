@@ -134,6 +134,7 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         tick_lt_1 = float(risk_cfg.get("min_tick_equity_lt_1", 0.0001))
         protect_min_improve_pct = float(exec_cfg.get("protect_min_improvement_pct", 0.01))
         protect_min_improve_usd = float(exec_cfg.get("protect_min_improvement_usd", 0.10))
+        min_profit_lock_pct = float(exec_cfg.get("min_profit_lock_pct", 0.0))
         # Protective stops must survive overnight; entry orders use "day"
         # because Alpaca market orders cannot be GTC.
         tif = exec_cfg.get("protect_time_in_force", "gtc")
@@ -213,6 +214,24 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         f"reason=blown_stop_detected",
                         event="PROTECT",
                     )
+                    # Guard against double-sell after process restart: check Alpaca for
+                    # any pending market sell order (in-memory suppress resets on restart).
+                    _pending_sell = any(
+                        getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                        and str(
+                            getattr(o, "type", "") or getattr(o, "order_type", "")
+                        ).lower() == "market"
+                        for o in (open_orders or [])
+                    )
+                    if _pending_sell:
+                        _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"old_stop={old_stop:.4f} reason=blown_stop_already_pending",
+                            event="PROTECT",
+                        )
+                        continue
                     if not dry_run:
                         try:
                             broker.api.cancel_order(getattr(stop_order, "id"))
@@ -259,6 +278,16 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 if be_stop > new_stop + tick:
                     new_stop = be_stop
                     reasons.append("break_even")
+
+            # ATR-independent profit lock: once price is up >= min_profit_lock_pct %
+            # from entry, force stop to at least break-even (entry + buffer).
+            if min_profit_lock_pct > 0 and entry > 0:
+                gain_pct = (last - entry) / entry * 100
+                if gain_pct >= min_profit_lock_pct:
+                    lock_stop = entry * (1 + break_even_buffer)
+                    if lock_stop > new_stop + tick:
+                        new_stop = lock_stop
+                        reasons.append("profit_lock")
 
             if trailing_enable:
                 # Cuando la posición lleva >= trailing_tighten_at_r de ganancia,
