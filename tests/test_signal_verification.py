@@ -319,17 +319,45 @@ class TestQuiverEndpointParsing:
 
     # --- housetrading (Congress) ---
     def test_house_purchase_counted(self):
+        # Use ReportDate (API field) — freshness is measured from disclosure, not transaction
         payload = {"housetrading": [
-            {"Ticker": "AAPL", "Transaction": "Purchase", "Date": self._recent_date(3)},
-            {"Ticker": "AAPL", "Transaction": "Purchase", "Date": self._recent_date(5)},
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(3), "Date": self._recent_date(45)},
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(5), "Date": self._recent_date(50)},
         ]}
         f = self._run_utils(payload)
         assert f["quiver_house_purchase_count"] == 2, \
             f"Expected 2 congressional purchases, got {f['quiver_house_purchase_count']}"
 
+    def test_house_purchase_stale_transaction_but_fresh_report_counted(self):
+        # STOCK Act scenario: trade happened 41 days ago, but disclosed TODAY → must be counted
+        payload = {"housetrading": [
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(1), "Date": self._recent_date(41)},
+        ]}
+        f = self._run_utils(payload)
+        assert f["quiver_house_purchase_count"] == 1, \
+            "Trade disclosed today must be counted even if transaction was 41 days ago"
+
+    def test_house_purchase_stale_report_not_counted(self):
+        # Disclosure too old → rejected regardless of transaction date
+        payload = {"housetrading": [
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(45), "Date": self._recent_date(3)},
+        ]}
+        f = self._run_utils(payload)
+        assert f["quiver_house_purchase_count"] == 0, \
+            "Trade with stale ReportDate (45d) must be filtered out"
+
+    def test_house_purchase_case_insensitive(self):
+        # Transaction field must be matched case-insensitively
+        payload = {"housetrading": [
+            {"Ticker": "AAPL", "Transaction": "purchase", "ReportDate": self._recent_date(2)},
+        ]}
+        f = self._run_utils(payload)
+        assert f["quiver_house_purchase_count"] == 1, \
+            "Lowercase 'purchase' must be counted (case-insensitive match)"
+
     def test_house_sale_not_counted(self):
         payload = {"housetrading": [
-            {"Ticker": "AAPL", "Transaction": "Sale", "Date": self._recent_date(2)},
+            {"Ticker": "AAPL", "Transaction": "Sale", "ReportDate": self._recent_date(2)},
         ]}
         f = self._run_utils(payload)
         assert f["quiver_house_purchase_count"] == 0, "Congressional sales should not count as purchases"
