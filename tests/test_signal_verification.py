@@ -360,10 +360,10 @@ class TestQuiverEndpointParsing:
 
     # --- sec13f ---
     def test_sec13f_count_parsed(self):
-        # Both dates within default freshness_days=7 so both are counted
+        # Both dates within freshness_days_sec13f=6 so both are counted
         payload = {"sec13f": [
-            {"Ticker": "AAPL", "ReportDate": self._recent_date(3)},
-            {"Ticker": "AAPL", "ReportDate": self._recent_date(6)},
+            {"Ticker": "AAPL", "ReportDate": self._recent_date(2)},
+            {"Ticker": "AAPL", "ReportDate": self._recent_date(5)},
         ]}
         f = self._run_utils(payload)
         assert f["quiver_sec13f_count"] == 2, f"Expected 2 13F filings, got {f['quiver_sec13f_count']}"
