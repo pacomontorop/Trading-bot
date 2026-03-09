@@ -26,8 +26,13 @@ SYMBOLS_PATH = os.path.join("data", "symbols.csv")
 _NY_TZ = ZoneInfo("America/New_York")
 
 
+_SYMBOLS_MAX_AGE_SEC = 86400  # regenerate universe daily to pick up new listings
+
+
 def _symbols_csv_valid(path: str) -> bool:
     if not os.path.exists(path):
+        return False
+    if time.time() - os.path.getmtime(path) > _SYMBOLS_MAX_AGE_SEC:
         return False
     try:
         with open(path, newline="", encoding="utf-8") as handle:

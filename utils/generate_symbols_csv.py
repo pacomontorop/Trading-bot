@@ -25,14 +25,14 @@ def generate_symbols_csv(output_path="data/symbols.csv"):
             # Warrants (symbol suffix W/WS/WT and name contains Warrant)
             if any(pattern in name for pattern in _ETF_PATTERNS):
                 return True
-            # Warrant-style suffixes: symbols ending in W, WS, WT with len >= 5
-            if len(sym) >= 5 and sym.endswith(("W", "WS", "WT", "WW")):
+            # Warrant-style suffixes: symbols ending in W, WS, WT with len >= 4
+            if len(sym) >= 4 and sym.endswith(("W", "WS", "WT", "WW")):
                 return True
-            # SPAC units ending in U with len >= 5
-            if len(sym) >= 5 and sym.endswith("U") and sym[:-1].isalpha():
+            # SPAC units ending in U with len >= 4
+            if len(sym) >= 4 and sym.endswith("U") and sym[:-1].isalpha():
                 return True
-            # Rights symbols ending in R with len >= 5
-            if len(sym) >= 5 and sym.endswith("R") and sym[:-1].isalpha():
+            # Rights symbols ending in R with len >= 4
+            if len(sym) >= 4 and sym.endswith("R") and sym[:-1].isalpha():
                 return True
             return False
 

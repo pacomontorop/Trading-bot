@@ -69,15 +69,14 @@ quiver_gate:
   min_active_signal_types: 1
 
 risk:
-  daily_max_spend_usd: 800          # hard budget cap — limits to ~1-4 positions at $200-500 each
-  daily_max_new_positions: 0        # 0 = no count limit; budget above is the real limiter
-                                    # count limit caused late high-scorers (RTX-type) to be blocked
-                                    # by earlier mediocre approvals due to sequential universe scan
+  daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
+  daily_max_spend_pct_buying_power: 0.30 # max 30% of buying power per day (scales with account size)
+  daily_max_new_positions: 0             # 0 = no count limit; cash budget above is the real limiter
   max_total_open_positions: 10
-  max_position_size_usd: 500
+  max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
   max_exposure_pct_equity: 0.60
-  max_symbol_exposure_pct_equity: 0.12
+  max_symbol_exposure_pct_equity: 0.12  # ~12% of equity per position (scales with account)
   cash_buffer_pct: 0.10
   symbol_cooldown_days: 5
   if_position_open_skip: true
@@ -103,7 +102,7 @@ safeguards:
   enabled: true
   ttl_days: 90                               # extended: expires ~2026-06-02
   started_at_utc: "2026-03-04T00:00:00Z"
-  break_even_R: 1.0
+  break_even_R: 0.5
   break_even_buffer_pct: 0.001
   trailing_enable: true
 
