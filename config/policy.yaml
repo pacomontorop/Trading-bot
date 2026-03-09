@@ -72,7 +72,7 @@ risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
   daily_max_spend_pct_buying_power: 0.30 # max 30% of buying power per day (scales with account size)
   daily_max_new_positions: 0             # 0 = no count limit; cash budget above is the real limiter
-  max_total_open_positions: 10
+  max_total_open_positions: 0           # 0 = no limit; daily_max_spend_pct_buying_power controls budget
   max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
   max_exposure_pct_equity: 0.60
@@ -88,7 +88,7 @@ risk:
   min_tick_equity_ge_1: 0.01
   min_tick_equity_lt_1: 0.0001
   stop_limit_buffer_pct: 0.002
-  blown_stop_gap_atr_multiplier: 0.5  # market-sell only if gap > N×ATR (0 = any gap)
+  blown_stop_gap_atr_multiplier: 0.0  # market-sell on any gap (0 = immediate, no tolerance)
 
 execution:
   use_bracket: true
@@ -126,5 +126,5 @@ live_account:
   min_position_size_usd: 25    # minimum viable position
   daily_max_cash_pct: 0.30     # max fraction of live cash across all positions today (30 %)
   daily_max_new_positions: 0   # max new live trades per day (0 = no count limit)
-  max_total_open_positions: 10 # max simultaneous live positions
+  max_total_open_positions: 0  # 0 = no limit; daily_max_cash_pct controls budget
   symbol_cooldown_days: 5      # days before re-trading the same symbol
