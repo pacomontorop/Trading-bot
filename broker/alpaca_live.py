@@ -95,8 +95,20 @@ def list_live_positions():
 
 
 def list_live_open_orders():
-    """Return open orders for the live account."""
+    """Return active orders for the live account.
+
+    Fetches all of today's orders and filters to active statuses so that
+    bracket stop legs (which have status ``held``, not ``open``) are included.
+    Without ``held`` orders the trailing-stop logic cannot find the bracket's
+    stop leg and mistakenly tries to submit a duplicate sell order, which
+    Alpaca rejects with ``insufficient qty available``.
+    """
+    import datetime
+
     try:  # pragma: no cover - network call
-        return live_api.list_orders(status="open", limit=500)
+        today = datetime.date.today().isoformat()
+        all_orders = live_api.list_orders(status="all", limit=500, after=f"{today}T00:00:00Z")
+        active = {"new", "accepted", "held", "pending_new", "accepted_for_bidding", "partially_filled"}
+        return [o for o in (all_orders or []) if str(getattr(o, "status", "")).lower() in active]
     except Exception:
         return []
