@@ -372,16 +372,6 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
-            try:
-                if best_order is not None and getattr(best_order, "id", None):
-                    live_api.cancel_order(getattr(best_order, "id"))
-            except Exception as exc:
-                log_event(
-                    f"LIVE_PROTECT symbol={symbol} cancel_failed err={exc}",
-                    event="LIVE",
-                )
-                continue
-
             stop_payload = {"stop_price": float(new_stop)}
             limit = stop_limit_price(float(new_stop), symbol=symbol)
             order_type = "stop"
@@ -389,27 +379,48 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 stop_payload["limit_price"] = float(limit)
                 order_type = "stop_limit"
 
-            client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
-            try:  # pragma: no cover - network
-                live_api.submit_order(
-                    symbol=symbol,
-                    side="sell",
-                    qty=qty,
-                    type=order_type,
-                    time_in_force=tif,
-                    client_order_id=client_order_id,
-                    **stop_payload,
-                )
-                log_event(
-                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                    f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
-                    f"new_stop={new_stop:.4f} reason={reason_txt}",
-                    event="LIVE",
-                )
-            except Exception as exc:  # pragma: no cover
-                log_event(
-                    f"LIVE_PROTECT symbol={symbol} submit_failed err={exc}",
-                    event="LIVE",
-                )
+            if best_order is not None and getattr(best_order, "id", None):
+                # Replace the existing stop leg in place (works for bracket child
+                # orders too).  This avoids cancel+resubmit which would fail with
+                # "insufficient qty available" when the bracket's TP leg is still
+                # active and holding the shares.
+                try:  # pragma: no cover - network
+                    live_api.replace_order(getattr(best_order, "id"), **stop_payload)
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
+                        f"new_stop={new_stop:.4f} reason={reason_txt}",
+                        event="LIVE",
+                    )
+                except Exception as exc:  # pragma: no cover
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} replace_failed err={exc}",
+                        event="LIVE",
+                    )
+            else:
+                # No existing stop order yet — submit a standalone stop.
+                # (e.g. position opened outside the bot or bracket already closed)
+                client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                try:  # pragma: no cover - network
+                    live_api.submit_order(
+                        symbol=symbol,
+                        side="sell",
+                        qty=qty,
+                        type=order_type,
+                        time_in_force=tif,
+                        client_order_id=client_order_id,
+                        **stop_payload,
+                    )
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
+                        f"new_stop={new_stop:.4f} reason={reason_txt}",
+                        event="LIVE",
+                    )
+                except Exception as exc:  # pragma: no cover
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} submit_failed err={exc}",
+                        event="LIVE",
+                    )
     finally:
         _LIVE_PROTECT_LOCK.release()
