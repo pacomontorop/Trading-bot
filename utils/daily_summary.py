@@ -221,8 +221,27 @@ def build_session_summary(session_stats: dict) -> str:
     lines.append("")
     lines.append("--- Key Parameters ---")
 
+    def _fmt_param(val: Any, fmt: str) -> str:
+        """Format a policy parameter; return 'no limit' for falsy numeric values."""
+        if val is None:
+            return ""
+        if fmt in ("usd", "int", "float") and float(val) == 0:
+            return "no limit"
+        if fmt == "usd":
+            return _usd(float(val))
+        if fmt == "float":
+            return f"{float(val):.2f}"
+        return str(val)
+
+    # daily_max_spend_usd is 0 when pct-of-buying-power is the real limiter
+    spend_usd = _policy("risk", "daily_max_spend_usd")
+    spend_pct = _policy("risk", "daily_max_spend_pct_buying_power")
+    if spend_usd:
+        row("Daily max spend:", _usd(float(spend_usd)))
+    elif spend_pct:
+        row("Daily max spend:", f"{float(spend_pct)*100:.0f}% buying power")
+
     params: list[tuple[str, Any, str]] = [
-        ("Daily max spend:",      _policy("risk", "daily_max_spend_usd"),      "usd"),
         ("Max positions/day:",    _policy("risk", "daily_max_new_positions"),   "int"),
         ("Max open positions:",   _policy("risk", "max_total_open_positions"),  "int"),
         ("Max position size:",    _policy("risk", "max_position_size_usd"),     "usd"),
@@ -234,12 +253,9 @@ def build_session_summary(session_stats: dict) -> str:
     for label, val, fmt in params:
         if val is None:
             continue
-        if fmt == "usd":
-            row(label, _usd(float(val)))
-        elif fmt == "float":
-            row(label, f"{float(val):.2f}")
-        else:
-            row(label, str(val))
+        formatted = _fmt_param(val, fmt)
+        if formatted:
+            row(label, formatted)
 
     kill = _policy("market", "global_kill_switch")
     if kill:
