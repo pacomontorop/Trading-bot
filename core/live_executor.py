@@ -178,7 +178,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
         tick_ge_1 = float(risk_cfg.get("min_tick_equity_ge_1", 0.01))
         tick_lt_1 = float(risk_cfg.get("min_tick_equity_lt_1", 0.0001))
-        tif = exec_cfg.get("time_in_force", "day")
+        tif = exec_cfg.get("protect_time_in_force", "gtc")
 
         positions = list_live_positions()
         open_orders = list_live_open_orders()
