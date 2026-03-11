@@ -243,3 +243,44 @@ class StateManager:
             _persistent["executed_symbols"].clear()
             _persistent["metrics"].clear()
             _persist()
+
+
+# ---------------------------------------------------------------------------
+# Summary-send deduplication (cross-instance safe)
+# ---------------------------------------------------------------------------
+
+def try_claim_summary_send(date_str: str) -> bool:
+    """Claim the right to send today's session summary email.
+
+    Returns True once — the caller must send the email.
+    Returns False if another instance (or a previous restart of this instance)
+    has already claimed it.
+
+    Strategy:
+    - Redis available → atomic SETNX on ``summary:sent:{date}`` with a 48-hour TTL.
+      Works across multiple containers sharing the same Redis instance.
+    - No Redis → atomic file creation with ``open(..., "x")``.
+      Works for single-instance deployments; fails silently on ephemeral
+      multi-container setups (falls back to always claiming).
+    """
+    if _redis is not None:  # pragma: no cover
+        try:
+            key = f"summary:sent:{date_str}"
+            claimed = bool(_redis.setnx(key, date_str))
+            if claimed:
+                _redis.expire(key, 48 * 3600)
+            return claimed
+        except Exception:
+            pass  # Redis error → fall through to file-based approach
+
+    flag_path = os.path.join("data", f"summary_sent_{date_str}.flag")
+    try:
+        os.makedirs(os.path.dirname(flag_path), exist_ok=True)
+        with open(flag_path, "x") as fh:
+            fh.write(date_str)
+        return True
+    except FileExistsError:
+        return False
+    except Exception:
+        # Cannot create file (e.g. read-only FS) → allow send to avoid silent loss
+        return True
