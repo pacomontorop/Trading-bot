@@ -107,17 +107,15 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             # Use a file-based flag to prevent duplicate emails when multiple
             # Render instances are running simultaneously (e.g. during deploys).
             if _prev_market_open and _session_stats.get("cycles_run", 0) > 0 and _summary_sent_date != _today:
-                _summary_flag = os.path.join("data", f"summary_sent_{_today}.flag")
+                from utils.state import try_claim_summary_send
                 try:
-                    # open(..., "x") is atomic: raises FileExistsError if already sent
-                    with open(_summary_flag, "x") as _f:
-                        _f.write(_today)
-                    _summary_sent_date = _today
-                    from utils.daily_summary import send_session_summary
-                    send_session_summary(_session_stats)
-                except FileExistsError:
-                    _summary_sent_date = _today  # another instance already sent it
-                    log_event("SESSION_SUMMARY skip reason=already_sent_by_another_instance", event="SUMMARY")
+                    if try_claim_summary_send(_today):
+                        _summary_sent_date = _today
+                        from utils.daily_summary import send_session_summary
+                        send_session_summary(_session_stats)
+                    else:
+                        _summary_sent_date = _today  # another instance already sent it
+                        log_event("SESSION_SUMMARY skip reason=already_sent_by_another_instance", event="SUMMARY")
                 except Exception as _exc:
                     log_event(f"SESSION_SUMMARY trigger failed err={_exc}", event="SUMMARY")
             _prev_market_open = False
