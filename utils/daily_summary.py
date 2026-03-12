@@ -129,6 +129,8 @@ def build_session_summary(session_stats: dict) -> str:
     orders_pos_open: int = session_stats.get("orders_position_open", 0)
     orders_failed: int = session_stats.get("orders_failed", 0)
 
+    # The state file is only written when a trade executes (record_trade).
+    # On no-trade days the file is absent or carries yesterday's date — normal.
     if paper_today:
         positions: int = int(paper.get("new_positions_today") or 0)
         spent: float = float(paper.get("spent_today_usd") or 0)
@@ -149,32 +151,30 @@ def build_session_summary(session_stats: dict) -> str:
         if blocked:
             row("Blocked reason:", blocked)
 
-        if orders_placed == 0:
-            # Explain why no trades were made
-            causes: list[str] = []
-            if approved_total == 0:
-                causes.append("no signals passed all gates")
-            if orders_pos_open:
-                causes.append(f"position already open ({orders_pos_open}× skipped)")
-            if orders_failed:
-                causes.append(f"{orders_failed} order placement(s) failed")
-            if skips_vix:
-                causes.append(f"VIX too high ({skips_vix} cycles paused)")
-            if _policy("market", "global_kill_switch"):
-                causes.append("global kill switch is ON")
-            if not _policy("safeguards", "enabled", default=True):
-                causes.append("safeguards inactive — orders blocked")
-            if causes:
-                row("No trades:", "; ".join(causes))
-            else:
-                lines.append("  No trades executed today.")
+    if orders_placed == 0:
+        # Explain why no paper trades (applies whether state file exists or not)
+        causes: list[str] = []
+        if approved_total == 0:
+            causes.append("no signals passed all gates")
+        if orders_pos_open:
+            causes.append(f"position already open ({orders_pos_open}× skipped)")
+        if orders_failed:
+            causes.append(f"{orders_failed} order placement(s) failed")
+        if skips_vix:
+            causes.append(f"VIX too high ({skips_vix} cycles paused)")
+        if _policy("market", "global_kill_switch"):
+            causes.append("global kill switch is ON")
+        if not _policy("safeguards", "enabled", default=True):
+            causes.append("safeguards inactive — orders blocked")
+        if causes:
+            row("No trades:", "; ".join(causes))
         else:
-            if orders_pos_open:
-                row("Skipped (pos. open):", f"{orders_pos_open}")
-            if orders_failed:
-                row("Order errors:", f"{orders_failed}")
-    else:
-        lines.append("  State file not found for today.")
+            lines.append("  No trades executed today.")
+    elif paper_today:
+        if orders_pos_open:
+            row("Skipped (pos. open):", f"{orders_pos_open}")
+        if orders_failed:
+            row("Order errors:", f"{orders_failed}")
 
     # ── Live account (only when enabled) ────────────────────────────────────
     live_enabled = os.getenv("ENABLE_LIVE_TRADING", "false").lower() == "true"
@@ -188,11 +188,11 @@ def build_session_summary(session_stats: dict) -> str:
         live_rejected: int = session_stats.get("live_orders_rejected", 0)
         live_rej: dict[str, int] = session_stats.get("live_rejection_counts", {})
 
+        # State file only written on trade days — absent file = no trades (normal).
         if live_today:
             l_pos: int = int(live.get("new_positions_today") or 0)
             l_spent: float = float(live.get("spent_today_usd") or 0)
             l_syms: list[str] = [s for s in (live.get("symbols_traded_today") or []) if s]
-            # Note: live state has no last_trade_time or blocked_reason fields
 
             if l_pos > 0:
                 row("Positions opened:", str(l_pos))
@@ -201,21 +201,19 @@ def build_session_summary(session_stats: dict) -> str:
             if l_syms:
                 row("Symbols traded:", ", ".join(l_syms))
 
-            if live_placed == 0:
-                if live_rej:
-                    top = sorted(live_rej.items(), key=lambda x: -x[1])[:5]
-                    row("No live trades —", "top rejections:")
-                    for reason, cnt in top:
-                        lines.append(f"    {reason}: {cnt}×")
-                elif live_rejected:
-                    row("No live trades:", f"{live_rejected} signals rejected")
-                else:
-                    lines.append("  No live trades executed today.")
+        if live_placed == 0:
+            if live_rej:
+                top = sorted(live_rej.items(), key=lambda x: -x[1])[:5]
+                row("No live trades —", "top rejections:")
+                for reason, cnt in top:
+                    lines.append(f"    {reason}: {cnt}×")
+            elif live_rejected:
+                row("No live trades:", f"{live_rejected} signals rejected")
             else:
-                if live_rejected:
-                    row("Signals rejected:", str(live_rejected))
-        else:
-            lines.append("  Live state file not found for today.")
+                lines.append("  No live trades executed today.")
+        elif live_today:
+            if live_rejected:
+                row("Signals rejected:", str(live_rejected))
 
     # ── Key policy parameters ────────────────────────────────────────────────
     lines.append("")
