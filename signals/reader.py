@@ -449,8 +449,15 @@ def get_top_signals(
     *,
     max_symbols: int | None = None,
     exclude: Iterable[str] | None = None,
-) -> List[SignalTuple]:
-    """Return a list of approved signals for the current scan cycle."""
+) -> tuple[List[SignalTuple], List[SignalTuple]]:
+    """Return ``(paper_approved, live_extra)`` for the current scan cycle.
+
+    ``paper_approved`` – signals that passed all paper risk gates.
+    ``live_extra``     – signals rejected by paper *only* because of
+                         ``max_exposure`` (paper account full).  The live
+                         account evaluates these independently; they are
+                         not sent to the paper executor.
+    """
 
     log_event(
         "PROVIDERS: "
@@ -841,6 +848,10 @@ def get_top_signals(
             )
         )
 
+    # Build a symbol→candidate lookup so live_extra can carry price/atr/scores.
+    ranked_by_symbol = {c["symbol"]: c for c in ranked}
+    live_extra: List[SignalTuple] = []
+
     for rejection in rejection_reasons:
         decision_trace = rejection.get("decision_trace", {})
         if decision_trace:
@@ -855,6 +866,24 @@ def get_top_signals(
                 event="TRACE",
             )
 
+        # Signals rejected ONLY because paper account is at max exposure are
+        # still viable for the live account (which has its own exposure limits).
+        risk_reasons = rejection.get("reasons", [])
+        if risk_reasons == ["max_exposure"]:
+            sym = rejection.get("symbol")
+            cand = ranked_by_symbol.get(sym) if sym else None
+            if cand:
+                live_extra.append(
+                    (
+                        sym,
+                        float(cand.get("score_total", 0)),
+                        float(cand.get("quiver_score", 0)),
+                        float(cand["price"]) if cand.get("price") is not None else None,
+                        float(cand["atr"]) if cand.get("atr") is not None else None,
+                        cand,
+                    )
+                )
+
     top_rejected_by_reason = rejection_counts.most_common(5)
     log_event(
         (
@@ -864,6 +893,7 @@ def get_top_signals(
             f"quiver_called={quiver_called} "
             f"candidates={len(candidates)} "
             f"approved={len(approved)} "
+            f"live_extra={len(live_extra)} "
             f"market_gate={market_ok} "
             f"market_reasons={market_reasons} "
             f"mapping_fail_pct={mapping_fail_pct:.2f} "
@@ -875,4 +905,4 @@ def get_top_signals(
         top_reasons = [rej.get("reasons", []) for rej in rejection_reasons[:5]]
         log_event(f"SCAN risk_rejections_top5={top_reasons}", event="SCAN")
 
-    return approved
+    return approved, live_extra
