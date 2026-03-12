@@ -275,8 +275,11 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
         # ── Live-only signals (paper full, live has capacity) ───────────────
         # Signals rejected by paper solely due to max_exposure are evaluated
         # here for the live account only — paper is intentionally skipped.
+        # Cap to 2 per cycle so live never fires a burst of orders in one tick;
+        # daily_max_cash_pct in live_account policy provides the session-level cap.
+        _live_extra_limit = 2
         if live_active and live_extra:
-            for symbol, total_score, quiver_score, price, atr, plan in live_extra:
+            for symbol, total_score, quiver_score, price, atr, plan in live_extra[:_live_extra_limit]:
                 try:
                     live_plan, reason = compute_live_plan(
                         symbol=symbol,
