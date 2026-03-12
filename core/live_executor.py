@@ -380,23 +380,75 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 order_type = "stop_limit"
 
             if best_order is not None and getattr(best_order, "id", None):
-                # Replace the existing stop leg in place (works for bracket child
-                # orders too).  This avoids cancel+resubmit which would fail with
-                # "insufficient qty available" when the bracket's TP leg is still
-                # active and holding the shares.
+                # Try replace_order first (preferred: keeps bracket chain intact).
+                # On failure (e.g. "order chain not fully replaced" from Alpaca),
+                # fall back to cancel + new standalone stop.
+                # new_stop is already guaranteed > best_stop by the skip logic above,
+                # but we take max() as an extra safety to never move the stop down.
+                _safe_new_stop = max(float(new_stop), float(best_stop))
+                _safe_payload = {"stop_price": _safe_new_stop}
+                _limit = stop_limit_price(_safe_new_stop, symbol=symbol)
+                if _limit and _limit < _safe_new_stop:
+                    _safe_payload["limit_price"] = float(_limit)
+                    order_type = "stop_limit"
+
+                _replaced = False
                 try:  # pragma: no cover - network
-                    live_api.replace_order(getattr(best_order, "id"), **stop_payload)
+                    live_api.replace_order(getattr(best_order, "id"), **_safe_payload)
+                    _replaced = True
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                         f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
-                        f"new_stop={new_stop:.4f} reason={reason_txt}",
+                        f"new_stop={_safe_new_stop:.4f} reason={reason_txt}",
                         event="LIVE",
                     )
                 except Exception as exc:  # pragma: no cover
                     log_event(
-                        f"LIVE_PROTECT symbol={symbol} replace_failed err={exc}",
+                        f"LIVE_PROTECT symbol={symbol} replace_failed err={exc} "
+                        f"fallback=cancel_resubmit",
                         event="LIVE",
                     )
+
+                if not _replaced:  # pragma: no cover - network
+                    # Fallback: cancel old stop, submit new standalone stop.
+                    # Only submit if cancel succeeds to avoid duplicate orders.
+                    _cancel_ok = False
+                    try:
+                        live_api.cancel_order(getattr(best_order, "id"))
+                        _cancel_ok = True
+                    except Exception as exc2:
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} cancel_failed err={exc2} "
+                            f"old_stop={best_stop:.4f} kept_as_is=1",
+                            event="LIVE",
+                        )
+                    if _cancel_ok:
+                        client_order_id = (
+                            f"LIVE.PROTECT.{symbol}"
+                            f".{int(_safe_new_stop * 10000)}"
+                            f".{int(time.time())}"
+                        )
+                        try:
+                            live_api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type=order_type,
+                                time_in_force=tif,
+                                client_order_id=client_order_id,
+                                **_safe_payload,
+                            )
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} "
+                                f"last={last:.4f} old_stop={best_stop:.4f} "
+                                f"new_stop={_safe_new_stop:.4f} reason={reason_txt}_resubmit",
+                                event="LIVE",
+                            )
+                        except Exception as exc3:
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} resubmit_failed err={exc3}",
+                                event="LIVE",
+                            )
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
