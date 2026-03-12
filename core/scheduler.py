@@ -162,7 +162,7 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             time.sleep(interval_sec)
             continue
 
-        opportunities = get_top_signals(max_symbols=max_symbols)
+        opportunities, live_extra = get_top_signals(max_symbols=max_symbols)
 
         # Track universe size after first _cycle_batch() call (independent of results)
         if not _session_stats["symbols_scanned_max"]:
@@ -173,15 +173,15 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             except Exception:
                 pass
 
-        if not opportunities:
+        live_active = is_live_enabled()
+
+        if not opportunities and not (live_active and live_extra):
             _session_stats["no_signals_cycles"] += 1
             log_event("SCAN end: no approved signals", event="SCAN")
             time.sleep(interval_sec)
             continue
 
         _session_stats["signals_approved_total"] += len(opportunities)
-
-        live_active = is_live_enabled()
 
         # ── Pre-fetch live account state once for the whole cycle ───────────
         # Avoids N broker API calls (account + positions + orders) when there
@@ -271,5 +271,48 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                     log_event(f"LIVE ORDER {symbol}: failed", event="LIVE")
             except Exception as exc:
                 log_event(f"LIVE ORDER {symbol}: error err={exc}", event="LIVE")
+
+        # ── Live-only signals (paper full, live has capacity) ───────────────
+        # Signals rejected by paper solely due to max_exposure are evaluated
+        # here for the live account only — paper is intentionally skipped.
+        if live_active and live_extra:
+            for symbol, total_score, quiver_score, price, atr, plan in live_extra:
+                try:
+                    live_plan, reason = compute_live_plan(
+                        symbol=symbol,
+                        price=price or 0.0,
+                        atr=atr,
+                        snapshot=live_snapshot,
+                        state=live_state,
+                    )
+                    if live_plan is None:
+                        _session_stats["live_orders_rejected"] += 1
+                        _rej = reason or "unknown"
+                        _session_stats["live_rejection_counts"][_rej] = (
+                            _session_stats["live_rejection_counts"].get(_rej, 0) + 1
+                        )
+                        log_event(
+                            f"LIVE ORDER {symbol}: rejected reason={reason} (paper_exposure_bypass)",
+                            event="LIVE",
+                        )
+                        continue
+                    log_event(
+                        (
+                            f"LIVE ORDER {symbol}: attempt score={total_score:.2f} "
+                            f"qty={live_plan['qty']} notional={live_plan['notional']:.2f} "
+                            f"(paper_exposure_bypass)"
+                        ),
+                        event="LIVE",
+                    )
+                    live_success = place_live_order(live_plan, dry_run=config.DRY_RUN)
+                    if live_success:
+                        _session_stats["live_orders_placed"] += 1
+                        log_event(f"LIVE ORDER {symbol}: submitted (paper_exposure_bypass)", event="LIVE")
+                        if not config.DRY_RUN:
+                            record_live_trade(live_plan)
+                    else:
+                        log_event(f"LIVE ORDER {symbol}: failed (paper_exposure_bypass)", event="LIVE")
+                except Exception as exc:
+                    log_event(f"LIVE ORDER {symbol}: error err={exc} (paper_exposure_bypass)", event="LIVE")
 
         time.sleep(interval_sec)

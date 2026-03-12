@@ -84,7 +84,7 @@ def _test_yahoo_disabled_no_trade() -> None:
     reader._load_universe = lambda path="data/symbols.csv": [
         {"symbol": "AAPL", "ticker_map": {"canonical": "AAPL", "yahoo": "AAPL", "quiver": "AAPL"}}
     ]
-    approvals = reader.get_top_signals(max_symbols=1)
+    approvals, _live_extra = reader.get_top_signals(max_symbols=1)
     assert not approvals, "expected no trades when Yahoo is disabled"
 
 
