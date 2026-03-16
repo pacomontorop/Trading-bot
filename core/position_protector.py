@@ -19,9 +19,9 @@ _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
 # Symbols whose shares are committed to an existing bracket stop.
-# Suppressed for 30 min so we don't spam "insufficient qty" every tick.
+# Suppressed for 4 h (full trading session) so we don't spam "insufficient qty" every tick.
 _BRACKET_SUPPRESS: dict[str, float] = {}
-_BRACKET_SUPPRESS_SEC = 1800
+_BRACKET_SUPPRESS_SEC = 14400
 # Symbols for which a blown-stop market-sell has already been submitted.
 # Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
 _BLOWN_STOP_SUPPRESS: dict[str, float] = {}
@@ -393,7 +393,7 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     # Suppress this symbol for 30 min to avoid spam every tick.
                     _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
                     log_event(
-                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=30",
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=240",
                         event="PROTECT",
                     )
                 else:
