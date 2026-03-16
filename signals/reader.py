@@ -403,6 +403,14 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         return True, ["quiver_disabled"]
 
     checks = []
+    # Congressional purchases: any non-zero count satisfies the gate (timing-sensitive, strong signal)
+    congress_total = (
+        features.get("quiver_senate_purchase_count", 0)
+        + features.get("quiver_congress_purchase_count", 0)
+        + features.get("quiver_house_purchase_count", 0)
+    )
+    if congress_total > 0:
+        checks.append(True)
     insider_min = float(cfg.get("insider_buy_min_count_lookback", 0))
     if insider_min > 0:
         checks.append(features.get("quiver_insider_buy_count", 0) >= insider_min)
@@ -433,7 +441,12 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         active_types += 1
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
-    if features.get("quiver_house_purchase_count", 0) > 0:
+    # Congressional trades: senate + congress + house counted as one type (same data source)
+    if (
+        features.get("quiver_house_purchase_count", 0) > 0
+        or features.get("quiver_senate_purchase_count", 0) > 0
+        or features.get("quiver_congress_purchase_count", 0) > 0
+    ):
         active_types += 1
 
     min_types = int(cfg.get("min_active_signal_types", 1))
