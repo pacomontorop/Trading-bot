@@ -7,6 +7,8 @@ for all open live long positions (same logic as the paper protector).
 
 from __future__ import annotations
 
+import fcntl
+import os
 import threading
 import time
 from typing import Optional
@@ -26,6 +28,13 @@ _ATR_TTL_SEC = 300.0
 # Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
 _LIVE_BLOWN_STOP_SUPPRESS: dict[str, float] = {}
 _LIVE_BLOWN_STOP_SUPPRESS_SEC = 300
+# Symbols where Alpaca reported "insufficient qty available" (all qty in bracket).
+# Suppressed for 5 min to avoid spamming the error every protection cycle.
+_LIVE_INSUF_QTY_SUPPRESS: dict[str, float] = {}
+_LIVE_INSUF_QTY_SUPPRESS_SEC = 300
+
+# File-based lock path for cross-process protection dedup (multiple Render instances).
+_LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
 
 # Crypto symbols (e.g. BTCUSD, ETHUSD) are not managed by this bot's equity logic.
 # Alpaca crypto tickers typically end in USD with length >= 6, or contain "/".
@@ -158,6 +167,19 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         log_event("LIVE_PROTECT skip reason=lock_busy", event="LIVE")
         return
 
+    # Cross-process lock: prevent duplicate protection cycles when Render runs
+    # multiple instances simultaneously (e.g. during rolling deploys).
+    _flock_fd = None
+    try:
+        _flock_fd = open(_LIVE_PROTECT_FLOCK_PATH, "w")
+        fcntl.flock(_flock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (IOError, OSError):
+        if _flock_fd is not None:
+            _flock_fd.close()
+        _LIVE_PROTECT_LOCK.release()
+        log_event("LIVE_PROTECT skip reason=flock_busy", event="LIVE")
+        return
+
     try:
         safeguards_cfg = (getattr(config, "_policy", {}) or {}).get("safeguards", {}) or {}
         if not bool(safeguards_cfg.get("enabled", False)) or not is_safeguards_active():
@@ -203,6 +225,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     f"LIVE_PROTECT symbol={symbol} reason=skip_crypto",
                     event="LIVE",
                 )
+                continue
+            # Skip symbols where qty was fully committed to a bracket order.
+            if time.monotonic() < _LIVE_INSUF_QTY_SUPPRESS.get(symbol, 0):
                 continue
 
             last = get_current_price(symbol)
@@ -403,11 +428,16 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         event="LIVE",
                     )
                 except Exception as exc:  # pragma: no cover
+                    err_str = str(exc)
                     log_event(
-                        f"LIVE_PROTECT symbol={symbol} replace_failed err={exc} "
+                        f"LIVE_PROTECT symbol={symbol} replace_failed err={err_str} "
                         f"fallback=cancel_resubmit",
                         event="LIVE",
                     )
+                    if "insufficient qty" in err_str.lower():
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                        )
 
                 if not _replaced:  # pragma: no cover - network
                     # Fallback: cancel old stop, submit new standalone stop.
@@ -470,9 +500,20 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         event="LIVE",
                     )
                 except Exception as exc:  # pragma: no cover
+                    err_str = str(exc)
                     log_event(
-                        f"LIVE_PROTECT symbol={symbol} submit_failed err={exc}",
+                        f"LIVE_PROTECT symbol={symbol} submit_failed err={err_str}",
                         event="LIVE",
                     )
+                    if "insufficient qty" in err_str.lower():
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                        )
     finally:
+        if _flock_fd is not None:
+            try:
+                fcntl.flock(_flock_fd, fcntl.LOCK_UN)
+                _flock_fd.close()
+            except Exception:
+                pass
         _LIVE_PROTECT_LOCK.release()
