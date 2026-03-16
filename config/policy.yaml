@@ -2,7 +2,7 @@ signals:
   freshness_days_quiver: 7
   freshness_days_insider: 10                   # insider trades: 10d captures buy clusters (Form 4 lag + multi-day patterns)
   freshness_days_sec13f: 6                     # SEC 13F: filings arrive in 1-2 days → 6d still fresh, 7d conservative
-  freshness_days_congress: 40                  # Congress/Senate/House: STOCK Act allows 45d delay; 40d captures ~95% of signals
+  freshness_days_congress: 15                  # Congress/Senate/House: alpha concentrado en días 1-10 (STOCK Act permite 45d pero el move ya ocurrió)
   freshness_days_yahoo_prices: 2
   freshness_days_gov_contracts: 45             # small contracts (<$50M): 45d, likely discounted beyond that
   freshness_days_gov_contracts_large: 90       # large contracts (>=$50M): 90d, multi-year execution not yet priced
@@ -55,31 +55,31 @@ quiver_gate:
   # Fast lane: strong single signal bypasses yahoo strict thresholds (but not trend or RSI)
   fast_lane_require_trend_positive: true    # even in fast_lane, require uptrend vs 90d start (prevents NGNE-type entries)
   fast_lane_confirm_sec: 300               # signal must appear in 2 consecutive scans within this window (prevents phantom API entries)
-  insider_buy_strong_min_count_7d: 2        # >= 2 insider buys in 7d = strong
+  insider_buy_strong_min_count_7d: 3        # >= 3 insider buys in 7d = strong (clusters reales, evidencia ScienceDirect 2024)
   gov_contract_strong_min_total_30d: 5000000  # >= $5M gov contracts in 30d = strong (raised from $1M to filter noise)
   patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
   # Minimum gate: at least ONE of these must be met for a symbol to pass
   # Set all to 0 to disable the gate entirely (quiver becomes scoring-only)
-  insider_buy_min_count_lookback: 1         # at least 1 insider buy in freshness window
-  gov_contract_min_total_amount: 100000     # at least $100k in gov contracts
+  insider_buy_min_count_lookback: 3         # al menos 3 insider buys (clusters, no señales individuales ruidosas)
+  gov_contract_min_total_amount: 500000     # al menos $500k en contratos (filtra ruido — $100k irrelevante en large caps)
   gov_contract_min_count: 0                 # 0 = disabled (amount threshold is sufficient)
   patent_momentum_min: 0                    # 0 = disabled (patent data sparse)
   sec13f_count_min: 0                       # 0 = disabled (13F filings are quarterly, not weekly)
   sec13f_change_min_pct: 0                  # 0 = disabled
   house_purchase_min_count: 0               # 0 = disabled (congressional buys as alternative gate)
-  # How many distinct signal types must be non-zero (1 = any single signal is enough)
-  min_active_signal_types: 1
+  # How many distinct signal types must be non-zero (2 = exige corroboración entre fuentes)
+  min_active_signal_types: 2
 
 risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
-  daily_max_spend_pct_buying_power: 0.30 # max 30% of buying power per day (scales with account size)
+  daily_max_spend_pct_buying_power: 1.0  # paper: allow up to 100% of buying power per day
   daily_max_new_positions: 0             # 0 = no count limit; cash budget above is the real limiter
   max_total_open_positions: 0           # 0 = no limit; daily_max_spend_pct_buying_power controls budget
   max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
-  max_exposure_pct_equity: 0.60
+  max_exposure_pct_equity: 0            # 0 = disabled; no cap on total equity deployed (paper)
   max_symbol_exposure_pct_equity: 0.12  # ~12% of equity per position (scales with account)
-  cash_buffer_pct: 0.10
+  cash_buffer_pct: 0.0                  # paper: no cash buffer reserved
   symbol_cooldown_days: 5
   if_position_open_skip: true
   skip_if_order_pending: true

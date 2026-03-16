@@ -7,6 +7,8 @@ for all open live long positions (same logic as the paper protector).
 
 from __future__ import annotations
 
+import fcntl
+import os
 import threading
 import time
 from typing import Optional
@@ -26,6 +28,13 @@ _ATR_TTL_SEC = 300.0
 # Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
 _LIVE_BLOWN_STOP_SUPPRESS: dict[str, float] = {}
 _LIVE_BLOWN_STOP_SUPPRESS_SEC = 300
+# Symbols where Alpaca reported "insufficient qty available" (all qty in bracket).
+# Suppressed for 5 min to avoid spamming the error every protection cycle.
+_LIVE_INSUF_QTY_SUPPRESS: dict[str, float] = {}
+_LIVE_INSUF_QTY_SUPPRESS_SEC = 300
+
+# File-based lock path for cross-process protection dedup (multiple Render instances).
+_LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
 
 # Crypto symbols (e.g. BTCUSD, ETHUSD) are not managed by this bot's equity logic.
 # Alpaca crypto tickers typically end in USD with length >= 6, or contain "/".
@@ -158,6 +167,19 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         log_event("LIVE_PROTECT skip reason=lock_busy", event="LIVE")
         return
 
+    # Cross-process lock: prevent duplicate protection cycles when Render runs
+    # multiple instances simultaneously (e.g. during rolling deploys).
+    _flock_fd = None
+    try:
+        _flock_fd = open(_LIVE_PROTECT_FLOCK_PATH, "w")
+        fcntl.flock(_flock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (IOError, OSError):
+        if _flock_fd is not None:
+            _flock_fd.close()
+        _LIVE_PROTECT_LOCK.release()
+        log_event("LIVE_PROTECT skip reason=flock_busy", event="LIVE")
+        return
+
     try:
         safeguards_cfg = (getattr(config, "_policy", {}) or {}).get("safeguards", {}) or {}
         if not bool(safeguards_cfg.get("enabled", False)) or not is_safeguards_active():
@@ -203,6 +225,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     f"LIVE_PROTECT symbol={symbol} reason=skip_crypto",
                     event="LIVE",
                 )
+                continue
+            # Skip symbols where qty was fully committed to a bracket order.
+            if time.monotonic() < _LIVE_INSUF_QTY_SUPPRESS.get(symbol, 0):
                 continue
 
             last = get_current_price(symbol)
@@ -312,10 +337,21 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
             initial_stop_dist = max((atr_val or 0.0) * atr_k, entry * min_stop_pct)
+            initial_stop = entry - initial_stop_dist
             denom = max(initial_stop_dist, entry * min_stop_pct)
             r_multiple = (last - entry) / denom if denom > 0 else 0.0
 
-            new_stop = best_stop
+            # Floor at initial ATR stop — mirrors paper protector behaviour.
+            # When the bracket stop expires overnight (day TIF) best_stop resets
+            # to 0; without this floor the protector would start from 0 instead
+            # of the intended risk level, leaving positions unprotected.
+            new_stop = max(best_stop, initial_stop)
+            if best_stop == 0:
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} qty={qty:.0f} "
+                    f"initial_stop={initial_stop:.4f} reason=no_stop_found placing_initial_stop",
+                    event="LIVE",
+                )
             reasons: list[str] = []
 
             if r_multiple >= break_even_r:
@@ -403,11 +439,16 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         event="LIVE",
                     )
                 except Exception as exc:  # pragma: no cover
+                    err_str = str(exc)
                     log_event(
-                        f"LIVE_PROTECT symbol={symbol} replace_failed err={exc} "
+                        f"LIVE_PROTECT symbol={symbol} replace_failed err={err_str} "
                         f"fallback=cancel_resubmit",
                         event="LIVE",
                     )
+                    if "insufficient qty" in err_str.lower():
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                        )
 
                 if not _replaced:  # pragma: no cover - network
                     # Fallback: cancel old stop, submit new standalone stop.
@@ -470,9 +511,98 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         event="LIVE",
                     )
                 except Exception as exc:  # pragma: no cover
+                    err_str = str(exc)
                     log_event(
-                        f"LIVE_PROTECT symbol={symbol} submit_failed err={exc}",
+                        f"LIVE_PROTECT symbol={symbol} submit_failed err={err_str}",
                         event="LIVE",
                     )
+                    if "insufficient qty" in err_str.lower():
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                        )
+
+        # --- Take-profit renewal pass ---
+        # Bracket TP legs (limit sells) use day TIF and expire at EOD.
+        # Alpaca also silently cancels the TP leg whenever replace_order() is
+        # called on the bracket stop leg (even a simple stop-price update).
+        # This means after the first trailing-stop tick the position has NO
+        # take-profit order and can only exit via the stop.
+        # Re-place a standalone GTC limit-sell whenever no open TP exists.
+        tp_mult = float(exec_cfg.get("take_profit_atr_mult", 3.0))
+        for pos in positions or []:
+            try:
+                symbol = str(getattr(pos, "symbol", "") or "").upper()
+                qty = float(getattr(pos, "qty", 0) or 0)
+                side = str(getattr(pos, "side", "") or "").lower()
+                entry = float(getattr(pos, "avg_entry_price", 0) or 0)
+            except Exception:
+                continue
+            if not symbol or qty <= 0 or entry <= 0 or (side and side != "long"):
+                continue
+            if _is_crypto_symbol(symbol):
+                continue
+            if time.monotonic() < _LIVE_BLOWN_STOP_SUPPRESS.get(symbol, 0):
+                continue
+
+            has_tp = any(
+                getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+                and str(getattr(o, "type", "") or getattr(o, "order_type", "")).lower() == "limit"
+                for o in (open_orders or [])
+            )
+            if has_tp:
+                continue
+
+            atr_tp = _atr(symbol)
+            if not atr_tp or atr_tp <= 0:
+                continue
+            last_tp = get_current_price(symbol)
+            if not last_tp or last_tp <= 0:
+                continue
+
+            computed_tp = round(entry + atr_tp * tp_mult, 2)
+            if computed_tp <= last_tp:
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} computed_tp={computed_tp:.2f} "
+                    f"last={last_tp:.4f} reason=tp_skip_price_above_target",
+                    event="LIVE",
+                )
+                continue
+
+            if dry_run:
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} computed_tp={computed_tp:.2f} "
+                    f"reason=tp_renewal dry_run=1",
+                    event="LIVE",
+                )
+                continue
+
+            try:
+                live_api.submit_order(
+                    symbol=symbol,
+                    side="sell",
+                    qty=qty,
+                    type="limit",
+                    time_in_force="gtc",
+                    limit_price=computed_tp,
+                    client_order_id=f"LIVE.TP.{symbol}.{int(computed_tp * 100)}.{int(time.time())}",
+                )
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last_tp:.4f} "
+                    f"atr={atr_tp:.4f} tp={computed_tp:.2f} reason=tp_renewal",
+                    event="LIVE",
+                )
+            except Exception as exc:
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} tp_submit_failed err={exc}",
+                    event="LIVE",
+                )
+
     finally:
+        if _flock_fd is not None:
+            try:
+                fcntl.flock(_flock_fd, fcntl.LOCK_UN)
+                _flock_fd.close()
+            except Exception:
+                pass
         _LIVE_PROTECT_LOCK.release()

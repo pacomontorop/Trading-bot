@@ -401,5 +401,83 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
                         event="PROTECT",
                     )
+
+        # --- Take-profit renewal pass ---
+        # Bracket TP legs (limit sells) use day TIF and expire at EOD.
+        # Alpaca also cancels the TP leg when replace_order() updates the stop.
+        # Re-place a standalone GTC limit-sell whenever no open TP exists.
+        tp_mult = float(exec_cfg.get("take_profit_atr_mult", 3.0))
+        for pos in positions or []:
+            try:
+                symbol = str(getattr(pos, "symbol", "") or "").upper()
+                qty = float(getattr(pos, "qty", 0) or 0)
+                side = str(getattr(pos, "side", "") or "").lower()
+                entry = float(getattr(pos, "avg_entry_price", 0) or 0)
+                asset_class = str(getattr(pos, "asset_class", "us_equity") or "us_equity").lower()
+            except Exception:
+                continue
+            if not symbol or qty <= 0 or entry <= 0 or (side and side != "long"):
+                continue
+            if asset_class not in {"us_equity", "equity"}:
+                continue
+            if time.monotonic() < _BLOWN_STOP_SUPPRESS.get(symbol, 0):
+                continue
+
+            has_tp = any(
+                getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+                and str(getattr(o, "type", "") or getattr(o, "order_type", "")).lower() == "limit"
+                for o in (open_orders or [])
+            )
+            if has_tp:
+                continue
+
+            atr_tp = _atr(symbol)
+            if not atr_tp or atr_tp <= 0:
+                continue
+            last_tp = _price(symbol)
+            if not last_tp or last_tp <= 0:
+                continue
+
+            computed_tp = round(entry + atr_tp * tp_mult, 2)
+            if computed_tp <= last_tp:
+                log_event(
+                    f"symbol={symbol} entry={entry:.4f} computed_tp={computed_tp:.2f} "
+                    f"last={last_tp:.4f} reason=tp_skip_price_above_target",
+                    event="PROTECT",
+                )
+                continue
+
+            tif_tp = exec_cfg.get("protect_time_in_force", "gtc")
+            if dry_run:
+                log_event(
+                    f"symbol={symbol} entry={entry:.4f} computed_tp={computed_tp:.2f} "
+                    f"reason=tp_renewal dry_run=1",
+                    event="PROTECT",
+                )
+                continue
+
+            try:
+                client_order_id = f"PROTECT.TP.{symbol}.{int(computed_tp * 100)}.{int(time.time() * 1000) % 1_000_000}"
+                broker.api.submit_order(
+                    symbol=symbol,
+                    side="sell",
+                    qty=qty,
+                    type="limit",
+                    time_in_force=tif_tp,
+                    limit_price=computed_tp,
+                    client_order_id=client_order_id,
+                )
+                log_event(
+                    f"symbol={symbol} entry={entry:.4f} last={last_tp:.4f} "
+                    f"atr={atr_tp:.4f} tp={computed_tp:.2f} reason=tp_renewal",
+                    event="PROTECT",
+                )
+            except Exception as exc:
+                log_event(
+                    f"symbol={symbol} tp_submit_failed err={exc}",
+                    event="PROTECT",
+                )
+
     finally:
         _PROTECT_LOCK.release()

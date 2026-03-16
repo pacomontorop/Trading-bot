@@ -28,22 +28,24 @@ _fast_lane_pending: dict[str, float] = {}  # symbol -> monotonic timestamp of fi
 
 
 QUIVER_FEATURE_WEIGHTS = {
-    # Congressional / Senate — top alpha signal (Grok 2026: +3-5% annual vs S&P)
-    "quiver_senate_purchase_count":      2.2,   # Senate: best info asymmetry; max 5×2.2 = 11 pts
+    # Congressional / Senate — top alpha signal (Grok+literatura 2024-25: alpha real en primeros 5-10 días)
+    "quiver_senate_purchase_count":      2.8,   # Senate: mayor info asimétrica documentada; max 5×2.8 = 14 pts
     "quiver_congress_purchase_count":    1.8,   # Congress unified feed; max 5×1.8 = 9 pts
     "quiver_house_purchase_count":       1.2,   # House only; max 5×1.2 = 6 pts
     # Insider activity — net count primary signal (buys - sells)
+    # Alpha real solo en clusters ≥3 (ScienceDirect 2024); min gate subido a 3
     "quiver_insider_net_count":          2.0,   # net insider buys; max 5×2.0 = 10 pts
-    "quiver_insider_buy_count":          0.8,   # raw buys contribute; max 5×0.8 = 4 pts
-    "quiver_insider_sell_count":        -1.2,   # raw sells penalize; max -5×1.2 = -6 pts
+    "quiver_insider_buy_count":          1.0,   # raw buys (con min 3 en gate = señal real); max 5×1.0 = 5 pts
+    "quiver_insider_sell_count":        -1.5,   # raw sells penalizan más; max -5×1.5 = -7.5 pts
     # Innovation / IP — ~100 bp/month alpha (Kogan/Qiu)
     "quiver_patent_momentum_latest":     1.5,   # max 5×1.5 = 7.5 pts
-    # Government contracts — post-announcement drift
-    "quiver_gov_contract_total_amount":  0.000002,  # cap $5M → max 10 pts
+    # Government contracts — señal más real-time y fuerte (Pyun, Economics Letters 2025)
+    "quiver_gov_contract_total_amount":  0.0000025,  # cap $5M → max 12.5 pts (subido levemente)
     "quiver_gov_contract_count":         0.8,   # max 5×0.8 = 4 pts
-    # Institutional interest (13F filings)
-    "quiver_sec13f_count":               0.4,   # max 5×0.4 = 2 pts
-    "quiver_sec13f_change_latest_pct":   0.25,  # max 20×0.25 = 5 pts
+    # Institutional interest (13F filings) — REDUCIDO: lag real hasta 135 días (Miori & Cucuringu 2022)
+    # Usar solo como confirmación estructural, no como driver principal
+    "quiver_sec13f_count":               0.15,  # era 0.4; lag trimestral; max 5×0.15 = 0.75 pts
+    "quiver_sec13f_change_latest_pct":   0.10,  # era 0.25; max 20×0.10 = 2 pts
     # Off-exchange short interest — bearish signal → negative weight
     "quiver_offexchange_dpi":           -0.5,   # high short interest = bearish
     # Retail sentiment — noisy, kept minimal
@@ -401,6 +403,14 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         return True, ["quiver_disabled"]
 
     checks = []
+    # Congressional purchases: any non-zero count satisfies the gate (timing-sensitive, strong signal)
+    congress_total = (
+        features.get("quiver_senate_purchase_count", 0)
+        + features.get("quiver_congress_purchase_count", 0)
+        + features.get("quiver_house_purchase_count", 0)
+    )
+    if congress_total > 0:
+        checks.append(True)
     insider_min = float(cfg.get("insider_buy_min_count_lookback", 0))
     if insider_min > 0:
         checks.append(features.get("quiver_insider_buy_count", 0) >= insider_min)
@@ -431,7 +441,12 @@ def gate_quiver_minimum(features: dict[str, float]) -> tuple[bool, list[str]]:
         active_types += 1
     if features.get("quiver_wsb_recent_max_mentions", 0) > 0:
         active_types += 1
-    if features.get("quiver_house_purchase_count", 0) > 0:
+    # Congressional trades: senate + congress + house counted as one type (same data source)
+    if (
+        features.get("quiver_house_purchase_count", 0) > 0
+        or features.get("quiver_senate_purchase_count", 0) > 0
+        or features.get("quiver_congress_purchase_count", 0) > 0
+    ):
         active_types += 1
 
     min_types = int(cfg.get("min_active_signal_types", 1))

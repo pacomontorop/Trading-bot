@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import gc
 import os
 import time
 from datetime import datetime
@@ -20,6 +21,7 @@ from signals.filters import is_position_open
 from signals.reader import get_top_signals
 from utils.generate_symbols_csv import generate_symbols_csv
 from utils.logger import log_event
+from utils.telegram_alert import send_telegram_alert
 
 
 SYMBOLS_PATH = os.path.join("data", "symbols.csv")
@@ -27,6 +29,43 @@ _NY_TZ = ZoneInfo("America/New_York")
 
 
 _SYMBOLS_MAX_AGE_SEC = 86400  # regenerate universe daily to pick up new listings
+
+
+def _notify_order(
+    symbol: str,
+    plan: dict,
+    total_score: float,
+    quiver_score: float,
+    account: str = "PAPER",
+) -> None:
+    """Send a Telegram alert when an order is placed.
+
+    Fast-lane entries get a prominent warning header since they bypass
+    some technical filters. All other approved entries get a standard notice.
+    Silently no-ops if Telegram is not configured.
+    """
+    trace = plan.get("decision_trace") or {}
+    fast_lane = trace.get("fast_lane_confirm_status") == "confirmed"
+    strong_reasons = (trace.get("quiver_signal_summary") or {}).get("strong_reason", [])
+    rsi = trace.get("rsi")
+    atr_pct = (trace.get("yahoo_metrics") or {}).get("atr_pct")
+    price = plan.get("price") or plan.get("notional", 0) / max(plan.get("qty", 1), 1)
+    notional = plan.get("notional", 0)
+
+    header = "FAST-LANE ENTRY" if fast_lane else "ORDER PLACED"
+    prefix = "!!" if fast_lane else "--"
+    lines = [
+        f"{prefix} [{account}] {header}: {symbol}",
+        f"   Score: {total_score:.2f}  (quiver {quiver_score:.2f})",
+        f"   Price: ${price:.2f}  |  Notional: ${notional:.0f}",
+    ]
+    if fast_lane and strong_reasons:
+        lines.append(f"   Fast-lane trigger: {', '.join(strong_reasons)}")
+    if rsi is not None:
+        lines.append(f"   RSI: {rsi:.1f}")
+    if atr_pct is not None:
+        lines.append(f"   ATR%: {atr_pct:.1f}%")
+    send_telegram_alert("\n".join(lines))
 
 
 def _symbols_csv_valid(path: str) -> bool:
@@ -125,6 +164,10 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
 
         _prev_market_open = True
         _session_stats["cycles_run"] += 1
+        # Force GC every 30 cycles to free yfinance DataFrames and other
+        # accumulated objects before they trigger a Render memory OOM restart.
+        if _session_stats["cycles_run"] % 30 == 0:
+            gc.collect()
 
         now_ts = time.time()
 
@@ -226,6 +269,7 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                     log_event(f"ORDER {symbol}: submitted", event="ORDER")
                     if not config.DRY_RUN:
                         risk_manager.record_trade(plan)
+                    _notify_order(symbol, plan, total_score, quiver_score, account="PAPER")
                 else:
                     _session_stats["orders_failed"] += 1
                     log_event(f"ORDER {symbol}: failed", event="ORDER")
@@ -267,6 +311,7 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                     log_event(f"LIVE ORDER {symbol}: submitted", event="LIVE")
                     if not config.DRY_RUN:
                         record_live_trade(live_plan)
+                    _notify_order(symbol, plan, total_score, quiver_score, account="LIVE")
                 else:
                     log_event(f"LIVE ORDER {symbol}: failed", event="LIVE")
             except Exception as exc:
@@ -313,6 +358,7 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                         log_event(f"LIVE ORDER {symbol}: submitted (paper_exposure_bypass)", event="LIVE")
                         if not config.DRY_RUN:
                             record_live_trade(live_plan)
+                        _notify_order(symbol, plan, total_score, quiver_score, account="LIVE")
                     else:
                         log_event(f"LIVE ORDER {symbol}: failed (paper_exposure_bypass)", event="LIVE")
                 except Exception as exc:

@@ -8,6 +8,10 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 warnings.filterwarnings("ignore", message="Timestamp.utcnow")
+# Broad catch: Pandas4Warning (FutureWarning subclass) for utcnow deprecation
+# issued deep inside yfinance — the module filter above doesn't reach it.
+warnings.filterwarnings("ignore", message=".*utcnow.*")
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 from fastapi import FastAPI
 
