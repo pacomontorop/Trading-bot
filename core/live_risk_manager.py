@@ -255,13 +255,15 @@ def compute_live_plan(
     if stop_distance <= 0:
         return None, "invalid_stop_distance"
 
-    # Risk-based qty: risk at most 1% of live equity on stop distance
-    risk_qty = int((equity * risk_pct) / stop_distance)
-    # Budget-based qty: stay within cash budget
-    budget_qty = int(budget / price)
+    # Risk-based qty: risk at most 1% of live equity on stop distance.
+    # Budget-based qty: stay within cash budget.
+    # Use 1-decimal fractional shares so stocks priced just above the per-position
+    # budget are still tradeable (Alpaca supports fractional shares for eligible symbols).
+    risk_qty = round((equity * risk_pct) / stop_distance, 1)
+    budget_qty = round(budget / price, 1)
     qty = min(risk_qty, budget_qty)
 
-    if qty < 1:
+    if qty < 0.1:
         return None, "live_qty_below_one"
 
     notional = qty * price

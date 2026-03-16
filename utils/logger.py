@@ -15,6 +15,19 @@ _last_msg: dict[str, float] = {}
 _dedupe_lock = threading.Lock()
 _dedupe_last: dict[str, float] = {}
 
+# Prune caches when they exceed this size to prevent unbounded growth in
+# long-running deployments scanning thousands of symbols per day.
+_CACHE_MAX_SIZE = 2000
+_CACHE_TTL_SEC = 3600.0  # keep entries for 1 hour
+
+
+def _prune_cache(cache: dict[str, float], now: float) -> None:
+    """Remove entries older than _CACHE_TTL_SEC. Call while holding the lock."""
+    cutoff = now - _CACHE_TTL_SEC
+    stale = [k for k, ts in cache.items() if ts < cutoff]
+    for k in stale:
+        del cache[k]
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_dir = os.path.join(PROJECT_ROOT, "logs")
 
@@ -138,6 +151,8 @@ def log_event(message, **fields):
         now = time.time()
         key = str(dedupe_key)
         with _dedupe_lock:
+            if len(_dedupe_last) > _CACHE_MAX_SIZE:
+                _prune_cache(_dedupe_last, now)
             last = _dedupe_last.get(key, 0.0)
             if now - last < max(dedupe_ttl, 0.0):
                 return
@@ -183,6 +198,8 @@ def log_once(key: str, message: str, min_interval_sec: float = 60.0, **fields) -
 
     now = time.time()
     with _rate_lock:
+        if len(_last_msg) > _CACHE_MAX_SIZE:
+            _prune_cache(_last_msg, now)
         last = _last_msg.get(key, 0.0)
         if now - last < max(min_interval_sec, 0.0):
             return

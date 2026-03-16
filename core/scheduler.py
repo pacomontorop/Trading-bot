@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import gc
 import os
 import time
 from datetime import datetime
@@ -163,6 +164,10 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
 
         _prev_market_open = True
         _session_stats["cycles_run"] += 1
+        # Force GC every 30 cycles to free yfinance DataFrames and other
+        # accumulated objects before they trigger a Render memory OOM restart.
+        if _session_stats["cycles_run"] % 30 == 0:
+            gc.collect()
 
         now_ts = time.time()
 
