@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import time
 import datetime as _dt
 from collections import Counter
 from datetime import timezone
@@ -18,6 +19,12 @@ from utils.logger import log_event
 from utils.universe import load_universe
 
 SignalTuple = Tuple[str, float, float, float | None, float | None, dict]
+
+# Consecutive-scan confirmation for fast-lane signals.
+# A symbol must appear as "strong" in two scans within _FAST_LANE_CONFIRM_SEC seconds
+# before being allowed through the fast lane.  This prevents phantom entries caused by
+# transient QuiverQuant API errors that return real data only on the second attempt.
+_fast_lane_pending: dict[str, float] = {}  # symbol -> monotonic timestamp of first strong signal
 
 
 QUIVER_FEATURE_WEIGHTS = {
@@ -648,21 +655,51 @@ def get_top_signals(
         strong_signal, _, quiver_summary = _quiver_fast_lane_summary(features, quiver_gate_cfg)
         decision_trace["quiver_signal_summary"] = quiver_summary
 
+        # Consecutive-scan confirmation: require the fast-lane signal to persist across
+        # at least two scans within fast_lane_confirm_sec seconds.  On the FIRST scan
+        # where a strong signal appears we record the timestamp but do NOT activate the
+        # fast lane yet.  On the SECOND scan (same window) we promote it.
+        # If the signal disappears between scans the pending entry is cleared.
+        if quiver_fast_lane_enabled and strong_signal:
+            confirm_sec = float(quiver_gate_cfg.get("fast_lane_confirm_sec", 300))
+            now_mono = time.monotonic()
+            first_seen = _fast_lane_pending.get(symbol)
+            if first_seen is None:
+                # First time we see this strong signal — record but do not yet activate
+                _fast_lane_pending[symbol] = now_mono
+                strong_signal = False
+                decision_trace["fast_lane_confirm_status"] = "pending_first_seen"
+            elif now_mono - first_seen > confirm_sec:
+                # Signal was seen before but outside the confirmation window → restart
+                _fast_lane_pending[symbol] = now_mono
+                strong_signal = False
+                decision_trace["fast_lane_confirm_status"] = "pending_window_reset"
+            else:
+                # Confirmed: signal persisted within the window — allow fast lane
+                del _fast_lane_pending[symbol]
+                decision_trace["fast_lane_confirm_status"] = "confirmed"
+        elif symbol in _fast_lane_pending:
+            # Signal disappeared — clear pending state
+            del _fast_lane_pending[symbol]
+            decision_trace["fast_lane_confirm_status"] = "cleared_signal_gone"
+
         if strong_signal and quiver_fast_lane_enabled:
             relaxed_min_market_cap = float(gate_cfg.get("relaxed_min_market_cap", 300_000_000))
             relaxed_min_avg_volume = float(gate_cfg.get("relaxed_min_avg_volume_7d", 50_000))
             relaxed_max_atr_pct = float(gate_cfg.get("relaxed_max_atr_pct", 12.0))
+            fast_lane_require_trend = bool(quiver_gate_cfg.get("fast_lane_require_trend_positive", True))
             yahoo_reasons = _yahoo_gate_reasons(
                 snapshot_data=yahoo_snapshot,
                 min_market_cap=relaxed_min_market_cap,
                 min_avg_volume=relaxed_min_avg_volume,
                 max_atr_pct=relaxed_max_atr_pct,
-                require_trend=False,
+                require_trend=fast_lane_require_trend,
             )
             yahoo_thresholds = {
                 "min_market_cap": relaxed_min_market_cap,
                 "min_avg_volume_7d": relaxed_min_avg_volume,
                 "max_atr_pct": relaxed_max_atr_pct,
+                "require_trend_positive": fast_lane_require_trend,
             }
             yahoo_mode_used = "relaxed_due_to_quiver"
         else:

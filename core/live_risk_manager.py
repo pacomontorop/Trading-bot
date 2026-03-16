@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -90,8 +91,11 @@ def load_live_state() -> LiveDailyState:
 def save_live_state(state: LiveDailyState) -> None:
     try:
         os.makedirs(os.path.dirname(LIVE_STATE_PATH), exist_ok=True)
-        with open(LIVE_STATE_PATH, "w", encoding="utf-8") as handle:
-            json.dump(state.to_dict(), handle)
+        dir_path = os.path.dirname(os.path.abspath(LIVE_STATE_PATH))
+        with tempfile.NamedTemporaryFile("w", dir=dir_path, delete=False, suffix=".tmp", encoding="utf-8") as tmp:
+            json.dump(state.to_dict(), tmp)
+            tmp_path = tmp.name
+        os.replace(tmp_path, LIVE_STATE_PATH)
     except Exception as exc:
         log_event(f"LIVE_RISK state save failed err={exc}", event="LIVE")
 

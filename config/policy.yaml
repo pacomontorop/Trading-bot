@@ -52,9 +52,11 @@ technicals:
 quiver_gate:
   enabled: true
   fast_lane_enabled: true
-  # Fast lane: strong single signal bypasses yahoo strict thresholds
+  # Fast lane: strong single signal bypasses yahoo strict thresholds (but not trend or RSI)
+  fast_lane_require_trend_positive: true    # even in fast_lane, require uptrend vs 90d start (prevents NGNE-type entries)
+  fast_lane_confirm_sec: 300               # signal must appear in 2 consecutive scans within this window (prevents phantom API entries)
   insider_buy_strong_min_count_7d: 2        # >= 2 insider buys in 7d = strong
-  gov_contract_strong_min_total_30d: 1000000  # >= $1M gov contracts in 30d = strong
+  gov_contract_strong_min_total_30d: 5000000  # >= $5M gov contracts in 30d = strong (raised from $1M to filter noise)
   patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
   # Minimum gate: at least ONE of these must be met for a symbol to pass
   # Set all to 0 to disable the gate entirely (quiver becomes scoring-only)
