@@ -557,14 +557,52 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     )
                 except Exception as exc:  # pragma: no cover
                     err_str = str(exc)
+                    if "insufficient qty" in err_str.lower():
+                        # A non-stop sell order (e.g. a dangling TP limit) is tying up
+                        # all shares. Cancel it so the protective stop can be placed;
+                        # the TP renewal pass will re-place the take-profit afterwards.
+                        _blocking = next(
+                            (
+                                o for o in (open_orders or [])
+                                if getattr(o, "symbol", "") == symbol
+                                and str(getattr(o, "side", "")).lower() == "sell"
+                            ),
+                            None,
+                        )
+                        if _blocking:
+                            try:
+                                live_api.cancel_order(getattr(_blocking, "id"))
+                                _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                                live_api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=qty,
+                                    type=order_type,
+                                    time_in_force=tif,
+                                    client_order_id=_retry_id,
+                                    **stop_payload,
+                                )
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
+                                    event="LIVE",
+                                )
+                            except Exception as exc2:
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
+                                    event="LIVE",
+                                )
+                                _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                    time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                                )
+                        else:
+                            _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                            )
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} submit_failed err={err_str}",
                         event="LIVE",
                     )
-                    if "insufficient qty" in err_str.lower():
-                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
-                            time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
-                        )
 
         # --- Take-profit renewal pass ---
         # Bracket TP legs (limit sells) use day TIF and expire at EOD.

@@ -516,6 +516,8 @@ def get_top_signals(
 
     exclude_set = {s.upper() for s in (exclude or [])}
     evaluated: list[str] = []
+    _seen_this_cycle: set[str] = set()  # dedup within this call (guards against duplicate CSV rows
+    # or concurrent process overlap during Render rolling deploys)
     candidates: list[dict] = []
     rejected: list[str] = []
     rejection_counts: Counter[str] = Counter()
@@ -529,6 +531,9 @@ def get_top_signals(
 
     for entry in universe:
         symbol = entry["ticker_map"]["canonical"]
+        if symbol in _seen_this_cycle:
+            continue
+        _seen_this_cycle.add(symbol)
         if symbol in exclude_set:
             rejected.append(f"{symbol}:excluded")
             rejection_counts["excluded"] += 1
