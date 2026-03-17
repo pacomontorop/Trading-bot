@@ -34,8 +34,13 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
     for _o in _sells:
         try:
             api.cancel_order(getattr(_o, "id"))
-        except Exception:
-            pass
+        except Exception as _e:
+            if "429" in str(_e) or "rate limit" in str(_e).lower():
+                time.sleep(1.5)
+                try:
+                    api.cancel_order(getattr(_o, "id"))
+                except Exception:
+                    pass
 
     # Wait for Alpaca to process the cancellations asynchronously.
     time.sleep(0.8)
@@ -47,7 +52,9 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
                 if getattr(o, "symbol", "") == symbol
                 and str(getattr(o, "side", "")).lower() == "sell"
             ]
-        except Exception:
+        except Exception as _e:
+            if "429" in str(_e) or "rate limit" in str(_e).lower():
+                time.sleep(1.5)
             remaining = []
         if not remaining:
             return True

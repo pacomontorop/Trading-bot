@@ -14,6 +14,7 @@ from broker import alpaca as broker
 from core.order_protection import cancel_all_sells_and_wait, stop_limit_price
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
+from utils.telegram_alert import send_telegram_alert
 
 _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
@@ -241,6 +242,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 f"symbol={symbol} reason=blown_stop_cancel_wait_failed",
                                 event="PROTECT",
                             )
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing."
+                            )
                         # A TP limit may have partially or fully filled during the
                         # 800 ms wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
@@ -254,6 +258,14 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 event="PROTECT",
                             )
                         else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="PROTECT",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ PAPER {symbol}: blown_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
                             try:
                                 client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                                 broker.api.submit_order(
@@ -366,6 +378,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 f"symbol={symbol} reason=no_stop_cancel_wait_failed",
                                 event="PROTECT",
                             )
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing."
+                            )
                         # A TP limit may have partially or fully filled during the
                         # 800 ms wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
@@ -379,6 +394,14 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 event="PROTECT",
                             )
                         else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="PROTECT",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ PAPER {symbol}: no_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
                             try:
                                 client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                                 broker.api.submit_order(
@@ -509,6 +532,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                             log_event(
                                 f"symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
                                 event="PROTECT",
+                            )
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (stop placement) — blocking sell orders not cleared. Stop suppressed."
                             )
                             _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
                     else:

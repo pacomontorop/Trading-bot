@@ -20,6 +20,7 @@ from core.broker import get_tick_size, round_to_tick
 from core.order_protection import cancel_all_sells_and_wait, compute_bracket_prices, stop_limit_price, validate_bracket_prices
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
+from utils.telegram_alert import send_telegram_alert
 
 _LIVE_PROTECT_LOCK = threading.Lock()
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
@@ -316,6 +317,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 f"LIVE_PROTECT symbol={symbol} reason=blown_stop_cancel_wait_failed",
                                 event="LIVE",
                             )
+                            send_telegram_alert(
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing."
+                            )
                         # A TP limit may have partially or fully filled during the
                         # 800 ms wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
@@ -329,6 +333,14 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 event="LIVE",
                             )
                         else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="LIVE",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ LIVE {symbol}: blown_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
                             try:
                                 client_order_id = f"LIVE.BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                                 live_api.submit_order(
@@ -429,6 +441,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 f"LIVE_PROTECT symbol={symbol} reason=no_stop_cancel_wait_failed",
                                 event="LIVE",
                             )
+                            send_telegram_alert(
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing."
+                            )
                         # A TP limit may have partially or fully filled during the
                         # 800 ms wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
@@ -442,6 +457,14 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 event="LIVE",
                             )
                         else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="LIVE",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ LIVE {symbol}: no_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
                             try:
                                 client_order_id = f"LIVE.NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                                 live_api.submit_order(
@@ -635,6 +658,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
                                     event="LIVE",
+                                )
+                                send_telegram_alert(
+                                    f"⚠️ LIVE {symbol}: cancel_wait_timed_out (stop placement) — blocking sell orders not cleared. Stop suppressed."
                                 )
                                 _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                                     time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
