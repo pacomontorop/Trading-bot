@@ -22,7 +22,8 @@ _ATR_CACHE: dict[str, tuple[float, float]] = {}
 # Symbols whose shares are committed to an existing bracket stop.
 # Suppressed for 4 h (full trading session) so we don't spam "insufficient qty" every tick.
 _BRACKET_SUPPRESS: dict[str, float] = {}
-_BRACKET_SUPPRESS_SEC = 14400
+_BRACKET_SUPPRESS_SEC = 14400        # 4 h — safe when original stop still protects
+_BRACKET_SUPPRESS_NO_STOP_SEC = 300  # 5 min — used when position has NO stop at all
 # Symbols for which a blown-stop market-sell has already been submitted.
 # Suppressed for 5 min to prevent double-selling before Alpaca updates positions.
 _BLOWN_STOP_SUPPRESS: dict[str, float] = {}
@@ -56,7 +57,10 @@ def _price(symbol: str) -> Optional[float]:
             _PRICE_CACHE[symbol] = (now, val)
             return val
     except Exception:
-        return None
+        # On network failure return the stale cached value rather than None so
+        # the protection cycle can still act on the last known price.
+        if cached:
+            return cached[1]
     return None
 
 
@@ -287,6 +291,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                     f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
                                     event="PROTECT",
                                 )
+                                send_telegram_alert(
+                                    f"🚨 PAPER {symbol}: blown stop — market sell FAILED ({exc}). Position still open below stop at {last:.2f}! Manual close required."
+                                )
                     continue
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
@@ -423,6 +430,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                     f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
                                     event="PROTECT",
                                 )
+                                send_telegram_alert(
+                                    f"🚨 PAPER {symbol}: no stop + price at/below stop level — market sell FAILED ({exc}). Position unprotected at {last:.2f}! Manual close required."
+                                )
                     else:
                         log_event(
                             f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
@@ -527,7 +537,11 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                     f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
                                     event="PROTECT",
                                 )
-                                _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                                send_telegram_alert(
+                                    f"🚨 PAPER {symbol}: cancelled all sells but stop still failed ({exc2}) — position has NO stop and NO TP!"
+                                )
+                                # Position unprotected: retry in 5 min, not 4 h.
+                                _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_NO_STOP_SEC
                         else:
                             log_event(
                                 f"symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
@@ -536,7 +550,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                             send_telegram_alert(
                                 f"⚠️ PAPER {symbol}: cancel_wait_timed_out (stop placement) — blocking sell orders not cleared. Stop suppressed."
                             )
-                            _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                            # Blocking sells still open: retry in 5 min.
+                            _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_NO_STOP_SEC
                     else:
                         _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
                         log_event(
