@@ -119,9 +119,12 @@ def compute_bracket_prices(
 
 def validate_bracket_prices(entry_price: float, stop_price: float, take_profit: float) -> bool:
     """Return True when bracket prices are valid for a long entry."""
+    import math as _math
 
-    if stop_price <= 0 or take_profit <= 0:
-        return False
+    # Guard against zero, negative, NaN, or inf values in any leg.
+    for val in (entry_price, stop_price, take_profit):
+        if not (isinstance(val, (int, float)) and _math.isfinite(val) and val > 0):
+            return False
     if stop_price >= entry_price:
         return False
     if take_profit <= entry_price:

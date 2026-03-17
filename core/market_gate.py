@@ -201,18 +201,19 @@ def _vix_threshold() -> float:
     return float(market_cfg.get("vix_pause_threshold", 0))
 
 
-def _fetch_vix() -> float:
-    """Fetch the latest VIX close from Yahoo Finance. Returns 0.0 on failure."""
+def _fetch_vix() -> Optional[float]:
+    """Fetch the latest VIX close from Yahoo Finance. Returns None on failure."""
     try:
         import yfinance as yf  # noqa: PLC0415 — optional, imported lazily
 
         hist = yf.Ticker("^VIX").history(period="5d")
         if hist.empty:
-            return 0.0
-        return float(hist["Close"].dropna().iloc[-1])
+            return None
+        val = float(hist["Close"].dropna().iloc[-1])
+        return val if val > 0 else None
     except Exception as exc:  # pragma: no cover - network dependent
         log_event(f"VIX fetch failed err={exc}", event="GATE")
-        return 0.0
+        return None
 
 
 def get_vix_level(force_refresh: bool = False) -> tuple[float, bool]:
@@ -234,15 +235,24 @@ def get_vix_level(force_refresh: bool = False) -> tuple[float, bool]:
             and not force_refresh
         )
         if not cache_ok:
-            level = _fetch_vix()
-            _VIX_STATE.ts = now
-            _VIX_STATE.level = level
-            _VIX_STATE.elevated = threshold > 0 and level > threshold
-            if level > 0:
+            fetched = _fetch_vix()
+            if fetched is not None:
+                # Fresh reading: update state and cache.
+                _VIX_STATE.level = fetched
+                _VIX_STATE.elevated = threshold > 0 and fetched > threshold
                 log_event(
-                    f"VIX level={level:.1f} threshold={threshold:.0f} "
+                    f"VIX level={fetched:.1f} threshold={threshold:.0f} "
                     f"elevated={_VIX_STATE.elevated}",
                     event="GATE",
                 )
+            else:
+                # Fetch failed: keep the last known level so an elevated VIX
+                # stays elevated rather than silently dropping to 0 and
+                # allowing new entries during a market stress period.
+                log_event(
+                    f"VIX fetch failed — keeping last known level={_VIX_STATE.level:.1f}",
+                    event="GATE",
+                )
+            _VIX_STATE.ts = now
 
         return _VIX_STATE.level, _VIX_STATE.elevated
