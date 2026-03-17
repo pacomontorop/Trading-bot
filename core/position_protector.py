@@ -582,6 +582,21 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             if has_tp:
                 continue
 
+            # If stop/stop_limit orders already commit all shares, Alpaca will
+            # reject a standalone limit-sell with "insufficient qty available".
+            # Skip the TP attempt entirely — no API call, no error, no suppress needed.
+            stop_committed_qty = sum(
+                float(getattr(o, "qty", 0) or 0)
+                for o in (open_orders or [])
+                if getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+                and str(
+                    getattr(o, "type", "") or getattr(o, "order_type", "")
+                ).lower() in {"stop", "stop_limit"}
+            )
+            if stop_committed_qty >= qty:
+                continue
+
             atr_tp = _atr(symbol)
             if not atr_tp or atr_tp <= 0:
                 continue

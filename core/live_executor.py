@@ -32,7 +32,7 @@ _LIVE_BLOWN_STOP_SUPPRESS_SEC = 300
 # Symbols where Alpaca reported "insufficient qty available" (all qty in bracket).
 # Suppressed for 5 min to avoid spamming the error every protection cycle.
 _LIVE_INSUF_QTY_SUPPRESS: dict[str, float] = {}
-_LIVE_INSUF_QTY_SUPPRESS_SEC = 300
+_LIVE_INSUF_QTY_SUPPRESS_SEC = 14400  # 4 hours — matches paper protector
 
 # File-based lock path for cross-process protection dedup (multiple Render instances).
 _LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
@@ -707,6 +707,21 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 for o in (open_orders or [])
             )
             if has_tp:
+                continue
+
+            # If stop/stop_limit orders already commit all shares, Alpaca will
+            # reject a standalone limit-sell with "insufficient qty available".
+            # Skip the TP attempt entirely — no API call, no error, no suppress needed.
+            stop_committed_qty = sum(
+                float(getattr(o, "qty", 0) or 0)
+                for o in (open_orders or [])
+                if getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+                and str(
+                    getattr(o, "type", "") or getattr(o, "order_type", "")
+                ).lower() in {"stop", "stop_limit"}
+            )
+            if stop_committed_qty >= qty:
                 continue
 
             atr_tp = _atr(symbol)
