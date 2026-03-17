@@ -31,9 +31,19 @@ _ATR_TTL_SEC = 300.0
 _LIVE_BLOWN_STOP_SUPPRESS: dict[str, float] = {}
 _LIVE_BLOWN_STOP_SUPPRESS_SEC = 300
 # Symbols where Alpaca reported "insufficient qty available" (all qty in bracket).
-# Suppressed for 5 min to avoid spamming the error every protection cycle.
+# 4-hour suppress is safe when the *original* stop order is still active —
+# we're merely postponing the trailing improvement.
 _LIVE_INSUF_QTY_SUPPRESS: dict[str, float] = {}
-_LIVE_INSUF_QTY_SUPPRESS_SEC = 14400  # 4 hours — matches paper protector
+_LIVE_INSUF_QTY_SUPPRESS_SEC = 14400  # 4 hours — original stop still protects
+
+# Shorter retry window used when a position has NO stop at all (unprotected).
+# 5 minutes: fast enough to re-establish protection without hammering the API.
+_LIVE_NO_STOP_RETRY_SEC = 300  # 5 minutes
+
+# Per-symbol Telegram alert cooldown for repeated stop-failure noise suppression.
+# Prevents a Telegram flood while we keep retrying every 60-second tick.
+_LIVE_STOP_ALERT_COOLDOWN: dict[str, float] = {}
+_LIVE_STOP_ALERT_COOLDOWN_SEC = 300  # 5 minutes between repeated alerts
 
 # File-based lock path for cross-process protection dedup (multiple Render instances).
 _LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
@@ -646,9 +656,14 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     f"LIVE_PROTECT symbol={symbol} reinstate_failed err={exc4}",
                                     event="LIVE",
                                 )
-                                send_telegram_alert(
-                                    f"🚨 LIVE {symbol}: stop_resubmit AND reinstate BOTH failed — position may be unprotected! old_stop={best_stop:.4f}"
-                                )
+                                _now_m = time.monotonic()
+                                if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
+                                    send_telegram_alert(
+                                        f"🚨 LIVE {symbol}: stop_resubmit AND reinstate BOTH failed — position may be unprotected! old_stop={best_stop:.4f}"
+                                    )
+                                    _LIVE_STOP_ALERT_COOLDOWN[symbol] = (
+                                        _now_m + _LIVE_STOP_ALERT_COOLDOWN_SEC
+                                    )
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
@@ -707,8 +722,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     send_telegram_alert(
                                         f"🚨 LIVE {symbol}: cancelled all sells but stop still failed ({exc2}) — position has NO stop and NO TP!"
                                     )
+                                    # Position is unprotected: retry in 5 min, not 4 h.
                                     _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
-                                        time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                                        time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
                                     )
                             else:
                                 log_event(
@@ -718,8 +734,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 send_telegram_alert(
                                     f"⚠️ LIVE {symbol}: cancel_wait_timed_out (stop placement) — blocking sell orders not cleared. Stop suppressed."
                                 )
+                                # Blocking sells still open: retry in 5 min.
                                 _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
-                                    time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                                    time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
                                 )
                         else:
                             _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
@@ -731,10 +748,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     )
                     # For errors other than "insufficient qty" (which has its own
                     # alert path above), fire a Telegram — no stop protection exists.
+                    # Cooldown prevents a flood: we keep retrying every 60-second tick
+                    # so we only alert once per cooldown window.
                     if "insufficient qty" not in err_str.lower():
-                        send_telegram_alert(
-                            f"🚨 LIVE {symbol}: stop placement failed ({err_str}) — position has NO stop!"
-                        )
+                        _now_m = time.monotonic()
+                        if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
+                            send_telegram_alert(
+                                f"🚨 LIVE {symbol}: stop placement failed ({err_str}) — position has NO stop!"
+                            )
+                            _LIVE_STOP_ALERT_COOLDOWN[symbol] = (
+                                _now_m + _LIVE_STOP_ALERT_COOLDOWN_SEC
+                            )
 
         # --- Take-profit renewal pass ---
         # Bracket TP legs (limit sells) use day TIF and expire at EOD.
