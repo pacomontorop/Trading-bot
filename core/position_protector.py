@@ -11,7 +11,7 @@ import yfinance as yf
 
 import config
 from broker import alpaca as broker
-from core.order_protection import stop_limit_price
+from core.order_protection import cancel_all_sells_and_wait, stop_limit_price
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
 
@@ -233,17 +233,14 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         )
                         continue
                     if not dry_run:
-                        # Cancel ALL open sell orders (stop + any TP limit) so the
-                        # market close is not blocked by "insufficient qty".
-                        for _o in (open_orders or []):
-                            if (
-                                getattr(_o, "symbol", "") == symbol
-                                and str(getattr(_o, "side", "")).lower() == "sell"
-                            ):
-                                try:
-                                    broker.api.cancel_order(getattr(_o, "id"))
-                                except Exception:
-                                    pass
+                        # Cancel ALL open sell orders and wait for Alpaca to confirm
+                        # before submitting market close (avoids "insufficient qty").
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if not _cleared:
+                            log_event(
+                                f"symbol={symbol} reason=blown_stop_cancel_wait_failed",
+                                event="PROTECT",
+                            )
                         try:
                             client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             broker.api.submit_order(
@@ -348,17 +345,14 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                             event="PROTECT",
                         )
                     elif not dry_run:
-                        # Cancel ALL open sell orders (TP limit, stops) before
-                        # market close to avoid "insufficient qty" errors.
-                        for _o in (open_orders or []):
-                            if (
-                                getattr(_o, "symbol", "") == symbol
-                                and str(getattr(_o, "side", "")).lower() == "sell"
-                            ):
-                                try:
-                                    broker.api.cancel_order(getattr(_o, "id"))
-                                except Exception:
-                                    pass
+                        # Cancel ALL open sell orders and wait for Alpaca to confirm
+                        # before submitting market close (avoids "insufficient qty").
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if not _cleared:
+                            log_event(
+                                f"symbol={symbol} reason=no_stop_cancel_wait_failed",
+                                event="PROTECT",
+                            )
                         try:
                             client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             broker.api.submit_order(
@@ -453,37 +447,41 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 err_str = str(exc)
                 if "insufficient qty" in err_str:
                     # One or more sell orders (TP limit, stops) are tying up all
-                    # shares. Cancel ALL of them so the stop gets placed.
-                    _blocking_orders = [
-                        o for o in (open_orders or [])
-                        if getattr(o, "symbol", "") == symbol
+                    # shares. Cancel ALL of them, wait for Alpaca to confirm, then
+                    # retry; the TP renewal pass re-places take-profits later.
+                    _has_sells = any(
+                        getattr(o, "symbol", "") == symbol
                         and str(getattr(o, "side", "")).lower() == "sell"
-                    ]
-                    if _blocking_orders:
-                        try:
-                            for _bl in _blocking_orders:
-                                try:
-                                    broker.api.cancel_order(getattr(_bl, "id"))
-                                except Exception:
-                                    pass
-                            _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type=order_type,
-                                time_in_force=tif,
-                                client_order_id=_retry_id,
-                                **stop_payload,
-                            )
+                        for o in (open_orders or [])
+                    )
+                    if _has_sells:
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if _cleared:
+                            try:
+                                _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=qty,
+                                    type=order_type,
+                                    time_in_force=tif,
+                                    client_order_id=_retry_id,
+                                    **stop_payload,
+                                )
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc2:
+                                log_event(
+                                    f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
+                                    event="PROTECT",
+                                )
+                                _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                        else:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
-                                event="PROTECT",
-                            )
-                        except Exception as exc2:
-                            log_event(
-                                f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
+                                f"symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
                                 event="PROTECT",
                             )
                             _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
