@@ -704,6 +704,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                         f"LIVE_PROTECT symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
                                         event="LIVE",
                                     )
+                                    send_telegram_alert(
+                                        f"🚨 LIVE {symbol}: cancelled all sells but stop still failed ({exc2}) — position has NO stop and NO TP!"
+                                    )
                                     _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                                         time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
                                     )
@@ -726,6 +729,12 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         f"LIVE_PROTECT symbol={symbol} submit_failed err={err_str}",
                         event="LIVE",
                     )
+                    # For errors other than "insufficient qty" (which has its own
+                    # alert path above), fire a Telegram — no stop protection exists.
+                    if "insufficient qty" not in err_str.lower():
+                        send_telegram_alert(
+                            f"🚨 LIVE {symbol}: stop placement failed ({err_str}) — position has NO stop!"
+                        )
 
         # --- Take-profit renewal pass ---
         # Bracket TP legs (limit sells) use day TIF and expire at EOD.
