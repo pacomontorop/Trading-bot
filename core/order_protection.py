@@ -2,10 +2,65 @@
 
 from __future__ import annotations
 
-from typing import Optional
+import time
+from typing import Any, Optional
 
 import config
 from core.broker import get_tick_size, round_to_tick
+
+
+def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
+    """Cancel ALL open sell orders for *symbol*, then wait for Alpaca to confirm.
+
+    Alpaca processes cancellations asynchronously (200–800 ms).  Submitting a
+    new order immediately after ``cancel_order()`` often returns
+    "insufficient qty available" because the cancelled order still appears open
+    server-side.  This helper cancels every sell from *open_orders*, sleeps
+    800 ms, then re-fetches from Alpaca up to twice (with 0.5 s / 1 s backoff)
+    to confirm the queue is clear before returning.
+
+    Returns ``True`` when no open sell orders remain (safe to submit a new one).
+    Returns ``False`` when some orders are still active after all retries (caller
+    should fall back to suppressing the symbol for a cooldown period).
+    """
+    _sells = [
+        o for o in (open_orders or [])
+        if getattr(o, "symbol", "") == symbol
+        and str(getattr(o, "side", "")).lower() == "sell"
+    ]
+    if not _sells:
+        return True
+
+    for _o in _sells:
+        try:
+            api.cancel_order(getattr(_o, "id"))
+        except Exception as _e:
+            if "429" in str(_e) or "rate limit" in str(_e).lower():
+                time.sleep(1.5)
+                try:
+                    api.cancel_order(getattr(_o, "id"))
+                except Exception:
+                    pass
+
+    # Wait for Alpaca to process the cancellations asynchronously.
+    time.sleep(0.8)
+
+    for attempt in range(2):
+        try:
+            remaining = [
+                o for o in api.list_orders(status="open", limit=50)
+                if getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+            ]
+        except Exception as _e:
+            if "429" in str(_e) or "rate limit" in str(_e).lower():
+                time.sleep(1.5)
+            remaining = []
+        if not remaining:
+            return True
+        time.sleep(0.5 * (2 ** attempt))  # 0.5 s → 1 s
+
+    return False
 
 
 def _risk_cfg() -> dict:

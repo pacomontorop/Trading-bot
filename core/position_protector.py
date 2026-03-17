@@ -11,9 +11,10 @@ import yfinance as yf
 
 import config
 from broker import alpaca as broker
-from core.order_protection import stop_limit_price
+from core.order_protection import cancel_all_sells_and_wait, stop_limit_price
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
+from utils.telegram_alert import send_telegram_alert
 
 _PROTECT_LOCK = threading.Lock()
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
@@ -233,31 +234,59 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         )
                         continue
                     if not dry_run:
+                        # Cancel ALL open sell orders and wait for Alpaca to confirm
+                        # before submitting market close (avoids "insufficient qty").
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if not _cleared:
+                            log_event(
+                                f"symbol={symbol} reason=blown_stop_cancel_wait_failed",
+                                event="PROTECT",
+                            )
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing."
+                            )
+                        # A TP limit may have partially or fully filled during the
+                        # 800 ms wait. Fetch real position qty before market-selling.
+                        _sell_qty = qty
                         try:
-                            broker.api.cancel_order(getattr(stop_order, "id"))
+                            _sell_qty = float(getattr(broker.api.get_position(symbol), "qty", qty))
                         except Exception:
                             pass
-                        try:
-                            client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type="market",
-                                time_in_force="day",
-                                client_order_id=client_order_id,
-                            )
-                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                        if _sell_qty <= 0:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"old_stop={old_stop:.4f} reason=blown_stop_market_sell",
+                                f"symbol={symbol} reason=blown_stop_position_already_closed",
                                 event="PROTECT",
                             )
-                        except Exception as exc:
-                            log_event(
-                                f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
-                                event="PROTECT",
-                            )
+                        else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="PROTECT",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ PAPER {symbol}: blown_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
+                            try:
+                                client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=_sell_qty,
+                                    type="market",
+                                    time_in_force="day",
+                                    client_order_id=client_order_id,
+                                )
+                                _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"old_stop={old_stop:.4f} qty={_sell_qty:.0f} reason=blown_stop_market_sell",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc:
+                                log_event(
+                                    f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
+                                    event="PROTECT",
+                                )
                     continue
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
@@ -341,27 +370,59 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                             event="PROTECT",
                         )
                     elif not dry_run:
+                        # Cancel ALL open sell orders and wait for Alpaca to confirm
+                        # before submitting market close (avoids "insufficient qty").
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if not _cleared:
+                            log_event(
+                                f"symbol={symbol} reason=no_stop_cancel_wait_failed",
+                                event="PROTECT",
+                            )
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing."
+                            )
+                        # A TP limit may have partially or fully filled during the
+                        # 800 ms wait. Fetch real position qty before market-selling.
+                        _sell_qty = qty
                         try:
-                            client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type="market",
-                                time_in_force="day",
-                                client_order_id=client_order_id,
-                            )
-                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                            _sell_qty = float(getattr(broker.api.get_position(symbol), "qty", qty))
+                        except Exception:
+                            pass
+                        if _sell_qty <= 0:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop_market_sell",
+                                f"symbol={symbol} reason=no_stop_position_already_closed",
                                 event="PROTECT",
                             )
-                        except Exception as exc:
-                            log_event(
-                                f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
-                                event="PROTECT",
-                            )
+                        else:
+                            if _sell_qty != qty:
+                                log_event(
+                                    f"symbol={symbol} qty_adjusted orig={qty:.0f} real={_sell_qty:.0f} reason=partial_tp_fill",
+                                    event="PROTECT",
+                                )
+                                send_telegram_alert(
+                                    f"ℹ️ PAPER {symbol}: no_stop qty adjusted {qty:.0f}→{_sell_qty:.0f} (partial TP fill during cancel window)"
+                                )
+                            try:
+                                client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=_sell_qty,
+                                    type="market",
+                                    time_in_force="day",
+                                    client_order_id=client_order_id,
+                                )
+                                _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"new_stop={new_stop:.4f} qty={_sell_qty:.0f} reason=no_stop_price_below_stop_market_sell",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc:
+                                log_event(
+                                    f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
+                                    event="PROTECT",
+                                )
                     else:
                         log_event(
                             f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
@@ -434,39 +495,46 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             except Exception as exc:
                 err_str = str(exc)
                 if "insufficient qty" in err_str:
-                    # A non-stop sell order (e.g. a dangling TP limit) may be tying
-                    # up shares. Cancel it and retry so the stop gets placed.
-                    # If no blocking order is found, suppress for 4h (bracket stop).
-                    _blocking = next(
-                        (
-                            o for o in (open_orders or [])
-                            if getattr(o, "symbol", "") == symbol
-                            and str(getattr(o, "side", "")).lower() == "sell"
-                        ),
-                        None,
+                    # One or more sell orders (TP limit, stops) are tying up all
+                    # shares. Cancel ALL of them, wait for Alpaca to confirm, then
+                    # retry; the TP renewal pass re-places take-profits later.
+                    _has_sells = any(
+                        getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                        for o in (open_orders or [])
                     )
-                    if _blocking:
-                        try:
-                            broker.api.cancel_order(getattr(_blocking, "id"))
-                            _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type=order_type,
-                                time_in_force=tif,
-                                client_order_id=_retry_id,
-                                **stop_payload,
-                            )
+                    if _has_sells:
+                        _cleared = cancel_all_sells_and_wait(broker.api, symbol, open_orders)
+                        if _cleared:
+                            try:
+                                _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=qty,
+                                    type=order_type,
+                                    time_in_force=tif,
+                                    client_order_id=_retry_id,
+                                    **stop_payload,
+                                )
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc2:
+                                log_event(
+                                    f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
+                                    event="PROTECT",
+                                )
+                                _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                        else:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
+                                f"symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
                                 event="PROTECT",
                             )
-                        except Exception as exc2:
-                            log_event(
-                                f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
-                                event="PROTECT",
+                            send_telegram_alert(
+                                f"⚠️ PAPER {symbol}: cancel_wait_timed_out (stop placement) — blocking sell orders not cleared. Stop suppressed."
                             )
                             _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
                     else:
