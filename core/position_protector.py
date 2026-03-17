@@ -434,13 +434,47 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             except Exception as exc:
                 err_str = str(exc)
                 if "insufficient qty" in err_str:
-                    # Shares are committed to an existing bracket stop order.
-                    # Suppress this symbol for 30 min to avoid spam every tick.
-                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
-                    log_event(
-                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=240",
-                        event="PROTECT",
+                    # A non-stop sell order (e.g. a dangling TP limit) may be tying
+                    # up shares. Cancel it and retry so the stop gets placed.
+                    # If no blocking order is found, suppress for 4h (bracket stop).
+                    _blocking = next(
+                        (
+                            o for o in (open_orders or [])
+                            if getattr(o, "symbol", "") == symbol
+                            and str(getattr(o, "side", "")).lower() == "sell"
+                        ),
+                        None,
                     )
+                    if _blocking:
+                        try:
+                            broker.api.cancel_order(getattr(_blocking, "id"))
+                            _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
+                            broker.api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type=order_type,
+                                time_in_force=tif,
+                                client_order_id=_retry_id,
+                                **stop_payload,
+                            )
+                            log_event(
+                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
+                                event="PROTECT",
+                            )
+                        except Exception as exc2:
+                            log_event(
+                                f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
+                                event="PROTECT",
+                            )
+                            _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                    else:
+                        _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=protected_by_bracket suppress_min=240",
+                            event="PROTECT",
+                        )
                 else:
                     log_event(
                         f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=submit_failed err={exc}",
