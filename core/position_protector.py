@@ -241,27 +241,40 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 f"symbol={symbol} reason=blown_stop_cancel_wait_failed",
                                 event="PROTECT",
                             )
+                        # A TP limit may have partially or fully filled during the
+                        # 800 ms wait. Fetch real position qty before market-selling.
+                        _sell_qty = qty
                         try:
-                            client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type="market",
-                                time_in_force="day",
-                                client_order_id=client_order_id,
-                            )
-                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                            _sell_qty = float(getattr(broker.api.get_position(symbol), "qty", qty))
+                        except Exception:
+                            pass
+                        if _sell_qty <= 0:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"old_stop={old_stop:.4f} reason=blown_stop_market_sell",
+                                f"symbol={symbol} reason=blown_stop_position_already_closed",
                                 event="PROTECT",
                             )
-                        except Exception as exc:
-                            log_event(
-                                f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
-                                event="PROTECT",
-                            )
+                        else:
+                            try:
+                                client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=_sell_qty,
+                                    type="market",
+                                    time_in_force="day",
+                                    client_order_id=client_order_id,
+                                )
+                                _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"old_stop={old_stop:.4f} qty={_sell_qty:.0f} reason=blown_stop_market_sell",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc:
+                                log_event(
+                                    f"symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
+                                    event="PROTECT",
+                                )
                     continue
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
@@ -353,27 +366,40 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                 f"symbol={symbol} reason=no_stop_cancel_wait_failed",
                                 event="PROTECT",
                             )
+                        # A TP limit may have partially or fully filled during the
+                        # 800 ms wait. Fetch real position qty before market-selling.
+                        _sell_qty = qty
                         try:
-                            client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
-                            broker.api.submit_order(
-                                symbol=symbol,
-                                side="sell",
-                                qty=qty,
-                                type="market",
-                                time_in_force="day",
-                                client_order_id=client_order_id,
-                            )
-                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                            _sell_qty = float(getattr(broker.api.get_position(symbol), "qty", qty))
+                        except Exception:
+                            pass
+                        if _sell_qty <= 0:
                             log_event(
-                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                                f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop_market_sell",
+                                f"symbol={symbol} reason=no_stop_position_already_closed",
                                 event="PROTECT",
                             )
-                        except Exception as exc:
-                            log_event(
-                                f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
-                                event="PROTECT",
-                            )
+                        else:
+                            try:
+                                client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                broker.api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=_sell_qty,
+                                    type="market",
+                                    time_in_force="day",
+                                    client_order_id=client_order_id,
+                                )
+                                _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                                log_event(
+                                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                    f"new_stop={new_stop:.4f} qty={_sell_qty:.0f} reason=no_stop_price_below_stop_market_sell",
+                                    event="PROTECT",
+                                )
+                            except Exception as exc:
+                                log_event(
+                                    f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
+                                    event="PROTECT",
+                                )
                     else:
                         log_event(
                             f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
