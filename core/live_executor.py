@@ -17,6 +17,7 @@ import config
 from broker.alpaca import get_current_price
 from broker.alpaca_live import live_api, list_live_positions, list_live_open_orders
 from core.broker import get_tick_size, round_to_tick
+from core.market_gate import is_us_equity_market_open
 from core.order_protection import cancel_all_sells_and_wait, compute_bracket_prices, stop_limit_price, validate_bracket_prices
 from core.safeguards import is_safeguards_active
 from utils.logger import log_event
@@ -514,6 +515,19 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 )
                 continue
 
+            # Alpaca rejects stop/stop_limit orders outside the regular session
+            # (9:30 AM – 4:00 PM ET).  The existing GTC stop placed during the
+            # session stays active and will trigger when the market reopens.
+            # Attempting to cancel + replace after hours leaves the position
+            # temporarily unprotected if the new placement is rejected.
+            if not is_us_equity_market_open():
+                log_event(
+                    f"LIVE_PROTECT symbol={symbol} old_stop={best_stop:.4f} "
+                    f"new_stop={new_stop:.4f} reason=skip_stop_update_after_hours",
+                    event="LIVE",
+                )
+                continue
+
             stop_payload = {"stop_price": float(new_stop)}
             limit = stop_limit_price(float(new_stop), symbol=symbol)
             order_type = "stop"
@@ -596,6 +610,45 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 f"LIVE_PROTECT symbol={symbol} resubmit_failed err={exc3}",
                                 event="LIVE",
                             )
+                            send_telegram_alert(
+                                f"⚠️ LIVE {symbol}: stop cancel OK but new stop rejected ({exc3}). Reinstating old stop at {best_stop:.4f}."
+                            )
+                            # The old stop was cancelled but the new one was rejected.
+                            # Immediately reinstate the old stop to avoid leaving the
+                            # position unprotected.
+                            try:
+                                _ri_id = (
+                                    f"LIVE.PROTECT.{symbol}"
+                                    f".REINSTATE.{int(float(best_stop) * 10000)}"
+                                    f".{int(time.time())}"
+                                )
+                                _ri_payload: dict = {"stop_price": float(best_stop)}
+                                _ri_limit = stop_limit_price(float(best_stop), symbol=symbol)
+                                _ri_type = "stop"
+                                if _ri_limit and _ri_limit < best_stop:
+                                    _ri_payload["limit_price"] = float(_ri_limit)
+                                    _ri_type = "stop_limit"
+                                live_api.submit_order(
+                                    symbol=symbol,
+                                    side="sell",
+                                    qty=qty,
+                                    type=_ri_type,
+                                    time_in_force=tif,
+                                    client_order_id=_ri_id,
+                                    **_ri_payload,
+                                )
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} reinstated old_stop={best_stop:.4f}",
+                                    event="LIVE",
+                                )
+                            except Exception as exc4:
+                                log_event(
+                                    f"LIVE_PROTECT symbol={symbol} reinstate_failed err={exc4}",
+                                    event="LIVE",
+                                )
+                                send_telegram_alert(
+                                    f"🚨 LIVE {symbol}: stop_resubmit AND reinstate BOTH failed — position may be unprotected! old_stop={best_stop:.4f}"
+                                )
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
