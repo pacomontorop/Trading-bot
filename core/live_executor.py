@@ -373,6 +373,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     f"LIVE_PROTECT symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
                                     event="LIVE",
                                 )
+                                send_telegram_alert(
+                                    f"🚨 LIVE {symbol}: blown stop — market sell FAILED ({exc}). Position still open below stop at {last:.2f}! Manual close required."
+                                )
                     continue
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
@@ -496,6 +499,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
                                     event="LIVE",
+                                )
+                                send_telegram_alert(
+                                    f"🚨 LIVE {symbol}: no stop + price at/below stop level — market sell FAILED ({exc}). Position unprotected at {last:.2f}! Manual close required."
                                 )
                     else:
                         log_event(
