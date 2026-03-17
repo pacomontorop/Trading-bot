@@ -387,11 +387,56 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 continue
 
             if new_stop >= last:
-                log_event(
-                    f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
-                    f"old_stop={best_stop:.4f} new_stop={new_stop:.4f} reason=skip_invalid_stop",
-                    event="LIVE",
-                )
+                # If there is no existing stop order and the price has already
+                # fallen below the intended stop level, close immediately with
+                # a market sell rather than silently skipping the position.
+                if best_stop == 0:
+                    _pending_sell = any(
+                        getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                        for o in (open_orders or [])
+                    )
+                    if _pending_sell:
+                        _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"new_stop={new_stop:.4f} reason=no_stop_below_stop_already_pending",
+                            event="LIVE",
+                        )
+                    elif not dry_run:
+                        try:
+                            client_order_id = f"LIVE.NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                            live_api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type="market",
+                                time_in_force="day",
+                                client_order_id=client_order_id,
+                            )
+                            _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop_market_sell",
+                                event="LIVE",
+                            )
+                        except Exception as exc:
+                            log_event(
+                                f"LIVE_PROTECT symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
+                                event="LIVE",
+                            )
+                    else:
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop dry_run=1",
+                            event="LIVE",
+                        )
+                else:
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                        f"old_stop={best_stop:.4f} new_stop={new_stop:.4f} reason=skip_invalid_stop",
+                        event="LIVE",
+                    )
                 continue
 
             # Round new_stop to tick size before submitting to Alpaca
@@ -543,6 +588,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 continue
             if time.monotonic() < _LIVE_BLOWN_STOP_SUPPRESS.get(symbol, 0):
                 continue
+            # Skip if shares are committed to a bracket/stop order.
+            if time.monotonic() < _LIVE_INSUF_QTY_SUPPRESS.get(symbol, 0):
+                continue
 
             has_tp = any(
                 getattr(o, "symbol", "") == symbol
@@ -593,6 +641,11 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     event="LIVE",
                 )
             except Exception as exc:
+                err_str = str(exc)
+                if "insufficient qty" in err_str.lower():
+                    _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                        time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
+                    )
                 log_event(
                     f"LIVE_PROTECT symbol={symbol} tp_submit_failed err={exc}",
                     event="LIVE",

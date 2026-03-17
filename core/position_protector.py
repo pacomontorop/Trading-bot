@@ -324,10 +324,55 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
 
             if new_stop >= last:
-                log_event(
-                    f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=skip_invalid_stop",
-                    event="PROTECT",
-                )
+                # If there is no existing stop order and price has already fallen
+                # below the intended stop level, close immediately with a market
+                # sell rather than silently leaving the position unprotected.
+                if old_stop == 0:
+                    _pending_sell = any(
+                        getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                        for o in (open_orders or [])
+                    )
+                    if _pending_sell:
+                        _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"new_stop={new_stop:.4f} reason=no_stop_below_stop_already_pending",
+                            event="PROTECT",
+                        )
+                    elif not dry_run:
+                        try:
+                            client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                            broker.api.submit_order(
+                                symbol=symbol,
+                                side="sell",
+                                qty=qty,
+                                type="market",
+                                time_in_force="day",
+                                client_order_id=client_order_id,
+                            )
+                            _BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _BLOWN_STOP_SUPPRESS_SEC
+                            log_event(
+                                f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop_market_sell",
+                                event="PROTECT",
+                            )
+                        except Exception as exc:
+                            log_event(
+                                f"symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
+                                event="PROTECT",
+                            )
+                    else:
+                        log_event(
+                            f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                            f"new_stop={new_stop:.4f} reason=no_stop_price_below_stop dry_run=1",
+                            event="PROTECT",
+                        )
+                else:
+                    log_event(
+                        f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason=skip_invalid_stop",
+                        event="PROTECT",
+                    )
                 continue
 
             reason_txt = "+".join(reasons) if reasons else "update"
@@ -422,6 +467,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
             if time.monotonic() < _BLOWN_STOP_SUPPRESS.get(symbol, 0):
                 continue
+            # Skip if shares are committed to a bracket/stop order.
+            if time.monotonic() < _BRACKET_SUPPRESS.get(symbol, 0):
+                continue
 
             has_tp = any(
                 getattr(o, "symbol", "") == symbol
@@ -474,6 +522,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     event="PROTECT",
                 )
             except Exception as exc:
+                err_str = str(exc)
+                if "insufficient qty" in err_str:
+                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
                 log_event(
                     f"symbol={symbol} tp_submit_failed err={exc}",
                     event="PROTECT",
