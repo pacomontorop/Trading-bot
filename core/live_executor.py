@@ -308,10 +308,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         )
                         continue
                     if not dry_run:
-                        try:
-                            live_api.cancel_order(getattr(best_order, "id"))
-                        except Exception:
-                            pass
+                        # Cancel ALL open sell orders (stop + any TP limit) so the
+                        # market close is not blocked by "insufficient qty".
+                        for _o in (open_orders or []):
+                            if (
+                                getattr(_o, "symbol", "") == symbol
+                                and str(getattr(_o, "side", "")).lower() == "sell"
+                            ):
+                                try:
+                                    live_api.cancel_order(getattr(_o, "id"))
+                                except Exception:
+                                    pass
                         try:
                             client_order_id = f"LIVE.BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             live_api.submit_order(
@@ -404,6 +411,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                             event="LIVE",
                         )
                     elif not dry_run:
+                        # Cancel ALL open sell orders (TP limit, stops) before
+                        # market close to avoid "insufficient qty" errors.
+                        for _o in (open_orders or []):
+                            if (
+                                getattr(_o, "symbol", "") == symbol
+                                and str(getattr(_o, "side", "")).lower() == "sell"
+                            ):
+                                try:
+                                    live_api.cancel_order(getattr(_o, "id"))
+                                except Exception:
+                                    pass
                         try:
                             client_order_id = f"LIVE.NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             live_api.submit_order(
@@ -558,20 +576,21 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 except Exception as exc:  # pragma: no cover
                     err_str = str(exc)
                     if "insufficient qty" in err_str.lower():
-                        # A non-stop sell order (e.g. a dangling TP limit) is tying up
-                        # all shares. Cancel it so the protective stop can be placed;
-                        # the TP renewal pass will re-place the take-profit afterwards.
-                        _blocking = next(
-                            (
-                                o for o in (open_orders or [])
-                                if getattr(o, "symbol", "") == symbol
-                                and str(getattr(o, "side", "")).lower() == "sell"
-                            ),
-                            None,
-                        )
-                        if _blocking:
+                        # One or more sell orders (TP limit, stops) are tying up all
+                        # shares. Cancel ALL of them so the protective stop can be
+                        # placed; the TP renewal pass re-places take-profits later.
+                        _blocking_orders = [
+                            o for o in (open_orders or [])
+                            if getattr(o, "symbol", "") == symbol
+                            and str(getattr(o, "side", "")).lower() == "sell"
+                        ]
+                        if _blocking_orders:
                             try:
-                                live_api.cancel_order(getattr(_blocking, "id"))
+                                for _bl in _blocking_orders:
+                                    try:
+                                        live_api.cancel_order(getattr(_bl, "id"))
+                                    except Exception:
+                                        pass
                                 _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
                                 live_api.submit_order(
                                     symbol=symbol,

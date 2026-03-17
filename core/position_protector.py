@@ -233,10 +233,17 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         )
                         continue
                     if not dry_run:
-                        try:
-                            broker.api.cancel_order(getattr(stop_order, "id"))
-                        except Exception:
-                            pass
+                        # Cancel ALL open sell orders (stop + any TP limit) so the
+                        # market close is not blocked by "insufficient qty".
+                        for _o in (open_orders or []):
+                            if (
+                                getattr(_o, "symbol", "") == symbol
+                                and str(getattr(_o, "side", "")).lower() == "sell"
+                            ):
+                                try:
+                                    broker.api.cancel_order(getattr(_o, "id"))
+                                except Exception:
+                                    pass
                         try:
                             client_order_id = f"BLOWNSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             broker.api.submit_order(
@@ -341,6 +348,17 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                             event="PROTECT",
                         )
                     elif not dry_run:
+                        # Cancel ALL open sell orders (TP limit, stops) before
+                        # market close to avoid "insufficient qty" errors.
+                        for _o in (open_orders or []):
+                            if (
+                                getattr(_o, "symbol", "") == symbol
+                                and str(getattr(_o, "side", "")).lower() == "sell"
+                            ):
+                                try:
+                                    broker.api.cancel_order(getattr(_o, "id"))
+                                except Exception:
+                                    pass
                         try:
                             client_order_id = f"NOSTOP.{symbol}.{int(time.time() * 1000) % 1_000_000}"
                             broker.api.submit_order(
@@ -434,20 +452,20 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             except Exception as exc:
                 err_str = str(exc)
                 if "insufficient qty" in err_str:
-                    # A non-stop sell order (e.g. a dangling TP limit) may be tying
-                    # up shares. Cancel it and retry so the stop gets placed.
-                    # If no blocking order is found, suppress for 4h (bracket stop).
-                    _blocking = next(
-                        (
-                            o for o in (open_orders or [])
-                            if getattr(o, "symbol", "") == symbol
-                            and str(getattr(o, "side", "")).lower() == "sell"
-                        ),
-                        None,
-                    )
-                    if _blocking:
+                    # One or more sell orders (TP limit, stops) are tying up all
+                    # shares. Cancel ALL of them so the stop gets placed.
+                    _blocking_orders = [
+                        o for o in (open_orders or [])
+                        if getattr(o, "symbol", "") == symbol
+                        and str(getattr(o, "side", "")).lower() == "sell"
+                    ]
+                    if _blocking_orders:
                         try:
-                            broker.api.cancel_order(getattr(_blocking, "id"))
+                            for _bl in _blocking_orders:
+                                try:
+                                    broker.api.cancel_order(getattr(_bl, "id"))
+                                except Exception:
+                                    pass
                             _retry_id = f"PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                             broker.api.submit_order(
                                 symbol=symbol,
