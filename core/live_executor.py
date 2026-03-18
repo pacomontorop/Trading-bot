@@ -585,6 +585,8 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                             time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
                         )
+                    # For any replace failure, log and fall through to cancel+resubmit.
+                    # The cancel+resubmit path has its own suppress if it also fails.
 
                 if not _replaced:  # pragma: no cover - network
                     # Fallback: cancel old stop, submit new standalone stop.
@@ -661,6 +663,11 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} reinstate_failed err={exc4}",
                                     event="LIVE",
+                                )
+                                # Suppress further attempts for 5 min; position may be
+                                # unprotected but spamming Alpaca won't help.
+                                _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                    time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
                                 )
                                 _now_m = time.monotonic()
                                 if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
@@ -754,13 +761,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     )
                     # For errors other than "insufficient qty" (which has its own
                     # alert path above), fire a Telegram — no stop protection exists.
-                    # Cooldown prevents a flood: we keep retrying every 60-second tick
-                    # so we only alert once per cooldown window.
+                    # Also set a 5-min submission suppress so the bot does NOT
+                    # spam Alpaca every 60 s with the same rejected order.
                     if "insufficient qty" not in err_str.lower():
+                        # Suppress new stop attempts for 5 min to avoid flooding.
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                        )
                         _now_m = time.monotonic()
                         if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
                             send_telegram_alert(
-                                f"🚨 LIVE {symbol}: stop placement failed ({err_str}) — position has NO stop!"
+                                f"🚨 LIVE {symbol}: stop placement rejected by Alpaca ({err_str}) — position has NO stop! Retrying in 5 min."
                             )
                             _LIVE_STOP_ALERT_COOLDOWN[symbol] = (
                                 _now_m + _LIVE_STOP_ALERT_COOLDOWN_SEC
