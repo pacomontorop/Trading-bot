@@ -56,6 +56,50 @@ _LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
 # we suppress retries for _LIVE_NO_STOP_RETRY_SEC.
 _LIVE_LAST_REPLACE: dict[str, tuple[float, float]] = {}  # symbol -> (old, expected_new)
 
+# Stop high-water mark: highest stop successfully placed per symbol.
+# When best_stop == 0 (stop expired/cancelled), the HWM is used as a floor so
+# we never re-place a stop BELOW a level that was previously accepted.
+# Stops only ever move up — this enforces that invariant across session breaks.
+_LIVE_STOP_HWM: dict[str, float] = {}
+_LIVE_STOP_HWM_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "live_stop_hwm.json"
+)
+_LIVE_STOP_HWM_LOADED = False
+
+
+def _save_stop_hwm() -> None:
+    """Persist stop HWM entries to disk."""
+    try:
+        os.makedirs(os.path.dirname(_LIVE_STOP_HWM_FILE), exist_ok=True)
+        with open(_LIVE_STOP_HWM_FILE, "w") as fh:
+            json.dump(dict(_LIVE_STOP_HWM), fh)
+    except Exception:
+        pass
+
+
+def _load_stop_hwm_once() -> None:
+    """Load persisted stop HWM on first call (survives restarts)."""
+    global _LIVE_STOP_HWM_LOADED
+    if _LIVE_STOP_HWM_LOADED:
+        return
+    _LIVE_STOP_HWM_LOADED = True
+    try:
+        with open(_LIVE_STOP_HWM_FILE) as fh:
+            data = json.load(fh)
+        for sym, val in data.items():
+            _LIVE_STOP_HWM[sym] = float(val)
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    except Exception:
+        pass
+
+
+def _update_stop_hwm(symbol: str, stop: float) -> None:
+    """Update HWM if stop is a new high; save to disk."""
+    if stop > _LIVE_STOP_HWM.get(symbol, 0.0):
+        _LIVE_STOP_HWM[symbol] = stop
+        _save_stop_hwm()
+
 # Path for persisting _LIVE_INSUF_QTY_SUPPRESS across restarts.
 _LIVE_SUPPRESS_FILE = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "data", "live_suppress.json"
@@ -247,7 +291,8 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         return
 
     try:
-        _load_suppress_once()  # Load persisted suppresses once per process lifetime.
+        _load_suppress_once()   # Load persisted suppresses once per process lifetime.
+        _load_stop_hwm_once()   # Load persisted stop HWM once per process lifetime.
 
         safeguards_cfg = (getattr(config, "_policy", {}) or {}).get("safeguards", {}) or {}
         if not bool(safeguards_cfg.get("enabled", False)) or not is_safeguards_active():
@@ -468,15 +513,15 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             denom = max(initial_stop_dist, entry * min_stop_pct)
             r_multiple = (last - entry) / denom if denom > 0 else 0.0
 
-            # Floor at initial ATR stop — mirrors paper protector behaviour.
-            # When the bracket stop expires overnight (day TIF) best_stop resets
-            # to 0; without this floor the protector would start from 0 instead
-            # of the intended risk level, leaving positions unprotected.
-            new_stop = max(best_stop, initial_stop)
+            # Floor at: (1) initial ATR stop, (2) any previously-accepted stop
+            # (high-water mark).  The HWM prevents re-placing a stop BELOW a
+            # level that was already gained via trailing — stops only ever go up.
+            hwm = _LIVE_STOP_HWM.get(symbol, 0.0)
+            new_stop = max(best_stop, initial_stop, hwm)
             if best_stop == 0:
                 log_event(
                     f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} qty={qty:.0f} "
-                    f"initial_stop={initial_stop:.4f} reason=no_stop_found placing_initial_stop",
+                    f"initial_stop={initial_stop:.4f} hwm={hwm:.4f} reason=no_stop_found placing_initial_stop",
                     event="LIVE",
                 )
             reasons: list[str] = []
@@ -641,7 +686,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 # fall back to cancel + new standalone stop.
                 # new_stop is already guaranteed > best_stop by the skip logic above,
                 # but we take max() as an extra safety to never move the stop down.
-                _safe_new_stop = max(float(new_stop), float(best_stop))
+                _safe_new_stop = max(float(new_stop), float(best_stop), _LIVE_STOP_HWM.get(symbol, 0.0))
                 _safe_payload = {"stop_price": _safe_new_stop}
                 _limit = stop_limit_price(_safe_new_stop, symbol=symbol)
                 if _limit and _limit < _safe_new_stop:
@@ -650,10 +695,11 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
 
                 _replaced = False
                 try:  # pragma: no cover - network
-                    live_api.replace_order(getattr(best_order, "id"), **_safe_payload)
+                    live_api.replace_order(getattr(best_order, "id"), time_in_force=tif, **_safe_payload)
                     _replaced = True
                     # Record this attempt so we can detect async rejections next cycle.
                     _LIVE_LAST_REPLACE[symbol] = (best_stop, _safe_new_stop)
+                    _update_stop_hwm(symbol, _safe_new_stop)
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                         f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
@@ -710,6 +756,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 client_order_id=client_order_id,
                                 **_safe_payload,
                             )
+                            _update_stop_hwm(symbol, _safe_new_stop)
                             log_event(
                                 f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} "
                                 f"last={last:.4f} old_stop={best_stop:.4f} "
@@ -785,6 +832,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         client_order_id=client_order_id,
                         **stop_payload,
                     )
+                    _update_stop_hwm(symbol, new_stop)
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                         f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
@@ -816,6 +864,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                         client_order_id=_retry_id,
                                         **stop_payload,
                                     )
+                                    _update_stop_hwm(symbol, new_stop)
                                     log_event(
                                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                                         f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
