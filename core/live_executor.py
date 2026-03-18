@@ -8,6 +8,7 @@ for all open live long positions (same logic as the paper protector).
 from __future__ import annotations
 
 import fcntl
+import math
 import os
 import threading
 import time
@@ -99,12 +100,14 @@ def place_live_order(plan: dict, *, dry_run: bool = False) -> bool:
     Returns ``True`` on success (or dry-run), ``False`` on failure.
     """
     symbol = plan.get("symbol")
-    qty = float(plan.get("qty") or 0)
+    # Alpaca live rejects bracket orders with fractional qty.
+    # Floor to integer; reject if the result is zero.
+    qty = math.floor(float(plan.get("qty") or 0))
     price = float(plan.get("price") or 0)
     atr = plan.get("atr")
     time_in_force = plan.get("time_in_force", "day")
 
-    if qty <= 0 or not symbol:
+    if qty < 1 or not symbol:
         log_event(f"LIVE ORDER {symbol}: rejected reason=zero_qty", event="LIVE")
         return False
 
