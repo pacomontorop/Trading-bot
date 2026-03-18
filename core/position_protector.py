@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import fcntl
 import math
+import os
 import threading
 import time
 from typing import Optional
@@ -17,6 +19,11 @@ from utils.logger import log_event
 from utils.telegram_alert import send_telegram_alert
 
 _PROTECT_LOCK = threading.Lock()
+# File-level lock prevents multiple bot processes (e.g. two Render instances)
+# from running the paper protect cycle simultaneously.
+_PROTECT_LOCK_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "paper_protect.lock"
+)
 _PRICE_CACHE: dict[str, tuple[float, float]] = {}
 _ATR_CACHE: dict[str, tuple[float, float]] = {}
 # Symbols whose shares are committed to an existing bracket stop.
@@ -117,6 +124,17 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
 
     if not _PROTECT_LOCK.acquire(blocking=False):
         log_event("skip reason=lock_busy", event="PROTECT")
+        return
+
+    # Cross-process lock: prevents two bot instances from running the paper
+    # protect cycle at the same time (e.g. two Render deployments).
+    try:
+        os.makedirs(os.path.dirname(_PROTECT_LOCK_PATH), exist_ok=True)
+        _lock_fd = open(_PROTECT_LOCK_PATH, "w")
+        fcntl.flock(_lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        _PROTECT_LOCK.release()
+        log_event("skip reason=file_lock_busy", event="PROTECT")
         return
 
     try:
@@ -663,4 +681,9 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 )
 
     finally:
+        try:
+            fcntl.flock(_lock_fd, fcntl.LOCK_UN)
+            _lock_fd.close()
+        except Exception:
+            pass
         _PROTECT_LOCK.release()

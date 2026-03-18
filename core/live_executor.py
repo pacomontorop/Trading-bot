@@ -8,6 +8,8 @@ for all open live long positions (same logic as the paper protector).
 from __future__ import annotations
 
 import fcntl
+import json
+import math
 import os
 import threading
 import time
@@ -47,6 +49,56 @@ _LIVE_STOP_ALERT_COOLDOWN_SEC = 300  # 5 minutes between repeated alerts
 
 # File-based lock path for cross-process protection dedup (multiple Render instances).
 _LIVE_PROTECT_FLOCK_PATH = "/tmp/live_protect_cycle.lock"
+
+# Tracks the (old_stop, new_stop) from a replace_order call that appeared to
+# succeed at the API level.  On the next cycle we check whether the stop price
+# actually changed; if not, Alpaca rejected the replacement asynchronously and
+# we suppress retries for _LIVE_NO_STOP_RETRY_SEC.
+_LIVE_LAST_REPLACE: dict[str, tuple[float, float]] = {}  # symbol -> (old, expected_new)
+
+# Path for persisting _LIVE_INSUF_QTY_SUPPRESS across restarts.
+_LIVE_SUPPRESS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "live_suppress.json"
+)
+_LIVE_SUPPRESS_LOADED = False
+
+
+def _save_suppress() -> None:
+    """Persist current suppress entries to disk (wall-clock expiry times)."""
+    now_mono = time.monotonic()
+    now_wall = time.time()
+    data = {
+        sym: now_wall + (exp_mono - now_mono)
+        for sym, exp_mono in _LIVE_INSUF_QTY_SUPPRESS.items()
+        if exp_mono > now_mono
+    }
+    try:
+        os.makedirs(os.path.dirname(_LIVE_SUPPRESS_FILE), exist_ok=True)
+        with open(_LIVE_SUPPRESS_FILE, "w") as fh:
+            json.dump(data, fh)
+    except Exception:
+        pass
+
+
+def _load_suppress_once() -> None:
+    """Load persisted suppresses on first call (survives restarts)."""
+    global _LIVE_SUPPRESS_LOADED
+    if _LIVE_SUPPRESS_LOADED:
+        return
+    _LIVE_SUPPRESS_LOADED = True
+    try:
+        with open(_LIVE_SUPPRESS_FILE) as fh:
+            data = json.load(fh)
+        now_wall = time.time()
+        now_mono = time.monotonic()
+        for sym, exp_wall in data.items():
+            remaining = exp_wall - now_wall
+            if remaining > 0:
+                _LIVE_INSUF_QTY_SUPPRESS[sym] = now_mono + remaining
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    except Exception:
+        pass
 
 # Crypto symbols (e.g. BTCUSD, ETHUSD) are not managed by this bot's equity logic.
 # Alpaca crypto tickers typically end in USD with length >= 6, or contain "/".
@@ -99,12 +151,14 @@ def place_live_order(plan: dict, *, dry_run: bool = False) -> bool:
     Returns ``True`` on success (or dry-run), ``False`` on failure.
     """
     symbol = plan.get("symbol")
-    qty = float(plan.get("qty") or 0)
+    # Alpaca live rejects bracket orders with fractional qty.
+    # Floor to integer; reject if the result is zero.
+    qty = math.floor(float(plan.get("qty") or 0))
     price = float(plan.get("price") or 0)
     atr = plan.get("atr")
     time_in_force = plan.get("time_in_force", "day")
 
-    if qty <= 0 or not symbol:
+    if qty < 1 or not symbol:
         log_event(f"LIVE ORDER {symbol}: rejected reason=zero_qty", event="LIVE")
         return False
 
@@ -193,6 +247,8 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         return
 
     try:
+        _load_suppress_once()  # Load persisted suppresses once per process lifetime.
+
         safeguards_cfg = (getattr(config, "_policy", {}) or {}).get("safeguards", {}) or {}
         if not bool(safeguards_cfg.get("enabled", False)) or not is_safeguards_active():
             log_event("LIVE_PROTECT skip reason=safeguards_inactive", event="LIVE")
@@ -265,6 +321,34 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         best_stop = sp
                         best_order = order
                 except Exception:
+                    continue
+
+            # --- Async-rejection detection ---
+            # replace_order() returns HTTP 200 but Alpaca can asynchronously
+            # reject the replacement (visible as "rejected" in the orders UI).
+            # The original stop is then cancelled, or the replacement silently
+            # fails, leaving old_stop unchanged.  Detect this by comparing
+            # best_stop with what we expected after the last replace attempt.
+            if symbol in _LIVE_LAST_REPLACE:
+                _last_old, _last_expected = _LIVE_LAST_REPLACE.pop(symbol)
+                _tick_chk = get_tick_size(symbol, "us_equity", last or entry)
+                if best_stop <= _last_old + _tick_chk:
+                    # Stop didn't actually change → replacement was rejected async.
+                    log_event(
+                        f"LIVE_PROTECT symbol={symbol} replace_async_rejected "
+                        f"expected={_last_expected:.4f} actual={best_stop:.4f} "
+                        f"suppressing={_LIVE_NO_STOP_RETRY_SEC}s",
+                        event="LIVE",
+                    )
+                    send_telegram_alert(
+                        f"⚠️ LIVE {symbol}: replace_order async rejected (expected stop "
+                        f"{_last_expected:.4f}, still at {best_stop:.4f}). "
+                        f"Suppressing for 5 min."
+                    )
+                    _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                        time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                    )
+                    _save_suppress()
                     continue
 
             if not last or last <= 0:
@@ -568,6 +652,8 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 try:  # pragma: no cover - network
                     live_api.replace_order(getattr(best_order, "id"), **_safe_payload)
                     _replaced = True
+                    # Record this attempt so we can detect async rejections next cycle.
+                    _LIVE_LAST_REPLACE[symbol] = (best_stop, _safe_new_stop)
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
                         f"atr={float(atr_val or 0):.4f} old_stop={best_stop:.4f} "
@@ -585,6 +671,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                             time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
                         )
+                        _save_suppress()
+                    # For any replace failure, fall through to cancel+resubmit.
+                    # The cancel+resubmit path sets its own suppress if that also fails.
 
                 if not _replaced:  # pragma: no cover - network
                     # Fallback: cancel old stop, submit new standalone stop.
@@ -599,6 +688,12 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                             f"old_stop={best_stop:.4f} kept_as_is=1",
                             event="LIVE",
                         )
+                        # Stop can't be cancelled (e.g. bracket leg locked by parent).
+                        # Suppress retries to avoid hammering Alpaca every 60 s.
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                        )
+                        _save_suppress()
                     if _cancel_ok:
                         client_order_id = (
                             f"LIVE.PROTECT.{symbol}"
@@ -662,6 +757,12 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     f"LIVE_PROTECT symbol={symbol} reinstate_failed err={exc4}",
                                     event="LIVE",
                                 )
+                                # Suppress further attempts for 5 min; position may be
+                                # unprotected but spamming Alpaca won't help.
+                                _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                    time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                                )
+                                _save_suppress()
                                 _now_m = time.monotonic()
                                 if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
                                     send_telegram_alert(
@@ -732,6 +833,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                                         time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
                                     )
+                                    _save_suppress()
                             else:
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
@@ -744,23 +846,30 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                                     time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
                                 )
+                                _save_suppress()
                         else:
                             _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
                                 time.monotonic() + _LIVE_INSUF_QTY_SUPPRESS_SEC
                             )
+                            _save_suppress()
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} submit_failed err={err_str}",
                         event="LIVE",
                     )
                     # For errors other than "insufficient qty" (which has its own
                     # alert path above), fire a Telegram — no stop protection exists.
-                    # Cooldown prevents a flood: we keep retrying every 60-second tick
-                    # so we only alert once per cooldown window.
+                    # Also set a 5-min submission suppress so the bot does NOT
+                    # spam Alpaca every 60 s with the same rejected order.
                     if "insufficient qty" not in err_str.lower():
+                        # Suppress new stop attempts for 5 min to avoid flooding.
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                        )
+                        _save_suppress()
                         _now_m = time.monotonic()
                         if _now_m >= _LIVE_STOP_ALERT_COOLDOWN.get(symbol, 0):
                             send_telegram_alert(
-                                f"🚨 LIVE {symbol}: stop placement failed ({err_str}) — position has NO stop!"
+                                f"🚨 LIVE {symbol}: stop placement rejected by Alpaca ({err_str}) — position has NO stop! Retrying in 5 min."
                             )
                             _LIVE_STOP_ALERT_COOLDOWN[symbol] = (
                                 _now_m + _LIVE_STOP_ALERT_COOLDOWN_SEC
