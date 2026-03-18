@@ -34,6 +34,13 @@ ALLOW_STALE_EQ_WHEN_CLOSED = os.getenv(
 _CACHE_TTL = 2.0
 _cache: Dict[Tuple[str, str], Tuple[float, PriceTuple]] = {}
 
+# Per-symbol cooldown for PRICE_FAIL log messages.
+# With multiple bot instances and 15-second scheduler loops, a single illiquid
+# or halted symbol can flood the log with hundreds of errors per minute.
+# Only log PRICE_FAIL once per 5 minutes per symbol.
+_PRICE_FAIL_LOG_COOLDOWN: Dict[str, float] = {}
+_PRICE_FAIL_LOG_COOLDOWN_SEC = 300
+
 _EQUITY_TIMEOUT = 2.5
 _RETRY_ATTEMPTS = 3
 _RETRY_BASE_DELAY = 0.2
@@ -325,10 +332,13 @@ def get_price(
     failure_text = "no_price"
     if reasons:
         failure_text = ",".join(f"{k}:{v}" for k, v in reasons.items())
-        log_event(
-            f"PRICE_FAIL symbol={upper} reasons={reasons}",
-            event="ERROR",
-        )
+        _now_m = time.monotonic()
+        if _now_m >= _PRICE_FAIL_LOG_COOLDOWN.get(upper, 0):
+            log_event(
+                f"PRICE_FAIL symbol={upper} reasons={reasons}",
+                event="ERROR",
+            )
+            _PRICE_FAIL_LOG_COOLDOWN[upper] = _now_m + _PRICE_FAIL_LOG_COOLDOWN_SEC
 
     result = (None, None, None, False, failure_text)
     _cache[cache_key] = (now, result)
