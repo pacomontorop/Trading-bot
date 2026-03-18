@@ -695,7 +695,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
 
                 _replaced = False
                 try:  # pragma: no cover - network
-                    live_api.replace_order(getattr(best_order, "id"), **_safe_payload)
+                    live_api.replace_order(getattr(best_order, "id"), time_in_force=tif, **_safe_payload)
                     _replaced = True
                     # Record this attempt so we can detect async rejections next cycle.
                     _LIVE_LAST_REPLACE[symbol] = (best_stop, _safe_new_stop)
