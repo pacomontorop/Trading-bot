@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import fcntl
+import json
 import math
 import os
 import threading
@@ -36,8 +37,51 @@ _BRACKET_SUPPRESS_NO_STOP_SEC = 300  # 5 min — used when position has NO stop 
 _BLOWN_STOP_SUPPRESS: dict[str, float] = {}
 _BLOWN_STOP_SUPPRESS_SEC = 300
 
+# Stop high-water mark: highest stop successfully placed per symbol.
+# Prevents re-placing a stop BELOW a level previously accepted (e.g. when a
+# day-TIF bracket stop expires overnight and best_stop resets to 0).
+_PAPER_STOP_HWM: dict[str, float] = {}
+_PAPER_STOP_HWM_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "paper_stop_hwm.json"
+)
+_PAPER_STOP_HWM_LOADED = False
+
 _PRICE_TTL_SEC = 15.0
 _ATR_TTL_SEC = 300.0
+
+
+def _save_paper_stop_hwm() -> None:
+    """Persist paper stop HWM to disk."""
+    try:
+        os.makedirs(os.path.dirname(_PAPER_STOP_HWM_FILE), exist_ok=True)
+        with open(_PAPER_STOP_HWM_FILE, "w") as fh:
+            json.dump(dict(_PAPER_STOP_HWM), fh)
+    except Exception:
+        pass
+
+
+def _load_paper_stop_hwm_once() -> None:
+    """Load persisted paper stop HWM on first call."""
+    global _PAPER_STOP_HWM_LOADED
+    if _PAPER_STOP_HWM_LOADED:
+        return
+    _PAPER_STOP_HWM_LOADED = True
+    try:
+        with open(_PAPER_STOP_HWM_FILE) as fh:
+            data = json.load(fh)
+        for sym, val in data.items():
+            _PAPER_STOP_HWM[sym] = float(val)
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    except Exception:
+        pass
+
+
+def _update_paper_stop_hwm(symbol: str, stop: float) -> None:
+    """Update paper HWM if stop is a new high; save to disk."""
+    if stop > _PAPER_STOP_HWM.get(symbol, 0.0):
+        _PAPER_STOP_HWM[symbol] = stop
+        _save_paper_stop_hwm()
 
 
 def _risk_cfg() -> dict:
@@ -138,6 +182,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         return
 
     try:
+        _load_paper_stop_hwm_once()  # Load persisted stop HWM once per process lifetime.
+
         safeguards_cfg = _safeguards_cfg()
         if not bool(safeguards_cfg.get("enabled", False)) or not is_safeguards_active():
             log_event("skip reason=safeguards_inactive", event="PROTECT")
@@ -320,11 +366,13 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             denom = max(entry - initial_stop, entry * min_stop_pct)
             r_multiple = (last - entry) / denom if denom > 0 else 0.0
 
-            # Never allow the stop to fall below the initial ATR-based floor.
-            # When bracket orders expire overnight (day TIF) old_stop resets to 0;
-            # without this guard the protector would place a fresh stop based on
-            # the current (lower) price, effectively chasing the stock down.
-            new_stop = max(old_stop, initial_stop)
+            # Never allow the stop to fall below: (1) initial ATR floor,
+            # (2) high-water mark — the highest stop ever successfully set.
+            # The HWM ensures that even when a day-TIF bracket stop expires
+            # overnight (old_stop resets to 0), the replacement is never placed
+            # below a level that was already earned via trailing.
+            hwm = _PAPER_STOP_HWM.get(symbol, 0.0)
+            new_stop = max(old_stop, initial_stop, hwm)
             reasons: list[str] = []
 
             if r_multiple >= break_even_r:
@@ -516,6 +564,7 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                     client_order_id=client_order_id,
                     **stop_payload,
                 )
+                _update_paper_stop_hwm(symbol, new_stop)
                 log_event(
                     f"symbol={symbol} entry={entry:.4f} last={last:.4f} atr={float(atr or 0):.4f} old_stop={old_stop:.4f} new_stop={new_stop:.4f} reason={reason_txt}",
                     event="PROTECT",
@@ -545,6 +594,7 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                     client_order_id=_retry_id,
                                     **stop_payload,
                                 )
+                                _update_paper_stop_hwm(symbol, new_stop)
                                 log_event(
                                     f"symbol={symbol} entry={entry:.4f} last={last:.4f} "
                                     f"new_stop={new_stop:.4f} reason={reason_txt}_cancel_tp_placed_stop",
