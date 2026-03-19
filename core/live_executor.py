@@ -458,10 +458,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 event="LIVE",
                             )
                             send_telegram_alert(
-                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing."
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing 5 min."
                             )
+                            # Do NOT attempt market-sell while shares are still locked
+                            # in Alpaca sell orders — it will fail with "insufficient qty".
+                            _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                            )
+                            _save_suppress()
+                            continue
                         # A TP limit may have partially or fully filled during the
-                        # 800 ms wait. Fetch real position qty before market-selling.
+                        # cancel wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
                         try:
                             _sell_qty = float(getattr(live_api.get_position(symbol), "qty", qty))
@@ -585,10 +592,17 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 event="LIVE",
                             )
                             send_telegram_alert(
-                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing."
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing 5 min."
                             )
+                            # Do NOT attempt market-sell while shares are still locked
+                            # in Alpaca sell orders — it will fail with "insufficient qty".
+                            _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                            )
+                            _save_suppress()
+                            continue
                         # A TP limit may have partially or fully filled during the
-                        # 800 ms wait. Fetch real position qty before market-selling.
+                        # cancel wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
                         try:
                             _sell_qty = float(getattr(live_api.get_position(symbol), "qty", qty))
@@ -744,7 +758,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         client_order_id = (
                             f"LIVE.PROTECT.{symbol}"
                             f".{int(_safe_new_stop * 10000)}"
-                            f".{int(time.time())}"
+                            f".{int(time.time() * 1000) % 1_000_000}"
                         )
                         try:
                             live_api.submit_order(
@@ -778,7 +792,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 _ri_id = (
                                     f"LIVE.PROTECT.{symbol}"
                                     f".REINSTATE.{int(float(best_stop) * 10000)}"
-                                    f".{int(time.time())}"
+                                    f".{int(time.time() * 1000) % 1_000_000}"
                                 )
                                 _ri_payload: dict = {"stop_price": float(best_stop)}
                                 _ri_limit = stop_limit_price(float(best_stop), symbol=symbol)
@@ -821,7 +835,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
-                client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                 try:  # pragma: no cover - network
                     live_api.submit_order(
                         symbol=symbol,
@@ -854,7 +868,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                             _cleared = cancel_all_sells_and_wait(live_api, symbol, open_orders)
                             if _cleared:
                                 try:
-                                    _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                                    _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                                     live_api.submit_order(
                                         symbol=symbol,
                                         side="sell",
