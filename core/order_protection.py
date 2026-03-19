@@ -28,8 +28,24 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
         if getattr(o, "symbol", "") == symbol
         and str(getattr(o, "side", "")).lower() == "sell"
     ]
+
+    # If the stale snapshot shows no sells, verify against Alpaca live state
+    # before returning True.  A TP/stop placed by the same cycle's TP-renewal
+    # pass won't appear in the snapshot but WILL commit the qty in Alpaca,
+    # causing the subsequent market-sell to fail with "insufficient qty".
     if not _sells:
-        return True
+        try:
+            _live_sells = [
+                o for o in api.list_orders(status="open", limit=50)
+                if getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+            ]
+        except Exception:
+            _live_sells = []
+        if not _live_sells:
+            return True
+        # Found live sells that weren't in the snapshot — cancel them too.
+        _sells = _live_sells
 
     for _o in _sells:
         try:
