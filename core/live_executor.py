@@ -430,15 +430,19 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         f"reason=blown_stop_detected",
                         event="LIVE",
                     )
-                    # Guard against double-sell after process restart: check Alpaca for
-                    # any pending market sell order (in-memory suppress resets on restart).
+                    # Guard against double-sell after process restart: re-fetch orders
+                    # live (not from stale snapshot) so we catch orders placed in this cycle.
+                    try:
+                        _live_orders_blown = live_api.list_orders(status="open", limit=50)
+                    except Exception:
+                        _live_orders_blown = open_orders or []
                     _pending_sell = any(
                         getattr(o, "symbol", "") == symbol
                         and str(getattr(o, "side", "")).lower() == "sell"
                         and str(
                             getattr(o, "type", "") or getattr(o, "order_type", "")
                         ).lower() == "market"
-                        for o in (open_orders or [])
+                        for o in _live_orders_blown
                     )
                     if _pending_sell:
                         _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
@@ -451,17 +455,25 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     if not dry_run:
                         # Cancel ALL open sell orders (stop + any TP limit) and wait
                         # for Alpaca to confirm before submitting market close.
-                        _cleared = cancel_all_sells_and_wait(live_api, symbol, open_orders)
+                        # Use the fresh list so snapshot-invisible orders are also cancelled.
+                        _cleared = cancel_all_sells_and_wait(live_api, symbol, _live_orders_blown)
                         if not _cleared:
                             log_event(
                                 f"LIVE_PROTECT symbol={symbol} reason=blown_stop_cancel_wait_failed",
                                 event="LIVE",
                             )
                             send_telegram_alert(
-                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing."
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (blown_stop) — sell orders still open after retries. Suppressing 5 min."
                             )
+                            # Do NOT attempt market-sell while shares are still locked
+                            # in Alpaca sell orders — it will fail with "insufficient qty".
+                            _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                            )
+                            _save_suppress()
+                            continue
                         # A TP limit may have partially or fully filled during the
-                        # 800 ms wait. Fetch real position qty before market-selling.
+                        # cancel wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
                         try:
                             _sell_qty = float(getattr(live_api.get_position(symbol), "qty", qty))
@@ -498,13 +510,38 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     event="LIVE",
                                 )
                             except Exception as exc:
+                                err_str = str(exc)
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} reason=blown_stop_market_sell_failed err={exc}",
                                     event="LIVE",
                                 )
-                                send_telegram_alert(
-                                    f"🚨 LIVE {symbol}: blown stop — market sell FAILED ({exc}). Position still open below stop at {last:.2f}! Manual close required."
-                                )
+                                # "insufficient qty": force-cancel all live sells and retry once.
+                                if "insufficient qty" in err_str.lower():
+                                    _retry_cleared = cancel_all_sells_and_wait(live_api, symbol, [])
+                                    if _retry_cleared:
+                                        try:
+                                            _retry_coid = f"LIVE.BLOWNSTOP.RETRY.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                            live_api.submit_order(
+                                                symbol=symbol,
+                                                side="sell",
+                                                qty=_sell_qty,
+                                                type="market",
+                                                time_in_force="day",
+                                                client_order_id=_retry_coid,
+                                            )
+                                            _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
+                                            log_event(
+                                                f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                                f"old_stop={best_stop:.4f} qty={_sell_qty:.0f} reason=blown_stop_market_sell_retry_ok",
+                                                event="LIVE",
+                                            )
+                                            exc = None  # retry succeeded
+                                        except Exception as exc2:
+                                            exc = exc2
+                                if exc is not None:
+                                    send_telegram_alert(
+                                        f"🚨 LIVE {symbol}: blown stop — market sell FAILED ({exc}). Position still open below stop at {last:.2f}! Manual close required."
+                                    )
                     continue
 
             tick = tick_ge_1 if last >= 1 else tick_lt_1
@@ -563,10 +600,16 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                 # fallen below the intended stop level, close immediately with
                 # a market sell rather than silently skipping the position.
                 if best_stop == 0:
+                    # Re-fetch orders live — the stale snapshot may miss orders
+                    # placed by the TP-renewal pass earlier in this same cycle.
+                    try:
+                        _live_orders_now = live_api.list_orders(status="open", limit=50)
+                    except Exception:
+                        _live_orders_now = open_orders or []
                     _pending_sell = any(
                         getattr(o, "symbol", "") == symbol
                         and str(getattr(o, "side", "")).lower() == "sell"
-                        for o in (open_orders or [])
+                        for o in _live_orders_now
                     )
                     if _pending_sell:
                         _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
@@ -578,17 +621,25 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                     elif not dry_run:
                         # Cancel ALL open sell orders and wait for Alpaca to confirm
                         # before submitting market close (avoids "insufficient qty").
-                        _cleared = cancel_all_sells_and_wait(live_api, symbol, open_orders)
+                        # Use the fresh order list so orders missed by the snapshot are cancelled too.
+                        _cleared = cancel_all_sells_and_wait(live_api, symbol, _live_orders_now)
                         if not _cleared:
                             log_event(
                                 f"LIVE_PROTECT symbol={symbol} reason=no_stop_cancel_wait_failed",
                                 event="LIVE",
                             )
                             send_telegram_alert(
-                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing."
+                                f"⚠️ LIVE {symbol}: cancel_wait_timed_out (no_stop) — sell orders still open after retries. Suppressing 5 min."
                             )
+                            # Do NOT attempt market-sell while shares are still locked
+                            # in Alpaca sell orders — it will fail with "insufficient qty".
+                            _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                                time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                            )
+                            _save_suppress()
+                            continue
                         # A TP limit may have partially or fully filled during the
-                        # 800 ms wait. Fetch real position qty before market-selling.
+                        # cancel wait. Fetch real position qty before market-selling.
                         _sell_qty = qty
                         try:
                             _sell_qty = float(getattr(live_api.get_position(symbol), "qty", qty))
@@ -625,13 +676,39 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                     event="LIVE",
                                 )
                             except Exception as exc:
+                                err_str = str(exc)
                                 log_event(
                                     f"LIVE_PROTECT symbol={symbol} reason=no_stop_market_sell_failed err={exc}",
                                     event="LIVE",
                                 )
-                                send_telegram_alert(
-                                    f"🚨 LIVE {symbol}: no stop + price at/below stop level — market sell FAILED ({exc}). Position unprotected at {last:.2f}! Manual close required."
-                                )
+                                # "insufficient qty": a sell order appeared between our cancel
+                                # and this submission.  Force-cancel all live sells and retry once.
+                                if "insufficient qty" in err_str.lower():
+                                    _retry_cleared = cancel_all_sells_and_wait(live_api, symbol, [])
+                                    if _retry_cleared:
+                                        try:
+                                            _retry_coid = f"LIVE.NOSTOP.RETRY.{symbol}.{int(time.time() * 1000) % 1_000_000}"
+                                            live_api.submit_order(
+                                                symbol=symbol,
+                                                side="sell",
+                                                qty=_sell_qty,
+                                                type="market",
+                                                time_in_force="day",
+                                                client_order_id=_retry_coid,
+                                            )
+                                            _LIVE_BLOWN_STOP_SUPPRESS[symbol] = time.monotonic() + _LIVE_BLOWN_STOP_SUPPRESS_SEC
+                                            log_event(
+                                                f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
+                                                f"new_stop={new_stop:.4f} qty={_sell_qty:.0f} reason=no_stop_market_sell_retry_ok",
+                                                event="LIVE",
+                                            )
+                                            exc = None  # retry succeeded
+                                        except Exception as exc2:
+                                            exc = exc2
+                                if exc is not None:
+                                    send_telegram_alert(
+                                        f"🚨 LIVE {symbol}: no stop + price at/below stop level — market sell FAILED ({exc}). Position unprotected at {last:.2f}! Manual close required."
+                                    )
                     else:
                         log_event(
                             f"LIVE_PROTECT symbol={symbol} entry={entry:.4f} last={last:.4f} "
@@ -744,7 +821,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                         client_order_id = (
                             f"LIVE.PROTECT.{symbol}"
                             f".{int(_safe_new_stop * 10000)}"
-                            f".{int(time.time())}"
+                            f".{int(time.time() * 1000) % 1_000_000}"
                         )
                         try:
                             live_api.submit_order(
@@ -778,7 +855,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                                 _ri_id = (
                                     f"LIVE.PROTECT.{symbol}"
                                     f".REINSTATE.{int(float(best_stop) * 10000)}"
-                                    f".{int(time.time())}"
+                                    f".{int(time.time() * 1000) % 1_000_000}"
                                 )
                                 _ri_payload: dict = {"stop_price": float(best_stop)}
                                 _ri_limit = stop_limit_price(float(best_stop), symbol=symbol)
@@ -821,7 +898,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
-                client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                 try:  # pragma: no cover - network
                     live_api.submit_order(
                         symbol=symbol,
@@ -854,7 +931,7 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
                             _cleared = cancel_all_sells_and_wait(live_api, symbol, open_orders)
                             if _cleared:
                                 try:
-                                    _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time())}"
+                                    _retry_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                                     live_api.submit_order(
                                         symbol=symbol,
                                         side="sell",

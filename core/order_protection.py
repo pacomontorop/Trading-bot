@@ -12,12 +12,12 @@ from core.broker import get_tick_size, round_to_tick
 def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
     """Cancel ALL open sell orders for *symbol*, then wait for Alpaca to confirm.
 
-    Alpaca processes cancellations asynchronously (200–800 ms).  Submitting a
+    Alpaca processes cancellations asynchronously (200–2000 ms).  Submitting a
     new order immediately after ``cancel_order()`` often returns
     "insufficient qty available" because the cancelled order still appears open
     server-side.  This helper cancels every sell from *open_orders*, sleeps
-    800 ms, then re-fetches from Alpaca up to twice (with 0.5 s / 1 s backoff)
-    to confirm the queue is clear before returning.
+    1.5 s, then re-fetches from Alpaca up to 3 times (with 1 s / 2 s / 3 s
+    backoff) to confirm the queue is clear before returning.
 
     Returns ``True`` when no open sell orders remain (safe to submit a new one).
     Returns ``False`` when some orders are still active after all retries (caller
@@ -28,24 +28,41 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
         if getattr(o, "symbol", "") == symbol
         and str(getattr(o, "side", "")).lower() == "sell"
     ]
+
+    # If the stale snapshot shows no sells, verify against Alpaca live state
+    # before returning True.  A TP/stop placed by the same cycle's TP-renewal
+    # pass won't appear in the snapshot but WILL commit the qty in Alpaca,
+    # causing the subsequent market-sell to fail with "insufficient qty".
     if not _sells:
-        return True
+        try:
+            _live_sells = [
+                o for o in api.list_orders(status="open", limit=50)
+                if getattr(o, "symbol", "") == symbol
+                and str(getattr(o, "side", "")).lower() == "sell"
+            ]
+        except Exception:
+            _live_sells = []
+        if not _live_sells:
+            return True
+        # Found live sells that weren't in the snapshot — cancel them too.
+        _sells = _live_sells
 
     for _o in _sells:
         try:
             api.cancel_order(getattr(_o, "id"))
         except Exception as _e:
             if "429" in str(_e) or "rate limit" in str(_e).lower():
-                time.sleep(1.5)
+                time.sleep(2.0)
                 try:
                     api.cancel_order(getattr(_o, "id"))
                 except Exception:
                     pass
 
     # Wait for Alpaca to process the cancellations asynchronously.
-    time.sleep(0.8)
+    # Alpaca can take up to 1-2 s to propagate cancellations server-side.
+    time.sleep(1.5)
 
-    for attempt in range(2):
+    for attempt in range(3):
         try:
             remaining = [
                 o for o in api.list_orders(status="open", limit=50)
@@ -54,11 +71,11 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
             ]
         except Exception as _e:
             if "429" in str(_e) or "rate limit" in str(_e).lower():
-                time.sleep(1.5)
+                time.sleep(2.0)
             remaining = []
         if not remaining:
             return True
-        time.sleep(0.5 * (2 ** attempt))  # 0.5 s → 1 s
+        time.sleep(1.0 * (attempt + 1))  # 1 s → 2 s → 3 s
 
     return False
 
