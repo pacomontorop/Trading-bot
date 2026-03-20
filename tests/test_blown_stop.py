@@ -36,8 +36,13 @@ def _run_protect(
     atr: float = 1.5,
     blown_gap_mult: float = 0.0,
     dry_run: bool = False,
+    cancel_succeeds: bool = True,
 ):
-    """Helper: run one paper protect tick with controlled config."""
+    """Helper: run one paper protect tick with controlled config.
+
+    ``cancel_succeeds`` controls whether ``cancel_all_sells_and_wait`` returns
+    True (simulating Alpaca clearing the queue) or False (timeout / still open).
+    """
     from core import position_protector
 
     mock_api = MagicMock()
@@ -61,6 +66,10 @@ def _run_protect(
         patch(
             "core.position_protector._safeguards_cfg",
             return_value={"enabled": True, "break_even_R": 1.0, "trailing_enable": True},
+        ),
+        patch(
+            "core.position_protector.cancel_all_sells_and_wait",
+            return_value=cancel_succeeds,
         ),
     ):
         position_protector.tick_protect_positions(dry_run=dry_run)
@@ -89,9 +98,9 @@ class TestBlownStopPaper:
         pos = _make_position("SW", entry=46.40, qty=10.0)
         stop_order = _make_stop_limit_order("SW", stop_price=42.49, order_id="ord-sw")
 
+        # cancel_all_sells_and_wait is mocked; market sell should be submitted.
         mock_api = _run_protect(pos, stop_order, last_price=40.88, atr=2.02, blown_gap_mult=0.5)
 
-        mock_api.cancel_order.assert_called_once_with("ord-sw")
         _assert_market_sell(mock_api, "SW")
 
     def test_blown_stop_sw_would_miss_with_1_5_multiplier(self):
@@ -133,9 +142,9 @@ class TestBlownStopPaper:
         pos = _make_position("TWST", entry=20.00, qty=8.0)
         stop_order = _make_stop_limit_order("TWST", stop_price=18.00, order_id="ord-twst")
         # tiny gap of $0.05 should still trigger when mult=0
+        # cancel_all_sells_and_wait is mocked; market sell should be submitted.
         mock_api = _run_protect(pos, stop_order, last_price=17.95, atr=1.5, blown_gap_mult=0.0)
 
-        mock_api.cancel_order.assert_called_once_with("ord-twst")
         _assert_market_sell(mock_api, "TWST")
 
     def test_blown_stop_no_atr_any_gap_triggers(self):
@@ -143,9 +152,9 @@ class TestBlownStopPaper:
         pos = _make_position("RDFN", entry=10.00, qty=15.0)
         stop_order = _make_stop_limit_order("RDFN", stop_price=9.00, order_id="ord-rdfn")
 
+        # cancel_all_sells_and_wait is mocked; market sell should be submitted.
         mock_api = _run_protect(pos, stop_order, last_price=8.50, atr=None, blown_gap_mult=1.5)
 
-        mock_api.cancel_order.assert_called_once_with("ord-rdfn")
         _assert_market_sell(mock_api, "RDFN")
 
     def test_blown_stop_not_triggered_when_last_above_stop(self):
@@ -179,4 +188,22 @@ class TestBlownStopPaper:
         )
 
         mock_api.cancel_order.assert_not_called()
+        mock_api.submit_order.assert_not_called()
+
+    def test_blown_stop_cancel_timed_out_no_market_sell(self):
+        """When cancel_all_sells_and_wait times out, no market sell is attempted.
+
+        Regression: before the fix, the code fell through and tried to submit a
+        market sell even when sells were still open, producing "insufficient qty"
+        (as observed for PAPER IRM on 2026-03-20).
+        """
+        pos = _make_position("IRM", entry=110.00, qty=127.0)
+        stop_order = _make_stop_limit_order("IRM", stop_price=106.00, order_id="ord-irm")
+
+        mock_api = _run_protect(
+            pos, stop_order, last_price=104.22, atr=2.0,
+            blown_gap_mult=0.5, cancel_succeeds=False,
+        )
+
+        # Cancellation timed out — market sell must NOT be submitted
         mock_api.submit_order.assert_not_called()
