@@ -377,8 +377,12 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             if symbol in _LIVE_LAST_REPLACE:
                 _last_old, _last_expected = _LIVE_LAST_REPLACE.pop(symbol)
                 _tick_chk = get_tick_size(symbol, "us_equity", last or entry)
-                if best_stop <= _last_old + _tick_chk:
-                    # Stop didn't actually change → replacement was rejected async.
+                # Compare actual stop against the *expected* new stop (not old+tick).
+                # Using old+tick would cause a false positive when the improvement was
+                # exactly 1 tick (new == old + tick satisfies the old check even though
+                # the replacement succeeded).
+                if best_stop < _last_expected - _tick_chk:
+                    # Stop is meaningfully below what we expected → async rejection.
                     log_event(
                         f"LIVE_PROTECT symbol={symbol} replace_async_rejected "
                         f"expected={_last_expected:.4f} actual={best_stop:.4f} "
