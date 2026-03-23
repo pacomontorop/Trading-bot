@@ -902,6 +902,34 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             else:
                 # No existing stop order yet — submit a standalone stop.
                 # (e.g. position opened outside the bot or bracket already closed)
+                #
+                # Proactively cancel any open sell orders (e.g. TP limit leg from
+                # the original bracket) before submitting so Alpaca does not reject
+                # the new stop with "insufficient qty available".
+                # Use a fresh order fetch — the stale open_orders snapshot may miss
+                # orders placed earlier in this cycle or from a concurrent instance.
+                try:
+                    _fresh_sells = live_api.list_orders(status="open", limit=50)
+                except Exception:
+                    _fresh_sells = list(open_orders or [])
+                _has_any_sell = any(
+                    getattr(o, "symbol", "") == symbol
+                    and str(getattr(o, "side", "")).lower() == "sell"
+                    for o in _fresh_sells
+                )
+                if _has_any_sell:
+                    _pre_cleared = cancel_all_sells_and_wait(live_api, symbol, _fresh_sells)
+                    if not _pre_cleared:
+                        log_event(
+                            f"LIVE_PROTECT symbol={symbol} reason=no_stop_cancel_pre_failed "
+                            f"suppressing={_LIVE_NO_STOP_RETRY_SEC}s",
+                            event="LIVE",
+                        )
+                        _LIVE_INSUF_QTY_SUPPRESS[symbol] = (
+                            time.monotonic() + _LIVE_NO_STOP_RETRY_SEC
+                        )
+                        _save_suppress()
+                        continue
                 client_order_id = f"LIVE.PROTECT.{symbol}.{int(new_stop * 10000)}.{int(time.time() * 1000) % 1_000_000}"
                 try:  # pragma: no cover - network
                     live_api.submit_order(
