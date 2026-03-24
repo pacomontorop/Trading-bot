@@ -62,7 +62,7 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
     # Alpaca can take up to 1-2 s to propagate cancellations server-side.
     time.sleep(1.5)
 
-    for attempt in range(3):
+    for attempt in range(4):
         try:
             remaining = [
                 o for o in api.list_orders(status="open", limit=50)
@@ -75,7 +75,22 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
             remaining = []
         if not remaining:
             return True
-        time.sleep(1.0 * (attempt + 1))  # 1 s → 2 s → 3 s
+        # Orders already in "pending_cancel" are confirmed-as-cancelling by Alpaca —
+        # they will not commit qty for a new order.  Treat as cleared.
+        _active = [
+            o for o in remaining
+            if str(getattr(o, "status", "")).lower() not in ("pending_cancel", "cancelled")
+        ]
+        if not _active:
+            return True
+        # Re-attempt cancelling orders that are still active (bracket TP legs may
+        # need a second nudge, especially just after placement).
+        for _o in _active:
+            try:
+                api.cancel_order(getattr(_o, "id"))
+            except Exception:
+                pass
+        time.sleep(1.0 * (attempt + 1))  # 1 s → 2 s → 3 s → 4 s
 
     return False
 
