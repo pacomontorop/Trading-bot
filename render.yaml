@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: Trading-bot
+    runtime: python
+    region: oregon
+    plan: starter
+
+    # CRITICAL: This bot is stateful. Multiple instances cause:
+    #   - duplicate orders on Alpaca
+    #   - trailing stops cancelling/recreating in a loop
+    #   - risk state (data/risk_state.json) diverging between instances
+    # numInstances must ALWAYS be 1. Never enable autoscaling.
+    numInstances: 1
+
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn start:app --host 0.0.0.0 --port 10000
+
+    envVars:
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+    disk:
+      name: trading-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+
+    healthCheckPath: /
