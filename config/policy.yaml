@@ -81,6 +81,7 @@ risk:
   min_position_size_usd: 100
   max_exposure_pct_equity: 0            # 0 = disabled; no cap on total equity deployed (paper)
   max_symbol_exposure_pct_equity: 0.12  # ~12% of equity per position (scales with account)
+  max_position_pct: 0.12               # alias read by executor.py calculate_position_size_risk_based()
   cash_buffer_pct: 0.0                  # paper: no cash buffer reserved
   symbol_cooldown_days: 5
   if_position_open_skip: true
