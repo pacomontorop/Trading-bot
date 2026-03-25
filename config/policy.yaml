@@ -81,6 +81,7 @@ risk:
   min_position_size_usd: 100
   max_exposure_pct_equity: 0            # 0 = disabled; no cap on total equity deployed (paper)
   max_symbol_exposure_pct_equity: 0.12  # ~12% of equity per position (scales with account)
+  max_position_pct: 0.12               # alias read by executor.py calculate_position_size_risk_based()
   cash_buffer_pct: 0.0                  # paper: no cash buffer reserved
   symbol_cooldown_days: 5
   if_position_open_skip: true
@@ -130,10 +131,10 @@ live_account:
   # Position sizing per order:  min(max_cash_pct × cash, max_position_size_usd)
   # Daily budget across orders:  daily_max_cash_pct × cash  (0 = unlimited)
   # Hard count limit per day:    daily_max_new_positions     (0 = no count limit)
-  max_cash_pct: 0.20         # max fraction of live cash per individual position (10 %)
-  max_position_size_usd: 500   # hard cap per position — raised for ~$3,800 account (10% ≈ $380)
-  min_position_size_usd: 0.1    # minimum viable position
-  daily_max_cash_pct: 0.50    # max fraction of live cash across all positions today (50 %)
+  max_cash_pct: 0.20           # max fraction of live cash per individual position (20 %)
+  max_position_size_usd: 500   # hard cap per position
+  min_position_size_usd: 25    # minimum viable position
+  daily_max_cash_pct: 0.50     # max fraction of live cash across all positions today (50 %)
   daily_max_new_positions: 0   # max new live trades per day (0 = no count limit)
   max_total_open_positions: 0  # 0 = no limit; daily_max_cash_pct controls budget
   symbol_cooldown_days: 5      # days before re-trading the same symbol
