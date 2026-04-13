@@ -14,8 +14,23 @@ import config
 from utils.symbols import detect_asset_class, normalize_for_yahoo
 
 
-_CACHE_TTL = timedelta(minutes=5)
+# Reduced from 5 min to 90s: prevents unbounded DataFrame accumulation
+# during high-frequency scanning at market open (OOM fix)
+_CACHE_TTL = timedelta(seconds=90)
 _stock_cache = {}
+
+
+def clear_expired_cache() -> int:
+    """Remove cache entries older than TTL to free DataFrame memory proactively.
+
+    Returns the number of entries removed. Call after each scan cycle.
+    """
+    now = datetime.utcnow()
+    expired = [sym for sym, entry in _stock_cache.items()
+               if (now - entry["ts"]) >= _CACHE_TTL]
+    for sym in expired:
+        del _stock_cache[sym]
+    return len(expired)
 
 
 class SkipSymbol(Exception):
@@ -104,9 +119,18 @@ def _fetch_yahoo_data(symbol: str, return_history: bool = False):
         current_price,
         atr,
     )
-    _stock_cache[symbol] = {"data": data, "history": hist, "ts": now}
+    # Only cache the heavy history DataFrame when the caller actually needs it.
+    # When return_history=False (the common path) we store None to avoid
+    # holding 90-day DataFrames in memory across the 90-second TTL window.
+    cache_entry: dict = {"data": data, "ts": now}
     if return_history:
-        return data, hist
+        cache_entry["history"] = hist
+    else:
+        # Release the DataFrame immediately; caller only needs scalar `data`
+        del hist
+    _stock_cache[symbol] = cache_entry
+    if return_history:
+        return data, cache_entry["history"]
     return data
 
 
