@@ -164,10 +164,19 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
 
         _prev_market_open = True
         _session_stats["cycles_run"] += 1
-        # Force GC every 30 cycles to free yfinance DataFrames and other
-        # accumulated objects before they trigger a Render memory OOM restart.
-        if _session_stats["cycles_run"] % 30 == 0:
+        # Memory management: aggressively GC during the first 20 cycles
+        # (market-open burst) then every 10 cycles thereafter.
+        # Also flush stale yfinance DataFrames from the scoring cache.
+        cycles = _session_stats["cycles_run"]
+        if cycles <= 20 or cycles % 10 == 0:
             gc.collect()
+        try:
+            from signals.scoring import clear_expired_cache
+            removed = clear_expired_cache()
+            if removed:
+                log_event(f"CACHE cleared={removed} expired_entries", event="CACHE")
+        except Exception:
+            pass
 
         now_ts = time.time()
 
