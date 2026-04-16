@@ -196,6 +196,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         trailing_enable = bool(safeguards_cfg.get("trailing_enable", True))
         trailing_mult = float(exec_cfg.get("trailing_stop_atr_mult", 2.0))
         trailing_profit_mult = float(exec_cfg.get("trailing_stop_profit_atr_mult", 1.0))
+        trailing_2r_mult = float(exec_cfg.get("trailing_stop_2r_atr_mult", 0.75))
+        trailing_3r_mult = float(exec_cfg.get("trailing_stop_3r_atr_mult", 0.5))
         trailing_tighten_at_r = float(exec_cfg.get("trailing_tighten_at_R", 0.5))
         atr_k = float(risk_cfg.get("atr_k", 2.0))
         min_stop_pct = float(risk_cfg.get("min_stop_pct", 0.05))
@@ -396,19 +398,40 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                         reasons.append("profit_lock")
 
             if trailing_enable:
-                # Cuando la posición lleva >= trailing_tighten_at_r de ganancia,
-                # apretamos el trailing para asegurar el beneficio acumulado.
-                in_profit = r_multiple >= trailing_tighten_at_r
-                effective_mult = trailing_profit_mult if in_profit else trailing_mult
+                # Multi-tier trailing: progressively tighter as R-multiple grows.
+                # The more we've earned, the closer the stop follows the price.
+                # Tier 0 (<0.2R):  1.5×ATR — room to breathe before profit
+                # Tier 1 (0.2–2R): 1.0×ATR — standard profit trail
+                # Tier 2 (2–3R):   0.75×ATR — capture more of mid-run gains
+                # Tier 3 (3R+):    0.5×ATR  — lock 90%+ of big winners
+                if r_multiple >= 3.0:
+                    effective_mult = trailing_3r_mult
+                    trail_label = "trailing_3r"
+                elif r_multiple >= 2.0:
+                    effective_mult = trailing_2r_mult
+                    trail_label = "trailing_2r"
+                elif r_multiple >= trailing_tighten_at_r:
+                    effective_mult = trailing_profit_mult
+                    trail_label = "trailing_profit"
+                else:
+                    effective_mult = trailing_mult
+                    trail_label = "trailing"
                 if atr and atr > 0:
                     trail_stop = last - atr * effective_mult
                 else:
-                    # Fallback sin ATR: 2% si en ganancia, 3% si todavía no
-                    fallback_pct = 0.02 if in_profit else 0.03
+                    # Fallback sin ATR: escala con R-multiple
+                    if r_multiple >= 3.0:
+                        fallback_pct = 0.01
+                    elif r_multiple >= 2.0:
+                        fallback_pct = 0.015
+                    elif r_multiple >= trailing_tighten_at_r:
+                        fallback_pct = 0.02
+                    else:
+                        fallback_pct = 0.03
                     trail_stop = last * (1 - fallback_pct)
                 if trail_stop > new_stop + tick:
                     new_stop = trail_stop
-                    reasons.append("trailing_profit" if in_profit else "trailing")
+                    reasons.append(trail_label)
 
             # Only replace the order if the improvement is meaningful.
             # Three-way max: tick size floor, percentage of stop, and absolute
