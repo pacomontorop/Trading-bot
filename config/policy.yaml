@@ -98,11 +98,13 @@ risk:
 execution:
   use_bracket: true
   take_profit_atr_mult: 2.5          # tightened from 3.0: TP closer to price → more fills before reversal
-  trailing_stop_atr_mult: 1.5        # tightened from 2.0: trail 1.5×ATR below price
-  trailing_tighten_at_R: 0.2         # tightened from 0.3: start tighter trail sooner (at 0.2R gain)
-  trailing_stop_profit_atr_mult: 1.0 # tightened from 1.5: 1×ATR once in profit (locks gains fast)
-  protect_min_improvement_pct: 0.005 # 0.5% mínimo para actualizar stop (reduce spam)
-  protect_min_improvement_usd: 0.10  # $0.10 mínimo absoluto para actualizar stop
+  trailing_stop_atr_mult: 1.5        # trail inicial 1.5×ATR (antes de entrar en ganancia)
+  trailing_tighten_at_R: 0.2         # empezar a apretar trail desde 0.2R de ganancia
+  trailing_stop_profit_atr_mult: 1.0 # 1×ATR una vez en ganancia (tier 1: 0.2R–2R)
+  trailing_stop_2r_atr_mult: 0.75    # 0.75×ATR al superar 2R de ganancia (tier 2)
+  trailing_stop_3r_atr_mult: 0.5     # 0.5×ATR al superar 3R de ganancia (tier 3 — máxima captura)
+  protect_min_improvement_pct: 0.003 # 0.3% mínimo para actualizar stop (más frecuente que 0.5%)
+  protect_min_improvement_usd: 0.05  # $0.05 mínimo absoluto (más granular que $0.10)
   min_profit_lock_pct: 0.3           # tightened from 0.5: lock break-even at 0.3% gain (was 0.5%)
   time_in_force: day
   allow_partial_fills: true
