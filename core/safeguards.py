@@ -7,6 +7,10 @@ from typing import Iterable, Optional
 
 import config
 from broker import alpaca as broker
+try:
+    import yfinance as _yf_sg
+except Exception:
+    _yf_sg = None
 from core.order_protection import compute_bracket_prices, compute_break_even_stop, stop_limit_price
 from utils.logger import log_event
 
@@ -158,10 +162,26 @@ def run_safeguards() -> None:
 
         if stop_order is None and trailing_order is None:
             if trailing_enable and trailing_mult > 0:
+                # Use ATR-based trail price instead of fixed 2% to adapt to each symbol's volatility
                 trail_price = 0.0
-                trail_percent = 2.0
+                trail_percent = 2.0  # fallback if ATR unavailable
+                if _yf_sg is not None:
+                    try:
+                        _hist = _yf_sg.Ticker(symbol).history(period="20d")
+                        if len(_hist) >= 14:
+                            _h, _l, _c = _hist["High"], _hist["Low"], _hist["Close"]
+                            _tr = [max(_h.iloc[i]-_l.iloc[i], abs(_h.iloc[i]-_c.iloc[i-1]),
+                                       abs(_l.iloc[i]-_c.iloc[i-1])) for i in range(1, len(_c))]
+                            _atr_sg = sum(_tr[-14:]) / 14
+                            if _atr_sg > 0 and last_price > 0:
+                                _trail_pct = (_atr_sg * trailing_mult) / last_price * 100
+                                trail_percent = round(max(min(_trail_pct, 8.0), 1.0), 2)  # clamp 1-8%
+                                trail_price = 0.0
+                    except Exception:
+                        pass
                 log_event(
-                    f"RISK_PROTECT symbol={symbol} action=missing_protection creating_stop=trailing",
+                    f"RISK_PROTECT symbol={symbol} action=missing_protection creating_stop=trailing "
+                    f"trail_pct={trail_percent:.2f}",
                     event="RISK",
                 )
                 try:  # pragma: no cover - network
@@ -248,14 +268,28 @@ def run_safeguards() -> None:
         if trailing_enable and trailing_mult > 0 and trailing_order is None and stop_price:
             threshold = entry_price + 1.5 * (entry_price - stop_price)
             if last_price >= threshold:
+                # Use ATR-based trail price instead of fixed 2%
                 trail_price = 0.0
-                trail_percent = 2.0
+                trail_percent = 2.0  # fallback
+                if _yf_sg is not None:
+                    try:
+                        _hist2 = _yf_sg.Ticker(symbol).history(period="20d")
+                        if len(_hist2) >= 14:
+                            _h2, _l2, _c2 = _hist2["High"], _hist2["Low"], _hist2["Close"]
+                            _tr2 = [max(_h2.iloc[i]-_l2.iloc[i], abs(_h2.iloc[i]-_c2.iloc[i-1]),
+                                        abs(_l2.iloc[i]-_c2.iloc[i-1])) for i in range(1, len(_c2))]
+                            _atr2 = sum(_tr2[-14:]) / 14
+                            if _atr2 > 0 and last_price > 0:
+                                _tp2 = (_atr2 * trailing_mult) / last_price * 100
+                                trail_percent = round(max(min(_tp2, 8.0), 1.0), 2)
+                    except Exception:
+                        pass
                 log_event(
                     (
                         "RISK_PROTECT "
                         f"symbol={symbol} action=activate_trailing "
-                        f"trail={trail_price if trail_price > 0 else trail_percent} "
-                        f"last={last_price:.4f} entry={entry_price:.4f} atr=0"
+                        f"trail_pct={trail_percent:.2f} "
+                        f"last={last_price:.4f} entry={entry_price:.4f}"
                     ),
                     event="RISK",
                 )
@@ -275,3 +309,4 @@ def run_safeguards() -> None:
                     )
                 except Exception:
                     pass
+
