@@ -214,6 +214,35 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             time.sleep(interval_sec)
             continue
 
+        # ── Daily P&L circuit breaker ───────────────────────────────────────
+        # If the account is already down beyond the configured threshold today,
+        # pause new entries — protect the capital that remains for the next day.
+        # Existing positions continue to be protected regardless.
+        try:
+            _drawdown_threshold = -abs(float(
+                ((getattr(config, "_policy", {}) or {}).get("market", {}) or {})
+                .get("daily_max_drawdown_pct", 0) or 0
+            ))
+            if _drawdown_threshold < 0:
+                from broker import alpaca as _broker_acct
+                _acct = _broker_acct.api.get_account()
+                _equity = float(_acct.equity)
+                _last_equity = float(_acct.last_equity)
+                if _last_equity > 0:
+                    _daily_pnl_pct = (_equity - _last_equity) / _last_equity * 100
+                    if _daily_pnl_pct <= _drawdown_threshold:
+                        _session_stats.setdefault("skips_drawdown", 0)
+                        _session_stats["skips_drawdown"] += 1
+                        log_event(
+                            f"SCAN skipped reason=daily_drawdown_limit "
+                            f"pnl_pct={_daily_pnl_pct:.2f} threshold={_drawdown_threshold:.2f}",
+                            event="SCAN",
+                        )
+                        time.sleep(interval_sec)
+                        continue
+        except Exception as _exc:
+            log_event(f"DRAWDOWN_CHECK failed err={_exc}", event="SCAN")
+
         opportunities, live_extra = get_top_signals(max_symbols=max_symbols)
 
         # Track universe size after first _cycle_batch() call (independent of results)
@@ -374,3 +403,4 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                     log_event(f"LIVE ORDER {symbol}: error err={exc} (paper_exposure_bypass)", event="LIVE")
 
         time.sleep(interval_sec)
+
