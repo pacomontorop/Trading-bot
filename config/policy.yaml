@@ -7,11 +7,11 @@ signals:
   freshness_days_gov_contracts: 45             # small contracts (<$50M): 45d, likely discounted beyond that
   freshness_days_gov_contracts_large: 90       # large contracts (>=$50M): 90d, multi-year execution not yet priced
   gov_contract_large_threshold_usd: 50000000  # $50M threshold to qualify as large
-  max_symbols_per_scan: 30           # symbols evaluated per scan cycle
+  max_symbols_per_scan: 50           # symbols evaluated per scan cycle
                                      # Yahoo fetches are sequential (~2-5s/symbol):
-                                     # 30 symbols ≈ 1.5-2.5 min scan + 15s sleep ≈ 2 min/cycle
-                                     # 4900 symbols / 30 per cycle = 163 cycles × ~2 min = ~5.5h
-                                     # → covers full universe 1.2-1.5x per trading day (6.5h session)
+                                     # 50 symbols ≈ 2.5-4 min scan + 15s sleep ≈ 3 min/cycle
+                                     # 4900 symbols / 50 per cycle = 98 cycles × ~3 min = ~5h
+                                     # → covers full universe ~1.3x per trading day; catches late-day signals faster
                                      # fresh signals (insider filings, gov contracts) caught same day
   symbol_rescan_cooldown_hours: 4    # hours before a symbol can be re-evaluated (0 = no cooldown)
                                      # 4h → ~2-3 full sweeps/day; catches afternoon filings & contracts
@@ -25,6 +25,10 @@ signals:
 
 market:
   global_kill_switch: false
+  # Circuit breaker: pause new entries if daily P&L drops below this threshold.
+  # Set to 0 to disable. 2.5% = stop opening positions if account is down 2.5% today.
+  # Existing positions continue to be protected regardless.
+  daily_max_drawdown_pct: 2.5
   # Pause new entries when CBOE VIX exceeds this level.
   # 0 = disabled.  Levels: calm <20, elevated 20-28, fear >28, crisis >35.
   # Existing positions continue to be monitored regardless.
@@ -140,3 +144,4 @@ live_account:
   daily_max_new_positions: 0   # max new live trades per day (0 = no count limit)
   max_total_open_positions: 0  # 0 = no limit; daily_max_cash_pct controls budget
   symbol_cooldown_days: 5      # days before re-trading the same symbol
+
