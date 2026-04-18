@@ -78,20 +78,20 @@ quiver_gate:
 
 risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
-  daily_max_spend_pct_buying_power: 1.0  # paper: allow up to 100% of buying power per day
+  daily_max_spend_pct_buying_power: 0.75 # OPTIMIZED: allow up to 75% of buying power per day (was 1.0)
   daily_max_new_positions: 0             # 0 = no count limit; cash budget above is the real limiter
-  max_total_open_positions: 0           # 0 = no limit; daily_max_spend_pct_buying_power controls budget
+  max_total_open_positions: 15          # OPTIMIZED: max 15 simultaneous positions (was unlimited). 15 * 5% = 75% max exposure
   max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
-  max_exposure_pct_equity: 0            # 0 = disabled; no cap on total equity deployed (paper)
-  max_symbol_exposure_pct_equity: 0.12  # ~12% of equity per position (scales with account)
-  max_position_pct: 0.12               # alias read by executor.py calculate_position_size_risk_based()
-  cash_buffer_pct: 0.0                  # paper: no cash buffer reserved
+  max_exposure_pct_equity: 0.75         # OPTIMIZED: cap total exposure at 75% of equity (was unlimited)
+  max_symbol_exposure_pct_equity: 0.05  # OPTIMIZED: cap individual positions at 5% of equity (was 12%)
+  max_position_pct: 0.05                # OPTIMIZED: alias — was 0.12, now 0.05 (matches max_symbol_exposure_pct_equity)
+  cash_buffer_pct: 0.05                 # OPTIMIZED: reserve 5% cash buffer (was 0%)
   symbol_cooldown_days: 5
   if_position_open_skip: true
   skip_if_order_pending: true
   slippage_buffer_pct: 0.002
-  max_symbol_risk_pct: 0.01
+  max_symbol_risk_pct: 0.0075          # OPTIMIZED: reduce risk per trade to 0.75% (was 1.0%)
   atr_k: 1.5              # tightened from 2.0: stop at 1.5×ATR limits max loss per trade
   min_stop_pct: 0.03      # tightened from 0.05: 3% floor (was 5%) to match tighter ATR stops
   min_tick_equity_ge_1: 0.01
