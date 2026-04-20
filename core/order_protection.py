@@ -16,13 +16,20 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
     new order immediately after ``cancel_order()`` often returns
     "insufficient qty available" because the cancelled order still appears open
     server-side.  This helper cancels every sell from *open_orders*, sleeps
-    1.5 s, then re-fetches from Alpaca up to 3 times (with 1 s / 2 s / 3 s
-    backoff) to confirm the queue is clear before returning.
+    2.5 s, then re-fetches from Alpaca up to 6 times (with 1 s / 2 s / 3 s / 4 s
+    / 5 s / 6 s backoff) to confirm the queue is clear before returning.
+
+    The longer timeout (total ~23.5 s vs the old 11.5 s) is needed because
+    Alpaca's paper-trading engine can take 10–15 s to reflect a cancellation
+    when a stop-limit order is in the ``triggered`` state (stop price was hit,
+    limit order is pending fill).
 
     Returns ``True`` when no open sell orders remain (safe to submit a new one).
     Returns ``False`` when some orders are still active after all retries (caller
     should fall back to suppressing the symbol for a cooldown period).
     """
+    from utils.logger import log_event  # local import to avoid circular
+
     _sells = [
         o for o in (open_orders or [])
         if getattr(o, "symbol", "") == symbol
@@ -48,21 +55,43 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
         _sells = _live_sells
 
     for _o in _sells:
+        _oid = getattr(_o, "id", None)
+        _ostatus = str(getattr(_o, "status", "")).lower()
         try:
-            api.cancel_order(getattr(_o, "id"))
+            api.cancel_order(_oid)
         except Exception as _e:
-            if "429" in str(_e) or "rate limit" in str(_e).lower():
+            _estr = str(_e)
+            if "429" in _estr or "rate limit" in _estr.lower():
                 time.sleep(2.0)
                 try:
-                    api.cancel_order(getattr(_o, "id"))
-                except Exception:
-                    pass
+                    api.cancel_order(_oid)
+                except Exception as _e2:
+                    log_event(
+                        f"symbol={symbol} cancel_order_retry_failed id={_oid} "
+                        f"status={_ostatus} err={_e2}",
+                        event="ORDER_PROTECTION",
+                    )
+            else:
+                # Log non-rate-limit cancel failures so we know if Alpaca is
+                # rejecting the cancel (e.g. order already filled or locked).
+                log_event(
+                    f"symbol={symbol} cancel_order_failed id={_oid} "
+                    f"status={_ostatus} err={_e}",
+                    event="ORDER_PROTECTION",
+                )
 
     # Wait for Alpaca to process the cancellations asynchronously.
-    # Alpaca can take up to 1-2 s to propagate cancellations server-side.
-    time.sleep(1.5)
+    # Paper API can take 10-15 s when a stop-limit was just triggered.
+    # Increased from 1.5 s to 2.5 s to absorb this extra latency.
+    time.sleep(2.5)
 
-    for attempt in range(4):
+    # States that mean Alpaca has accepted the cancel — qty will be released
+    # even if the final "cancelled" status hasn't propagated yet.
+    _CANCEL_TERMINAL = frozenset(
+        ("pending_cancel", "cancelled", "done_for_day", "expired", "replaced")
+    )
+
+    for attempt in range(6):  # was range(4); total wait now ~23.5 s vs 11.5 s
         try:
             remaining = [
                 o for o in api.list_orders(status="open", limit=50)
@@ -75,22 +104,33 @@ def cancel_all_sells_and_wait(api: Any, symbol: str, open_orders: list) -> bool:
             remaining = []
         if not remaining:
             return True
-        # Orders already in "pending_cancel" are confirmed-as-cancelling by Alpaca —
-        # they will not commit qty for a new order.  Treat as cleared.
+        # Orders already in a terminal-cancel state are confirmed-as-cancelling —
+        # Alpaca will not commit their qty for a new order.  Treat as cleared.
         _active = [
             o for o in remaining
-            if str(getattr(o, "status", "")).lower() not in ("pending_cancel", "cancelled")
+            if str(getattr(o, "status", "")).lower() not in _CANCEL_TERMINAL
         ]
         if not _active:
             return True
-        # Re-attempt cancelling orders that are still active (bracket TP legs may
-        # need a second nudge, especially just after placement).
+        # Re-attempt cancelling orders that are still active.
+        # Log their current status so we can diagnose future timeouts.
         for _o in _active:
+            _oid = getattr(_o, "id", None)
+            _ostatus = str(getattr(_o, "status", "")).lower()
+            log_event(
+                f"symbol={symbol} cancel_retry attempt={attempt + 1} "
+                f"id={_oid} status={_ostatus}",
+                event="ORDER_PROTECTION",
+            )
             try:
-                api.cancel_order(getattr(_o, "id"))
-            except Exception:
-                pass
-        time.sleep(1.0 * (attempt + 1))  # 1 s → 2 s → 3 s → 4 s
+                api.cancel_order(_oid)
+            except Exception as _e:
+                log_event(
+                    f"symbol={symbol} cancel_retry_failed attempt={attempt + 1} "
+                    f"id={_oid} status={_ostatus} err={_e}",
+                    event="ORDER_PROTECTION",
+                )
+        time.sleep(1.0 * (attempt + 1))  # 1 s → 2 s → 3 s → 4 s → 5 s → 6 s
 
     return False
 
