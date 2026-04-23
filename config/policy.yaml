@@ -79,8 +79,8 @@ quiver_gate:
 risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
   daily_max_spend_pct_buying_power: 0.75 # OPTIMIZED: allow up to 75% of buying power per day (was 1.0)
-  daily_max_new_positions: 0             # 0 = no count limit; cash budget above is the real limiter
-  max_total_open_positions: 15          # OPTIMIZED: max 15 simultaneous positions (was unlimited). 15 * 5% = 75% max exposure
+  daily_max_new_positions: 2             # max 2 nuevas posiciones por día (era 0=ilimitado). Previene sobre-trading.
+  max_total_open_positions: 6           # SIMPLIFICADO 2026-04-23: max 6 posiciones. Menos posiciones = más control = menos errores. Era 15.
   max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
   max_exposure_pct_equity: 0.75         # OPTIMIZED: cap total exposure at 75% of equity (was unlimited)
@@ -144,4 +144,13 @@ live_account:
   daily_max_new_positions: 0   # max new live trades per day (0 = no count limit)
   max_total_open_positions: 0  # 0 = no limit; daily_max_cash_pct controls budget
   symbol_cooldown_days: 5      # days before re-trading the same symbol
+
+earnings:
+  # LECCIÓN CRÍTICA 2026-04-23 (MEDP): no mantener posiciones overnight con AH earnings.
+  # Un stop_limit NO protege contra gaps nocturnos post-earnings (precio salta directo al AH).
+  # Resultado MEDP: entry $515 → AH $420 → stop $488 no se ejecutó → pérdida -18.6%.
+  avoid_entry_if_earnings_within_days: 1   # no abrir nueva posición si earnings en las próximas 24h
+  close_before_ah_earnings: true           # cerrar posición si ticker tiene earnings AH ese día (antes 15:45 ET)
+  close_before_pre_market_earnings: false  # NO cerrar antes de earnings pre-market (esos son plays intencionales)
+  # Implementar en: core/scheduler.py — añadir check de calendario yfinance antes de tick_protect y place_long_order
 
