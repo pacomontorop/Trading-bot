@@ -408,3 +408,24 @@ python -m pytest tests/ -v -k gate  # solo gates
 - Llamadas de red en `try/except` con fallback logging
 - Sin estado global excepto broker singleton y config de policy
 - **Cambios de configuración**: editar `config/policy.yaml` — NUNCA hardcodear valores
+
+---
+
+## ⚠️ LECCIONES CRÍTICAS DEL SISTEMA (NO IGNORAR)
+
+### MEDP 2026-04-23 — Gap nocturno post-earnings: stop_limit NO protege
+- **Qué pasó:** MEDP comprada ~$515. Reportó earnings AH con EPS beat pero guidance solo "afirmado". 
+  Stock cayó $515→$420 en after-hours. Stop_limit a $488 NO se ejecutó (precio saltó al otro lado del límite).
+- **Pérdida:** -18.6%, -$957 (paper)
+- **Causa raíz:** 
+  1. Bot no verifica si el ticker tiene earnings AH ese día antes de mantener posición overnight.
+  2. Bracket stop_limit no protege contra gaps: price gaps past both stop AND limit.
+  3. Bot corre solo durante horas de mercado → AH no hay protección activa.
+- **Fix necesario en código:**
+  - `core/scheduler.py`: antes de `tick_protect_positions`, verificar si alguna posición abierta tiene 
+    earnings AH hoy (via `yf.Ticker(sym).calendar`). Si sí → close at market antes de 15:45 ET.
+  - `signals/reader.py` o `core/executor.py`: no abrir posición en ticker con earnings en las próximas 24h.
+- **Config ya actualizado:** `policy.yaml` → `earnings.close_before_ah_earnings: true` (pendiente impl. en código)
+
+### Regla de oro: posición + earnings AH = CERRAR antes de las 15:45 ET
+
