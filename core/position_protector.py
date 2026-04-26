@@ -791,3 +791,140 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         except Exception:
             pass
         _PROTECT_LOCK.release()
+
+
+# ── AH earnings close ─────────────────────────────────────────────────────────
+
+def _has_ah_earnings_today(symbol: str) -> bool:
+    """Return True if symbol reports earnings after-hours today.
+
+    Uses yfinance calendar. Falls back to False on any error.
+    Lesson MEDP 2026-04-23: bot held overnight through AH earnings → gap -18%.
+    """
+    try:
+        import yfinance as yf
+        from datetime import date
+        t = yf.Ticker(symbol)
+        cal = t.calendar
+        if cal is None:
+            return False
+        if hasattr(cal, "to_dict"):
+            cal = cal.to_dict()
+        today = date.today()
+        for key in ("Earnings Date", "earningsDate", "earnings_date"):
+            if key in cal:
+                raw = cal[key]
+                if hasattr(raw, "__iter__") and not isinstance(raw, str):
+                    raw = list(raw)
+                    if raw:
+                        raw = raw[0]
+                earn_date = raw.date() if hasattr(raw, "date") else raw
+                if earn_date == today:
+                    return True
+                break
+    except Exception:
+        pass
+    return False
+
+
+def close_positions_with_ah_earnings(*, dry_run: bool = False) -> None:
+    """Close ALL non-Cowork positions that have AH earnings today before 15:45 ET.
+
+    Policy: earnings.close_before_ah_earnings = true (policy.yaml).
+    Cowork positions (COWORK-* prefix) are excluded — Cowork manages their own
+    earnings lifecycle with explicit override support for high-conviction plays.
+
+    Call this function around 15:30-15:40 ET every trading day.
+    Lesson: MEDP 2026-04-23 — -$1,293 paper loss from overnight AH earnings gap.
+    """
+    import config as _config
+    earn_cfg = _config.cfg.get("earnings", {})
+    if not earn_cfg.get("close_before_ah_earnings", False):
+        return
+
+    try:
+        positions = broker.list_positions()
+        open_orders = broker.api.list_orders(status="open", limit=500)
+    except Exception as exc:
+        log_event(f"ah_earnings_close: failed to fetch positions err={exc}", event="EARNINGS_CLOSE")
+        return
+
+    # Build set of Cowork-managed symbols (excluded from forced close)
+    cowork_symbols: set[str] = set()
+    try:
+        recent = broker.api.list_orders(status="all", limit=200)
+        for o in (recent or []):
+            cid = str(getattr(o, "client_order_id", "") or "")
+            if cid.upper().startswith("COWORK-"):
+                sym = str(getattr(o, "symbol", "") or "").upper()
+                if sym and getattr(o, "status", "") in ("filled", "partially_filled",
+                                                          "new", "accepted", "held"):
+                    cowork_symbols.add(sym)
+    except Exception:
+        pass
+
+    ny_now = datetime.now(tz=ZoneInfo("America/New_York"))
+    # Only act between 14:30 ET and 15:50 ET (after FOMC quiet window, before market close)
+    if not (14 * 60 + 30 <= ny_now.hour * 60 + ny_now.minute <= 15 * 60 + 50):
+        return
+
+    for pos in (positions or []):
+        try:
+            symbol = str(getattr(pos, "symbol", "") or "").upper()
+            qty = float(getattr(pos, "qty", 0) or 0)
+            side = str(getattr(pos, "side", "") or "").lower()
+        except Exception:
+            continue
+
+        if not symbol or qty == 0:
+            continue
+        if symbol in cowork_symbols:
+            log_event(f"symbol={symbol} reason=skip_cowork_managed", event="EARNINGS_CLOSE")
+            continue
+        if not _has_ah_earnings_today(symbol):
+            continue
+
+        # This position has AH earnings today and is not Cowork-managed → close it
+        close_side = "sell" if side == "long" or qty > 0 else "buy"
+        close_qty = abs(qty)
+        cid = f"EARNINGSCLOSE.{symbol}.{int(time.time())}"
+
+        log_event(
+            f"symbol={symbol} qty={close_qty} side={close_side} "
+            f"reason=ah_earnings_today action=market_close",
+            event="EARNINGS_CLOSE",
+        )
+        send_telegram_alert(
+            f"📅 EARNINGS CLOSE: {symbol} — cerrando {close_qty} acc antes de AH earnings. "
+            f"Lección MEDP: stop_limit no protege gaps nocturnos."
+        )
+
+        if dry_run:
+            log_event(f"symbol={symbol} DRY_RUN — no order submitted", event="EARNINGS_CLOSE")
+            continue
+
+        try:
+            # Cancel all open sell orders first to avoid "insufficient qty"
+            for o in (open_orders or []):
+                if str(getattr(o, "symbol", "")).upper() == symbol:
+                    try:
+                        broker.api.cancel_order(o.id)
+                    except Exception:
+                        pass
+            time.sleep(0.5)
+
+            broker.api.submit_order(
+                symbol=symbol,
+                side=close_side,
+                qty=str(int(close_qty)) if close_qty == int(close_qty) else str(close_qty),
+                type="market",
+                time_in_force="day",
+                client_order_id=cid,
+            )
+            log_event(
+                f"symbol={symbol} qty={close_qty} side={close_side} cid={cid} submitted",
+                event="EARNINGS_CLOSE",
+            )
+        except Exception as exc:
+            log_event(f"symbol={symbol} close_failed err={exc}", event="EARNINGS_CLOSE")
+            send_telegram_alert(f"⚠️ EARNINGS_CLOSE {symbol} FAILED: {exc}")

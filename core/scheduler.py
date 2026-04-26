@@ -27,6 +27,71 @@ from utils.telegram_alert import send_telegram_alert
 SYMBOLS_PATH = os.path.join("data", "symbols.csv")
 _NY_TZ = ZoneInfo("America/New_York")
 
+# ── Coordination helpers ──────────────────────────────────────────────────────
+
+def _is_cowork_reserved(symbol: str) -> bool:
+    """Return True if symbol has a recent Cowork-managed order (prefix COWORK-).
+
+    Cowork tags all its entries with client_order_id='COWORK-YYYYMMDD-SYMBOL'.
+    The bot must never open a new position in a Cowork-reserved ticker; it
+    would create duplicate exposure and interfere with Cowork's stop/TP logic.
+    Checks the last 200 orders (filled + open) for the prefix.
+    """
+    try:
+        from broker import alpaca as broker
+        recent = broker.api.list_orders(status="all", limit=200)
+        prefix = f"COWORK-"
+        sym_upper = symbol.upper()
+        for o in (recent or []):
+            cid = str(getattr(o, "client_order_id", "") or "")
+            if cid.upper().startswith(prefix) and sym_upper in cid.upper():
+                # Only block if the order is open/filled (not cancelled)
+                status = str(getattr(o, "status", "")).lower()
+                if status in ("new", "accepted", "pending_new", "filled",
+                              "partially_filled", "held"):
+                    return True
+    except Exception:
+        pass
+    return False
+
+
+def _has_earnings_within(symbol: str, days: int) -> bool:
+    """Return True if the symbol has earnings scheduled within `days` calendar days.
+
+    Uses yfinance calendar. Falls back to False on any error so we never
+    silently block a valid trade due to a data fetch failure.
+    Lesson: MEDP 2026-04-23 — bot entered with AH earnings that day → gap -18%.
+    """
+    try:
+        import yfinance as yf
+        from datetime import date, timedelta
+        t = yf.Ticker(symbol)
+        cal = t.calendar
+        if cal is None:
+            return False
+        # calendar may be a dict or DataFrame depending on yfinance version
+        if hasattr(cal, "to_dict"):
+            cal = cal.to_dict()
+        earn_date = None
+        for key in ("Earnings Date", "earningsDate", "earnings_date"):
+            if key in cal:
+                raw = cal[key]
+                if hasattr(raw, "__iter__") and not isinstance(raw, str):
+                    raw = list(raw)
+                    if raw:
+                        raw = raw[0]
+                if hasattr(raw, "date"):
+                    earn_date = raw.date()
+                elif isinstance(raw, date):
+                    earn_date = raw
+                break
+        if earn_date is None:
+            return False
+        today = date.today()
+        return today <= earn_date <= today + timedelta(days=days)
+    except Exception:
+        return False
+
 
 _SYMBOLS_MAX_AGE_SEC = 86400  # regenerate universe daily to pick up new listings
 
@@ -285,6 +350,29 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
                 live_active = False
 
         for symbol, total_score, quiver_score, price, atr, plan in opportunities:
+            # ── Coordination gates (earnings + Cowork) ─────────────────────
+            # Gate 1: skip symbols reserved by Cowork (client_order_id COWORK-*).
+            # Cowork identifies its orders with prefix "COWORK-YYYYMMDD-SYMBOL".
+            # If any filled/pending order for this symbol has that prefix, the
+            # symbol belongs to Cowork's lifecycle — the bot must not interfere.
+            if _is_cowork_reserved(symbol):
+                log_event(
+                    f"APPROVAL {symbol}: rejected reason=cowork_reserved",
+                    event="APPROVAL",
+                )
+                continue
+
+            # Gate 2: skip symbols with AH earnings today or within N days.
+            # policy.yaml: earnings.avoid_entry_if_earnings_within_days
+            _earn_cfg = config.cfg.get("earnings", {})
+            _avoid_days = int(_earn_cfg.get("avoid_entry_if_earnings_within_days", 1))
+            if _avoid_days > 0 and _has_earnings_within(symbol, _avoid_days):
+                log_event(
+                    f"APPROVAL {symbol}: rejected reason=earnings_within_{_avoid_days}d",
+                    event="APPROVAL",
+                )
+                continue
+
             # ── Paper account trade ─────────────────────────────────────────
             if is_position_open(symbol):
                 _session_stats["orders_position_open"] += 1
