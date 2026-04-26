@@ -14,7 +14,7 @@ from broker.alpaca_live import is_live_enabled
 from core.executor import place_long_order
 from core.live_executor import place_live_order, tick_protect_live_positions
 from core.live_risk_manager import compute_live_plan, get_live_snapshot, load_live_state, record_live_trade
-from core.position_protector import tick_protect_positions
+from core.position_protector import tick_protect_positions, close_positions_with_ah_earnings
 from core import risk_manager
 from core.market_gate import is_us_equity_market_open, get_vix_level
 from signals.filters import is_position_open
@@ -244,6 +244,16 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             pass
 
         now_ts = time.time()
+
+        # ── AH earnings forced close (MEDP lesson 2026-04-23) ─────────────
+        # Runs every protect cycle (60s). The function itself checks whether
+        # current ET time is in the 14:30-15:50 window and bails out early
+        # if not, so the call is cheap outside that window.
+        if now_ts - last_protect_ts >= 60:
+            try:
+                close_positions_with_ah_earnings(dry_run=config.DRY_RUN)
+            except Exception as exc:
+                log_event(f"EARNINGS_CLOSE loop_error err={exc}", event="EARNINGS_CLOSE")
 
         # ── Paper account position protection ──────────────────────────────
         if now_ts - last_protect_ts >= 60:
