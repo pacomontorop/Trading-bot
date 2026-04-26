@@ -216,6 +216,22 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         except Exception:
             open_orders = []
 
+        # Build set of symbols opened by Cowork (client_order_id starts with "COWORK-").
+        # The PROTECT mechanism must NOT interfere with Cowork-managed positions —
+        # Cowork places its own stops and has its own lifecycle management.
+        # Lesson: 2026-04-24 MSFT closed 8min after Cowork entry by PROTECT (BUG MEJ-005).
+        _cowork_symbols: set[str] = set()
+        try:
+            _recent_filled = broker.api.list_orders(status="all", limit=100)
+            for _o in (_recent_filled or []):
+                _cid = str(getattr(_o, "client_order_id", "") or "")
+                if _cid.upper().startswith("COWORK-") and getattr(_o, "status", "") in ("filled", "partially_filled"):
+                    _sym = str(getattr(_o, "symbol", "") or "").upper()
+                    if _sym:
+                        _cowork_symbols.add(_sym)
+        except Exception:
+            pass
+
         for pos in positions or []:
             try:
                 symbol = str(getattr(pos, "symbol", "") or "").upper()
@@ -228,6 +244,13 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
             if not symbol or qty <= 0 or entry <= 0:
                 continue
             if side and side != "long":
+                continue
+            # Skip Cowork-managed positions — Cowork places its own stops.
+            if symbol in _cowork_symbols:
+                log_event(
+                    f"symbol={symbol} reason=skip_cowork_managed_position",
+                    event="PROTECT",
+                )
                 continue
             # Skip symbols whose shares are locked in a bracket stop order.
             if time.monotonic() < _BRACKET_SUPPRESS.get(symbol, 0):
