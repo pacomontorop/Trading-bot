@@ -363,14 +363,37 @@ def equity_scheduler_loop(interval_sec: int = 15, max_symbols: int | None = None
             # ── Coordination gates (earnings + Cowork) ─────────────────────
             # Gate 1: skip symbols reserved by Cowork (client_order_id COWORK-*).
             # Cowork identifies its orders with prefix "COWORK-YYYYMMDD-SYMBOL".
-            # If any filled/pending order for this symbol has that prefix, the
-            # symbol belongs to Cowork's lifecycle — the bot must not interfere.
+            # This covers: executed Cowork positions + EW drift-trade positions.
             if _is_cowork_reserved(symbol):
                 log_event(
                     f"APPROVAL {symbol}: rejected reason=cowork_reserved",
                     event="APPROVAL",
                 )
                 continue
+
+            # Gate 1B: skip symbols queued as EW pipeline candidates (pendiente_ew).
+            # EW Daily Pipeline writes candidates to performance_log.json with
+            # estado=pendiente_ew. If the bot enters these before Cowork does,
+            # it pollutes the symbol and breaks the drift-trade plan.
+            try:
+                import json as _json, glob as _glob
+                _perf_paths = _glob.glob("/sessions/*/mnt/Scheduled/performance_log.json")
+                if _perf_paths:
+                    with open(_perf_paths[0]) as _pf:
+                        _plog_data = _json.load(_pf)
+                    _ew_reserved = {
+                        c.get("ticker", "")
+                        for c in _plog_data.get("candidatos_validados", [])
+                        if c.get("estado") in ("pendiente", "pendiente_ew", "pendiente_reentrada")
+                    }
+                    if symbol.upper() in _ew_reserved:
+                        log_event(
+                            f"APPROVAL {symbol}: rejected reason=ew_pipeline_reserved",
+                            event="APPROVAL",
+                        )
+                        continue
+            except Exception:
+                pass  # Never block on perf_log read error
 
             # Gate 2: skip symbols with AH earnings today or within N days.
             # policy.yaml: earnings.avoid_entry_if_earnings_within_days
