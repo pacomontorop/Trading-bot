@@ -659,11 +659,49 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                                     f"symbol={symbol} stop_after_cancel_tp_failed err={exc2}",
                                     event="PROTECT",
                                 )
-                                send_telegram_alert(
-                                    f"🚨 PAPER {symbol}: cancelled all sells but stop still failed ({exc2}) — position has NO stop and NO TP!"
-                                )
-                                # Position unprotected: retry in 5 min, not 4 h.
-                                _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_NO_STOP_SEC
+                                # FIX 28-abr-2026: antes de mandar la alerta de pánico, verificar
+                                # si hay un bracket leg en "held" que protege la posición.
+                                # list_orders(status="open") no ve los held legs → falso alarm.
+                                # Si hay held leg → la posición SÍ está protegida → suppress 4h, sin alarma.
+                                _hidden_bracket_stop = False
+                                try:
+                                    _all_sym = broker.api.list_orders(
+                                        status="all", symbols=[symbol], nested=True, limit=20
+                                    )
+                                    for _ho in (_all_sym or []):
+                                        if _ho.status not in ("new","accepted","held","pending_new"):
+                                            continue
+                                        if (_ho.side == "sell"
+                                                and _ho.order_type in ("stop","stop_limit")
+                                                and _ho.status == "held"
+                                                and getattr(_ho, "stop_price", None)):
+                                            _hidden_bracket_stop = True
+                                            break
+                                        for _hl in (getattr(_ho, "legs", None) or []):
+                                            if (_hl.side == "sell"
+                                                    and _hl.order_type in ("stop","stop_limit")
+                                                    and _hl.status == "held"
+                                                    and getattr(_hl, "stop_price", None)):
+                                                _hidden_bracket_stop = True
+                                                break
+                                        if _hidden_bracket_stop:
+                                            break
+                                except Exception:
+                                    pass
+                                if _hidden_bracket_stop:
+                                    # Posición protegida por bracket held — no alarma, suppress 4h
+                                    log_event(
+                                        f"symbol={symbol} reason=protected_by_hidden_bracket_leg suppress_min=240",
+                                        event="PROTECT",
+                                    )
+                                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_SEC
+                                else:
+                                    # Posición genuinamente sin stop — alerta de pánico + retry 5min
+                                    send_telegram_alert(
+                                        f"🚨 PAPER {symbol}: cancelled all sells but stop still failed ({exc2}) — position has NO stop and NO TP!"
+                                    )
+                                    # Position unprotected: retry in 5 min, not 4 h.
+                                    _BRACKET_SUPPRESS[symbol] = time.monotonic() + _BRACKET_SUPPRESS_NO_STOP_SEC
                         else:
                             log_event(
                                 f"symbol={symbol} cancel_wait_timed_out reason=stop_suppressed",
@@ -928,3 +966,4 @@ def close_positions_with_ah_earnings(*, dry_run: bool = False) -> None:
         except Exception as exc:
             log_event(f"symbol={symbol} close_failed err={exc}", event="EARNINGS_CLOSE")
             send_telegram_alert(f"⚠️ EARNINGS_CLOSE {symbol} FAILED: {exc}")
+
