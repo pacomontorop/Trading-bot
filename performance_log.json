@@ -130,30 +130,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-07",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "SHOP: MISS -31.0% vs consensus (2026-05-06)",
-      "descripcion": "EPS actual=$0.1948 vs consensus=$0.2823. Revenue YoY: None. Reacci\u00f3n AH: -15.6%. SHOP MISS EPS $0.1948 vs $0.2823 cons (-31%). Rev BEAT $2.68B vs $2.63B. Stock -15.6%.",
-      "accion_futura": "Revisar perfil de SHOP: \u00bfguidance? \u00bfsectorial? Re-evaluar antes de pr\u00f3ximo earnings.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "INLINE_WHISPER",
-      "titulo": "ARM: INLINE vs whisper aunque beat consensus +11.1% (2026-05-06)",
-      "descripcion": "ARM INLINE vs whisper (beat consensus +11% pero whisper ya esperaba $0.60). Rev $1.49B (+20.1% YoY). Stock -10.1%. \u2014 Demostraci\u00f3n de por qu\u00e9 EW whisper es mejor predictor que consensus.",
-      "accion_futura": "Reforzar regla: continuation plays SOLO si beat \u22655% vs whisper, no consensus.",
-      "impacto_score": 0.0
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "COIN: MISS +0.0% vs consensus (2026-05-07)",
-      "descripcion": "EPS actual=$-1.49 vs consensus=$0.04. Revenue YoY: -31.0. Reacci\u00f3n AH: -4.0%. COIN MISS GRANDE: EPS -$1.49 vs +$0.04 cons. Rev $1.41B vs $1.48B (-31% YoY). $482M unrealized losses crypto. Stock -4% AH.",
-      "accion_futura": "Revisar perfil de COIN: \u00bfguidance? \u00bfsectorial? Re-evaluar antes de pr\u00f3ximo earnings.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-07",
       "tipo": "CRYPTO_SECTOR_MACRO",
       "titulo": "Sector crypto d\u00e9bil: COIN miss masivo, BTC slide impact\u00f3 Q1 (2026-05-07)",
       "descripcion": "COIN report\u00f3 GAAP loss -$1.49 EPS por $482M unrealized losses cripto. Trading volumes bajaron. Implicaci\u00f3n macro: cualquier candidato sector crypto-exposed (MARA, RIOT, MSTR, HOOD) requiere extra cautela en pr\u00f3ximos earnings.",
@@ -1088,6 +1064,29 @@
       "descripcion": "EPS actual=$0.17 vs whisper=$None vs cons=$0.11. AH=+0.0%.",
       "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
       "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-22",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "BAH: BEAT +23.6% vs whisper (2026-05-22) OK",
+      "descripcion": "EPS=1.78 vs whisper=1.44 vs cons=1.32. Rev YoY=-6.4%. AH=-1.9%.",
+      "accion_futura": "Confirma pipeline EW. Mantener par\u00e1metros actuales.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-22",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "GSL: beat marginal +4.5% vs whisper (2026-05-22)",
+      "descripcion": "EPS=2.56 vs whisper=2.45. AH=+0.0%.",
+      "accion_futura": "Verificar gap post-earnings. Beat marginal no garantiza continuation."
+    },
+    {
+      "fecha": "2026-05-22",
+      "tipo": "SELL_THE_NEWS",
+      "titulo": "BAH: skip continuation (2026-05-22) \u2014 AH negativo (-1.9%) + revenue declining (-6.4% YoY) \u2014 sell-the-news d\u00e9bil pero contexto desfavorable",
+      "descripcion": "beat_whisper=+23.6%, beat_cons=+34.9%, AH=-1.9%, rev_yoy=-6.4%. A pesar de beat fuerte, mercado no confirma. Contexto: FY27 EPS $6.00-$6.35, Revenue $11.20-$11.70B (vs consensus $6.17 / $11.59B \u2014 soft revenue guide)",
+      "accion_futura": "Verificar pre-drift y guidance forward. Para BAH: revenue declining + AH negativo = no continuation.",
+      "impacto_score": -0.5
     }
   ],
   "operaciones": [
@@ -3019,7 +3018,7 @@
       "earnings_timing": "pre-market",
       "score": 4.0,
       "score_ajustado": 4.0,
-      "estado": "pendiente",
+      "estado": "resultado_conocido",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 9.09,
       "whisper": 1.44,
@@ -3077,7 +3076,17 @@
           "score": 4.0
         }
       ],
-      "notas": " | Refresco preopen 09:15 score=4.0"
+      "notas": " | Refresco preopen 09:15 score=4.0",
+      "resultado_real": "beat",
+      "eps_actual": 1.78,
+      "eps_whisper": 1.44,
+      "eps_consensus": 1.32,
+      "whisper_beat_pct": 23.61,
+      "estado_anterior": "pendiente",
+      "ts_resultado": "2026-05-22T21:41:32.306857+00:00",
+      "revenue_growth_yoy_real": -6.42,
+      "guidance_proximo": "FY27 EPS $6.00-$6.35, Revenue $11.20-$11.70B (vs consensus $6.17 / $11.59B \u2014 soft revenue guide)",
+      "reaccion_ah_pct": -1.91
     },
     {
       "ticker": "WMS",
@@ -20754,6 +20763,18 @@
       "revenue_growth_yoy": 1.16,
       "fuente_datos": "gmail_ew",
       "ts_registrado": "2026-05-21T21:44:58.449245+00:00"
+    },
+    {
+      "ticker": "GSL",
+      "fecha": "2026-05-22",
+      "resultado": "beat",
+      "eps_actual": 2.56,
+      "eps_whisper": 2.45,
+      "eps_consensus": 2.4,
+      "whisper_beat_pct": 4.49,
+      "consensus_beat_pct": 6.67,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": 3.72
     }
   ],
   "kpis_actuales": {
