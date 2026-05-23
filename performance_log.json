@@ -129,119 +129,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-07",
-      "tipo": "CRYPTO_SECTOR_MACRO",
-      "titulo": "Sector crypto d\u00e9bil: COIN miss masivo, BTC slide impact\u00f3 Q1 (2026-05-07)",
-      "descripcion": "COIN report\u00f3 GAAP loss -$1.49 EPS por $482M unrealized losses cripto. Trading volumes bajaron. Implicaci\u00f3n macro: cualquier candidato sector crypto-exposed (MARA, RIOT, MSTR, HOOD) requiere extra cautela en pr\u00f3ximos earnings.",
-      "accion_futura": "Marcar tickers crypto-correlated en pre-filter. Reducir sizing si BTC <$X umbral.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "GAP_INFRA_LOG_WRITE",
-      "titulo": "DCBO score 8.5 no escrito al log \u2014 sesi\u00f3n sin carpeta Scheduled montada",
-      "descripcion": "ew-daily-results del 7-may identific\u00f3 DCBO con score 8.5 (post-earnings pre-market May 8) pero el candidato NO fue escrito a performance_log.json. Causa: la sesi\u00f3n del post-market no ten\u00eda la carpeta Scheduled montada en el workspace, por lo que el LOG_PATH no pudo resolverse. El candidato existi\u00f3 solo en memoria de la sesi\u00f3n y se perdi\u00f3 al terminar.",
-      "causa_raiz": "LOG_PATH discovery fallaba: find /sessions devolv\u00eda vac\u00edo en sesiones sin carpeta montada, fallback a path hardcoded que tampoco exist\u00eda en esa sesi\u00f3n.",
-      "fix_aplicado": "1) PRIMERO intentar path can\u00f3nico hardcoded (/sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json). 2) Si no existe, discovery como fallback. 3) DCBO a\u00f1adido manualmente a log para May 8.",
-      "accion_futura": "Siempre verificar al inicio de ew-daily-results que LOG_PATH existe y es escribible. Si no \u2192 Telegram alert + continuar igual. Ruta can\u00f3nica hardcoded SIEMPRE debe ser primera opci\u00f3n.",
-      "impacto_score": -0.5,
-      "tickers_afectados": [
-        "DCBO"
-      ]
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "BUG_CRITICO_BRACKET_DETECTION",
-      "titulo": "5 posiciones Cowork sin stop detectado \u2014 bracket parent en status 'filled' era invisible",
-      "descripcion": "_stop_real_alpaca() filtraba 'if o.status not in (new, accepted, held, pending_new, partially_filled): continue'. Esta l\u00ednea exclu\u00eda las bracket orders cuyo parent ya est\u00e1 'filled' (ejecutado). Las legs del bracket (stop + TP) quedan en status 'new'/'held' bajo el parent filled, pero la funci\u00f3n nunca las inspeccionaba. Resultado: Alpaca reportaba 0 stops, intraday-monitor intentaba colocar nuevos stops, fallaba con error 40310000 (qty bloqueado por limit-sell held_for_orders). 5 posiciones overnight sin protecci\u00f3n confirmada.",
-      "causa_raiz": "Filtro de status aplicado al ORDER PARENT en lugar de a los LEGS individuales. Para brackets, el parent filled NO es el stop \u2014 las legs son los stops.",
-      "fix_aplicado": "Eliminado filtro de status en el loop principal de all_orders. Ahora se itera TODAS las \u00f3rdenes y se verifica el status de CADA LEG individualmente. Stop leg en new/held/accepted = stop activo v\u00e1lido aunque parent sea filled.",
-      "accion_futura": "Nunca filtrar \u00f3rdenes por status antes de inspeccionar legs. Sempre usar status=all + nested=True. Verificar legs directamente.",
-      "impacto_score": -1.0,
-      "dinero_perdido_estimado": "5 posiciones overnight sin stop confirmado \u2014 exposici\u00f3n a gap adverso sin protecci\u00f3n",
-      "tickers_afectados": [
-        "AMD",
-        "y_otras_4"
-      ]
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "GANADOR_PERDIDO_SIN_WHISPER",
-      "titulo": "DIS +7.0% AH el mejor play del d\u00eda \u2014 perdido por falta de whisper",
-      "descripcion": "DIS report\u00f3 AH May 6: EPS=$1.57 vs consensus=$1.49 (+5.4%). Reacci\u00f3n AH=+7.0%. El sistema no gener\u00f3 continuation play porque la regla exig\u00eda datos de whisper EW. Pero el mercado confirm\u00f3 el beat con +7% \u2014 eso es la se\u00f1al m\u00e1s potente posible.",
-      "causa_raiz": "PASO 3B requer\u00eda whisper_beat_pct >= 5.0 para generar continuation. Sin whisper \u2192 beat_pct=0 \u2192 condici\u00f3n no cumplida \u2192 no candidato \u2192 perdemos DIS +7%.",
-      "fix_aplicado": "Nueva RUTA 2 en PASO 3B: si beat_consensus >= 3% Y AH_reaction >= 5% \u2192 continuation proxy aunque no haya whisper. Score ajustado -0.5 por incertidumbre. AH reaction es el mejor proxy de whisper cuando EW no tiene datos.",
-      "nueva_regla": "CUANDO AH_reaction >= 5% Y beat_consensus >= 3% \u2192 continuation play v\u00e1lida. El mercado YA descont\u00f3 la noticia \u2014 la subida AH confirma que el beat fue genuino.",
-      "accion_futura": "Monitorizar DIS en futuras earnings. Sector entertainment/streaming = candidato frecuente.",
-      "impacto_score": 0.5,
-      "dinero_perdido_estimado": "DIS +7% AH \u00d7 posici\u00f3n media = oportunidad perdida estimada $500-800",
-      "tickers_afectados": [
-        "DIS"
-      ]
-    },
-    {
-      "fecha": "2026-05-07",
-      "tipo": "SELL_THE_NEWS",
-      "titulo": "ARM: BEAT consensus +11.1% pero AH -10.1% \u2014 sell-the-news cl\u00e1sico",
-      "descripcion": "ARM beat consensus en +11.1% (muy fuerte). Pero era INLINE con whisper \u2192 el n\u00famero ya estaba descontado. AH: -10.1%. El mercado vendi\u00f3 en el anuncio porque ya hab\u00eda comprado el rumor. El drift pre-earnings probablemente era muy alto.",
-      "causa_raiz": "El mercado ya hab\u00eda incorporado el beat en el precio. Whisper = consensus \u2192 no hay sorpresa real. Solo hay sorpresa cuando beat_whisper > 0.",
-      "nueva_regla": "REGLA CR\u00cdTICA: Beat consensus NO es suficiente \u2014 se necesita beat WHISPER. Si resultado='inline_whisper' aunque beat_consensus sea alto \u2192 NO continuation. Si AH negativo a pesar de beat_consensus \u2192 sell-the-news detectado \u2192 skip.",
-      "accion_futura": "Para ARM y similares: verificar siempre whisper vs consensus. Si son similares \u2192 el mercado ya lo sabe \u2192 sin edge.",
-      "impacto_score": -0.3,
-      "score_adjustment_sugerido": "Si pre_drift > 15% Y no hay beat_whisper claro \u2192 reducir score -1.5 (se\u00f1al drift_descontado)",
-      "tickers_afectados": [
-        "ARM"
-      ]
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ACMR: BEAT +21.4% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$0.34 vs consensus=$0.28. AH=-1.6%.",
-      "accion_futura": "Confirma pipeline EW.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "FIS: BEAT +5.4% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$1.36 vs consensus=$1.29. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "CCSI: BEAT +9.3% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$1.52 vs consensus=$1.39. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "LYFT: MISS -33.3% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$0.04 vs consensus=$0.06. AH=-3.0%.",
-      "accion_futura": "Revisar perfil de LYFT: guidance, sectorial, deuda.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "PSNL: MISS -7.4% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$-0.29 vs consensus=$-0.27. AH=+0.0%.",
-      "accion_futura": "Revisar perfil de PSNL: guidance, sectorial, deuda.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-08",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "BAM: MISS -7.3% vs consensus (2026-05-08)",
-      "descripcion": "EPS actual=$0.38 vs consensus=$0.41. AH=+0.0%.",
-      "accion_futura": "Revisar perfil de BAM: guidance, sectorial, deuda.",
-      "impacto_score": -0.2
-    },
-    {
       "fecha": "2026-05-08",
       "tipo": "SELL_THE_NEWS_AH",
       "titulo": "ARM: SELL-THE-NEWS beat cons=+3.5% pero AH=-10.1% (2026-05-08)",
@@ -1087,6 +974,77 @@
       "descripcion": "beat_whisper=+23.6%, beat_cons=+34.9%, AH=-1.9%, rev_yoy=-6.4%. A pesar de beat fuerte, mercado no confirma. Contexto: FY27 EPS $6.00-$6.35, Revenue $11.20-$11.70B (vs consensus $6.17 / $11.59B \u2014 soft revenue guide)",
       "accion_futura": "Verificar pre-drift y guidance forward. Para BAH: revenue declining + AH negativo = no continuation.",
       "impacto_score": -0.5
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "BIDU: MISS -11.5% vs whisper/consensus",
+      "descripcion": "Whisper 2.0 vs actual 1.77 (-11.5%). Revisar criterios.",
+      "accion_futura": "Penalizar perfiles similares a BIDU"
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "FATN: BEAT +129.4% \u2014 sistema confirmado",
+      "descripcion": "Actual 0.39 vs whisper None (+129.4%)."
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "DUOT: MISS -400.0% vs whisper/consensus",
+      "descripcion": "Whisper None vs actual -0.15 (-400.0%). Revisar criterios.",
+      "accion_futura": "Penalizar perfiles similares a DUOT"
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "BEKE: BEAT +40.0% \u2014 sistema confirmado",
+      "descripcion": "Actual 0.21 vs whisper 0.15 (+40.0%)."
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "CRNT: MISS -100.0% vs whisper/consensus",
+      "descripcion": "Whisper None vs actual 0.0 (-100.0%). Revisar criterios.",
+      "accion_futura": "Penalizar perfiles similares a CRNT"
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "NVDA: BEAT +5.1% \u2014 sistema confirmado",
+      "descripcion": "Actual 1.87 vs whisper 1.78 (+5.1%)."
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "GLNG: BEAT +58.1% \u2014 sistema confirmado",
+      "descripcion": "Actual 0.49 vs whisper None (+58.1%)."
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "PERI: MISS -280.0% vs whisper/consensus",
+      "descripcion": "Whisper 0.05 vs actual -0.09 (-280.0%). Revisar criterios.",
+      "accion_futura": "Penalizar perfiles similares a PERI"
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "LION: BEAT +93.3% \u2014 sistema confirmado",
+      "descripcion": "Actual 0.29 vs whisper None (+93.3%)."
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "TTWO: MISS -143.2% vs whisper/consensus",
+      "descripcion": "Whisper 0.74 vs actual -0.32 (-143.2%). Revisar criterios.",
+      "accion_futura": "Penalizar perfiles similares a TTWO"
+    },
+    {
+      "fecha": "2026-05-23",
+      "tipo": "RESULTADO",
+      "titulo": "BAH: BEAT +23.6% \u2014 sistema confirmado",
+      "descripcion": "Actual 1.78 vs whisper 1.44 (+23.6%)."
     }
   ],
   "operaciones": [
@@ -1536,286 +1494,6 @@
   ],
   "candidatos_validados": [
     {
-      "ticker": "MSFT",
-      "score": 8.5,
-      "fecha_deteccion": "2026-04-23",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-04-29",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "entrar_apertura",
-      "ventana_entrada": "2026-04-28 09:40-10:30 ET (martes \u2014 \u00daLTIMA OPORTUNIDAD antes earnings 29-abr AH)",
-      "stop_tipo": "ATR\u00d71.5",
-      "sizing": "posici\u00f3n normal",
-      "argumento": "MSFT: Azure cloud +35% QoQ esperado. AI Copilot monetizaci\u00f3n acelerando. Hyperscaler capex fuerte confirma demanda. Morningstar: tech sector 23% discount con earnings +28.3%.",
-      "sector": "technology",
-      "estado": "cerrado",
-      "expira": "2026-04-29T13:30:00Z",
-      "score_macro_bonus": 2,
-      "notas": "MSFT -1.7% en 5d \u2192 dip pre-earnings. Azure AI revenue acelerando (cloud +21% Q3). Copilot monetizaci\u00f3n creciente. Beat rate ~85% \u00faltimos 8 trimestres. AI capex cycle narrativa dominante \u2192 whisper asymmetry esperada alta. Cap $3.1T \u2192 bajo ATR 2.6% \u2192 riesgo contenido. ENTRAR Viernes 25-abr o Lunes 28-abr ma\u00f1ana. | MEJORA 23-abr: a\u00f1adido score_ajustado=8.5. ALERTA: earnings AH el 28-abr \u2192 si se entra el 28-abr, CERRAR antes de 15:45 ET ese d\u00eda (regla no_holdings_earnings_overnight). | UPDATE 26-abr: MSFT cerrado por bot PROTECT a $420.85 (+$8.28). Precio actual $424.62 \u2014 sigue siendo compra pre-earnings. REENTRAR lunes 28-abr AM. Earnings confirmados para 29-abr AH. CERRAR antes de 15:45 ET el 29-abr. | BUG-FIX 27-abr: estado era pendiente_reentrada \u2192 market-open-execution no lo detect\u00f3 hoy. Corregido a pendiente. Ventana actualizada: martes 28-abr 09:40-10:30 ET. | EJECUTADO 28-abr 10:45 ET: 19 acc @ $425.10 paper (id=7f2c5ee3) + 1 acc @ real (id=d4ab84ee). Stop $408.60, TP $457.79.",
-      "score_total": 8.5,
-      "beat_rate": 85,
-      "avg_price_reaction_beat": 4.5,
-      "score_ajustado": 8.5,
-      "alerta_earnings_overnight": "CERRAR antes 15:30 ET el 2026-04-29 \u2014 earnings AH esa noche (FOMC mismo d\u00eda 14:00 ET)",
-      "fecha_ejecucion": "2026-04-28 10:45",
-      "orden_id": "7f2c5ee3-3c57-4b65-8f9e-f1273306ee16",
-      "orden_id_real": "d4ab84ee-27c8-4d29-88cc-f5597772360f",
-      "precio_ejecucion": 425.1,
-      "precio_actual": 425.1,
-      "acciones": 19,
-      "acciones_real": 1,
-      "stop_propuesto": 408.6,
-      "tp_propuesto": 457.79,
-      "fecha_reanalisis": "2026-04-26",
-      "ew_data": {
-        "earnings_date": "2026-04-29",
-        "earnings_time": "AH 4:05 PM ET",
-        "whisper": 4.13,
-        "consensus": 4.07,
-        "asimetria_pct": 1.47,
-        "revenue_estimate_b": 81.4,
-        "beat_streak": "6 consecutive beats",
-        "avg_beat_pct": 5.67,
-        "historical_moves_1d": {
-          "Q1_2025": 7.63,
-          "Q2_2025": 3.95,
-          "Q3_2025": -2.92,
-          "Q4_2025": -9.99
-        },
-        "nota": "Whisper asymmetry 1.47% \u2014 MODESTA. Q4 2025 -9.99% post-earnings. PERO: nosotros cerramos ANTES de earnings. Play es pre-earnings drift lunes-martes ma\u00f1ana.",
-        "score_ew_estimado": 3,
-        "source": "EarningsWhispers + TheWhisperNumber Apr-2026"
-      },
-      "score_total_con_ew": 8.5,
-      "ew_asimetria_pct": 1.47,
-      "ejecutado": true,
-      "ejecutado_at": "2026-04-28 14:48:14.485393+00:00",
-      "fecha_cierre": "2026-04-29",
-      "motivo_cierre": "R0: earnings AH 29-abr \u2014 cerrada antes de close (14:21 ET). Real cerrada por stop @$425.76.",
-      "resultado": "paper: cerrada ~$424 (entry $425.10) \u2248 -0.3%. Real: stop @$425.76 entry ~$421-425, peque\u00f1o gain"
-    },
-    {
-      "ticker": "META",
-      "score": 8.0,
-      "fecha_deteccion": "2026-04-23",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-04-29",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "entrar_apertura_desde_20260428",
-      "ventana_entrada": "2026-04-28 o 2026-04-29 09:40-13:00 ET",
-      "stop_tipo": "ATR\u00d71.5",
-      "sizing": "posici\u00f3n normal",
-      "argumento": "META: Ad revenue resiliente, AI Advantage ROI demostrado, Reality Labs menos drag. Capex AI fuerte. Beat rate 3 \u00faltimas quarters > 80%.",
-      "sector": "communication",
-      "estado": "cerrado",
-      "expira": "2026-04-30T21:20:24.537447Z",
-      "score_macro_bonus": 1,
-      "notas": "META -4.3% en 5d \u2192 dip significativo pre-earnings. Ad revenue resiliente + AI capex. Llama 4 lanzado, Ray-Ban AI momentum. Beat rate >80% consecutivo. Riesgo: capex guidance podr\u00eda decepcionar (mercado sensible al gasto en AI). VIGILAR: si MSFT bate el 28-abr \u2192 META sube por contagio positivo. Entrar solo si contexto limpio. | MEJORA 23-abr: a\u00f1adido score_ajustado=8.0. NO entrar el 25-abr (earnings son el 29-abr, demasiado temprano). Entrar el 28-abr si MSFT bate. ALERTA: earnings AH el 29-abr \u2192 CERRAR antes de 15:45 ET ese d\u00eda. | UPDATE 26-abr: META $675.03, 5d +0.6%. Confirmar entrada lunes 28-abr junto con MSFT. Ambos earnings AH el 29-abr \u2192 cerrar ambos antes 15:45 ET.",
-      "score_total": 8.0,
-      "beat_rate": 80,
-      "avg_price_reaction_beat": 5.2,
-      "score_ajustado": 8.0,
-      "alerta_earnings_overnight": "CERRAR antes 15:45 ET el 2026-04-29 \u2014 earnings AH esa noche",
-      "precio_actual": 669.15,
-      "precio_ejecucion": 669.15,
-      "acciones": 12,
-      "orden_id": "c7c5d17e-6718-4ae4-8135-deaf48d0d586",
-      "fecha_ejecucion": "2026-04-28 10:45",
-      "stop_propuesto": 643.69,
-      "tp_propuesto": 718.65,
-      "fecha_reanalisis": "2026-04-28",
-      "ew_data": {
-        "earnings_date": "2026-04-29",
-        "earnings_time": "AH 4:00 PM ET",
-        "whisper": 7.11,
-        "consensus": 6.71,
-        "asimetria_pct": 5.96,
-        "revenue_estimate_b": 55.49,
-        "nota": "Whisper asymmetry 5.96% EXCELENTE. Mercado espera $6.71 pero whisper $7.11 \u2014 si bate el whisper, movimiento fuerte. Mismo plan: cerrar antes 15:30 ET martes.",
-        "score_ew_estimado": 5,
-        "source": "EarningsWhispers Apr-2026"
-      },
-      "score_total_con_ew": 8.4,
-      "ew_asimetria_pct": 5.96,
-      "ejecutado": true,
-      "ejecutado_at": "2026-04-28 14:48:14.871917+00:00",
-      "motivo_cierre": "R0: earnings AH 29-abr \u2014 cerrada con market sell",
-      "fecha_cierre": "2026-04-29",
-      "resultado": "paper: cerrada (market sell ejecutado a pre-close)"
-    },
-    {
-      "ticker": "GOOGL",
-      "score": 7.9,
-      "score_total": 7.9,
-      "fecha_deteccion": "2026-04-28",
-      "detectado_por": "ew-daily-pipeline",
-      "earnings_fecha": "2026-04-29",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "entrar_intraday_hoy_28abr",
-      "ventana_entrada": "2026-04-28 10:45-13:00 ET (intraday pre-earnings drift \u2014 earnings AH ma\u00f1ana)",
-      "stop_tipo": "ATR\u00d71.5",
-      "sizing": "posici\u00f3n normal (~24 acc paper)",
-      "argumento": "GOOGL: whisper asymmetry 6.06% EXCELENTE (whisper $2.80 vs consenso $2.64). Beat rate ~80% hist\u00f3rico. Cloud (GCP) acelerando post-OpenAI partnership rumors. Search resiliente vs. AI fears. Earnings AH 29-abr \u2192 entrada hoy captura \u00faltimo d\u00eda de pre-earnings drift. CERRAR obligatoriamente antes 15:30 ET ma\u00f1ana.",
-      "sector": "communication",
-      "estado": "cerrado",
-      "expira": "2026-04-29T13:30:00Z",
-      "score_macro_bonus": 1,
-      "alerta_earnings_overnight": "CERRAR antes 15:30 ET el 2026-04-29 \u2014 earnings AH esa noche. FOMC mismo d\u00eda 14:00 ET.",
-      "fecha_ejecucion": "2026-04-28 10:45",
-      "orden_id": "c9210d08-4384-4412-9a2b-bfb1bc2111fe",
-      "precio_ejecucion": 351.6125,
-      "acciones": 24,
-      "stop_propuesto": 338.41,
-      "tp_propuesto": 370.46,
-      "notas": "EW PIPELINE 28-abr: asimetr\u00eda=6.06% \u2192 score A=3.0. Beat_rate ~80% \u2192 B=2.0. Avg_move \u22654% hist\u00f3rico \u2192 C=1.0. Sentiment analyst ~70% buy \u2192 D=1.0. Fuentes: EW parcial + WebSearch \u2192 E=1.4. Anti-descuento (mom_5d=5.64%) \u2192 F=0.0. Penalty whisper_parcial=-0.5. TOTAL=7.9. Score < 8.5 \u2192 NO cuenta real. Precio entrada ~$349.10, stop $338.41, TP $370.46 (ATR\u00d73). | DATA SOURCE: old.earningswhispers.com/stocks/goog \u2014 acceso parcial: whisper=$2.80, consenso=$2.64, earnings 29-abr 5PM ET AH.",
-      "ew_data": {
-        "earnings_date": "2026-04-29",
-        "earnings_time": "AH 5:00 PM ET",
-        "whisper": 2.8,
-        "consensus": 2.64,
-        "asimetria_pct": 6.06,
-        "revenue_estimate_b": 92.22,
-        "nota": "Whisper asymmetry 6.06% EXCELENTE \u2014 mercado espera $2.64 pero whisper $2.80. Esto implica que el mercado sabio ya posiciona para un beat significativo. Play pre-earnings drift: entrar hoy, cerrar ANTES del anuncio.",
-        "score_ew_estimado": 6,
-        "source": "old.earningswhispers.com Apr-2026 (acceso parcial)"
-      },
-      "score_ajustado": 7.9,
-      "ew_asimetria_pct": 6.06,
-      "beat_rate": 80,
-      "ejecutado": true,
-      "ejecutado_at": "2026-04-28 14:48:15.314459577+00:00",
-      "motivo_cierre": "R0: earnings AH 29-abr \u2014 cerrada con market sell",
-      "fecha_cierre": "2026-04-29",
-      "resultado": "paper: cerrada (market sell ejecutado)"
-    },
-    {
-      "ticker": "AAPL",
-      "score": 6.5,
-      "score_total": 6.5,
-      "score_macro_bonus": 2,
-      "sector": "technology",
-      "estado": "cerrado",
-      "earnings_fecha": "2026-04-30",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "vigilar_apertura",
-      "ventana_entrada": "2026-04-30 09:40-13:00 ET solo si contexto positivo",
-      "notas": "AAPL +1.2% en 5d \u2014 sin dip, sin catalizador urgente. CEO transition (Ternus) crea incertidumbre. AI iPhone features prometedoras pero China sigue siendo viento en contra. Score provisional 6.5 \u2014 necesita datos EW (whisper asymmetry, beat rate) para confirmar. Candidato de menor prioridad que MSFT/META esta semana. | MEJORA 23-abr: a\u00f1adido score_ajustado=6.5, argumento y stop_tipo. Score 6.5 < umbral 7.0 \u2192 NO ejecutar autom\u00e1ticamente, solo vigilar. | SENTINEL 2026-04-30 10:45: estado actualizado a abierta para que pre-close auto-cierre antes de earnings AH HOY.",
-      "fecha_deteccion": "2026-04-23",
-      "detectado_por": "post-market-review",
-      "expira": "2026-04-30T21:20:24.537447Z",
-      "beat_rate": 75,
-      "avg_price_reaction_beat": 2.8,
-      "score_ajustado": 6.5,
-      "argumento": "AAPL: AI iPhone Super Cycle en 2026. Beat rate hist\u00f3rico 75%. CEO transition (Tim Cook\u2192Ternus) crea incertidumbre de corto plazo. Revenue AI services creciendo. China headwind permanente pero mercado ya lo descuenta.",
-      "stop_tipo": "ATR\u00d71.5",
-      "ew_data": {
-        "earnings_date": "2026-04-30",
-        "earnings_time": "AH 4:30 PM ET",
-        "whisper": 2.01,
-        "consensus": 1.92,
-        "asimetria_pct": 4.69,
-        "revenue_estimate_b": 109.01,
-        "nota": "Whisper asymmetry 4.69% bueno. Score 6.5 \u2014 vigilar pero no entrada autom\u00e1tica.",
-        "score_ew_estimado": 4,
-        "source": "EarningsWhispers Apr-2026"
-      },
-      "score_total_con_ew": 6.8,
-      "ew_asimetria_pct": 4.69,
-      "actualizado_sentinel": "2026-04-30T10:45",
-      "cierre_motivo": "preearnings_close_intraday-monitor",
-      "cierre_precio": 273.5,
-      "cierre_fecha": "2026-04-30T16:37:30.141111+00:00"
-    },
-    {
-      "ticker": "CAT",
-      "score": 7.5,
-      "fecha_deteccion": "2026-04-25",
-      "detectado_por": "weekly-review-W17\u2192W18",
-      "earnings_fecha": "2026-04-30",
-      "earnings_timing": "pre-market",
-      "accion_recomendada": "entrar_dia_anterior",
-      "ventana_entrada": "2026-04-29 10:00-14:30 ET (antes FOMC)",
-      "stop_tipo": "ATR\u00d72.5 ventana earnings AM",
-      "sizing": "100% normal",
-      "argumento": "Industrials en top sectors. CAT exposure infrastructure spending. Beat de HON ya confirma momento sector.",
-      "sector": "industrials",
-      "estado": "cerrado",
-      "expira": "2026-04-30T20:00:00Z",
-      "conviction_tier": "conviction_alta",
-      "score_macro_bonus": 0.5,
-      "advertencia": "",
-      "fecha_ejecucion": "2026-04-29 13:44",
-      "orden_id": "e29f0ae4-0872-499d-8bd3-1469a368f352",
-      "precio_ejecucion": 817.1900024414062,
-      "fecha_cierre": "2026-04-29",
-      "motivo_cierre": "Earnings pre-market 30-abr \u2014 cerrada antes de close (14:22 ET) para eliminar riesgo overnight",
-      "resultado": "paper: cerrada ~$812 (entry $818.47) \u2248 -0.8%. EW drift no se materializ\u00f3 antes del cierre."
-    },
-    {
-      "ticker": "PLTR",
-      "score": 8.5,
-      "score_ajustado": 8.5,
-      "score_macro_bonus": 0,
-      "estado": "cerrado",
-      "accion_recomendada": "entrar_apertura",
-      "asimetria_pct": 14.3,
-      "earnings_fecha": "2026-05-04",
-      "earnings_timing": "after-hours",
-      "expira": "2026-05-04T20:00:00Z",
-      "notas": "Detectado pre-apertura 2026-05-01 via WebSearch. Score=6.0 asim=+14.3%. PLTR Q1: WS expects 115% EPS YoY growth, 10.55% implied move. | sentinel 09:48: confirmado earnings AH HOY via WebSearch",
-      "detectado_por": "sentinel-pre-apertura-websearch",
-      "ventana_entrada": "09:40 ET",
-      "whisper": 0.32,
-      "consensus": 0.28,
-      "pct_bullish": 71.0,
-      "vs_ma200": -11.9,
-      "short_interest_change": 12.3,
-      "options_implied_move": 9.9,
-      "avg_move_hist": 13.7,
-      "notable_options": "30,886 CALL $150 Jul-17 (bullish)",
-      "guidance": "revenue $1.53-1.54B (aligned/above consensus)",
-      "conviction": "MAXIMA",
-      "scoring_detail": {
-        "ticker": "PLTR",
-        "earnings_fecha": "2026-05-04",
-        "earnings_timing": "after-hours",
-        "whisper": 0.32,
-        "consensus": 0.28,
-        "asimetria_pct": 14.3,
-        "revenue_growth_yoy": 74.2,
-        "pct_bullish": 71.0,
-        "drift_desde_earnings": -12.7,
-        "vs_ma200": -11.9,
-        "short_interest_change": 12.3,
-        "options_implied_move": 9.9,
-        "avg_move_hist": 13.7,
-        "notable_options": "30,886 CALL $150 Jul-17 (Apr 27)",
-        "estimates_revised": "higher",
-        "guidance": "revenue $1.53-1.54B (inline/above consensus)",
-        "bloque_a": 3.0,
-        "bloque_b": 0.5,
-        "bloque_c": 0.5,
-        "bloque_d": 1.5,
-        "bloque_e": 0.5,
-        "bloque_f": 2.0,
-        "bloque_g": 0.5,
-        "penalizaciones": 0.0,
-        "score": 8.5,
-        "accion": "ENTRAR LUNES: pre-market scan 10:15 ET. Score \u22658.5 \u2192 real account eligible. Stop: 2.5\u00d7ATR. TP: 13.7% media hist\u00f3rica >> 9.9% implied \u2192 ventaja estad\u00edstica. Short interest elevado = potencial squeeze si baten. CRITICO: cerrar antes de AH o usar overnight si conviction_maxima.",
-        "riesgo_clave": "Short interest +12.3% puede amplificar movimiento en ambas direcciones",
-        "conviction": "MAXIMA",
-        "umbral_real": 8.0
-      },
-      "fuente": "EW email semana 03-may-2026",
-      "ts_actualizado": "2026-05-04T20:00:00.000000+00:00",
-      "fecha_ejecucion": "2026-05-04 13:48",
-      "precio_ejecucion": 142.4,
-      "notas_ejecucion": "Detectado posici\u00f3n pre-existente en Alpaca al ejecutar market-open. Paper: 60acc @ $142.40 | Real: 2acc @ $142.39. CERRADA antes de AH por regla R0. +$270 paper, +$9 real aprox.",
-      "alerta_earnings_overnight": true,
-      "resultado_final": "WIN \u2014 cerrada pre-earnings correctamente. Beat confirmado AH ($0.13 vs whisper, revenue guidance superior). Stock +14% AH but posici\u00f3n ya cerrada = plan ejecutado perfecto.",
-      "estado_candidato": "cerrado"
-    },
-    {
       "ticker": "AMD",
       "score": 8.0,
       "fecha_deteccion": "2026-05-02",
@@ -1828,7 +1506,7 @@
       "sizing": "Conviction alta \u2014 sizing 1.0x normal",
       "argumento": "AMD reports martes AH. Sector tech +2 macro bonus (r\u00e9gimen AI_TECH_RALLY). AAPL ya advirti\u00f3 'higher memory chip costs' (W18) \u2014 AMD ROIC m\u00e1s expuesto. Sandisk -6.2% y WDC -7.3% en W18 son alertas: memory weakness pero AMD CPU+GPU diferenciado. AI debt fatigue se\u00f1al contraria \u2014 vigilar narrativa post-MSFT/GOOG. Si bate: tech rally se extiende. Si falla: presi\u00f3n sobre toda cadena AI hardware.",
       "sector": "technology",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "expira": "2026-05-05T20:00:00Z",
       "score_macro_bonus": 2,
       "supply_chain_signal": false,
@@ -1853,7 +1531,8 @@
       "revenue_growth_yoy_real": 38.0,
       "guidance_proximo": "Q2 ~$11.2B (above consensus)",
       "reaccion_after_hours_pct": 16.0,
-      "fuente_resultado": "web_search_verificado"
+      "fuente_resultado": "web_search_verificado",
+      "ts_expirado": "2026-05-23T05:15:46.465959+00:00"
     },
     {
       "ticker": "ANET",
@@ -1868,7 +1547,7 @@
       "sizing": "Sizing 1.0x si entrada limpia",
       "argumento": "ANET reports martes AH. AI infra networking \u2014 beneficia de cloud capex (MSFT/META/GOOG ya beat). Sector tech +2. Supply chain: META/MSFT/GOOG capex AI confirmado en W18 \u2192 ANET es proveedor directo.",
       "sector": "technology",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "expira": "2026-05-05T20:00:00Z",
       "score_macro_bonus": 2,
       "supply_chain_signal": true,
@@ -1886,7 +1565,8 @@
       "revenue_growth_yoy_real": 35.1,
       "guidance_proximo": "Q2 ~$2.8B revenue, EPS ~$0.88 (slight beat)",
       "reaccion_after_hours_pct": -9.2,
-      "fuente_resultado": "web_search_verificado"
+      "fuente_resultado": "web_search_verificado",
+      "ts_expirado": "2026-05-23T05:15:46.465969+00:00"
     },
     {
       "ticker": "DIS",
@@ -1901,7 +1581,7 @@
       "sizing": "Sizing 0.7x (conviction_media)",
       "argumento": "DIS reports mi\u00e9 AH. Sector comm +1. Streaming + parks + experiences. Watch: tariff impact en parks (no directo).",
       "sector": "communication",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "expira": "2026-05-06T20:00:00Z",
       "score_macro_bonus": 1,
       "supply_chain_signal": false,
@@ -1921,7 +1601,8 @@
       "reaccion_after_hours_pct": 7.0,
       "guidance_proximo": null,
       "fuente_resultado": "websearch",
-      "notas_resultado": "DIS BEAT EPS $1.57 vs $1.49 cons (+5.4%). Rev $25.17B vs $24.87B. Stock +7%. Streaming + experiences fuertes."
+      "notas_resultado": "DIS BEAT EPS $1.57 vs $1.49 cons (+5.4%). Rev $25.17B vs $24.87B. Stock +7%. Streaming + experiences fuertes.",
+      "ts_expirado": "2026-05-23T05:15:46.465970+00:00"
     },
     {
       "ticker": "COIN",
@@ -1936,7 +1617,7 @@
       "sizing": "Sizing 0.7x",
       "argumento": "COIN reports jue AH. Sector financials 0 macro pero correlaci\u00f3n BTC alta. BTC en torno $77-78k W18. Beat depende de: trading volume, custody, derivatives. Risk: BTC nocturno gap (no controlable).",
       "sector": "financials",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "expira": "2026-05-07T20:00:00Z",
       "score_macro_bonus": 0,
       "supply_chain_signal": false,
@@ -1955,7 +1636,8 @@
       "reaccion_after_hours_pct": -4.0,
       "guidance_proximo": null,
       "fuente_resultado": "websearch",
-      "notas_resultado": "COIN MISS GRANDE: EPS -$1.49 vs +$0.04 cons. Rev $1.41B vs $1.48B (-31% YoY). $482M unrealized losses crypto. Stock -4% AH."
+      "notas_resultado": "COIN MISS GRANDE: EPS -$1.49 vs +$0.04 cons. Rev $1.41B vs $1.48B (-31% YoY). $482M unrealized losses crypto. Stock -4% AH.",
+      "ts_expirado": "2026-05-23T05:15:46.466044+00:00"
     },
     {
       "ticker": "SHOP",
@@ -1963,7 +1645,7 @@
       "earnings_timing": "pre-market",
       "score": 5.75,
       "score_ajustado": 5.75,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_antes_cierre_lunes",
       "asimetria_pct": 9.1,
       "whisper": 0.36,
@@ -1995,7 +1677,8 @@
       "reaccion_after_hours_pct": -15.6,
       "guidance_proximo": null,
       "fuente_resultado": "websearch",
-      "notas_resultado": "SHOP MISS EPS $0.1948 vs $0.2823 cons (-31%). Rev BEAT $2.68B vs $2.63B. Stock -15.6%."
+      "notas_resultado": "SHOP MISS EPS $0.1948 vs $0.2823 cons (-31%). Rev BEAT $2.68B vs $2.63B. Stock -15.6%.",
+      "ts_expirado": "2026-05-23T05:15:46.466046+00:00"
     },
     {
       "ticker": "ACMR",
@@ -2003,7 +1686,7 @@
       "earnings_timing": "pre-market",
       "score": 4.9,
       "score_ajustado": 4.9,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_miercoles_antes_entrar",
       "asimetria_pct": 15.0,
       "whisper": 0.23,
@@ -2033,11 +1716,12 @@
       "estado_anterior": "pendiente",
       "ts_resultado": "2026-05-08T21:44:26.213590+00:00",
       "revenue_growth_yoy_real": 34.2,
-      "guidance_proximo": "2026 revenue $1.08B-$1.175B reiterada"
+      "guidance_proximo": "2026 revenue $1.08B-$1.175B reiterada",
+      "ts_expirado": "2026-05-23T05:15:46.466047+00:00"
     },
     {
       "ticker": "FTNT",
-      "estado": "cerrada_pre_close",
+      "estado": "expirado",
       "score": 5.5,
       "score_ajustado": 5.5,
       "asimetria_pct": 8.1,
@@ -2052,7 +1736,8 @@
       "close_reason": "EARNINGS_AH_HOY \u2014 cerrar obligatorio (lecci\u00f3n MEDP)",
       "pnl_pct": -0.19,
       "pnl_abs": -16.32,
-      "closed_at": "2026-05-06T18:42:59.087846+00:00"
+      "closed_at": "2026-05-06T18:42:59.087846+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466048+00:00"
     },
     {
       "ticker": "AMD",
@@ -2060,7 +1745,7 @@
       "score_ajustado": 8.3,
       "score_override": 8.3,
       "source": "log_validated",
-      "estado": "ejecutado",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-05",
       "accion_recomendada": "entrar_apertura",
@@ -2089,14 +1774,15 @@
       "fecha_ejecucion": "2026-05-07 13:45",
       "orden_id": "caab4336-0f1f-41fe-b74c-aee9f85de1f0",
       "precio_ejecucion": 412.17498779296875,
-      "resultado_real": "beat"
+      "resultado_real": "beat",
+      "ts_expirado": "2026-05-23T05:15:46.466049+00:00"
     },
     {
       "ticker": "DDOG",
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 3.92,
       "whisper": 0.53,
@@ -2109,14 +1795,15 @@
       "detectado_por": "sentinel-preapertura",
       "fecha_deteccion": "2026-05-07",
       "ts_creado": "2026-05-07T09:13:40.736885+00:00",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "ts_expirado": "2026-05-23T05:15:46.466051+00:00"
     },
     {
       "ticker": "NET",
       "score": 5.0,
       "score_ajustado": 5.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 8.7,
       "whisper": 0.25,
@@ -2129,14 +1816,15 @@
       "detectado_por": "sentinel-preapertura",
       "fecha_deteccion": "2026-05-07",
       "ts_creado": "2026-05-07T09:13:40.736885+00:00",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "ts_expirado": "2026-05-23T05:15:46.466052+00:00"
     },
     {
       "ticker": "ABNB",
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "cerrado_pre_earnings_intraday",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 9.68,
       "whisper": 0.34,
@@ -2151,7 +1839,8 @@
       "ts_creado": "2026-05-07T09:13:40.736885+00:00",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "cerrado_at": "2026-05-07T16:38:14.887325+00:00",
-      "razon_cierre": "pre-earnings AH no validado score<8.5"
+      "razon_cierre": "pre-earnings AH no validado score<8.5",
+      "ts_expirado": "2026-05-23T05:15:46.466053+00:00"
     },
     {
       "ticker": "DCBO",
@@ -2159,7 +1848,7 @@
       "score_ajustado": 8.5,
       "score_override": 8.5,
       "source": "log_validated",
-      "estado": "descartado_apertura_R:R_1.20_<_1.2",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-08",
       "earnings_timing": "pre-market",
@@ -2187,14 +1876,15 @@
       "sector": "technology",
       "sub_sector": "edtech_saas",
       "fecha_descarte": "2026-05-08 13:45",
-      "motivo_descarte_apertura": "R:R 1.20 < 1.2"
+      "motivo_descarte_apertura": "R:R 1.20 < 1.2",
+      "ts_expirado": "2026-05-23T05:15:46.466054+00:00"
     },
     {
       "ticker": "HIMS",
       "score": 7.0,
       "score_ajustado": 7.0,
       "source": "weekend_ew_intel_chrome_W20",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-11",
       "earnings_timing": "after-hours",
@@ -2228,14 +1918,15 @@
       "estado_anterior": "pendiente_ew",
       "ts_resultado": "2026-05-11T21:42:27.320645+00:00",
       "revenue_growth_yoy_real": 4.0,
-      "guidance_proximo": "Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance)"
+      "guidance_proximo": "Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance)",
+      "ts_expirado": "2026-05-23T05:15:46.466055+00:00"
     },
     {
       "ticker": "CSCO",
       "score": 8.0,
       "score_ajustado": 8.0,
       "source": "weekend_ew_intel_websearch",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-13",
       "earnings_timing": "after-hours",
@@ -2267,14 +1958,15 @@
       "estado_anterior": "pendiente_ew",
       "ts_resultado": "2026-05-13T21:42:24.410462+00:00",
       "revenue_growth_yoy_real": 12.0,
-      "guidance_proximo": "FY26 revenue $62.8-63.0B (raised from prior); EPS $4.27-4.29"
+      "guidance_proximo": "FY26 revenue $62.8-63.0B (raised from prior); EPS $4.27-4.29",
+      "ts_expirado": "2026-05-23T05:15:46.466056+00:00"
     },
     {
       "ticker": "AMAT",
       "score": 8.5,
       "score_ajustado": 8.5,
       "source": "weekend_ew_intel_websearch",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-14",
       "earnings_timing": "after-hours",
@@ -2309,14 +2001,15 @@
       "revenue_growth_yoy_real": 11.4,
       "guidance_proximo": "Q3 rev ~$8.95B beat (vs ~$8.0B), EPS ~$3.36 raise",
       "estado_anterior": "ejecutado",
-      "ts_resultado": "2026-05-14T21:43:24.107423+00:00"
+      "ts_resultado": "2026-05-14T21:43:24.107423+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466057+00:00"
     },
     {
       "ticker": "BABA",
       "score": 7.0,
       "score_ajustado": 7.0,
       "source": "weekend_ew_intel_websearch",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-13",
       "earnings_timing": "after-hours",
@@ -2348,14 +2041,15 @@
       "estado_anterior": "pendiente_ew",
       "ts_resultado": "2026-05-13T21:42:24.410487+00:00",
       "revenue_growth_yoy_real": 9.24,
-      "guidance_proximo": null
+      "guidance_proximo": null,
+      "ts_expirado": "2026-05-23T05:15:46.466058+00:00"
     },
     {
       "ticker": "DOCS",
       "score": 7.5,
       "score_ajustado": 7.5,
       "source": "ew_calendar_chrome_W20",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-13",
       "earnings_timing": "after-hours",
@@ -2387,14 +2081,15 @@
       "estado_anterior": "pendiente_ew",
       "ts_resultado": "2026-05-13T21:42:24.410496+00:00",
       "revenue_growth_yoy_real": 5.1,
-      "guidance_proximo": "Next Q revenue $151.5M (1.1% below estimates); FY27 EBITDA $329M (below $373M est)"
+      "guidance_proximo": "Next Q revenue $151.5M (1.1% below estimates); FY27 EBITDA $329M (below $373M est)",
+      "ts_expirado": "2026-05-23T05:15:46.466059+00:00"
     },
     {
       "ticker": "DSP",
       "score": 6.0,
       "score_ajustado": 6.0,
       "source": "ew_calendar_chrome_W20",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-11",
       "earnings_timing": "after-hours",
@@ -2427,14 +2122,15 @@
       "ts_resultado": "2026-05-12T21:42:09.912729+00:00",
       "revenue_growth_yoy_real": 25.0,
       "guidance_proximo": "Q2 revenue $98.5M-$101.5M (above cons $93.6M)",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466060+00:00"
     },
     {
       "ticker": "NXT",
       "score": 8.46,
       "score_ajustado": 6.0,
       "source": "ew_calendar_chrome_W20",
-      "estado": "cerrado_parcial",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-12",
       "earnings_timing": "after-hours",
@@ -2467,14 +2163,15 @@
       "motivo_cierre_papel": "midday-monitor cierre preventivo \u2014 AH earnings score<9.0",
       "pnl_papel_usd": 7.52,
       "real_abierto": true,
-      "nota_real_overnight": "Real NXT (1 acc +12.6%) overnight con AH earnings. OCO stop $104.28."
+      "nota_real_overnight": "Real NXT (1 acc +12.6%) overnight con AH earnings. OCO stop $104.28.",
+      "ts_expirado": "2026-05-23T05:15:46.466061+00:00"
     },
     {
       "ticker": "NU",
       "score": 6.5,
       "score_ajustado": 6.5,
       "source": "ew_calendar_chrome_W20",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-14",
       "earnings_timing": "after-hours",
@@ -2506,14 +2203,15 @@
       "revenue_growth_yoy_real": null,
       "guidance_proximo": null,
       "estado_anterior": "pendiente_ew",
-      "ts_resultado": "2026-05-14T21:43:24.107443+00:00"
+      "ts_resultado": "2026-05-14T21:43:24.107443+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466062+00:00"
     },
     {
       "ticker": "BOOT",
       "score": 6.5,
       "score_ajustado": 6.5,
       "source": "ew_calendar_chrome_W20",
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-14",
       "earnings_timing": "after-hours",
@@ -2545,14 +2243,15 @@
       "revenue_growth_yoy_real": 18.7,
       "guidance_proximo": "SSS +6.1%, 25 nuevas tiendas; rev $538.8M beat",
       "estado_anterior": "pendiente_ew",
-      "ts_resultado": "2026-05-14T21:43:24.107452+00:00"
+      "ts_resultado": "2026-05-14T21:43:24.107452+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466063+00:00"
     },
     {
       "ticker": "JD",
       "score": 7.74,
       "score_ajustado": 7.74,
       "source": "pre_market_earnings_scan_20260511",
-      "estado": "ejecutado",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-12",
       "earnings_timing": "before-market",
@@ -2594,14 +2293,15 @@
       "revenue_actual_b": 45.766,
       "revenue_beat": true,
       "reaccion_d1_pct": 2.8,
-      "nota": "JD beat masivo: $0.74 vs $0.50 est (+48%). Revenue $45.77B beat. +2.8% D1."
+      "nota": "JD beat masivo: $0.74 vs $0.50 est (+48%). Revenue $45.77B beat. +2.8% D1.",
+      "ts_expirado": "2026-05-23T05:15:46.466064+00:00"
     },
     {
       "ticker": "HIMS",
       "score": 7.0,
       "score_ajustado": 7.0,
       "source": "weekend_ew_intel_chrome_W20",
-      "estado": "cancelado_condiciones_no_cumplidas",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-11",
       "earnings_timing": "after-hours",
@@ -2638,7 +2338,8 @@
       "motivo_cancelacion": "resultado=miss, AH=-9.0% (requiere beat + AH>=+5%)",
       "ts_resultado": "2026-05-11T21:42:27.320676+00:00",
       "revenue_growth_yoy_real": 4.0,
-      "guidance_proximo": "Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance)"
+      "guidance_proximo": "Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance)",
+      "ts_expirado": "2026-05-23T05:15:46.466065+00:00"
     },
     {
       "ticker": "XOM",
@@ -2675,7 +2376,7 @@
       "score": 8.86,
       "score_ajustado": 8.86,
       "source": "pre_market_earnings_scan_20260512",
-      "estado": "ejecutado",
+      "estado": "expirado",
       "tipo": "earnings_pre_drift",
       "earnings_fecha": "2026-05-12",
       "earnings_timing": "after-hours",
@@ -2705,7 +2406,8 @@
         "tp_price": 40.91,
         "orden_type": "market+OCO_colocado_post_cierre"
       },
-      "expira": "2026-05-13T14:00:00Z"
+      "expira": "2026-05-13T14:00:00Z",
+      "ts_expirado": "2026-05-23T05:15:46.466067+00:00"
     },
     {
       "ticker": "YETI",
@@ -2770,7 +2472,7 @@
       "score_ajustado": 9.5,
       "score_override": 9.5,
       "source": "log_validated",
-      "estado": "ejecutado",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-14",
       "accion_recomendada": "entrar_apertura",
@@ -2797,7 +2499,8 @@
       "play_horizon": "post_earnings_1_3d",
       "fecha_ejecucion": "2026-05-15 13:46",
       "orden_id": "3e8023e8-07a0-418c-832d-94194ba8a448",
-      "precio_ejecucion": 7.744999885559082
+      "precio_ejecucion": 7.744999885559082,
+      "ts_expirado": "2026-05-23T05:15:46.466070+00:00"
     },
     {
       "ticker": "AGYS",
@@ -2805,7 +2508,7 @@
       "earnings_timing": "after-hours",
       "score": 7.5,
       "score_ajustado": 7.5,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 6.0,
       "whisper": 0.53,
@@ -2867,7 +2570,8 @@
       "estado_anterior": "pendiente",
       "ts_resultado": "2026-05-18T21:45:05.164617+00:00",
       "revenue_growth_yoy_real": 11.7,
-      "guidance_proximo": "FY27 revenue $365M-$370M (mid $367.5M above consensus $363.59M)"
+      "guidance_proximo": "FY27 revenue $365M-$370M (mid $367.5M above consensus $363.59M)",
+      "ts_expirado": "2026-05-23T05:15:46.466072+00:00"
     },
     {
       "ticker": "ELF",
@@ -2875,7 +2579,7 @@
       "earnings_timing": "after-hours",
       "score": 7.5,
       "score_ajustado": 7.5,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 24.14,
       "whisper": 0.36,
@@ -2938,7 +2642,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449251+00:00",
       "revenue_growth_yoy_real": 35.0,
       "guidance_proximo": "FY27 rev +12-14%, EPS $3.27-$3.32 (below cons)",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466073+00:00"
     },
     {
       "ticker": "AAP",
@@ -2946,7 +2651,7 @@
       "earnings_timing": "pre-market",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 20.51,
       "whisper": 0.47,
@@ -3010,7 +2715,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449201+00:00",
       "revenue_growth_yoy_real": null,
       "guidance_proximo": "FY EPS $2.40-$3.10 mantenido",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466073+00:00"
     },
     {
       "ticker": "BAH",
@@ -3094,7 +2800,7 @@
       "earnings_timing": "pre-market",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "drift_entry_anticipada",
       "asimetria_pct": 9.0,
       "whisper": 1.09,
@@ -3156,7 +2862,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449207+00:00",
       "revenue_growth_yoy_real": null,
       "guidance_proximo": "FY27 guidance in-line",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466075+00:00"
     },
     {
       "ticker": "DECK",
@@ -3164,7 +2871,7 @@
       "earnings_timing": "after-hours",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 19.75,
       "whisper": 0.97,
@@ -3228,7 +2935,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449189+00:00",
       "revenue_growth_yoy_real": 9.6,
       "guidance_proximo": "FY27 rev $5.86B-$5.91B, EPS $7.30-$7.45",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466076+00:00"
     },
     {
       "ticker": "WDAY",
@@ -3236,7 +2944,7 @@
       "earnings_timing": "after-hours",
       "score": 5.5,
       "score_ajustado": 5.5,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 6.35,
       "whisper": 2.68,
@@ -3300,7 +3008,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449180+00:00",
       "revenue_growth_yoy_real": 13.5,
       "guidance_proximo": "Workday reaffirms guidance",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466078+00:00"
     },
     {
       "ticker": "BILI",
@@ -3308,7 +3017,7 @@
       "earnings_timing": "pre-market",
       "score": 7.0,
       "score_ajustado": 7.0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 5.88,
       "whisper": 0.18,
@@ -3370,7 +3079,8 @@
       "estado_anterior": "pendiente",
       "ts_resultado": "2026-05-19T21:43:46.711917+00:00",
       "revenue_growth_yoy_real": null,
-      "guidance_proximo": null
+      "guidance_proximo": null,
+      "ts_expirado": "2026-05-23T05:15:46.466079+00:00"
     },
     {
       "ticker": "URBN",
@@ -3378,7 +3088,7 @@
       "earnings_timing": "after-hours",
       "score": 6.9,
       "score_ajustado": 6.9,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 7.14,
       "whisper": 1.2,
@@ -3433,7 +3143,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449262+00:00",
       "revenue_growth_yoy_real": 11.4,
       "guidance_proximo": null,
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466080+00:00"
     },
     {
       "ticker": "IMVT",
@@ -3441,7 +3152,7 @@
       "earnings_timing": "pre-market",
       "score": 6.5,
       "score_ajustado": 6.5,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 6.67,
       "whisper": -0.56,
@@ -3496,7 +3207,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449268+00:00",
       "revenue_growth_yoy_real": null,
       "guidance_proximo": null,
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466081+00:00"
     },
     {
       "ticker": "ARCO",
@@ -3504,7 +3216,7 @@
       "earnings_timing": "pre-market",
       "score": 6.4,
       "score_ajustado": 6.4,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 40.0,
       "whisper": 0.14,
@@ -3559,7 +3271,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449274+00:00",
       "revenue_growth_yoy_real": 12.9,
       "guidance_proximo": null,
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466082+00:00"
     },
     {
       "ticker": "BULL",
@@ -3567,7 +3280,7 @@
       "earnings_timing": "after-hours",
       "score": 7.4,
       "score_ajustado": 6.4,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 33.33,
       "whisper": 0.04,
@@ -3620,7 +3333,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449214+00:00",
       "revenue_growth_yoy_real": 36.3,
       "guidance_proximo": null,
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466083+00:00"
     },
     {
       "ticker": "RL",
@@ -3628,7 +3342,7 @@
       "earnings_timing": "pre-market",
       "score": 5.0,
       "score_ajustado": 5.0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 3.57,
       "whisper": 2.61,
@@ -3682,7 +3396,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449196+00:00",
       "revenue_growth_yoy_real": 12.0,
       "guidance_proximo": null,
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466084+00:00"
     },
     {
       "ticker": "PANW",
@@ -3700,7 +3415,7 @@
       "sizing": "50% posici\u00f3n inicial, completar el d\u00eda antes de earnings",
       "conviction_tier": "conviction_alta",
       "sizing_multiplier": 1.0,
-      "estado": "ejecutado",
+      "estado": "expirado",
       "expira": "2026-05-22T20:00:00Z",
       "score_macro_bonus": 1,
       "notas": "A\u00f1adido en weekly review W20 \u2014 cyber AI play. Guidance bullish.",
@@ -3709,7 +3424,8 @@
       "notas_drift": "DRIFT ENTRY: score 9.0 \u2265 9.0, 5 d\u00edas hasta earnings. Entrar 50% Lunes para capturar pre-earnings drift institucional. Completar 50% restante el d\u00eda anterior.",
       "fecha_ejecucion": "2026-05-19 13:50",
       "orden_id": "145debda-cafb-400e-ade5-e3a6eea2dc80",
-      "precio_ejecucion": 246.69000244140625
+      "precio_ejecucion": 246.69000244140625,
+      "ts_expirado": "2026-05-23T05:15:46.466085+00:00"
     },
     {
       "ticker": "VFC",
@@ -3718,7 +3434,7 @@
       "earnings_timing": "pre-market",
       "score": 7.2,
       "score_ajustado": 7.2,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 400.0,
       "whisper": 0.06,
@@ -3777,7 +3493,8 @@
       "ts_resultado": "2026-05-21T21:44:58.449257+00:00",
       "revenue_growth_yoy_real": 3.0,
       "guidance_proximo": "FY27 rev +1-2%, op margin ~8%",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466086+00:00"
     },
     {
       "ticker": "HD",
@@ -3834,26 +3551,6 @@
       "nota_cierre": "Cerrado manualmente 2026-05-20 antes de earnings AH hoy. Ganancia +2.2% (+\\8)."
     },
     {
-      "ticker": "WMT",
-      "estado": "cerrado",
-      "fecha_se\u00f1al": "2026-05-18",
-      "earnings_date": "2026-05-21",
-      "earnings_tipo": "BMO",
-      "score": 8.6,
-      "score_ew": 8.6,
-      "beat_rate": 78,
-      "whisper_vs_consensus": 0.02,
-      "razon": "W20 manual: WMT earnings jueves BMO. Beat rate 78%. Play pre-drift. Mantener hasta mi\u00e9rcoles cierre.",
-      "precio_referencia": 97.0,
-      "stop_loss": 90.0,
-      "take_profit": 106.0,
-      "sizing_paper": 15,
-      "sizing_real": 0,
-      "fuente": "manual_claude_w20",
-      "accion_sugerida": "comprar_hoy_o_ma\u00f1ana",
-      "nota_cierre": "Cerrado manualmente 2026-05-20 antes de earnings BMO ma\u00f1ana. P/L -0.7% (-\u0004)."
-    },
-    {
       "ticker": "AS",
       "estado": "pendiente_ew",
       "fecha_se\u00f1al": "2026-05-18",
@@ -3878,7 +3575,7 @@
       "score_ajustado": 8.9,
       "score_override": 8.9,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-18",
       "accion_recomendada": "entrar_apertura",
@@ -3902,7 +3599,8 @@
       "ts_creado": "2026-05-18T21:45:05.164664+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "ts_expirado": "2026-05-23T05:15:46.466088+00:00"
     },
     {
       "ticker": "ECX",
@@ -3910,7 +3608,7 @@
       "score_ajustado": 9.0,
       "score_override": 9.0,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-19",
       "accion_recomendada": "entrar_apertura",
@@ -3934,7 +3632,8 @@
       "ts_creado": "2026-05-19T21:43:46.711956+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "ts_expirado": "2026-05-23T05:15:46.466089+00:00"
     },
     {
       "ticker": "TOL",
@@ -3942,7 +3641,7 @@
       "score_ajustado": 6.5,
       "score_override": 6.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-19",
       "accion_recomendada": "entrar_apertura",
@@ -3966,7 +3665,8 @@
       "ts_creado": "2026-05-19T21:43:46.711971+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "ts_expirado": "2026-05-23T05:15:46.466090+00:00"
     },
     {
       "ticker": "CAVA",
@@ -3974,7 +3674,7 @@
       "score_ajustado": 6.5,
       "score_override": 6.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-19",
       "accion_recomendada": "entrar_apertura",
@@ -3998,14 +3698,15 @@
       "ts_creado": "2026-05-19T21:43:46.711982+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "ts_expirado": "2026-05-23T05:15:46.466091+00:00"
     },
     {
       "ticker": "WMT",
       "score": 3.5,
       "score_ajustado": 3.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 1.54,
       "whisper": 0.66,
@@ -4017,14 +3718,15 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466092+00:00"
     },
     {
       "ticker": "HLNE",
       "score": 6.0,
       "score_ajustado": 6.0,
       "score_macro_bonus": 0,
-      "estado": "resultado_conocido",
+      "estado": "expirado",
       "accion_recomendada": "entrar_apertura",
       "asimetria_pct": 8.39,
       "whisper": 1.55,
@@ -4048,14 +3750,15 @@
       "ts_resultado": "2026-05-21T21:44:58.449221+00:00",
       "revenue_growth_yoy_real": 14.0,
       "guidance_proximo": "Dividend +11% a $2.40",
-      "fuente_resultado": "websearch"
+      "fuente_resultado": "websearch",
+      "ts_expirado": "2026-05-23T05:15:46.466093+00:00"
     },
     {
       "ticker": "DE",
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 1.03,
       "whisper": 5.87,
@@ -4067,14 +3770,15 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466094+00:00"
     },
     {
       "ticker": "VIPS",
       "score": 3.5,
       "score_ajustado": 3.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 0.0,
       "whisper": 0.68,
@@ -4086,14 +3790,15 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466095+00:00"
     },
     {
       "ticker": "ZM",
       "score": 4.5,
       "score_ajustado": 4.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 2.11,
       "whisper": 1.45,
@@ -4105,14 +3810,15 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466096+00:00"
     },
     {
       "ticker": "ROST",
       "score": 3.5,
       "score_ajustado": 3.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 0.0,
       "whisper": 1.7,
@@ -4124,14 +3830,15 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466097+00:00"
     },
     {
       "ticker": "TTWO",
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 32.14,
       "whisper": 0.74,
@@ -4143,7 +3850,8 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-05-23T05:15:46.466098+00:00"
     },
     {
       "ticker": "BJ",
@@ -4170,7 +3878,7 @@
       "score_ajustado": 7.0,
       "score_override": 7.0,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-21",
       "accion_recomendada": "entrar_apertura",
@@ -4202,7 +3910,352 @@
           "motivo": "score 7.0 < 8.5",
           "score": 7.0
         }
-      ]
+      ],
+      "ts_expirado": "2026-05-23T05:15:46.466099+00:00"
+    },
+    {
+      "ticker": "SNOW",
+      "earnings_fecha": "2026-05-27",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 18.75,
+      "whisper": 0.38,
+      "consensus": 0.32,
+      "revenue_growth_yoy": 26.7,
+      "pct_bullish": 60.0,
+      "vs_ma200": -15.05,
+      "drift_desde_earnings": 9.35,
+      "short_interest_change": 0,
+      "options_implied_move": 13.9,
+      "avg_move_hist": 14.1,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 172.2,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467444+00:00",
+      "expira": "2026-05-27T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "NCNO",
+      "earnings_fecha": "2026-05-27",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 23.08,
+      "whisper": 0.32,
+      "consensus": 0.26,
+      "revenue_growth_yoy": 8.1,
+      "pct_bullish": 60.0,
+      "vs_ma200": -28.78,
+      "drift_desde_earnings": 7.35,
+      "short_interest_change": 0,
+      "options_implied_move": 12.5,
+      "avg_move_hist": 10.5,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 16.07,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467463+00:00",
+      "expira": "2026-05-27T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "NTNX",
+      "earnings_fecha": "2026-05-27",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 17.14,
+      "whisper": 0.41,
+      "consensus": 0.35,
+      "revenue_growth_yoy": 7.4,
+      "pct_bullish": 60.0,
+      "vs_ma200": -12.64,
+      "drift_desde_earnings": 1.68,
+      "short_interest_change": 0,
+      "options_implied_move": 11.6,
+      "avg_move_hist": 8.1,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 47.12,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467474+00:00",
+      "expira": "2026-05-27T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "KSS",
+      "earnings_fecha": "2026-05-28",
+      "earnings_timing": "pre-market",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 33.33,
+      "whisper": -0.12,
+      "consensus": -0.18,
+      "revenue_growth_yoy": -2.3,
+      "pct_bullish": 60.0,
+      "vs_ma200": -20.19,
+      "drift_desde_earnings": 10.96,
+      "short_interest_change": 0,
+      "options_implied_move": 15.5,
+      "avg_move_hist": 18.3,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "consumer cyclical",
+      "sector_5d_chg": 2.46,
+      "precio_actual": 13.06,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467482+00:00",
+      "expira": "2026-05-28T14:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "PATH",
+      "earnings_fecha": "2026-05-28",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 18.75,
+      "whisper": 0.19,
+      "consensus": 0.16,
+      "revenue_growth_yoy": 11.4,
+      "pct_bullish": 60.0,
+      "vs_ma200": -15.81,
+      "drift_desde_earnings": 6.43,
+      "short_interest_change": 0,
+      "options_implied_move": 16.7,
+      "avg_move_hist": 9.7,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 10.93,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467489+00:00",
+      "expira": "2026-05-28T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "AEO",
+      "earnings_fecha": "2026-05-28",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 81.82,
+      "whisper": 0.2,
+      "consensus": 0.11,
+      "revenue_growth_yoy": 8.3,
+      "pct_bullish": 60.0,
+      "vs_ma200": -13.74,
+      "drift_desde_earnings": 8.11,
+      "short_interest_change": 0,
+      "options_implied_move": 15.9,
+      "avg_move_hist": 14.5,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "consumer cyclical",
+      "sector_5d_chg": 2.46,
+      "precio_actual": 16.53,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467496+00:00",
+      "expira": "2026-05-28T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "ASAN",
+      "earnings_fecha": "2026-05-28",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 25.0,
+      "whisper": 0.1,
+      "consensus": 0.08,
+      "revenue_growth_yoy": 8.7,
+      "pct_bullish": 60.0,
+      "vs_ma200": -39.21,
+      "drift_desde_earnings": 6.77,
+      "short_interest_change": 0,
+      "options_implied_move": 22.0,
+      "avg_move_hist": 16.8,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 6.62,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467503+00:00",
+      "expira": "2026-05-28T21:00:00+00:00",
+      "advertencias": []
+    },
+    {
+      "ticker": "PD",
+      "earnings_fecha": "2026-05-28",
+      "earnings_timing": "after-hours",
+      "score": 6.9,
+      "score_ajustado": 6.9,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 25.0,
+      "whisper": 0.3,
+      "consensus": 0.24,
+      "revenue_growth_yoy": -0.5,
+      "pct_bullish": 60.0,
+      "vs_ma200": -38.02,
+      "drift_desde_earnings": 6.35,
+      "short_interest_change": 0,
+      "options_implied_move": 20.9,
+      "avg_move_hist": 10.3,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "neutro",
+      "estimates_revised": "stable",
+      "score_detalle": {
+        "A": 3.0,
+        "B": 0.0,
+        "C": 1.5,
+        "D": 1.0,
+        "E": 0.0,
+        "F": 1.4,
+        "G": 0.0,
+        "penalizaciones": 0.0
+      },
+      "sector": "technology",
+      "sector_5d_chg": 3.46,
+      "precio_actual": 7.2,
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-05-23T05:15:46.467509+00:00",
+      "expira": "2026-05-28T21:00:00+00:00",
+      "advertencias": []
     }
   ],
   "macro_context": {
@@ -19890,296 +19943,150 @@
     }
   },
   "weekly_ew_intel": {
-    "semana": "W21 2026-05-18",
-    "fuente": "EarningsWhispers.com via Chrome MCP 2026-05-17",
-    "ts_procesado": "2026-05-17T05:15:42.797682+00:00",
-    "estado_run": "completo_refresh_sunday",
-    "total_escaneados": 44,
-    "top_pick": "AGYS",
+    "semana": "2026-05-25",
+    "fuente": "EarningsWhispers chrome+yfinance 2026-05-23",
+    "ts_procesado": "2026-05-23T05:15:46.467512+00:00",
+    "top_pick": "SNOW",
     "candidatos_tier1": [],
-    "candidatos_tier2": [
-      {
-        "ticker": "AGYS",
-        "score": 7.5,
-        "asim": 6.0,
-        "fecha": "2026-05-18"
-      },
-      {
-        "ticker": "ELF",
-        "score": 7.5,
-        "asim": 24.14,
-        "fecha": "2026-05-20"
-      },
-      {
-        "ticker": "AAP",
-        "score": 7.5,
-        "asim": 23.68,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "BAH",
-        "score": 7.5,
-        "asim": 9.09,
-        "fecha": "2026-05-22"
-      },
-      {
-        "ticker": "AS",
-        "score": 7.2,
-        "asim": 12.9,
-        "fecha": "2026-05-19"
-      },
-      {
-        "ticker": "VFC",
-        "score": 7.2,
-        "asim": 400.0,
-        "fecha": "2026-05-20"
-      },
-      {
-        "ticker": "WMS",
-        "score": 7.2,
-        "asim": 9.0,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "DECK",
-        "score": 7.2,
-        "asim": 19.75,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "WDAY",
-        "score": 7.2,
-        "asim": 6.35,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "BILI",
-        "score": 7.0,
-        "asim": 5.88,
-        "fecha": "2026-05-19"
-      }
-    ],
+    "candidatos_tier2": [],
     "candidatos_tier3": [
       {
-        "ticker": "URBN",
+        "ticker": "SNOW",
         "score": 6.9,
-        "asim": 7.14,
-        "fecha": "2026-05-20"
+        "asim": 18.75
       },
       {
-        "ticker": "IMVT",
+        "ticker": "NCNO",
+        "score": 6.9,
+        "asim": 23.08
+      },
+      {
+        "ticker": "NTNX",
+        "score": 6.9,
+        "asim": 17.14
+      },
+      {
+        "ticker": "KSS",
+        "score": 6.9,
+        "asim": 33.33
+      },
+      {
+        "ticker": "PATH",
+        "score": 6.9,
+        "asim": 18.75
+      },
+      {
+        "ticker": "AEO",
+        "score": 6.9,
+        "asim": 81.82
+      },
+      {
+        "ticker": "ASAN",
+        "score": 6.9,
+        "asim": 25.0
+      },
+      {
+        "ticker": "PD",
+        "score": 6.9,
+        "asim": 25.0
+      },
+      {
+        "ticker": "BOX",
         "score": 6.5,
-        "asim": 6.67,
-        "fecha": "2026-05-20"
+        "asim": 11.11
       },
       {
-        "ticker": "ARCO",
-        "score": 6.4,
-        "asim": 40.0,
-        "fecha": "2026-05-20"
-      },
-      {
-        "ticker": "BULL",
-        "score": 6.4,
-        "asim": 33.33,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "RL",
-        "score": 6.2,
-        "asim": 4.4,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "BIDU",
-        "score": 6.0,
-        "asim": 6.95,
-        "fecha": "2026-05-18"
-      },
-      {
-        "ticker": "CAVA",
-        "score": 6.0,
-        "asim": 5.88,
-        "fecha": "2026-05-19"
-      },
-      {
-        "ticker": "GDS",
-        "score": 6.0,
-        "asim": 5.66,
-        "fecha": "2026-05-20"
-      },
-      {
-        "ticker": "RDCM",
-        "score": 5.5,
-        "asim": 11.11,
-        "fecha": "2026-05-19"
-      },
-      {
-        "ticker": "TTWO",
-        "score": 5.5,
-        "asim": 32.14,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "INTU",
-        "score": 5.2,
-        "asim": 1.92,
-        "fecha": "2026-05-20"
-      },
-      {
-        "ticker": "NTES",
-        "score": 5.2,
-        "asim": 2.38,
-        "fecha": "2026-05-21"
-      },
-      {
-        "ticker": "BEKE",
-        "score": 5.0,
-        "asim": 7.14,
-        "fecha": "2026-05-19"
-      },
-      {
-        "ticker": "NIO",
-        "score": 5.0,
-        "asim": 20.83,
-        "fecha": "2026-05-21"
+        "ticker": "APPS",
+        "score": 6.5,
+        "asim": 22.22
       }
     ],
     "skip": [
       {
-        "ticker": "TJX",
+        "ticker": "ZS",
         "score": 4.9,
         "razon": "score_bajo"
       },
       {
-        "ticker": "LSPD",
+        "ticker": "TD",
         "score": 4.5,
         "razon": "score_bajo"
       },
       {
-        "ticker": "ZM",
-        "score": 4.5,
+        "ticker": "ADSK",
+        "score": 4.4,
         "razon": "score_bajo"
       },
       {
-        "ticker": "LOW",
-        "score": 4.2,
-        "razon": "score_bajo"
-      },
-      {
-        "ticker": "NVDA",
-        "score": 4.0,
-        "razon": "anti_descuento"
-      },
-      {
-        "ticker": "DE",
+        "ticker": "DKS",
         "score": 4.0,
         "razon": "score_bajo"
       },
       {
-        "ticker": "ROST",
+        "ticker": "CM",
         "score": 4.0,
         "razon": "score_bajo"
       },
       {
-        "ticker": "VIPS",
-        "score": 3.8,
-        "razon": "score_bajo"
-      },
-      {
-        "ticker": "KEYS",
-        "score": 3.5,
-        "razon": "anti_descuento"
-      },
-      {
-        "ticker": "TGT",
-        "score": 3.5,
-        "razon": "anti_descuento"
-      },
-      {
-        "ticker": "ENS",
-        "score": 3.5,
-        "razon": "anti_descuento"
-      },
-      {
-        "ticker": "ADI",
+        "ticker": "HPQ",
         "score": 3.0,
-        "razon": "anti_descuento"
+        "razon": "score_bajo"
       },
       {
-        "ticker": "BJ",
+        "ticker": "NTAP",
         "score": 3.0,
-        "razon": "anti_descuento"
+        "razon": "score_bajo"
       },
       {
-        "ticker": "WMT",
+        "ticker": "A",
+        "score": 2.9,
+        "razon": "score_bajo"
+      },
+      {
+        "ticker": "AZO",
         "score": 2.5,
-        "razon": "anti_descuento"
+        "razon": "score_bajo"
       },
       {
-        "ticker": "HD",
-        "score": 0.0,
-        "razon": "asim_negativa"
+        "ticker": "HRL",
+        "score": 2.5,
+        "razon": "score_bajo"
       },
       {
-        "ticker": "TOL",
-        "score": 0.0,
-        "razon": "asim_negativa"
+        "ticker": "COST",
+        "score": 2.5,
+        "razon": "score_bajo"
       },
       {
-        "ticker": "HAS",
-        "score": 0.0,
-        "razon": "asim_negativa"
-      },
-      {
-        "ticker": "PERI",
-        "score": 0.0,
-        "razon": "asim_negativa"
-      },
-      {
-        "ticker": "NDSN",
-        "score": 0.0,
-        "razon": "asim_negativa"
-      },
-      {
-        "ticker": "CPRT",
+        "ticker": "WB",
         "score": 0.0,
         "razon": "asim_negativa"
       }
     ],
-    "gmail_results_semana_pasada": [
-      {
-        "ticker": "SURG",
-        "resultado": "miss",
-        "fecha": "2026-05-15",
-        "fuente": "epsguidance snippet"
-      },
-      {
-        "ticker": "AMAT",
-        "resultado": "beat",
-        "fecha": "2026-05-14",
-        "fuente": "epsguidance snippet"
-      },
-      {
-        "ticker": "NBIS",
-        "resultado": "beat",
-        "fecha": "2026-05-13",
-        "fuente": "epsguidance snippet"
-      },
-      {
-        "ticker": "OKLO",
-        "resultado": "miss",
-        "fecha": "2026-05-12",
-        "fuente": "epsguidance snippet"
-      },
-      {
-        "ticker": "HIMS",
-        "resultado": "miss",
-        "fecha": "2026-05-11",
-        "fuente": "epsguidance snippet"
-      }
-    ],
-    "cadena_semanal": "NVDA mier AMC ancla AI; WMT/HD/TGT/LOW eje consumidor lun-mie; ELF/DECK/ROST/DAVA discrecional jue PM; TJX/AAP en consumer c\u00edclico semana plena"
+    "cadena_semanal": "Semana W22: 43 candidatos con whisper (Chrome). 0 Tier 1, 0 Tier 2, 31 Tier 3. Pendiente enriquecer con sentiment+options para promociones.",
+    "resultados_semana_anterior": {
+      "beats": [
+        "FATN",
+        "HD",
+        "BEKE",
+        "NVDA",
+        "GLNG",
+        "LION",
+        "BAH",
+        "GSL"
+      ],
+      "misses": [
+        "BIDU",
+        "DUOT",
+        "CRNT",
+        "PERI",
+        "TTWO"
+      ],
+      "inline": [
+        "WMT"
+      ],
+      "total_procesados": 14
+    }
   },
   "resultados_diarios": [
     {
