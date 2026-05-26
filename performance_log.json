@@ -14753,7 +14753,8 @@
       "urgencia": "ALTA",
       "mensaje": "GO/SLB/YETI tienen take-profit limits pero NO stops. Intraday-monitor debe colocar stops mañana al abrir. GO: entry $7.75 (+3.4%, mover a BE). SLB: entry $55.41 (+3.4%, mover a BE). YETI: entry $40.58 (+11.4%, ya R>1.5, partial pendiente + BE stop).",
       "accion_requerida": "intraday-monitor 2026-05-26: PASO 1 colocar stops BE/ATR para GO, SLB, YETI",
-      "resuelto": false
+      "resuelto": true,
+      "resolucion": "SLB/YETI cerraron via take-profit OCO 2026-05-26. GO stop emergencia colocado @$7.17 post-market 2026-05-26."
     }
   ],
   "mejoras_sistema": [
@@ -14885,6 +14886,15 @@
       "evidencia": "Post-market 2026-05-25 Memorial Day. EW weekly email 23-may con datos completos. Alpaca paper: 3 posiciones sin stop visible.",
       "archivo_modificado": "performance_log.json",
       "impacto_esperado": "Intraday-monitor 2026-05-26 colocará stops mañana en GO/SLB/YETI. Candidatos esta semana entrarán con scoring refinado.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-05-26",
+      "tipo": "regla_validada",
+      "descripcion": "post-market PASO 3 stop emergency workflow: cancelar limit OCO existente → colocar stop_limit GTC → take-profit a re-añadir cuando precio se mueva. Workflow validado con GO hoy.",
+      "evidencia": "GO Cowork 2026-05-26: 1107 sh sin stop por OCO limit holding. Workflow ejecutado OK: cancelar limit @$9.31 → stop_limit @$7.17/$6.95 colocado. Take-profit re-añadir cuando precio >$8.50 o por intraday-monitor.",
+      "archivo_modificado": "post-market-review/SKILL.md (PASO 3)",
+      "impacto_esperado": "Garantiza stop overnight para posiciones con OCO limit holding qty",
       "implementada": true
     }
   ],
@@ -16323,6 +16333,14 @@
       "umbral_paper": 8.75,
       "umbral_real": 9.0,
       "alerta_critica": "Posición Cowork GO sin stop activo — solo limit TP $9.31"
+    },
+    {
+      "fecha": "2026-05-26",
+      "lecciones_acumuladas": 32,
+      "mejoras_acumuladas": 16,
+      "candidatos_activos": 8,
+      "score_sistema": 7.6,
+      "mejora_hoy": "Stop emergency workflow validado en GO + macro_context full update"
     }
   ],
   "motor_alpha_diario": {
@@ -21303,5 +21321,52 @@
       "Reducir universo bot a <3000 símbolos para evitar OOM (BIQ-OOM-W21 nueva).",
       "PRIORIDAD máxima: añadir stops a GO, SLB, YETI ANTES de cualquier entrada nueva."
     ]
-  }
+  },
+  "auditoria_tareas": [
+    {
+      "fecha": "2026-05-26",
+      "score_sistema": 7.6,
+      "tareas": {
+        "market-open-execution": {
+          "ok": true,
+          "ejecutados_hoy": 0,
+          "issues": [],
+          "note": "No nuevas entradas hoy — candidatos no llegaban a 8.75 hasta este rescoring. Mañana CRM/SNOW/DELL/NTNX listos.",
+          "score": 9
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "candidatos_detectados": 0,
+          "issues": [
+            "Scan no añadió candidatos hoy — pero el universo de mañana ya tenía 5+ en log con earnings W23"
+          ],
+          "score": 8
+        },
+        "sentinel": {
+          "ok": true,
+          "ciclos_hoy": 6,
+          "issues": [],
+          "score": 6
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "r0_cerradas_hoy": 0,
+          "issues": [],
+          "note": "No earnings AH hoy en posiciones → no R0 necesaria. SLB/YETI cerraron via OCO weekend.",
+          "score": 10
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "stops_en_breakeven": 1,
+          "issues": [
+            "🚨 NO colocó stop a GO al abrir (sabía desde alerta crítica W23). Post-market lo cubrió."
+          ],
+          "score": 5
+        }
+      },
+      "tareas_con_issues": [
+        "intraday-monitor"
+      ]
+    }
+  ]
 }
