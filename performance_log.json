@@ -349,6 +349,14 @@
       "tarea_afectada": "intraday-monitor + market-open-execution",
       "auto_generado": false,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-05-26",
+      "tipo": "gestion_riesgo",
+      "titulo": "GO Cowork sin stop activo durante scan 10:25 ET",
+      "descripcion": "Posición GO (1107 acc @ $7.75, +5.23%) tenía limit TP $9.31 pero ningún stop. Riesgo descubierto durante semana de earnings. Pre-market scan reportó sin modificar (no add stop en task autónoma para evitar conflicto con bracket existente).",
+      "accion_correctiva": "Tarea de stop_management debería detectar posiciones Cowork sin stop al inicio del día y añadir stop_limit standalone. Considerar OCO order class.",
+      "implementada": false
     }
   ],
   "operaciones": [
@@ -3942,11 +3950,16 @@
     }
   ],
   "macro_context": {
-    "ts_actualizado": "2026-05-26T10:16",
-    "macro_score": 0.2,
-    "macro_bonus_pm": 0.0,
+    "ts_actualizado": "2026-05-26T14:30",
+    "macro_score": 0.8,
+    "macro_bonus_pm": 0.24,
     "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "contexto_resumen": [
+      "VIX=17 normal",
+      "Equities alcistas (+1.28%)",
+      "Flight to safety (TLT+0.7%)",
+      "Tech fuerte (+2.8%)"
+    ],
     "tarea_origen": "pre-market-earnings-scan",
     "notas": "Today is Memorial Day US holiday. No live market data. Scoring used neutral defaults (C/D/F neutros, sin WebSearch en vivo). Next trading day: 2026-05-26.",
     "sentinel_ultimo_check": {
@@ -4029,7 +4042,8 @@
     "bonos": {
       "tlt_chg": 0,
       "yield_10y": 0.0
-    }
+    },
+    "updated_by": "pre-market-earnings-scan"
   },
   "operaciones_crypto": [
     {
@@ -11969,6 +11983,28 @@
       "buying_power": 400377.8,
       "equity": 107238.49,
       "mercado_normal": true
+    },
+    {
+      "fecha": "2026-05-26",
+      "ts": "2026-05-26T14:30",
+      "tarea": "pre-market-earnings-scan",
+      "paper_equity": 108630.65,
+      "real_equity": 4544.51,
+      "paper_positions": [
+        "AS",
+        "GO",
+        "HD",
+        "SAIC"
+      ],
+      "cowork_positions": [
+        "GO"
+      ],
+      "pendientes_evaluados_hoy_manana": 8,
+      "ejecutables": [],
+      "macro_score": 0.8,
+      "vix": 16.829999923706055,
+      "sectores_lider": "tech",
+      "notas": "Sin entradas hoy — umbral 8.75 estricto y candidatos máx 7.05 (NCNO 7.04). PSTG +8.46% intraday descontado. SNOW/NTNX con sentiment deteriorado en últimos 90d."
     }
   ],
   "pre_close_log": [
@@ -16113,6 +16149,19 @@
       "parametros_version": "2026-05-23",
       "mejora_hoy": "Enriquecimiento candidatos con datos EW weekly preview + fix stale PANW + macro_context Memorial Day update + alerta sin_stop GO/SLB/YETI",
       "score_sistema_hoy": 9
+    },
+    {
+      "fecha": "2026-05-26",
+      "ts": "2026-05-26T14:30",
+      "tarea": "pre-market-earnings-scan",
+      "tipo": "scan_diario",
+      "resumen": "Pre-market scan @ 10:25 ET. Macro: normal (score +0.80). 8 candidatos analizados (BOX/SNOW/NCNO/NTNX/CRM/DKS/ANF/PSTG). 0 pasan umbral 8.75. Best=NCNO 7.04. BOX bloqueado REGLA D-1.",
+      "candidatos_evaluados": 8,
+      "ejecutables": 0,
+      "mejor_score": 7.05,
+      "umbral_paper": 8.75,
+      "umbral_real": 9.0,
+      "alerta_critica": "Posición Cowork GO sin stop activo — solo limit TP $9.31"
     }
   ],
   "motor_alpha_diario": {
