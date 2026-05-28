@@ -39,7 +39,7 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-05-28T14:34:26.411757+00:00",
+    "ultima_actualizacion": "2026-05-23",
     "motivo_actualizacion": "W21 review: min_signal_score=8.75",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
@@ -129,6 +129,726 @@
     }
   },
   "lecciones_sistema": [
+    {
+      "fecha": "2026-05-08",
+      "tipo": "SELL_THE_NEWS_AH",
+      "titulo": "ARM: SELL-THE-NEWS beat cons=+3.5% pero AH=-10.1% (2026-05-08)",
+      "descripcion": "Mercado vendio el beat. Pre-drift alto, whisper>cons o guidance flojo.",
+      "accion_futura": "Verificar pre-drift de ARM. mom5d>15% = sell-the-news probable.",
+      "impacto_score": -0.4
+    },
+    {
+      "fecha": "2026-05-08",
+      "tipo": "SELL_THE_NEWS_ACMR_PORTFOLIO",
+      "titulo": "ACMR (cartera): beat consensus +21.4% pero stock cayo 1.57% premarket (2026-05-08)",
+      "descripcion": "EPS $0.34 vs cons $0.28 (+21.4%) y revenue +34.2% YoY, pero margin compression (EPS bajo vs $0.46 hace 1 ano) -> mercado castigo pese a beat. Gross profit +29.5% vs revenue +34.2% = compresion margenes.",
+      "accion_futura": "Para semis con margin compression incluso en beats: penalizar score 0.5-1.0. Verificar EPS YoY trend, no solo beat vs consensus.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-05-09",
+      "tipo": "OPERATIVA",
+      "titulo": "Weekend EW Intel parcial: bodies de Gmail no accesibles + sin email semanal nuevo",
+      "descripcion": "Gmail MCP retornó solo snippets para epsguidance@ y para el último wr@earningswhispers.com (2026-05-02). El email semanal para la semana 2026-05-11 aún no ha llegado al inbox a fecha 2026-05-09. Ningún candidato añadido. Si el email llega más tarde hoy/domingo, re-ejecutar la tarea.",
+      "accion_futura": "Re-correr tarea cuando llegue el email de wr@earningswhispers.com"
+    },
+    {
+      "fecha": "2026-05-09",
+      "patron": "3 posiciones abiertas SIN STOP activo: AMD, OXY, PFE",
+      "categoria": "riesgo_critico",
+      "tipo": "alerta_operativa",
+      "descripcion": "Las posiciones abiertas tras pre-earnings close (AMD post-earnings continuation, OXY/PFE entradas Cowork) tienen TP limit pero NO stop loss. AMD está +10.5% UPL y se beneficia de no tener stop, pero OXY -10.5% UPL podría haberse evitado con stop. Riesgo: gap nocturno catastrófico.",
+      "accion_recomendada": "Lunes 11-may apertura: poner trailing stop en AMD (proteger ganancia >+5%), stop loss en OXY (limitar pérdida adicional, considerar cerrar), stop normal en PFE."
+    },
+    {
+      "fecha": "2026-05-10",
+      "tipo": "PLAN_LUNES",
+      "titulo": "Plan apertura lunes 11-may: gestión de posiciones abiertas (prioridad máxima)",
+      "categoria": "plan_operativo",
+      "descripcion": "Tres posiciones abiertas requieren gestión inmediata en apertura. OXY ha pasado 2 semanas en pérdida latente ~10% sin stop. AMD es ganador (+10.5%) que hay que proteger. PFE es neutral. Macro: CPI April el martes 13-may (09:30 ET) = no abrir nuevas posiciones lunes si el dato es incierto.",
+      "acciones": [
+        {
+          "ticker": "OXY",
+          "prioridad": "URGENTE",
+          "accion": "Evaluar cierre inmediato o colocar stop loss en $50.11 (ATR×1.5). Si precio abre < $50.50 → CERRAR. Si precio ≥ $51 → colocar stop $50.11. OXY entró en sector débil (energy rotation baja oil $105→$94), error de entrada que no debe repetirse.",
+          "stop_propuesto": 50.11,
+          "cierre_si_precio_lt": 50.5
+        },
+        {
+          "ticker": "AMD",
+          "prioridad": "ALTA",
+          "accion": "Trailing stop ACTUALIZADO: $446.92 (intraday-monitor ajustó automáticamente +13.22% UPL). TP original $483. Trailing stop sigue activo — dejar correr. Revisar cierre parcial 50% si AMD supera $475.",
+          "stop_actual": 446.92,
+          "stop_anterior": 414.55,
+          "stop_actualizado_por": "intraday-monitor-20260511",
+          "stop_objetivo": 446.92,
+          "tp": 483.0,
+          "pnl_pct_cierre_eod": 13.22
+        },
+        {
+          "ticker": "PFE",
+          "prioridad": "MEDIA",
+          "accion": "Colocar stop loss. Stop sugerido: precio_entrada - ATR×1.5. PFE post-earnings beat leve, sector pharma lateral. Mantener si stop colocado.",
+          "stop_propuesto": "entrada - ATR×1.5"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-10",
+      "tipo": "LECCIÓN_SECTOR_FILTER",
+      "titulo": "OXY: entrada en sector bajista — añadir filtro sector momentum",
+      "descripcion": "OXY fue elegida como candidato mientras oil bajaba de $105 a $94 y el sector energy mostraba rotación negativa. El sistema no tenía filtro de sector momentum. Una posición en energy con oil en tendencia bajista tiene viento en contra estructural. Resultado: -10.5% UPL tras 2 semanas.",
+      "accion_futura": "En pre-market-earnings-scan: añadir sector_momentum_check. Si el sector ETF del ticker (XLE para energy, XLK para tech, etc.) está -3%+ en 5 días → penalizar score -1.0. Si -5%+ → bloquear entrada. Usar YF sector ETF data.",
+      "impacto_score": -1.0,
+      "tickers_afectados": [
+        "OXY"
+      ],
+      "sector_etfs": {
+        "energy": "XLE",
+        "technology": "XLK",
+        "healthcare": "XLV",
+        "financials": "XLF",
+        "consumer_discretionary": "XLY",
+        "communication": "XLC",
+        "industrials": "XLI",
+        "materials": "XLB",
+        "utilities": "XLU",
+        "real_estate": "XLRE",
+        "consumer_staples": "XLP"
+      }
+    },
+    {
+      "fecha": "2026-05-10",
+      "tipo": "MEJORA_RR_ALTA_CONVICCION",
+      "titulo": "R:R mínimo reducido a 1.10 para scores ≥8.5 — caso DCBO",
+      "descripcion": "DCBO (score 8.5, R:R=1.20) fue rechazado porque el umbral era exactamente 1.20. El sistema trabajó correctamente pero el umbral era demasiado rígido para jugadas de muy alta convicción. Para scores ≥8.5, el edge de la señal compensa un R:R ligeramente menor. Fix aplicado en market-open-execution línea rr_minimo.",
+      "accion_futura": "Umbral dinámico: score ≥8.5 → R:R ≥1.10. Score <8.5 → R:R ≥1.20. Mantener score_min_real=7.5.",
+      "impacto_score": 0.0,
+      "fix_aplicado": "market-open-execution/SKILL.md: rr_minimo = 1.10 if score_total >= 8.5 else 1.20"
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "BUG_PATH_DISCOVERY",
+      "titulo": "Performance log 'no encontrado' en pre-market-scan — bug ruta multi-sesión",
+      "descripcion": "El pre-market-earnings-scan mostró 'Performance log no encontrado' en Telegram del 11-may. Causa: PERF_LOG = os.environ.get('PERF_LOG') or f'{os.getcwd()}/mnt/Scheduled/performance_log.json' falla cuando la sesión cambia de ID (nuevo session ID = nuevo cwd). La variable PERF_LOG tampoco está seteada en tareas programadas.",
+      "accion_implementada": "Reemplazado con glob('/sessions/*/mnt/Scheduled/performance_log.json') en bash y Python en TODOS los SKILL.md: pre-market-earnings-scan, weekend-ew-intel, crypto-scan, crypto-weekday-scan. El glob funciona independientemente del session ID.",
+      "patron": "Session ID rotates → cwd invalid → log not found → system uses defaults → wrong execution",
+      "fix_bash": "PERF_LOG=$(ls /sessions/*/mnt/Scheduled/performance_log.json 2>/dev/null | head -1)",
+      "fix_python": "import glob as _glob; PERF_LOG = next((p for p in _glob.glob('/sessions/*/mnt/Scheduled/performance_log.json') if os.path.exists(p)), '')",
+      "archivos_modificados": [
+        "pre-market-earnings-scan/SKILL.md",
+        "weekend-ew-intel/SKILL.md",
+        "crypto-scan/SKILL.md",
+        "crypto-weekday-scan/SKILL.md"
+      ]
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "BUG_STOP_DETECTION_SHORT",
+      "titulo": "Shorts muestran SL=⚠️NONE — _stop_real_alpaca no detecta buy-side stops",
+      "descripcion": "SAIC (posición SHORT) mostró SL=⚠️NONE en el Telegram del intraday-monitor. La función _stop_real_alpaca solo busca órdenes sell (o.side == 'sell') para verificar stops de posiciones largas. Para cortos, el stop-to-cover es una orden BUY — nunca detectada.",
+      "accion_futura": "En intraday-monitor SKILL.md: extender _stop_real_alpaca para que cuando qty < 0 (short), busque órdenes GTC de tipo BUY en lugar de SELL. Condición: if position.qty < 0: check buy-side stops.",
+      "patron": "shorts_stop_buy — posición corta siempre tiene stop BUY (no sell)",
+      "regla_filosofia": "Ya está documentada en filosofia_decision.reglas_de_oro.shorts_stop_buy pero no implementada en código",
+      "tarea_pendiente": "Fix _stop_real_alpaca en intraday-monitor/SKILL.md"
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "BUG_CRYPTO_STOP_NONE",
+      "titulo": "Crypto (ADAUSD, LINKUSD, BTCUSD) muestran SL=⚠️NONE",
+      "descripcion": "El Telegram del intraday-monitor mostró SL=⚠️NONE para las 3 posiciones crypto abiertas. El crypto-scan coloca órdenes stop_limit separadas (no brackets) vía Alpaca crypto API. El intraday-monitor busca stops via /v2/orders?status=open pero posiblemente el formato de símbolo difiere (ADAUSD vs ADA/USD) o las órdenes stop fueron rechazadas silenciosamente.",
+      "causa_probable": "Mismatch de símbolo: Alpaca crypto puede devolver posiciones como 'ADAUSD' pero las órdenes stop se buscaban con 'ADA/USD' o viceversa. También posible: las órdenes stop_limit crypto se rechazan durante horas de madrugada con error 422.",
+      "accion_futura": "1) Verificar en Alpaca paper API: GET /v2/orders?status=open para ver si los stops están realmente colocados y con qué símbolo. 2) En _stop_real_alpaca: normalizar símbolo (quitar '/' para crypto). 3) Si stops no existen: re-colocar en próxima ejecución crypto-weekday-scan.",
+      "regla_de_oro": "NUNCA dejar posición crypto sin stop. Verificar placement en Telegram con precio explícito tras colocación."
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "BUG_POST_MARKET_PATH",
+      "titulo": "Post-market falla cuando Cowork está cerrado — solución y workaround",
+      "descripcion": "El post-market corre a las 22:22 CEST (10:22 PM Madrid). Si Cowork está cerrado, el filesystem no está montado y el log no es accesible. El .scheduled/ es de solo lectura del sistema — no se puede escribir ahí. Fix: mantener Cowork abierto hasta ~22:45 CEST para que el post-market guarde al log.",
+      "raiz_causa": "Las tareas programadas solo pueden acceder al filesystem cuando Cowork está activo (sesión open y folder Scheduled seleccionado). Sin Cowork abierto → MODO LECTURA automático.",
+      "accion_usuario": "Mantener Cowork abierto hasta las 22:45 CEST (16:45 ET) para que el post-market actualice la memoria. Si se cierra antes → modo lectura (Telegram funciona pero no actualiza log).",
+      "workaround_tecnico": "Se añadió path canónico /sessions/wizardly-loving-carson/mnt/Scheduled/ como PRIMER candidato en todos los SKILL.md. Cuando Cowork está abierto, este path siempre funciona independientemente del session ID."
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "MEJORA_OCO_ORDENES",
+      "titulo": "OCO (One-Cancels-Other) implementado para todas las posiciones — TP + Stop en una sola orden",
+      "descripcion": "Detectado: el bot coloca TPs (limit sell) que bloquean todo el qty disponible, impidiendo añadir stops adicionales (Alpaca retorna 403 insufficient qty). Solución: cancelar TP individual → re-colocar como OCO (take_profit + stop_loss en una sola orden Alpaca). Cuando una leg se ejecuta, la otra se cancela automáticamente.",
+      "posiciones_arregladas": {
+        "real": [
+          "AMD: TP=$483.83 SL=$435.00",
+          "ABNB: TP=$155.13 SL=$131.00",
+          "ENB: TP=$57.68 SL=$51.50",
+          "JD: TP=$32.06 SL=$28.85"
+        ],
+        "paper": [
+          "JD: TP=$32.06 SL=$28.85"
+        ]
+      },
+      "formato_oco_alpaca": {
+        "type": "limit",
+        "order_class": "oco",
+        "take_profit": {
+          "limit_price": "XX.XX"
+        },
+        "stop_loss": {
+          "stop_price": "YY.YY",
+          "limit_price": "YY.ZZ"
+        }
+      },
+      "regla_futura": "SIEMPRE usar OCO cuando se coloca un TP en una posición. Nunca colocar TP limit sin stop — bloquea el qty. Los sistemas de bot/pre-market deben usar bracket o OCO por defecto."
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "PLAN_MARTES_12_MAY",
+      "titulo": "Plan operativo martes 12-may: triple evento — JD earnings BMO + CPI + HIMS continuation",
+      "categoria": "plan_operativo",
+      "descripcion": "Martes 12-may es el día de mayor riesgo de W20. Tres eventos simultáneos: (1) JD reporta BMO 8AM ET, (2) CPI April sale 8:30 ET, (3) HIMS puede tener continuation play si batió AH hoy.",
+      "acciones": [
+        {
+          "ticker": "JD",
+          "prioridad": "CRITICA",
+          "accion": "Pre-apertura 8:30 ET: revisar JD earnings resultado. Si BEAT Y CPI ok (SPY no cae) → mantener con trailing stop $29.28. Si MISS O CPI hot → CERRAR JD inmediatamente en apertura 09:30 ET.",
+          "stop_actual": 29.28,
+          "tp": 32.06,
+          "regla": "JD BMO + CPI mismo día = doble riesgo. El sistema no puede mantener una posición si ambos eventos son adversos."
+        },
+        {
+          "ticker": "HIMS",
+          "prioridad": "ALTA",
+          "accion": "Si HIMS batió AH (>$0.06 actual) Y reacción AH >= +5%: entrar 09:40 ET con sizing 50%. Condicionado a CPI benigno.",
+          "condicion": "BEAT AH + CPI ok + SPY +0.5% a las 09:45"
+        },
+        {
+          "ticker": "CANDIDATES_CPI_GATE",
+          "prioridad": "MEDIA",
+          "accion": "Todos los candidatos del martes (NXT, HIMS, y cualquier nuevo) están bloqueados hasta 09:45 ET si hay CPI. La tarea market-open-execution tiene el bloque CPI conditional implementado.",
+          "alerta_cpi": true
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "MISS_RESULTADO_CRITICO",
+      "titulo": "HIMS: MISS catastrófico (2026-05-11) — EPS -$0.18 vs whisper $0.06 (-400%), AH -9.0%",
+      "descripcion": "HIMS reportó AH Q1 2026: EPS adj -$0.18 (GAAP -$0.40) vs whisper $0.06 / cons $0.04. Revenue $608.1M vs $616.9M cons (miss). Guidance Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance). AH: -9.0%. CRÍTICO: la asimetría whisper-vs-consensus (+50%) NO siempre predice beat. En este caso, los costes del pivote GLP-1 (restructuring + inventory write-downs) destruyeron el quarter. Continuation candidate cancelado correctamente por condiciones explícitas (requiere beat + AH+5%).",
+      "accion_futura": "NUEVA REGLA: Si una empresa anuncia \"strategic pivot\" / restructuring activo en el quarter, penalizar el score de asimetría whisper. La asimetría >+30% es engañosa si hay one-time charges previsibles. Verificar: ¿hay restructuring announcements en últimos 90 días? Si sí, derate score 30-50%. Las condiciones explícitas de entrada (beat + AH+5%) salvaron la operación — mantener este patrón.",
+      "impacto_score": -0.5,
+      "tags": [
+        "HIMS",
+        "sell_the_news",
+        "asimetria_enganosa",
+        "restructuring_risk"
+      ]
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "CLSK: MISS (2026-05-11) — pérdida -$1.52 vs cons -$0.23, AH -5.0%",
+      "descripcion": "CleanSpark reportó Q2 2026 fiscal: pérdida -$1.52 EPS vs cons -$0.23 (much wider miss). AH -5%. Sector crypto miner — alta volatilidad esperada. No estaba en candidatos validados (no impacto portfolio).",
+      "accion_futura": "CLSK no era candidato (sector crypto miner = excluido). Mantener exclusión.",
+      "impacto_score": 0.0,
+      "tags": [
+        "CLSK",
+        "crypto_miner",
+        "not_candidate"
+      ]
+    },
+    {
+      "fecha": "2026-05-11",
+      "tipo": "SISTEMA_CONFIRMACION",
+      "titulo": "Sistema condiciones explícitas (HIMS): FUNCIONÓ (2026-05-11) — pérdida potencial evitada",
+      "descripcion": "HIMS continuation candidate creado domingo W20 con condiciones explícitas: beat + AH>=+5%. Resultado real: MISS catastrófico + AH -9%. Las condiciones bloquearon entrada automáticamente. Si se hubiera entrado sin condiciones a 50% sizing → pérdida estimada -8 a -10% en sizing reducido. Las condiciones de entrada explícitas son CRÍTICAS para asimetrías altas en sectores volátiles.",
+      "accion_futura": "MANTENER PATRÓN: cualquier continuation play con asimetría >+30% en sector healthcare/biotech DEBE tener condiciones explícitas: (1) beat confirmado (2) AH+5% mínimo (3) CPI/macro OK. Replicar este patrón para todos los high-asymmetry plays.",
+      "impacto_score": 0.5,
+      "tags": [
+        "HIMS",
+        "risk_management",
+        "condiciones_explicitas",
+        "sistema_funcionando"
+      ]
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "BUG_PRE_MARKET_TP_SIN_STOP",
+      "titulo": "Pre-market coloca TPs limit solos (sin bracket/OCO) → no pueden añadirse stops después",
+      "descripcion": "El pre-market-earnings-scan ejecuta bracket orders (market buy + TP + stop). Pero cuando el log no está accesible (sesión aislada), el scan usa defaults y puede colocar órdenes sin el stop leg correctamente. Resultado: REZI y NXT entraron con TP limit solo → las shares quedaron 'held' → imposible añadir stop extra. Fix manual: cancelar TP → re-colocar como OCO.",
+      "accion_implementada": "Colocar OCOs manualmente en sesión Cowork activa para REZI y NXT. Documentar que el pre-market DEBE usar OCO siempre, no bracket traditional que falla sin log.",
+      "accion_futura": "En pre-market-earnings-scan SKILL.md: cambiar orden de bracket a OCO explícito (order_class: oco) que siempre incluye tanto TP como stop en una sola orden atómica.",
+      "impacto": "Posiciones con AH earnings overnight sin stop = gap risk no mitigado"
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "SISTEMA_FUNCIONANDO_CPI",
+      "titulo": "CPI gate funcionó correctamente: NXT bloqueado en market-open, ejecutado por pre-market",
+      "descripcion": "El market-open-execution bloqueó NXT correctamente (CPI day, SPY -0.04% < +0.5% requerido). PERO el pre-market-earnings-scan lo ejecutó igualmente 45 min después con score 8.46. El pre-market no tiene el CPI gate porque no accede al performance_log (que tiene alerta_cpi field). El midday-monitor correctamente cerró NXT paper antes de earnings.",
+      "resultado": "Sistema multi-capa correcto: market-open gate (CPI) → pre-market override (señal fuerte 8.46) → midday close pre-earnings (risk management). Las 3 capas funcionaron.",
+      "accion_futura": "En pre-market: añadir check de SPY momentum mínimo en días con eventos macro críticos (CPI/FOMC). Si SPY < -0.5% en el día → solo entrar con score ≥ 8.5."
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "WIN_AMD_TRAILING",
+      "titulo": "AMD paper: trailing stop $446.92 activado → +$699 profit (WIN)",
+      "descripcion": "AMD paper (20 acc @ $411.94) tenía trailing stop a $446.92 activado por intraday-monitor el 11-may. El 12-may el selloff de CPI (tech -1.4%, Nasdaq -1.94%) bajó AMD de ~$458 a $446.92 activando el stop. Resultado: WIN +$699.60 paper. Posición real (1 acc @ $411.76) sigue abierta con stop OCO a $435.",
+      "pnl_paper": 699.6,
+      "patron": "Trailing stop funcionando perfectamente — capturó el 8.5% de ganancia asegurada incluso con el selloff",
+      "lección": "El trailing stop multi-tier del intraday-monitor FUNCIONA. No hay que intervenir manualmente. Dejar correr al sistema."
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "MACRO_CPI_OIL_SHOCK",
+      "titulo": "Día macro doble: CPI hot + Iran/Hormuz oil spike — sistema respondió correctamente",
+      "descripcion": "CPI April: 3.8% anual, core 2.8% YoY (sobre meta Fed). WTI $101.51 (+3.5%), Brent $107.65. Sentinel bloqueó entradas EW normales, ejecutó macro plays (XOM, CVX, SLB paper) en el spike de oil. Nasdaq -1.94%, Russell -2.34%. CPI gate en market-open funcionó.",
+      "macro_plays_ejecutados": [
+        "XOM paper 7acc @$151.43 stop=$146.90 TP=$159.02",
+        "CVX paper 5acc @$186.44 stop=$180.85 TP=$195.76",
+        "SLB paper 19acc @$55.41 stop=$53.74 TP=$58.18"
+      ],
+      "notas": "Sentinel correcto en identificar shock y actuar. OCOs colocados en sesión manual para todos los macro plays."
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "MEJORA_FAILSAFE_STOP_VERIFICATION",
+      "titulo": "Failsafe de verificación de stop post-orden implementado en TODOS los módulos de ejecución",
+      "descripcion": "Causa raíz de todas las posiciones sin stop: Alpaca bracket a veces no crea el leg de stop (race condition, timeout, error silencioso). Solución sistémica: después de cada bracket order, esperar 1.5s → query /orders?nested=true → verificar que existe leg stop_limit side=sell → si NO existe, colocar stop_limit GTC standalone de forma inmediata (FAILSAFE). Implementado en: pre-market-earnings-scan (paper + real), market-open-execution (paper + real), sentinel EW plays (paper + real), sentinel macro plays (paper).",
+      "modulos_actualizados": [
+        "pre-market-earnings-scan/SKILL.md — PASO 6 paper + real",
+        "market-open-execution/SKILL.md — PASO 1 paper + real",
+        "sentinel/SKILL.md — PASO 5 EW paper + real + PASO 4B macro plays"
+      ],
+      "patron": "COWORK-FAILSAFE-P-{ticker}-{YYYYMMDD} / COWORK-FAILSAFE-R-{ticker}-{YYYYMMDD}",
+      "lección": "Nunca asumir que un bracket order creó el stop. Siempre verificar. El costo de la verificación (1.5s) es ínfimo comparado con el riesgo de posición naked."
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "BEAT_RESULTADO_FUERTE",
+      "titulo": "JD: BEAT FUERTE cons=+37.0% AH=+0.0% (2026-05-12)",
+      "descripcion": "EPS actual=$0.74 vs consensus=$0.54. BMO. Non-GAAP EPS $0.74 vs cons $0.54 (+37%). Revenue +4.9% YoY. Profitability return, food delivery losses narrowing.",
+      "accion_futura": "Patrón confirmado para JD: beat fuerte + AH positivo = continuation viable.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "ZBRA: beat cons=+9.7% confirmado AH=+15.4%",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=4.75 vs cons=4.33.",
+      "accion_futura": "Si ZBRA repite patrón: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "BEAT_RESULTADO_FUERTE",
+      "titulo": "DSP: BEAT FUERTE cons=+133.3% AH=+7.0% (2026-05-11)",
+      "descripcion": "EPS actual=$0.07 vs consensus=$0.03. Reportado May 11 post-cierre. EPS $0.07 vs $0.03 (+133%). Rev +25% YoY. CTV >50% spend. AH +7%. Q2 guide arriba.",
+      "accion_futura": "Patrón confirmado para DSP: beat fuerte + AH positivo = continuation viable.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "DSP: beat cons=+133.3% confirmado AH=+7.0%",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.07 vs cons=0.03.",
+      "accion_futura": "Si DSP repite patrón: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "WIN_NXT_REAL",
+      "titulo": "NXT real: +$26.63 WIN (+21.7%) — TP OCO ejecutado por encima del objetivo",
+      "descripcion": "NXT comprado real 1 acc @$122.60 (12-may). Earnings beat AH → gapped up. OCO TP $144.36 ejecutado pero con slippage positivo: filled @$149.23. P&L real = +$26.63. El sistema funcionó correctamente en este caso.",
+      "pnl_real": 26.63,
+      "pnl_pct": 21.7,
+      "lección": "Cuando el OCO TP está bien colocado y el earnings beat es fuerte, el sistema captura más upside del esperado (gap above limit → fills at best available)."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "WIN_JD_REAL",
+      "titulo": "JD real: +$19.28 WIN (+6.3%) — TP OCO ejecutado",
+      "descripcion": "JD comprado real 11 acc @$30.677 (11-may). Earnings beat +48%. OCO TP ejecutado @$32.43. P&L real = +$19.28.",
+      "pnl_real": 19.28,
+      "pnl_pct": 6.3,
+      "lección": "JD earnings beat confirmó la tesis. El sizing conservador (11 shares @ $30) limitó tanto las ganancias como el riesgo."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "LOSS_REZI_GAP_EARNINGS",
+      "titulo": "REZI paper/real: LOSS crítico por gap post-earnings miss — stop_limit inútil en gaps",
+      "descripcion": "REZI entró 12-may @$36.94 paper (233 acc) y @$36.90 real (6 acc) con stop $33.84/$33.50 (stop_limit OCO). Earnings AH 12-may fueron miss. Stock gappeó de ~$36 a ~$30.11 en la apertura del 13-may. Stop_limit NO se ejecutó porque el precio pasó directamente de ~$36 a ~$30 (gap-through). Resultado: real cerrado por bot @$30.39 (cid=LIVE.BLOWNSTOP) → pérdida real -$39.06. Paper OCO cancelado en apertura → posición paper abierta -$1,591. El pre-close-manager del 12-may probablemente intentó cerrar REZI paper pero falló porque los bracket legs (held) bloqueaban la qty. Cowork estaba apagado el 13-may → no corrió el gap check. REZI paper se cerrará el 14-may a mercado.",
+      "pnl_paper": -1591.0,
+      "pnl_real": -39.06,
+      "causa_raiz": "1) Stop_limit no protege gaps overnight post-earnings. 2) Pre-close R0 no cancela bracket legs (held status). 3) Sin gap-check en apertura.",
+      "fixes_aplicados": [
+        "pre-close-manager: cancelar bracket legs (status=all nested=true) antes de R0 close",
+        "market-open-execution: GAP CHECK — cierra posiciones que abrieron bajo su stop",
+        "Regla nueva: NUNCA entrar en earnings play el MISMO DÍA de earnings AH — solo D-1"
+      ],
+      "lección": "El mayor enemigo del sistema son los gaps post-earnings cuando el ordenador está apagado. Fix estructural: 1) Pre-close R0 con cancel completo (incluyendo held legs). 2) Gap check en apertura. 3) Regla D-1: no entrar en earnings si son AH el mismo día de entrada."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "BUG_PRECLOSE_R0_BRACKET_HELD",
+      "titulo": "Bug crítico: pre-close R0 no cancelaba bracket legs (status=held) → shares bloqueadas",
+      "descripcion": "El pre-close R0 cancelaba órdenes status='open', pero bracket legs están en status='held'. Al intentar cerrar una posición con bracket activo, Alpaca retorna 403 insufficient qty porque todas las shares están held_for_orders. Fix: usar /orders?status=all&nested=true y cancelar todos los órdenes activos incluyendo held antes de colocar el market close.",
+      "fix_aplicado": "pre-close-manager/SKILL.md PASO 2: cancelar con status=all nested=true antes de market sell",
+      "lección": "NUNCA asumir que cancelar status=open es suficiente cuando hay bracket orders. Siempre usar status=all&nested=true."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "MEJORA_GAP_CHECK_APERTURA",
+      "titulo": "Gap check en apertura implementado en market-open-execution",
+      "descripcion": "Nuevo bloque en market-open-execution que en cada apertura verifica: si alguna posición paper abre con precio < stop_price conocido (del performance_log) → cerrar inmediatamente con market order cancelando todos los orders previos. También cierra defensivamente si pérdida > 12% sin stop conocido. Previene la situación REZI: apagón + gap post-earnings + sin gap check = posición abierta -18.5%.",
+      "lección": "El gap check de apertura es la última línea de defensa cuando el pre-close falla (ordenador apagado, error en R0). Coste: ~5 segundos por ciclo. Beneficio: protección ante catástrofes tipo REZI."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "REGLA_D1_EARNINGS",
+      "titulo": "Regla nueva: no entrar en earnings play el mismo día que los earnings — solo D-1",
+      "descripcion": "REZI se entró el 12-may, mismos AH del 12-may. El pre-close corrió pero no pudo cerrar. Si hubiéramos entrado el 11-may (D-1), el pre-close del 12-may habría tenido más oportunidades de cerrar la posición. Regla: si earnings_timing=after-hours y earnings_fecha=today → NO entrar. Solo entrar si earnings_fecha=mañana o posterior.",
+      "fix_pendiente": "pre-market-earnings-scan: añadir check 'if earnings_fecha == today and earnings_timing == after-hours → skip (regla D-1)'",
+      "lección": "Las posiciones de drift EW son D-1: entrar el día ANTES de earnings. Si los earnings son AH hoy, el drift ya es máximo → no hay más drift que capturar → no entrar."
+    },
+    {
+      "fecha": "2026-05-16",
+      "tipo": "PIVOTE_ESTRATEGICO_W20",
+      "titulo": "Pivote estratégico W20: calidad sobre cantidad, cuenta real desactivada",
+      "descripcion": "Análisis exhaustivo tras n=19 trades Cowork: win_rate=42%, profit_factor=0.84, P&L neto=-$456. El sistema está operando sin ventaja estadística demostrada. Diagnóstico raíz: (1) scoring system con poder predictivo insuficiente — demasiados factores correlacionados sin validación empírica; (2) exceso de operaciones diluye el edge; (3) cuenta real expuesta sin PF≥1.5 confirmado.",
+      "cambios_implementados": {
+        "min_signal_score": "7.5 → 8.5 (filtrar solo señales top-tier)",
+        "max_cowork_positions": "5 → 2 (concentración: mejores 2 jugadas, no spray-and-pray)",
+        "max_posiciones_paper_simultaneas": "6 → 2",
+        "score_threshold_real_account": "7.5 → 99.0 (cuenta real DESACTIVADA hasta PF≥1.5)",
+        "filtro_beat_rate": "≥60% añadido — evitar compañías con historial de miss (PFE, OXY tipo)",
+        "archivos_actualizados": [
+          "performance_log.json",
+          "pre-market-earnings-scan/SKILL.md",
+          "sentinel/SKILL.md",
+          "market-open-execution/SKILL.md"
+        ]
+      },
+      "criterio_reactivacion_real": "Paper muestra PF≥1.5 Y win_rate≥50% sostenido durante 8 semanas consecutivas (mínimo n=30 trades paper). Solo entonces revisar score_threshold_real_account.",
+      "lección": "La mejora continua requiere medir primero, cambiar después. n=19 es suficiente para detectar ausencia de edge. El capital real merece más certeza antes de arriesgarlo."
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "CSCO: BEAT cons +6.0% / AH +15.0% (2026-05-13) ✅",
+      "descripcion": "EPS actual=$1.06 vs consensus=$1.0. Reacción AH: +15.0%. Rev YoY: 12.0%.",
+      "accion_futura": "Confirma pipeline. Si AH ≥5% → continuation play válido.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "CSCO: beat cons=+6.0% confirmado AH=+15.0% (2026-05-13)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=1.06 vs cons=1.0. Whisper=NO disponible.",
+      "accion_futura": "Si CSCO repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "BABA: MISS cons -89.3% / AH -8.9% (2026-05-13)",
+      "descripcion": "EPS actual=$0.09 vs consensus=$0.84. Reacción AH: -8.9%. Revenue YoY: 9.24%.",
+      "accion_futura": "Revisar perfil de BABA: guidance, sector, momentum pre-earnings. Reacción AH muy negativa — confirmed bearish.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "DOCS: MISS cons -7.9% / AH -11.1% (2026-05-13)",
+      "descripcion": "EPS actual=$0.26 vs consensus=$0.282. Reacción AH: -11.1%. Revenue YoY: 5.1%.",
+      "accion_futura": "Revisar perfil de DOCS: guidance, sector, momentum pre-earnings. Reacción AH muy negativa — confirmed bearish.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "EOSE: BEAT cons +150.0% / AH +20.0% (2026-05-13) ✅",
+      "descripcion": "EPS actual=$0.12 vs consensus=$-0.24. Reacción AH: +20.0%. Rev YoY: 445.0%.",
+      "accion_futura": "Confirma pipeline. Si AH ≥5% → continuation play válido.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-13",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "EOSE: beat cons=+150.0% confirmado AH=+20.0% (2026-05-13)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.12 vs cons=-0.24. Whisper=NO disponible.",
+      "accion_futura": "Si EOSE repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-12",
+      "tipo": "WHISPER_MISS_TECNICO",
+      "titulo": "OKLO (2026-05-12): beat consensus pero clasificado \"miss\" por EW (whisper más optimista)",
+      "descripcion": "EPS=-$0.19 vs cons=-$0.20 (beat técnico) pero EW marcó \"missed expectations\" → whisper más exigente. AH=-2.29% confirma underwhelm.",
+      "accion_futura": "Para small-caps con cobertura ligera: whisper EW > consensus oficial. Validar siempre con EW antes de continuation play.",
+      "impacto_score": -0.1
+    },
+    {
+      "fecha": "2026-05-14",
+      "titulo": "Bug intraday PASO 1.8: field 'score_total' no existe - candidatos usan 'score'/'score_ajustado'",
+      "descripcion": "El check 'score_total >= 8.5' en PASO 1.8 falla porque los candidatos almacenan el score como 'score' o 'score_ajustado'. Esto resultó en intento erroneo de cierre AMAT (score 8.5, validado). El bracket order lo protegio (insufficient qty), pero el bug existe.",
+      "accion_correctiva": "Cambiar 'score_total' por la primera de ['score_ajustado','score','score_total'] disponible",
+      "tarea_afectada": "intraday-monitor",
+      "old_text": "score_ok = candidatos_validados_tickers.get(sym, {}).get('score_total', 0) >= 8.5",
+      "new_text": "_cv = candidatos_validados_tickers.get(sym, {}); score_ok = max(_cv.get('score',0), _cv.get('score_ajustado',0), _cv.get('score_total',0)) >= 8.5",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-05-14",
+      "titulo": "BUG CRÍTICO pre-close: R0 (earnings AH hoy) overrideado por elif posicion_reciente",
+      "descripcion": "El SKILL pre-close-manager evalúa decisiones en dos bloques if/elif separados. El primero detecta R0 (earnings AH HOY → CERRAR). El segundo bloque incluye reglas como 'posicion_reciente_<=2d_pnl>-3pct → MANTENER' que sobrescriben decision sin verificar el estado previo. AMAT (2026-05-14) fue marcada R0 pero overrideada a mantener. Violación crítica de regla SAGRADA — lección MEDP 2026-04-23 aplicable.",
+      "accion_correctiva": "Fix permanente en SKILL pre-close: envolver bloque R1-R4/M1-M3 en 'if decision == \"mantener\":' O consolidar todas las reglas en una sola cadena if/elif priorizada (R0 primero, luego R0-EXT, luego R1-R4, luego M1-M3).",
+      "severidad": "critica",
+      "implementada": false,
+      "componente": "pre-close-manager"
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "AMAT: BEAT cons +6.7% / AH +6.5% (2026-05-14)",
+      "descripcion": "EPS=$2.86 vs cons=$2.68 vs whisper=$2.71. Rev YoY=11.4.",
+      "accion_futura": "Continuation play candidato.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "AMAT: beat cons=+6.7% confirmado AH=+6.5% (2026-05-14)",
+      "descripcion": "Mercado confirmo beat con AH fuerte.",
+      "accion_futura": "AMAT: AH confirmacion = senal validada continuation 1-3d.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "NU: MISS cons -5.2% / whisper -15.4% / AH -3.5% (2026-05-14)",
+      "descripcion": "EPS=$0.1776 vs cons=$0.1874 vs whisper=$0.21. Rev YoY=None.",
+      "accion_futura": "Revisar perfil NU: pre-drift descontaba? guidance?",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "BOOT: beat marginal cons +1.4% (2026-05-14)",
+      "descripcion": "EPS=$1.45 vs cons=$1.43."
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "GO: BEAT cons +66.7% / AH +10.8% (2026-05-14)",
+      "descripcion": "EPS=$0.05 vs cons=$0.03 vs whisper=$None. Rev YoY=3.6.",
+      "accion_futura": "Continuation play candidato.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "GO: beat cons=+66.7% confirmado AH=+10.8% (2026-05-14)",
+      "descripcion": "Mercado confirmo beat con AH fuerte.",
+      "accion_futura": "GO: AH confirmacion = senal validada continuation 1-3d.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "KLAR: BEAT cons +95.0% / AH +13.6% (2026-05-14)",
+      "descripcion": "EPS=$-0.01 vs cons=$-0.2 vs whisper=$None. Rev YoY=44.0.",
+      "accion_futura": "Continuation play candidato.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "KLAR: beat cons=+95.0% confirmado AH=+13.6% (2026-05-14)",
+      "descripcion": "Mercado confirmo beat con AH fuerte.",
+      "accion_futura": "KLAR: AH confirmacion = senal validada continuation 1-3d.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-14",
+      "tipo": "LECCION_PRE_DRIFT_NEGATIVO",
+      "titulo": "NU (2026-05-14): pre-drift -11.5%/-14.3% predijo miss",
+      "descripcion": "NU entro pendiente_ew con drift agresivamente negativo. Resultado: miss cons -5.2% / whisper -15.4%, AH negativo.",
+      "accion_futura": "earnings_pre_drift: drift negativo agresivo -> probable miss, NO entrar long. Considerar inverso o skip.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-05-15",
+      "tipo": "CONTINUATION_PERDIDO",
+      "titulo": "FIG: beat cons +66.7% no detectado en run Thursday → missed +12% Friday",
+      "descripcion": "FIG reportó Q1 2026 tras cierre Thursday May 14. EPS $0.10 vs cons $0.06 (+66.7%), revenue +46% YoY, AH=+6.86%. Continuation play habría dado +12.13% Friday. No estaba en parsing del EW email (posiblemente sólo en footer del email o fuente externa).",
+      "accion_futura": "Ampliar fuentes Gmail (motley fool, marketbeat) para capturar earnings AC del día. Considerar también búsqueda explícita por sector hot (tech/growth) tras cierre cada día.",
+      "impacto_score": -0.4
+    },
+    {
+      "fecha": "2026-05-15",
+      "tipo": "MACRO_RIESGO_CONTINUATION",
+      "titulo": "Friday 15-may: selloff semis -4 a -6.6% por Iran tensions",
+      "descripcion": "S&P -1.54%, NVDA -4.4%, INTC -6%, AMD -5.7%, MU -6.6% por miedo a Iran energy escalation. Esto impacta continuation plays semi-related: AMAT (continuation Thursday→Friday) probablemente cerró negativo. KLAR (BNPL, no semi) Friday morning +15% — el sector matters.",
+      "accion_futura": "Para continuation plays, comprobar correlación sectorial: si SOX/sector ETF cae >2% pre-open, considerar reducir size 50% o skip. Geopolitical risk = stop más cerca.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-05-16",
+      "tipo": "RESULTADO",
+      "titulo": "AMAT: BEAT (snippet Gmail)",
+      "descripcion": "Cerrado por scheduled weekend-ew-intel run con resultado de email snippet."
+    },
+    {
+      "fecha": "2026-05-17",
+      "tipo": "RESULTADO_OBSERVADO",
+      "titulo": "SURG: MISS (2026-05-15)",
+      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
+      "fuente": "epsguidance snippet"
+    },
+    {
+      "fecha": "2026-05-17",
+      "tipo": "RESULTADO_OBSERVADO",
+      "titulo": "AMAT: BEAT (2026-05-14)",
+      "descripcion": "Reportado en Gmail epsguidance snippet — beat. Sin datos EPS exactos por snippet limitado.",
+      "fuente": "epsguidance snippet"
+    },
+    {
+      "fecha": "2026-05-17",
+      "tipo": "RESULTADO_OBSERVADO",
+      "titulo": "NBIS: BEAT (2026-05-13)",
+      "descripcion": "Reportado en Gmail epsguidance snippet — beat. Sin datos EPS exactos por snippet limitado.",
+      "fuente": "epsguidance snippet"
+    },
+    {
+      "fecha": "2026-05-17",
+      "tipo": "RESULTADO_OBSERVADO",
+      "titulo": "OKLO: MISS (2026-05-12)",
+      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
+      "fuente": "epsguidance snippet"
+    },
+    {
+      "fecha": "2026-05-17",
+      "tipo": "RESULTADO_OBSERVADO",
+      "titulo": "HIMS: MISS (2026-05-11)",
+      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
+      "fuente": "epsguidance snippet"
+    },
+    {
+      "fecha": "2026-05-18",
+      "tipo": "WHISPER_HIGH_VS_CONSENSUS",
+      "titulo": "BIDU: beat consensus +3.5% pero MISS whisper -12.5% (2026-05-18)",
+      "descripcion": "EPS=1.75 vs cons=1.69 vs whisper=2.0. Whisper estaba por encima del consensus. Reacción AH apenas ++2.3%.",
+      "accion_futura": "Cuando whisper > consensus en >5%, beat-consensus solo no basta. Penalizar pre-trade si whisper supera consensus por >10%.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-05-18",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "AGYS: BEAT +18.9% vs whisper (2026-05-18) ✅",
+      "descripcion": "EPS actual=$0.63 vs whisper=$0.53 vs consensus=$0.5.",
+      "accion_futura": "Confirma pipeline EW. Mantener parámetros actuales.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-18",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "AGYS: beat cons=+26.0% confirmado AH=+14.0% (2026-05-18)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.63 vs cons=0.5. Whisper disponible.",
+      "accion_futura": "Si AGYS repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "BEAT_MARGINAL",
+      "titulo": "HD: beat marginal +0.6% (2026-05-19)",
+      "descripcion": "EPS actual=$3.43 vs cons=$3.41. AH=+0.0%.",
+      "accion_futura": "Beat marginal. Verificar guidance y reacción AH."
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "ECX: BEAT cons +57.1% (2026-05-19) ✅",
+      "descripcion": "EPS actual=$-0.03 vs cons=$-0.07. AH=+5.8%. Rev YoY=None.",
+      "accion_futura": "Confirma pipeline. Mantener parámetros.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "ECX: beat cons=+57.1% confirmado AH=+5.8% (2026-05-19)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=-0.03 vs cons=-0.07.",
+      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "TOL: BEAT cons +5.8% (2026-05-19) ✅",
+      "descripcion": "EPS actual=$2.72 vs cons=$2.57. AH=+5.5%. Rev YoY=-7.4.",
+      "accion_futura": "Confirma pipeline. Mantener parámetros.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "TOL: beat cons=+5.8% confirmado AH=+5.5% (2026-05-19)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=2.72 vs cons=2.57.",
+      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "BEAT_MARGINAL",
+      "titulo": "CAVA: beat marginal +4.8% (2026-05-19)",
+      "descripcion": "EPS actual=$None vs cons=$None. AH=+6.0%.",
+      "accion_futura": "Beat marginal. Verificar guidance y reacción AH."
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "CAVA: beat cons=+4.8% confirmado AH=+6.0% (2026-05-19)",
+      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=None vs cons=None.",
+      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-05-19",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "BILI: BEAT cons +12.2% (2026-05-19) ✅",
+      "descripcion": "EPS actual=$1.29 vs cons=$1.15. AH=+0.0%. Rev YoY=None.",
+      "accion_futura": "Confirma pipeline. Mantener parámetros.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-21",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "LION: BEAT +93.3% (2026-05-21) OK",
+      "descripcion": "EPS actual=$0.29 vs whisper=$None vs cons=$0.15. AH=+0.0%.",
+      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-21",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "TTWO: MISS -143.2% (2026-05-21)",
+      "descripcion": "EPS actual=$-0.32 vs whisper=$0.74 vs cons=$0.56. Rev YoY=6.15%.",
+      "accion_futura": "Revisar perfil de TTWO: guidance / deuda / sectorial.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-05-21",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "WDAY: BEAT +6.8% (2026-05-21) OK",
+      "descripcion": "EPS actual=$2.66 vs whisper=$None vs cons=$2.49. AH=+10.8%.",
+      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-05-21",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "WDAY: beat cons=+6.8% confirmado AH=+10.8% (2026-05-21)",
+      "descripcion": "Mercado confirmo beat con AH fuerte. EPS=2.66 vs cons=2.49.",
+      "accion_futura": "Si WDAY repite: AH confirmacion = senal continuation incluso sin whisper.",
+      "impacto_score": 0.3
+    },
     {
       "fecha": "2026-05-21",
       "tipo": "BEAT_RESULTADO",
@@ -333,118 +1053,6 @@
       "titulo": "W21: Pre-close vendiendo signals tier-1 antes del beat",
       "descripcion": "NVDA: bot vendió 10 acciones a $224.77 el 5/20 antes del earnings AH. NVDA beat masivo ($81.6B revenue vs $79.2B est, EPS $1.87 vs $1.78). Polymarket indicaba 90% prob beat. Pre-close regla genérica nos costó la ganancia post-beat (~$50 perdido por 10 sh).",
       "accion_futura": "Considerar excepción a pre-close para: (1) score_ew ≥ 4.5, (2) anticipation prob > 85%, (3) tier-1 AI infrastructure stocks. Crear BIQ-006."
-    },
-    {
-      "fecha": "2026-05-25",
-      "titulo": "W23: Pre-market scan en Memorial Day — preparar candidatos para semana de earnings",
-      "descripcion": "Scan ejecutado en Memorial Day (mercados cerrados). 19 candidatos puntuados, 0 con score ≥8.75 sin WebSearch en vivo. Top 8 con score 7.05: SNOW, NTNX, PATH, ASAN, PD, DELL, OKTA, BOX. La ceiling de 7.05 viene de C/D/F defaults — necesita ejecuciones post-market (con WebSearch en vivo) para subir scores. Semana de earnings retail/tech sólida (5/27 SNOW/NCNO/NTNX/CRM/MRVL/DKS/ANF; 5/28 PATH/ASAN/PD/DELL/OKTA/COST/BBY/BURL).",
-      "accion_correctiva": "Re-scan en post-market 2026-05-26 con WebSearch en vivo. Aplicar bonus de upgrade/options/insider para subir scores sobre 8.75. Verificar anti-descuento con price data real cuando market open.",
-      "severidad": "info"
-    },
-    {
-      "fecha": "2026-05-25",
-      "titulo": "Memorial Day post-market: paper equity intacta, week ahead = retail+tech earnings densa",
-      "descripcion": "Paper $108,245.04 sin cambios (mercado cerrado). 6 posiciones paper sin movimiento. 3 posiciones sin stop (GO, SLB, YETI) — solo take-profit limits visibles. GO Cowork score 9.8 entrada $7.75 ahora $8.02 (+3.4%) → mover a BE mañana. Semana 26-29: ZS martes AH, MRVL/CRM/SNOW miércoles AH, DELL/MDB/COST/BBY jueves. Pre-market scan ya generó 18 candidatos para la semana (scores 6.55-7.05) con datos EW completos del weekly preview.",
-      "accion_correctiva": "intraday-monitor 2026-05-26 09:40 ET: PASO 1 detectar GO/SLB/YETI sin stop y colocar BE/ATR. Re-validar candidatos con WebSearch en vivo + Yahoo Finance precios reales para subir scores.",
-      "tarea_afectada": "intraday-monitor + market-open-execution",
-      "auto_generado": false,
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "gestion_riesgo",
-      "titulo": "GO Cowork sin stop activo durante scan 10:25 ET",
-      "descripcion": "Posición GO (1107 acc @ $7.75, +5.23%) tenía limit TP $9.31 pero ningún stop. Riesgo descubierto durante semana de earnings. Pre-market scan reportó sin modificar (no add stop en task autónoma para evitar conflicto con bracket existente).",
-      "accion_correctiva": "Tarea de stop_management debería detectar posiciones Cowork sin stop al inicio del día y añadir stop_limit standalone. Considerar OCO order class.",
-      "implementada": false
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "SELL_THE_NEWS",
-      "titulo": "AZO: sell-the-news pattern (2026-05-26) — beat EPS +3.9% pero -10% intradía",
-      "descripcion": "AZO reportó Q3 EPS $38.07 vs cons $36.65 (+3.9% beat) PERO revenue $4.84B vs $4.86B exp (miss leve). Stock cayó -10%. O'Reilly (ORLY) en simpatía -4%. Auto-parts retailers: el mercado castigó el revenue miss a pesar del EPS beat. Probable pre-drift alto + concerns sectoriales.",
-      "accion_futura": "REGLA REFORZADA: beat EPS aislado NO es señal suficiente si hay revenue miss simultáneo. En sectores defensivos (consumer staples, auto-parts) el mercado pondera revenue tanto como EPS. Filtro: si cons_beat>0 PERO revenue_miss=True → degradar continuation score 30%.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "EW_EMAIL_TIMING",
-      "titulo": "EW Daily 2026-05-26: email de epsguidance no llegó antes de ejecutar tarea",
-      "descripcion": "La tarea ew-daily-results corre a 23:30 CEST (= 21:30 UTC = 17:30 ET). Email EW del día anterior (May 22) llegó a 21:21 UTC. Hoy May 26 corrimos a 21:39 UTC y email aún no presente. Posible retraso porque Memorial Day (May 25) interrumpió cadencia, o porque email llega tras AH reports (BOX/HEI/PVH cierran a 4:05 PM ET = 20:05 UTC pero EW espera más).",
-      "accion_futura": "Considerar mover ejecución de ew-daily-results de 23:30 CEST → 06:00 CEST siguiente día para garantizar email presente. O añadir reintento programado.",
-      "impacto_score": 0.0
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "CANDIDATO_PENDIENTE",
-      "titulo": "BOX: reportó hoy (Q1 FY27) — pendiente capturar resultado mañana",
-      "descripcion": "BOX en candidatos_validados (score 7.05) reportó 4:05 PM ET. Resultado no capturado vía WebSearch ni Gmail EW (email pendiente). Próxima ejecución debe priorizar BOX para cerrar la posición.",
-      "accion_futura": "Procesar resultado BOX en ew-daily-results 2026-05-27.",
-      "impacto_score": 0.0
-    },
-    {
-      "fecha": "2026-05-27",
-      "tarea": "pre-close-manager",
-      "titulo": "Stop-floor missing for COWORK-prefix detected positions",
-      "descripcion": "Cuando una posicion Cowork se identifica solo por COWORK- prefix en client_order_id (sin entry en operaciones[] ni candidatos_validados[]), cowork_match.stop_loss=0. El script de stops overnight compara new_stop vs stop_actual=0, siempre True, y puede LOOSEN el stop existente en Alpaca. Hoy 2026-05-27: AS y GO recibieron replace_order a un stop MAS LAXO que el previo (intraday-monitor habia tightenened). Manualmente restaurado: AS->35.12, GO->7.81.",
-      "accion_correctiva": "PASO 3 debe leer el stop_price real de la(s) open_stops antes de calcular new_stop, y aplicar floor: new_stop = max(new_stop_calculado, max(stop_price_actual_en_alpaca, stop_original)). Solo entonces decidir si replace.",
-      "implementada": false
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ZS: beat marginal +4.8% vs whisper (2026-05-26)",
-      "descripcion": "EPS actual=$1.08 vs whisper=$1.03.",
-      "accion_futura": "Verificar si hubo gap up significativo post-earnings."
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "ZS: SELL-THE-NEWS — beat cons=+6.9% pero AH=-17.0% (2026-05-26)",
-      "descripcion": "El mercado vendió en el beat. Causa probable ZS: corte de guidance forward o métricas secundarias (FCF margin, etc.). Pre-drift posible.",
-      "accion_futura": "Para ZS: verificar pre-drift y guidance secundario antes de earnings. FCF margin cut → sell-the-news pesado.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "BBAR: BEAT +42.1% vs whisper (2026-05-26) ✅",
-      "descripcion": "EPS actual=$0.27 vs whisper=$0.19 vs consensus=$0.17.",
-      "accion_futura": "Confirma pipeline EW. Mantener parámetros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "BBAR: beat cons=+58.8% confirmado AH=+7.4% (2026-05-26)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.27 vs cons=0.17. Whisper disponible.",
-      "accion_futura": "Si BBAR repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "VNET: MISS -5900.0% vs whisper (2026-05-26)",
-      "descripcion": "EPS actual=$-1.2 vs whisper=$-0.02 vs consensus=$0.0. Rev YoY=26.04%.",
-      "accion_futura": "Revisar perfil de VNET: ¿guidance negativo? ¿sectorial? ¿deuda alta?",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-26",
-      "tipo": "CASO_ESTUDIO_ZS",
-      "titulo": "ZS 2026-05-26: BEAT EPS pero -17% AH por corte FCF margin guide",
-      "descripcion": "Zscaler batió EPS (+4.85% vs whisper, +6.93% vs cons) y raised FY EPS guide ($4.10-$4.11), pero recortó FCF margin guide de 26.5-27% a 22.8-23.3%. Stock -17% AH. Patrón clásico SaaS: mercado prioriza FCF/Rule of 40 sobre EPS GAAP.",
-      "accion_futura": "LECCION: para SaaS con earnings, además de EPS+whisper monitorizar FCF margin guide. Si emisor mantiene gross margin pero baja FCF margin >300bps → continuation NO viable. Añadir filtro pre-earnings: si capex/rev acelera → reducir size 50%.",
-      "impacto_score": -0.6,
-      "caso_estudio": true
-    },
-    {
-      "fecha": "2026-05-28",
-      "tipo": "observacion_pipeline",
-      "titulo": "EW calendar headless devuelve 0 tickers — JS-rendered",
-      "descripcion": "La página /calendar de EW carga los tickers vía JavaScript. Sin un navegador con JS (Chrome MCP), no se puede obtener calendar automáticamente. Solo se pueden enriquecer tickers que llegan del email EW (procesado por weekend-ew-intel o post-market). Hoy se procesaron 9 candidatos provenientes del log y EW devolvió datos completos para todos.",
-      "accion_correctiva": "Mantener dependencia del email EW como fuente primaria de la lista de earnings de mañana. No depender del calendar scraping. La fetch individual /stocks/{ticker} sigue funcionando correctamente para enriquecer asimetría.",
-      "tarea_origen": "pre-market-earnings-scan"
     }
   ],
   "operaciones": [
@@ -881,7 +1489,7 @@
       "precio_tp": 276.96,
       "qty": 34,
       "rr": 2.0,
-      "estado": "cerrada_por_bot_pre_post_market_review",
+      "estado": "abierta",
       "orden_id": "145debda-cafb-400e-ade5-e3a6eea2dc80",
       "fecha_salida": null,
       "precio_salida": null,
@@ -889,40 +1497,7 @@
       "pnl_r": null,
       "leccion": null,
       "pnl_abs": -20.33000000000095,
-      "pnl_pct": -2.73,
-      "closed_at": "2026-05-25T20:31:20.172192+00:00",
-      "notas": " | Estado actualizado 2026-05-25 por post-market: no en posiciones Alpaca actuales — cerrada antes del Memorial Day."
-    },
-    {
-      "id": "COWORK-2026-05-28-BBAR",
-      "fecha_entrada": "2026-05-28",
-      "hora_et": "09:46",
-      "simbolo": "BBAR",
-      "tipo": "candidato_validado_post_earnings",
-      "tesis": "Post-earnings continuation. Beat EPS +42.1% vs whisper (Q1 EPS $0.27 vs $0.17 est). Score 9.5.",
-      "earnings_fecha": "2026-05-26",
-      "earnings_timing": "after-market",
-      "score_entrada": 9.5,
-      "precio_entrada": 17.91,
-      "precio_stop": 16.3,
-      "precio_tp": 20.37,
-      "qty": 494,
-      "rr": 2.0,
-      "estado": "abierta",
-      "orden_id": "b2e2b823-8f74-40aa-b123-2ff7e6544849",
-      "fecha_salida": null,
-      "precio_salida": null,
-      "pnl_dolares": null,
-      "pnl_r": null,
-      "leccion": null,
-      "source": "cowork",
-      "atr_entrada": 0.904,
-      "sizing_override": 1.0,
-      "gap_pct_entrada": 0.89,
-      "real_order_id": "20c9a9bb-0c55-404b-9fb6-8ca7e6ea4767",
-      "real_qty": 12,
-      "real_precio_entrada": 17.8725,
-      "cuenta": "paper+real"
+      "pnl_pct": -2.73
     }
   ],
   "candidatos_validados": [
@@ -3350,8 +3925,8 @@
       "ticker": "SNOW",
       "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
-      "score": 7.05,
-      "score_ajustado": 7.05,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 18.75,
@@ -3378,52 +3953,30 @@
         "G": 0.0,
         "penalizaciones": 0.0
       },
-      "sector": "enterprise_software",
+      "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 172.2,
-      "fuente": "pre-market-earnings-scan",
-      "conviction": "MEDIA",
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467444+00:00",
-      "expira": "2026-05-29T00:00:00Z",
+      "expira": "2026-05-27T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
-      "conviction_tier": "conviction_media",
-      "sizing_multiplier": 0.7,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 53.03,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full. | EW data 2026-05-25: asym=18.75% drift_hist=-3.5% bullish=81.8%",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "ew_data": {
-        "whisper": 0.38,
-        "consensus": 0.32,
-        "beat_pct_expected": 81.8,
-        "drift_hist_pct": -3.5,
-        "avg_move_recent": 14.1,
-        "implied_move": 13.8,
-        "sentiment": "bullish",
-        "date": "2026-05-27",
-        "timing": "after-hours"
-      },
-      "ew_asimetria_pct": 18.75,
-      "ew_drift_historico_pct": -3.5,
-      "ew_beat_rate_pct": 81.8,
-      "score_post_market_review": 7.0,
-      "score_total": 7.0
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0,
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "NCNO",
       "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
-      "score": 6.8,
-      "score_ajustado": 6.8,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
-      "accion_recomendada": "vigilar",
+      "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 23.08,
       "whisper": 0.32,
       "consensus": 0.26,
@@ -3451,31 +4004,25 @@
       "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 16.07,
-      "fuente": "pre-market-earnings-scan",
+      "fuente": "EW chrome+yfinance 2026-05-23",
       "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467463+00:00",
-      "expira": "2026-05-29T00:00:00Z",
+      "expira": "2026-05-27T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 75,
-      "avg_eps_surprise": 26.14,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=1.75 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z"
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "NTNX",
       "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
-      "score": 7.05,
-      "score_ajustado": 7.05,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 17.14,
@@ -3505,24 +4052,18 @@
       "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 47.12,
-      "fuente": "pre-market-earnings-scan",
-      "conviction": "MEDIA",
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467474+00:00",
-      "expira": "2026-05-29T00:00:00Z",
+      "expira": "2026-05-27T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 57.71,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z"
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "KSS",
@@ -3575,8 +4116,8 @@
       "ticker": "PATH",
       "earnings_fecha": "2026-05-28",
       "earnings_timing": "after-hours",
-      "score": 7.05,
-      "score_ajustado": 7.05,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 18.75,
@@ -3606,40 +4147,18 @@
       "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 10.93,
-      "fuente": "pre-market-earnings-scan",
-      "conviction": "MEDIA",
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467489+00:00",
-      "expira": "2026-05-30T00:00:00Z",
+      "expira": "2026-05-28T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 100,
-      "avg_eps_surprise": 254.43,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full. | EW data 2026-05-25: asym=18.75% drift_hist=-0.2% bullish=85.0%",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "ew_data": {
-        "whisper": 0.19,
-        "consensus": 0.16,
-        "beat_pct_expected": 85.0,
-        "drift_hist_pct": -0.2,
-        "avg_move_recent": 9.7,
-        "implied_move": 15.7,
-        "sentiment": "bearish_drift_flat",
-        "date": "2026-05-28",
-        "timing": "after-hours"
-      },
-      "ew_asimetria_pct": 18.75,
-      "ew_drift_historico_pct": -0.2,
-      "ew_beat_rate_pct": 85.0,
-      "score_post_market_review": 6.0,
-      "score_total": 6.0
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "AEO",
@@ -3692,8 +4211,8 @@
       "ticker": "ASAN",
       "earnings_fecha": "2026-05-28",
       "earnings_timing": "after-hours",
-      "score": 7.05,
-      "score_ajustado": 7.05,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 25.0,
@@ -3723,31 +4242,25 @@
       "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 6.62,
-      "fuente": "pre-market-earnings-scan",
-      "conviction": "MEDIA",
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467503+00:00",
-      "expira": "2026-05-30T00:00:00Z",
+      "expira": "2026-05-28T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 100,
-      "avg_eps_surprise": 53.02,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z"
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "PD",
       "earnings_fecha": "2026-05-28",
       "earnings_timing": "after-hours",
-      "score": 7.05,
-      "score_ajustado": 7.05,
+      "score": 6.9,
+      "score_ajustado": 6.9,
       "estado": "pendiente",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 25.0,
@@ -3777,473 +4290,125 @@
       "sector": "technology",
       "sector_5d_chg": 3.46,
       "precio_actual": 7.2,
-      "fuente": "pre-market-earnings-scan",
-      "conviction": "MEDIA",
+      "fuente": "EW chrome+yfinance 2026-05-23",
+      "conviction": "BAJA",
       "tier": 3,
       "real_eligible": false,
       "ts_creado": "2026-05-23T05:15:46.467509+00:00",
-      "expira": "2026-05-30T00:00:00Z",
+      "expira": "2026-05-28T21:00:00+00:00",
       "advertencias": [],
       "score_macro_bonus": 2,
       "score_industry_bonus": 0,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22",
-      "fecha_deteccion": "2026-05-25",
-      "beat_rate_historico": 100,
-      "avg_eps_surprise": 402.03,
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z"
+      "_nota_macro": "score_macro_bonus=2 disponible para pre-market scan W22"
     },
     {
       "ticker": "CRM",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "score_macro_bonus": 2,
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "score_macro_bonus": 0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 4.81,
       "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
-      "expira": "2026-05-29T00:00:00Z",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=2.5 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full. | EW data 2026-05-25: asym=4.81% drift_hist=-8.5% bullish=81.6%",
+      "expira": "2026-05-27T20:00:00Z",
+      "notas": "Score=4.0 — detectado en pre-apertura holiday (Memorial Day). Sesión próxima: 2026-05-26.",
       "detectado_por": "sentinel-preopen-holiday",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "fecha_deteccion": "2026-05-25",
-      "whisper": 3.27,
-      "consensus": 3.12,
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 8.81,
-      "fuente": "pre-market-earnings-scan",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA",
-      "ew_data": {
-        "whisper": 3.27,
-        "consensus": 3.12,
-        "beat_pct_expected": 81.6,
-        "drift_hist_pct": -8.5,
-        "avg_move_recent": 5.2,
-        "implied_move": 8.9,
-        "sentiment": "bearish_sell_news_risk",
-        "date": "2026-05-27",
-        "timing": "after-hours"
-      },
-      "ew_asimetria_pct": 4.81,
-      "ew_drift_historico_pct": -8.5,
-      "ew_beat_rate_pct": 81.6,
-      "score_post_market_review": 5.0,
-      "score_total": 5.0,
-      "sector": "enterprise_software",
-      "conviction_tier": "no_entry",
-      "sizing_multiplier": 0
-    },
-    {
-      "ticker": "DELL",
-      "fecha_deteccion": "2026-05-25",
-      "score": 7.05,
-      "score_ajustado": 7.05,
-      "asimetria_pct": 6.19,
-      "whisper": 3.09,
-      "consensus": 2.91,
-      "beat_rate_historico": 83,
-      "avg_eps_surprise": 15.95,
-      "earnings_fecha": "2026-05-28",
-      "earnings_timing": "after-hours",
-      "estado": "pendiente",
-      "accion_recomendada": "estudiar_antes_entrar",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "expira": "2026-05-30T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full. | EW data 2026-05-25: asym=6.19% drift_hist=114.9% bullish=81.8%",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "MEDIA",
-      "ew_data": {
-        "whisper": 3.09,
-        "consensus": 2.91,
-        "beat_pct_expected": 81.8,
-        "drift_hist_pct": 114.9,
-        "avg_move_recent": 9.3,
-        "implied_move": 12.1,
-        "sentiment": "bearish_but_drift_up",
-        "date": "2026-05-28",
-        "timing": "after-hours"
-      },
-      "ew_asimetria_pct": 6.19,
-      "ew_drift_historico_pct": 114.9,
-      "ew_beat_rate_pct": 81.8,
-      "score_post_market_review": 9.5,
-      "score_total": 9.5,
-      "score_macro_bonus": 2,
-      "sector": "technology",
-      "conviction_tier": "conviction_maxima",
-      "sizing_multiplier": 1.3
-    },
-    {
-      "ticker": "OKTA",
-      "fecha_deteccion": "2026-05-25",
-      "score": 7.05,
-      "score_ajustado": 7.05,
-      "asimetria_pct": 7.06,
-      "whisper": 0.91,
-      "consensus": 0.85,
-      "beat_rate_historico": 100,
-      "avg_eps_surprise": 27.5,
-      "earnings_fecha": "2026-05-28",
-      "earnings_timing": "after-hours",
-      "estado": "pendiente",
-      "accion_recomendada": "estudiar_antes_entrar",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "expira": "2026-05-30T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "MEDIA"
-    },
-    {
-      "ticker": "BOX",
-      "fecha_deteccion": "2026-05-25",
-      "score": 7.05,
-      "score_ajustado": 7.05,
-      "asimetria_pct": 11.11,
-      "whisper": 0.4,
-      "consensus": 0.36,
-      "beat_rate_historico": 83,
-      "avg_eps_surprise": 104.99,
-      "earnings_fecha": "2026-05-26",
-      "earnings_timing": "after-hours",
-      "estado": "resultado_conocido",
-      "accion_recomendada": "estudiar_antes_entrar",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "expira": "2026-05-28T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "MEDIA",
-      "nota_seguimiento": "EW Daily 2026-05-26: BOX reportó Q1 FY27 a las 4:05 PM ET. Email EW no llegado y WebSearch sin actuales aún. Procesar en próxima ejecución (May 27).",
-      "ts_seguimiento": "2026-05-26T21:42:40.184648+00:00",
-      "resultado_real": "beat",
-      "eps_actual": 0.37,
-      "eps_whisper": 0.4,
-      "eps_consensus": 0.36,
-      "whisper_beat_pct": -7.5,
-      "estado_anterior": "pendiente",
-      "ts_resultado": "2026-05-27T21:42:55.563017+00:00",
-      "revenue_growth_yoy_real": 10.74,
-      "guidance_proximo": "Raised but in-line (FY $1.56 vs LSEG $1.63)",
-      "reaccion_ah_pct": -2.0
-    },
-    {
-      "ticker": "BBY",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 4.92,
-      "whisper": 1.28,
-      "consensus": 1.22,
-      "beat_rate_historico": 83,
-      "avg_eps_surprise": 3.05,
-      "earnings_fecha": "2026-05-28",
-      "earnings_timing": "pre-market",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre",
-      "expira": "2026-05-30T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=2.5 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full. | EW data 2026-05-25: asym=4.92% drift_hist=-4.6% bullish=76.9%",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA",
-      "ew_data": {
-        "whisper": 1.28,
-        "consensus": 1.22,
-        "beat_pct_expected": 76.9,
-        "drift_hist_pct": -4.6,
-        "avg_move_recent": 6.9,
-        "implied_move": 10.1,
-        "sentiment": "bearish",
-        "date": "2026-05-28",
-        "timing": "pre-market"
-      },
-      "ew_asimetria_pct": 4.92,
-      "ew_drift_historico_pct": -4.6,
-      "ew_beat_rate_pct": 76.9,
-      "score_post_market_review": 4.0,
-      "score_total": 4.0,
-      "score_macro_bonus": 0,
-      "sector": "consumer_cyclical",
-      "conviction_tier": "no_entry",
-      "sizing_multiplier": 0
-    },
-    {
-      "ticker": "DKS",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 5.23,
-      "whisper": 3.02,
-      "consensus": 2.87,
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 5.54,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "pre-market",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre",
-      "expira": "2026-05-29T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=2.5 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA"
-    },
-    {
-      "ticker": "BURL",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 6.78,
-      "whisper": 1.89,
-      "consensus": 1.77,
-      "beat_rate_historico": 67,
-      "avg_eps_surprise": 8.89,
-      "earnings_fecha": "2026-05-28",
-      "earnings_timing": "pre-market",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre",
-      "expira": "2026-05-30T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=1.50 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA"
-    },
-    {
-      "ticker": "ANF",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 5.56,
-      "whisper": 1.33,
-      "consensus": 1.26,
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 101.63,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "pre-market",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre",
-      "expira": "2026-05-29T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=2.5 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA"
-    },
-    {
-      "ticker": "GAP",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 5.13,
-      "whisper": 0.41,
-      "consensus": 0.39,
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 78.43,
-      "earnings_fecha": "2026-05-28",
-      "earnings_timing": "after-hours",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "expira": "2026-05-30T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=2.5 B=2.00 C=0.5 D=0.5 F=1.05. EW status: EW_full.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA"
-    },
-    {
-      "ticker": "PSTG",
-      "fecha_deteccion": "2026-05-25",
-      "score": 6.55,
-      "score_ajustado": 6.55,
-      "asimetria_pct": 15.0,
-      "whisper": null,
-      "consensus": null,
-      "beat_rate_historico": 92,
-      "avg_eps_surprise": 24.3,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "estado": "pendiente",
-      "accion_recomendada": "vigilar",
-      "ventana_entrada": "D-1 cierre o pre-market mismo día",
-      "expira": "2026-05-29T00:00:00Z",
-      "fuente": "pre-market-earnings-scan",
-      "notas": "Updated by pre-market scan 2026-05-25 (Memorial Day - mercado cerrado). Score breakdown: A=3.0 B=2.00 C=0.5 D=0.5 F=1.05. EW status: yfinance_proxy.",
-      "last_updated": "2026-05-25T14:30:46.849273Z",
-      "conviction": "BAJA"
-    },
-    {
-      "ticker": "BBAR",
-      "score": 9.5,
-      "score_ajustado": 9.5,
-      "score_override": 9.5,
-      "source": "log_validated",
-      "estado": "ejecutado",
-      "tipo": "post_earnings_continuation",
-      "earnings_fecha": "2026-05-26",
-      "accion_recomendada": "entrar_apertura",
-      "ventana_entrada": "2026-05-28 09:40-10:15 ET — continuación post-beat",
-      "stop_tipo": "low_earnings_day_or_ATR1.5",
-      "sizing": "0.5x",
-      "argumento": "BBAR batió whisper en +42.1% (2026-05-26). EPS=0.27 vs W=$0.19. AH=+7.4%. Rev YoY=26.26%. Continuation ruta=whisper_confirmado.",
-      "beat_pct_vs_whisper": 42.11,
-      "consensus_beat_pct": 58.82,
-      "reaccion_ah_pct": 7.42,
-      "continuation_ruta": "whisper_confirmado",
-      "eps_actual": 0.27,
-      "eps_whisper": 0.19,
-      "revenue_growth_yoy": 26.26,
-      "fuente": "ew-daily-results-continuation",
-      "detectado_por": "ew-daily-results",
-      "fecha_deteccion": "2026-05-27",
-      "expira": "2026-05-28T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat +42.1% vs whisper. Entrar apertura 2026-05-28. Stop: bajo mínimo día earnings o ATR×1.5. Max hold: 3 días. NOTA: BBAR ADR Argentina ",
-      "asimetria_pct": 25.266,
-      "ts_creado": "2026-05-27T21:42:55.563060+00:00",
-      "umbral_real": 7.5,
-      "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d",
-      "warning_liquidez": "ADR thinly traded. Verificar bid/ask spread y avg volume antes de entrar. Sizing recomendado 0.5x del estándar.",
-      "fecha_ejecucion": "2026-05-28 13:49",
-      "orden_id": "b2e2b823-8f74-40aa-b123-2ff7e6544849",
-      "precio_ejecucion": 17.91
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fecha_deteccion": "2026-05-25"
     }
   ],
   "macro_context": {
-    "ts_actualizado": "2026-05-28T11:12",
-    "macro_score": 0.5,
-    "macro_bonus_pm": 0.24,
-    "macro_nivel": "normal",
-    "contexto_resumen": [
-      "S&P y Nasdaq en RECORDS pese a PCE 3.8% — sentimiento alcista",
-      "Earnings retail/tech sorpresa positiva (SNOW+37%, NCNO+14%, BBY+8%, DELL+4%)"
+    "fecha_actualizacion": "2026-05-23",
+    "semana": "2026-W22",
+    "regimen": "AI_TECH_RALLY",
+    "vix": 16.6,
+    "yield_spread_10y2y": 0.43,
+    "narrativa_dominante": "NVDA beat masivo 5/20 ($81.6B revenue vs $79.2B est) reactiva narrativa AI. Bloomberg: 'It's still all about AI' — sin AI no hay rally amplio. Yield curve flatteando (0.54→0.43) — preocupación growth. Fed pausada 3.50-3.75%, minutas Warsh hawkish con Iran inflación. Memorial Day 5/25 mercado cerrado. Sell-in-May sentiment (EW Whisper Report) en contra de AI strength.",
+    "fuentes_consultadas": [
+      "Bloomberg Morning Briefing 5/21-5/22",
+      "EarningsWhispers Whisper Report W21",
+      "FRED T10Y2Y",
+      "WebSearch NVDA earnings 5/20",
+      "Alpaca data SPY"
     ],
-    "tarea_origen": "pre-market-earnings-scan",
-    "notas": "Today is Memorial Day US holiday. No live market data. Scoring used neutral defaults (C/D/F neutros, sin WebSearch en vivo). Next trading day: 2026-05-26.",
+    "sector_prioridades": {
+      "ai_infrastructure": 2,
+      "memory_chips": 2,
+      "technology": 2,
+      "energy": 1,
+      "industrials": 1,
+      "defense": 1,
+      "financials": 0,
+      "communication": 1,
+      "materials": 1,
+      "healthcare": 0,
+      "consumer_discretionary": -1,
+      "consumer_staples": -1,
+      "utilities": -1,
+      "real_estate": -2
+    },
+    "sectores_a_vigilar_esta_semana": [
+      "ai_infrastructure",
+      "memory_chips",
+      "technology"
+    ],
+    "sectores_a_evitar_esta_semana": [
+      "real_estate",
+      "consumer_staples",
+      "utilities",
+      "consumer_discretionary"
+    ],
+    "eventos_macro_proxima_semana": [
+      {
+        "fecha": "2026-05-25",
+        "evento": "MEMORIAL DAY",
+        "hora_et": "todo el día",
+        "impacto": "CIERRE_MERCADO"
+      },
+      {
+        "fecha": "2026-05-27",
+        "evento": "FOMC Speakers (TBD)",
+        "hora_et": "TBD",
+        "impacto": "MEDIO"
+      },
+      {
+        "fecha": "2026-05-29",
+        "evento": "PCE Core (mes anterior)",
+        "hora_et": "08:30",
+        "impacto": "ALTO"
+      },
+      {
+        "fecha": "2026-05-30",
+        "evento": "Consumer Sentiment Final",
+        "hora_et": "10:00",
+        "impacto": "BAJO"
+      }
+    ],
+    "dias_riesgo_macro": [
+      "2026-05-25",
+      "2026-05-29"
+    ],
+    "notas_adicionales": "Memorial Day = sólo 4 días trading (martes-viernes). Earnings W22 destacados: AI/memory: NTNX, ASAN, PD (5/28); Retail: ANF, KSS, AEO; SNOW (5/27 AH); Software: PATH, CRWD posiblemente.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-05-28T11:12",
+      "timestamp": "2026-05-28T12:11",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 9.0,
-      "score_min_real_efectivo": 9.0,
-      "spy_change": 0,
-      "contexto": "S&P y Nasdaq en RECORDS pese a PCE 3.8% — sentimiento alcista|Earnings retail/tech sorpresa positiva (SNOW+37%, NCNO+14%, BBY+8%, DELL+4%)"
+      "shock_tipo": "ninguno"
     },
-    "fecha_actualizacion": "2026-05-25",
-    "vix": 20.0,
-    "regimen": "RISK_ON_EARNINGS_SEASON",
-    "narrativa_dominante": "ACTUALIZACIÓN 2026-05-25 (Memorial Day, mercados cerrados): Friday 22-may S&P 500 cerró en máximo histórico 7,473 (+0.37%), 8ª semana consecutiva de subidas. Dow récord 50,580 (+0.58%), Nasdaq 26,344 (+0.19%). VIX 16.76, calm. Drivers de la subida: (1) US-Iran avanzando hacia acuerdo, baja riesgo geopolítico, (2) AI capex super-cycle continua tras beat NVDA $1.87 vs $1.78 (rev +85.2% YoY), (3) earnings beats generalizados (INTU, HD, NIO). Semana 25-29 mayo: rica en datos macro (PCE inflación, GDP, personal income) y earnings (ZS martes, MRVL/CRM/SNOW miércoles, DELL/MDB/COST/BBY jueves). Mañana 2026-05-26 reopen: expectativa volatilidad por digestión de noticias del fin de semana largo.",
-    "sector_prioridades": {
-      "technology": 2,
-      "semiconductors": 2,
-      "enterprise_software": 2,
-      "cybersecurity": 1,
-      "consumer_cyclical": 0,
-      "retail": 0,
-      "energy": 1,
-      "defense": -1,
-      "financials": 1,
-      "healthcare": 0,
-      "consumer_staples": -1
-    },
-    "sectores_a_vigilar_esta_semana": [
-      "technology",
-      "semiconductors",
-      "enterprise_software",
-      "cybersecurity",
-      "energy",
-      "financials"
-    ],
-    "sectores_a_evitar_esta_semana": [
-      "defense",
-      "consumer_staples"
-    ],
-    "eventos_recientes": [
-      {
-        "fecha": "2026-05-25",
-        "evento": "Memorial Day - mercados US cerrados. Friday close S&P 500 récord 7,473 (+0.37%), 8ª semana consecutiva +. VIX 16.76 calm.",
-        "impacto": "BAJO (no trading)",
-        "sectores_afectados": [],
-        "fuente": "WebSearch + Bloomberg morning brief"
-      },
-      {
-        "fecha": "2026-05-25",
-        "evento": "US-Iran negotiations advancing — reducing geopolitical risk. Bloomberg morning briefing 'Deal optimism'.",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "defense",
-          "energy",
-          "airlines"
-        ],
-        "fuente": "Bloomberg Morning Briefing 2026-05-25"
-      }
-    ],
-    "fuentes_consultadas": [
-      "Gmail post-market 2026-05-25: EW weekly preview 23-may, EW daily summary 22-may, Bloomberg morning briefings"
-    ],
-    "sectores_hoy": {
-      "tech": 0,
-      "fin": 0,
-      "energy": 0,
-      "health": 0,
-      "industrial": 0,
-      "cons_disc": 0,
-      "utilities": 0
-    },
-    "macro_bonus_ew": 0.15,
+    "macro_score": 0.0,
+    "macro_nivel": "normal",
+    "contexto_resumen": [],
     "futuros": {
-      "SPY": 0,
-      "QQQ": 0,
-      "IWM": 0
+      "ES": 0.0,
+      "NQ": 0.0
     },
-    "bonos": {
-      "tlt_chg": 0
-    },
-    "updated_by": "pre-market-earnings-scan",
-    "fear_greed": 59,
-    "put_call_ratio": 0.83,
-    "websearch_intel": {
-      "iran_status": "US strikes Tuesday May 26, Iran vows retaliation, Brent >$100",
-      "fed_status": "Pause at 3.5-3.75%, last meeting Apr 29 (4 dissents)",
-      "earnings_today_amc": "AZO, ESLT, WSM, BBWI, SQM",
-      "earnings_tomorrow_amc": "CRM, MRVL, SNOW, SNPS, DKS",
-      "mag7_today": "None reporting"
-    },
-    "spy_change": 0.55,
-    "spy_30min": null,
-    "qqq_change": 1.61,
-    "vixy_change": -3.63,
-    "vix_estimate": 14,
-    "tlt_change": 0.38,
-    "sector_changes": {
-      "tech": 2.55,
-      "financials": -0.2,
-      "energy": -1.98,
-      "industrials": 1.42,
-      "consumer_disc": -0.16,
-      "utilities": 0.45
-    },
-    "iwm_change": 1.72,
-    "uso_change": -2.55,
-    "gld_change": -0.47,
-    "websearch_oil_tension": "US strikes Iran overnight, Brent $100→$99. Mercado descuenta paz. XLE -2% pese al spike.",
-    "spy_change_intraday": 0,
-    "macro_bonus": 0.18,
-    "fuente": "pre-market-earnings-scan 10:25 ET",
-    "shock_tipo": "ninguno",
-    "commodities": {
-      "uup": 0,
-      "gld": 0,
-      "uso": 0
-    }
+    "yield_10y": 0.0,
+    "oil_price": 0.0,
+    "ts_actualizado": "2026-05-28T12:11"
   },
   "operaciones_crypto": [
     {
@@ -9447,96 +9612,6 @@
       ],
       "ordenes": [],
       "razon_no_entrada": "Top score 4.00 < MIN_SCORE 7.0. F&G 28 (Fear) + 7d momentum negativo en todo el universo."
-    },
-    {
-      "id": "CRYPTO-SCAN-20260527-0137",
-      "fecha": "2026-05-27 01:37 ET",
-      "fecha_cest": "2026-05-27 07:37 CEST",
-      "tipo": "crypto_scan",
-      "fear_greed": 25,
-      "fear_greed_class": "Extreme Fear",
-      "modo": "WEEKDAY_OFFHOURS",
-      "min_score": 7.0,
-      "size_multiplier": 0.5,
-      "equity_paper": 108578,
-      "candidatos_evaluados": 7,
-      "ordenes_ejecutadas": 0,
-      "posiciones_crypto_tras_scan": 0,
-      "exposicion_crypto_pct": 0.0,
-      "razon_sin_entradas": "F&G=25 (Extreme Fear, threshold) + universo en negativo 24h/7d — ningún candidato alcanza score 5.5 prelim",
-      "candidatos": [
-        {
-          "symbol": "BTC/USD",
-          "score": 4.0,
-          "price": 75540,
-          "ch24": -1.71,
-          "ch7d": -1.51,
-          "vol24_usd_billions": 37.59,
-          "rsi": 50,
-          "detail": "24h -1.7% flat/neg | 7d -1.5% | vol $37.6B (huge) | RSI 50 ideal | F&G 25 FEAR"
-        },
-        {
-          "symbol": "ETH/USD",
-          "score": 4.0,
-          "price": 2071.69,
-          "ch24": -1.36,
-          "ch7d": -1.86,
-          "vol24_usd_billions": 14.59,
-          "rsi": 50,
-          "detail": "24h -1.4% flat/neg | 7d -1.9% | vol $14.6B (huge) | RSI 50 ideal | F&G 25 FEAR"
-        },
-        {
-          "symbol": "SOL/USD",
-          "score": 3.5,
-          "price": 83.61,
-          "ch24": -1.19,
-          "ch7d": -0.58,
-          "vol24_usd_billions": 2.69,
-          "rsi": 50,
-          "detail": "24h -1.2% flat/neg | 7d -0.6% | vol $2.7B | RSI 50 ideal | F&G 25 FEAR"
-        },
-        {
-          "symbol": "DOGE/USD",
-          "score": 3.0,
-          "price": 0.10143,
-          "ch24": -0.38,
-          "ch7d": -0.94,
-          "vol24_usd_billions": 0.71,
-          "rsi": 50,
-          "detail": "24h -0.4% flat/neg | 7d -0.9% | vol $711M | RSI 50 ideal | F&G 25 FEAR"
-        },
-        {
-          "symbol": "ADA/USD",
-          "score": 3.0,
-          "price": 0.239857,
-          "ch24": -1.04,
-          "ch7d": -3.3,
-          "vol24_usd_billions": 0.37,
-          "rsi": 50,
-          "detail": "24h -1.0% flat/neg | 7d -3.3% | vol $372M | RSI 50 ideal | F&G 25 FEAR"
-        },
-        {
-          "symbol": "AVAX/USD",
-          "score": 0,
-          "price": 9.14,
-          "ch24": -1.72,
-          "ch7d": 0.37,
-          "vol24_usd_billions": 0.18,
-          "rsi": 50,
-          "detail": "Vol insuficiente: $178M < $300M"
-        },
-        {
-          "symbol": "LINK/USD",
-          "score": 0,
-          "price": 9.42,
-          "ch24": -1.11,
-          "ch7d": -0.67,
-          "vol24_usd_billions": 0.3,
-          "rsi": 50,
-          "detail": "Vol insuficiente: $296M < $300M"
-        }
-      ],
-      "ordenes": []
     }
   ],
   "parametros_crypto": {
@@ -9995,13 +10070,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-05-25",
+    "_ultima_actualizacion": "2026-05-23",
     "rendimiento_global": {
-      "equity_paper_actual": 108245.04,
+      "equity_paper_actual": 107467.65,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2745.04,
-      "pnl_total_paper_pct": 2.6,
-      "equity_real_actual": 4544.5,
+      "pnl_total_paper_dolares": 1967.65,
+      "pnl_total_paper_pct": 1.87,
+      "equity_real_actual": 4517.39,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
       "pnl_total_real_pct": 0.39,
@@ -10294,19 +10369,7 @@
         "notas": "Solo 1 op Cowork W21 (PANW) post-pivote calidad. Bot operó 5 buys + 9 sells. NVDA beat masivo 5/20. 3 posiciones bot SIN STOP. Render OOM 5/21."
       }
     ],
-    "historico_diario": [
-      {
-        "fecha": "2026-05-25",
-        "equity_paper": 108245.04,
-        "equity_real": 4544.5,
-        "pnl_dia_paper": 101.3,
-        "vix": 16.76,
-        "memorial_day": true,
-        "n_posiciones": 6,
-        "n_ops_abiertas": 1,
-        "n_candidatos_pendientes": 19
-      }
-    ],
+    "historico_diario": [],
     "objetivos": {
       "win_rate_objetivo_pct": 55,
       "avg_r_objetivo": 1.5,
@@ -12273,125 +12336,6 @@
       "buying_power": 400377.8,
       "equity": 107238.49,
       "mercado_normal": true
-    },
-    {
-      "fecha": "2026-05-26",
-      "ts": "2026-05-26T14:30",
-      "tarea": "pre-market-earnings-scan",
-      "paper_equity": 108630.65,
-      "real_equity": 4544.51,
-      "paper_positions": [
-        "AS",
-        "GO",
-        "HD",
-        "SAIC"
-      ],
-      "cowork_positions": [
-        "GO"
-      ],
-      "pendientes_evaluados_hoy_manana": 8,
-      "ejecutables": [],
-      "macro_score": 0.8,
-      "vix": 16.829999923706055,
-      "sectores_lider": "tech",
-      "notas": "Sin entradas hoy — umbral 8.75 estricto y candidatos máx 7.05 (NCNO 7.04). PSTG +8.46% intraday descontado. SNOW/NTNX con sentiment deteriorado en últimos 90d."
-    },
-    {
-      "timestamp": "2026-05-27T16:39:59.188770+00:00",
-      "posiciones_abiertas": 4,
-      "posiciones_detalle": [
-        {
-          "symbol": "AS",
-          "shares": 50,
-          "entry": 34.9644,
-          "current": 37.0,
-          "pnl_pct": 5.82,
-          "stop": 34.89,
-          "stop_source": "stop_top_level"
-        },
-        {
-          "symbol": "DELL",
-          "shares": 28,
-          "entry": 302.156429,
-          "current": 306.97,
-          "pnl_pct": 1.59,
-          "stop": 276.2,
-          "stop_source": "stop_bracket_leg"
-        },
-        {
-          "symbol": "GO",
-          "shares": 1107,
-          "entry": 7.75,
-          "current": 8.155,
-          "pnl_pct": 5.23,
-          "stop": 7.17,
-          "stop_source": "stop_top_level"
-        },
-        {
-          "symbol": "HD",
-          "shares": 5,
-          "entry": 298.1,
-          "current": 318.39,
-          "pnl_pct": 6.81,
-          "stop": 299.3,
-          "stop_source": "stop_top_level"
-        }
-      ],
-      "posiciones_sin_stop": [],
-      "stops_actualizados": [
-        {
-          "symbol": "AS",
-          "old": 34.89,
-          "new": 35.12,
-          "R": 27.63
-        },
-        {
-          "symbol": "GO",
-          "old": 7.17,
-          "new": 7.81,
-          "R": 0.67
-        }
-      ],
-      "stops_fallidos": [],
-      "parciales_ejecutados": [
-        {
-          "symbol": "AS",
-          "shares": 25,
-          "precio_aprox": 37.04,
-          "R": 27.63,
-          "order_id": "52ba8bf4-12a",
-          "status": "filled"
-        }
-      ],
-      "ew_cierres_urgentes": [],
-      "ordenes_ejecutadas_hoy": [
-        {
-          "symbol": "DELL",
-          "side": "buy",
-          "type": "market",
-          "qty": "28",
-          "status": "filled",
-          "filled_avg_price": "302.156429",
-          "coid": "COWORK-20260527-DELL"
-        }
-      ],
-      "ordenes_pendientes": [],
-      "ordenes_canceladas": [],
-      "live_alertas": {
-        "DELL": [
-          "📰 POS: Dell Shares Hit New 52-Week High As AI Push And Analyst Upgrades Fuel Rally",
-          "📰 POS: Zoom Upbeat Q1 Results, Joins Lionsgate Studios, Ross Stores And Other Big Stocks Moving High"
-        ],
-        "HD": [
-          "⚠️ NEG: Lowe's Posts Q1 Earnings Beat; These Analysts Cut Price Target On Comp, Gross Margin Pressur"
-        ]
-      },
-      "candidatos_intraday_aprobados": [],
-      "ejecutados_intraday": [],
-      "fallidos_intraday": [],
-      "modo_dip": false,
-      "dip_mercado_pct": -0.10654094834761042,
-      "motivo_no_ejecucion": "max_cowork_positions=2 alcanzado (actuales=4)"
     }
   ],
   "pre_close_log": [
@@ -14809,173 +14753,6 @@
           "accion": "no_intervenir — bot gestiona sus propios stops"
         }
       ]
-    },
-    {
-      "timestamp": "2026-05-26T18:45:40.226321+00:00",
-      "evaluaciones": [
-        {
-          "symbol": "AS",
-          "decision": "mantener",
-          "razon": "mantener_estandar pnl=5.4% dias=7",
-          "pnl_pct": 5.42,
-          "pnl_abs": 94.78,
-          "dias": 7,
-          "price_now": 36.86,
-          "entry_price": 34.9644,
-          "stop_actual": 0.0,
-          "shares": 50
-        },
-        {
-          "symbol": "GO",
-          "decision": "mantener",
-          "razon": "mantener_estandar pnl=2.3% dias=11",
-          "pnl_pct": 2.26,
-          "pnl_abs": 193.72,
-          "dias": 11,
-          "price_now": 7.925,
-          "entry_price": 7.75,
-          "stop_actual": 0.0,
-          "shares": 1107
-        },
-        {
-          "symbol": "HD",
-          "decision": "mantener",
-          "razon": "mantener_estandar pnl=3.7% dias=7",
-          "pnl_pct": 3.75,
-          "pnl_abs": 55.82,
-          "dias": 7,
-          "price_now": 309.265,
-          "entry_price": 298.1,
-          "stop_actual": 0.0,
-          "shares": 5
-        }
-      ],
-      "posiciones_cerrar": 0,
-      "posiciones_mantener": 3,
-      "cierres_ejecutados": [],
-      "cierres_fallidos": [],
-      "stops_overnight": [
-        {
-          "symbol": "AS",
-          "old_stop": 0.0,
-          "new_stop": 34.89,
-          "pnl_pct": 5.42,
-          "tier": "overnight_normal_3pct",
-          "atr": 1.5764
-        },
-        {
-          "symbol": "GO",
-          "old_stop": 7.2,
-          "new_stop": 7.2,
-          "pnl_pct": 2.26,
-          "tier": "bracket_leg_held"
-        },
-        {
-          "symbol": "HD",
-          "old_stop": 0.0,
-          "new_stop": 299.3,
-          "pnl_pct": 3.75,
-          "tier": "overnight_normal_3pct",
-          "atr": 7.9736
-        }
-      ],
-      "pnl_dia_abs": 0,
-      "notas": "WebSearch confirmó AS/GO/HD ya reportaron earnings este mes — no R0. yfinance no disponible (disk full) — usando Alpaca data API para precios y ATR."
-    },
-    {
-      "timestamp": "2026-05-27T18:47:54.977838+00:00",
-      "evaluaciones": [
-        {
-          "symbol": "AS",
-          "decision": "mantener",
-          "razon": "posicion_reciente_0d",
-          "pnl_pct": 5.36,
-          "pnl_abs": 46.89,
-          "dias": 0,
-          "price_now": 36.84,
-          "entry_price": 34.9644,
-          "stop_actual": 0.0,
-          "shares": 25
-        },
-        {
-          "symbol": "DELL",
-          "decision": "mantener",
-          "razon": "posicion_reciente_0d",
-          "pnl_pct": 2.37,
-          "pnl_abs": 200.3,
-          "dias": 0,
-          "price_now": 309.31,
-          "entry_price": 302.156429,
-          "stop_actual": 0.0,
-          "shares": 28
-        },
-        {
-          "symbol": "GO",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 4.45,
-          "pnl_abs": 381.92,
-          "dias": 12,
-          "price_now": 8.095,
-          "entry_price": 7.75,
-          "stop_actual": 0.0,
-          "shares": 1107
-        },
-        {
-          "symbol": "HD",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 6.46,
-          "pnl_abs": 96.3,
-          "dias": 8,
-          "price_now": 317.36,
-          "entry_price": 298.1,
-          "stop_actual": 0.0,
-          "shares": 5
-        }
-      ],
-      "posiciones_cerrar": 0,
-      "posiciones_mantener": 4,
-      "cierres_ejecutados": [],
-      "cierres_fallidos": [],
-      "stops_overnight": [
-        {
-          "symbol": "AS",
-          "old_stop": 35.12,
-          "new_stop": 35.12,
-          "pnl_pct": 5.4,
-          "tier": "overnight_normal_3pct_floor_restored"
-        },
-        {
-          "symbol": "DELL",
-          "old_stop": 276.2,
-          "new_stop": 276.2,
-          "pnl_pct": 2.4,
-          "tier": "bracket_leg_held"
-        },
-        {
-          "symbol": "GO",
-          "old_stop": 7.81,
-          "new_stop": 7.81,
-          "pnl_pct": 4.5,
-          "tier": "overnight_normal_3pct_floor_restored"
-        },
-        {
-          "symbol": "HD",
-          "old_stop": 299.3,
-          "new_stop": 309.13,
-          "pnl_pct": 6.5,
-          "tier": "overnight_ajustado_6pct",
-          "atr": 8.23
-        }
-      ],
-      "pnl_dia_abs": 0,
-      "anomalias": [
-        "BUG-DETECTADO: script usaba stop_actual=0 (de cowork_match COWORK-prefix) en lugar de stop real de Alpaca; esto causo replace_order loosening en AS (35.12->34.95) y GO (7.81->7.33). Manualmente restaurado a niveles previos.",
-        "DELL bracket parent.status=filled con leg held@276.20 no detectado por loop (skipped por parent.status). Heuristica 'qty insuficiente' funciono; bracket intacto. Considerar inspeccionar legs incluso si parent=filled.",
-        "parametros_activos.max_cowork_positions=2 pero hay 4 posiciones Cowork abiertas (AS, DELL, GO, HD). Conviene revisar.",
-        "GO stop_limit overnight con limit=7.43, stop=7.81: spread 0.38 puede no llenar en gap nocturno fuerte. Riesgo conocido del bracket-style."
-      ]
     }
   ],
   "historial_diario_notas": [
@@ -15076,20 +14853,6 @@
       "hora_et": "09:40",
       "tarea": "market-open-execution",
       "resumen": "0 ejecutados, 2 descartados. PLTR ya tenía posición abierta (60 paper + 2 real). SHOP score 5.8 < umbral 7.0. RECORDATORIO: PLTR earnings HOY AH score 8.5 < 9.0 → pre-close-manager DEBE cerrar antes 15:45 ET por regla no_holdings_earnings_overnight."
-    },
-    {
-      "fecha": "2026-05-25",
-      "dia": "Monday",
-      "tarea": "post-market-review",
-      "equity_paper_cierre": 108245.04,
-      "equity_real_cierre": 4544.5,
-      "variacion_dia": 101.3,
-      "variacion_pct": 0.09,
-      "vix": 16.76,
-      "regimen_macro": "RISK_ON_EARNINGS_SEASON",
-      "trades_paper": [],
-      "evento_clave": "Memorial Day — mercados US cerrados. Friday S&P récord 7,473 (+0.37%), 8ª semana subidas. VIX 16.76.",
-      "leccion": "Post-holiday Tuesday reopen suele tener vol elevada por digestión de news weekend. Esperar a 09:45 ET min para evaluar tono real."
     }
   ],
   "alertas_criticas": [
@@ -15108,45 +14871,6 @@
       "severidad": "media",
       "mensaje": "MIN_SCORE=7.0 imposible sin EW input. Revisar si nuestro Earnings Whisper feed está vivo en producción.",
       "accion_sugerida": "Procesar en weekly-performance-review 09:00 → auto-mejora aplica cambios"
-    },
-    {
-      "fecha": "2026-05-25",
-      "tipo": "sin_stop_overnight_post_holiday",
-      "tickers": [
-        "GO",
-        "SLB",
-        "YETI"
-      ],
-      "detalle": [
-        {
-          "ticker": "GO",
-          "qty": 1107,
-          "entry": 7.75,
-          "current": 8.015,
-          "pnl_pct": 3.42,
-          "stop_sugerido_BE": 7.75
-        },
-        {
-          "ticker": "SLB",
-          "qty": 19,
-          "entry": 55.41,
-          "current": 57.28,
-          "pnl_pct": 3.38,
-          "stop_sugerido_BE": 55.41
-        },
-        {
-          "ticker": "YETI",
-          "qty": 132,
-          "entry": 40.58,
-          "current": 45.22,
-          "pnl_pct": 11.43,
-          "stop_sugerido_BE": 40.58
-        }
-      ],
-      "urgencia": "ALTA",
-      "mensaje": "GO/SLB/YETI tienen take-profit limits pero NO stops. Intraday-monitor debe colocar stops mañana al abrir. GO: entry $7.75 (+3.4%, mover a BE). SLB: entry $55.41 (+3.4%, mover a BE). YETI: entry $40.58 (+11.4%, ya R>1.5, partial pendiente + BE stop).",
-      "accion_requerida": "intraday-monitor 2026-05-26: PASO 1 colocar stops BE/ATR para GO, SLB, YETI",
-      "resuelto": false
     }
   ],
   "mejoras_sistema": [
@@ -15270,21 +14994,6 @@
       "implementada": false,
       "componente": "pre-close-manager",
       "prioridad": "critica"
-    },
-    {
-      "fecha": "2026-05-25",
-      "tipo": "data_enrichment_+_alerta_critica",
-      "descripcion": "Enriquecimiento candidatos semana con datos EW weekly preview (asimetría, drift histórico, beat rate, avg move). Refined scoring para ZS/MRVL/CRM/SNOW/DELL/PATH/MDB/COST/BBY/APPS. Fix stale PANW marcada como cerrada (no en posiciones Alpaca). Alerta crítica para intraday-monitor: GO/SLB/YETI sin stop overnight.",
-      "evidencia": "Post-market 2026-05-25 Memorial Day. EW weekly email 23-may con datos completos. Alpaca paper: 3 posiciones sin stop visible.",
-      "archivo_modificado": "performance_log.json",
-      "impacto_esperado": "Intraday-monitor 2026-05-26 colocará stops mañana en GO/SLB/YETI. Candidatos esta semana entrarán con scoring refinado.",
-      "implementada": true
-    },
-    {
-      "fecha": "2026-05-27",
-      "modulo": "pre-close-manager",
-      "descripcion": "Pre-close stop tightening debe usar el stop_price actual de Alpaca como floor (ademas de stop_original). Detectado en run del 27-may-2026 sobre AS y GO.",
-      "implementada": false
     }
   ],
   "industry_intelligence": {
@@ -16698,30 +16407,6 @@
         "backtest-validator: coordinación bot/Cowork documentada + credenciales añadidas",
         "pre-market-earnings-scan: PASO 0.4 W19 especial para MSFT/META/AAPL añadido"
       ]
-    },
-    {
-      "fecha": "2026-05-25",
-      "lecciones_acumuladas": 30,
-      "mejoras_acumuladas": 14,
-      "candidatos_activos": 19,
-      "bugs_pendientes": 0,
-      "alertas_sin_resolver": 3,
-      "parametros_version": "2026-05-23",
-      "mejora_hoy": "Enriquecimiento candidatos con datos EW weekly preview + fix stale PANW + macro_context Memorial Day update + alerta sin_stop GO/SLB/YETI",
-      "score_sistema_hoy": 9
-    },
-    {
-      "fecha": "2026-05-26",
-      "ts": "2026-05-26T14:30",
-      "tarea": "pre-market-earnings-scan",
-      "tipo": "scan_diario",
-      "resumen": "Pre-market scan @ 10:25 ET. Macro: normal (score +0.80). 8 candidatos analizados (BOX/SNOW/NCNO/NTNX/CRM/DKS/ANF/PSTG). 0 pasan umbral 8.75. Best=NCNO 7.04. BOX bloqueado REGLA D-1.",
-      "candidatos_evaluados": 8,
-      "ejecutables": 0,
-      "mejor_score": 7.05,
-      "umbral_paper": 8.75,
-      "umbral_real": 9.0,
-      "alerta_critica": "Posición Cowork GO sin stop activo — solo limit TP $9.31"
     }
   ],
   "motor_alpha_diario": {
@@ -20100,150 +19785,35 @@
       "vix": 16.8
     },
     {
-      "ts": "2026-05-25T12:13:21.989947+00:00",
-      "modo": "memorial_day_holiday",
-      "mercado_abierto": false,
-      "candidatos_escaneados": 2,
-      "oportunidades_detectadas": 0,
-      "cv_anadidos": 0,
-      "notas": "Holiday scan for tomorrow session"
-    },
-    {
-      "ts": "2026-05-25T14:13:47.843545+00:00",
-      "modo": "memorial-day-holiday",
-      "mercado_cerrado": true,
-      "candidatos_encontrados": 2,
-      "cv_added": 0,
-      "cv_listos": [],
-      "cv_preview": [],
-      "proxima_sesion": "2026-05-26"
-    },
-    {
-      "ts": "2026-05-26T09:15:31.878661+00:00",
-      "modo": "preopen",
-      "tickers_escaneados": 60,
-      "candidatos_detectados": 2,
-      "cv_added": 0,
-      "signals_added": 2
-    },
-    {
-      "ts": "2026-05-26T10:16:48.115831+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 3,
-      "vix": 16.8,
-      "macro_score": 0.2,
-      "macro_nivel": "normal"
-    },
-    {
-      "ts": "2026-05-26T11:15:09.834304+00:00",
-      "alertas": 12,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 3,
-      "vix": 16.8
-    },
-    {
-      "ts": "2026-05-26T12:27:23.765072+00:00",
+      "ts": "2026-05-28T12:11:04.899818+00:00",
       "alertas": 2,
       "acciones": 0,
       "oportunidades": 0,
-      "cowork_abiertas": 3,
-      "vix": 20,
-      "notas": "sentinel_alpaca-only_run | 3 pos protected (AS, GO, HD) | 23 tickers momentum | macro normal"
-    },
-    {
-      "ts": "2026-05-26T14:12:35.832771+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 3,
-      "vix": 14,
-      "macro_nivel": "normal",
-      "macro_score": 0.5,
-      "mercado": "SPY +0.55% QQQ +1.61% IWM +1.72%"
-    },
-    {
-      "ts": "2026-05-27T13:11:18.566086+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.7,
-      "macro_nivel": "normal",
-      "notas": "cowork 4/2 sobre limite — no nuevas entradas. Posiciones AS/DELL/GO/HD con stops OK."
-    },
-    {
-      "ts": "2026-05-27T14:12:08.353173+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.7
-    },
-    {
-      "ts": "2026-05-28T09:18:08.940925+00:00",
-      "mode": "pre-open-scan",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "candidates_scanned": 93,
-      "candidates_with_earnings_today": 6,
-      "note": "Pre-open scan 2026-05-28. 0 new EW candidates added to CV."
-    },
-    {
-      "ts": "2026-05-28T10:15:43.824890+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
       "cowork_abiertas": 5,
-      "vix_proxy": 24.71,
-      "spy_change": 0,
-      "macro_nivel": "normal",
-      "macro_context": {
-        "pce_yoy": 3.8,
-        "pce_subio": true,
-        "iran_conflicto": true,
-        "oil_wti": 91,
-        "oil_chg": 3,
-        "fed_dec_hike_prob": 1.0,
-        "snow_chg": 30,
-        "snow_catalyst": "AI demand beat Q1 + AWS expansion",
-        "futures_nq": -0.5,
-        "futures_es": -0.2
-      },
-      "mode": "VIVO_yfinance_omitido"
-    },
-    {
-      "ts": "2026-05-28T11:12:22.984318+00:00",
-      "alertas": 7,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 5,
-      "vix": 0
+      "vix": 15.9,
+      "macro_nivel": "normal"
     }
   ],
   "momentum_15m": {
     "GO": {
-      "precio": 8.5,
-      "mom_15m": 0.177,
-      "mom_30m": -0.701,
-      "vol_ratio": 1.0,
-      "vwap_dev": 0.843,
-      "rsi": 63.5,
-      "señal": "debil_alcista",
-      "ts": "11:12"
+      "precio": 8.62,
+      "mom_15m": 0.174,
+      "mom_30m": -0.058,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.577,
+      "rsi": 70.7,
+      "senal": "debil_alcista",
+      "ts": "12:11"
     },
     "HD": {
-      "precio": 319.41,
-      "mom_15m": 0.22,
-      "mom_30m": -0.119,
-      "vol_ratio": 0.31,
-      "vwap_dev": -0.071,
-      "rsi": 59.9,
-      "señal": "debil_alcista",
-      "ts": "11:12"
+      "precio": 319.75,
+      "mom_15m": 0.095,
+      "mom_30m": -0.02,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.104,
+      "rsi": 54.8,
+      "senal": "LATERAL",
+      "ts": "12:11"
     },
     "NVDA": {
       "precio": 224.88,
@@ -20286,24 +19856,24 @@
       "ts": "15:41"
     },
     "SAIC": {
-      "precio": 100.07,
-      "mom_15m": 0.492,
-      "mom_30m": 1.142,
-      "vol_ratio": 0.75,
-      "vwap_dev": 0.221,
-      "rsi": 54.3,
-      "señal": "debil_alcista",
-      "ts": "10:14"
+      "precio": 99.85,
+      "mom_15m": 0.117,
+      "mom_30m": 0.211,
+      "vol_ratio": 0.23,
+      "vwap_dev": 0.226,
+      "rsi": 57.7,
+      "señal": "LATERAL",
+      "ts": "15:41"
     },
     "AS": {
-      "precio": 36.62,
-      "mom_15m": 0.068,
-      "mom_30m": -0.109,
-      "vol_ratio": 1.4,
-      "vwap_dev": 0.565,
-      "rsi": 71.8,
-      "señal": "LATERAL",
-      "ts": "11:12"
+      "precio": 36.3,
+      "mom_15m": -0.165,
+      "mom_30m": -0.357,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.629,
+      "rsi": 20.2,
+      "senal": "debil_bajista",
+      "ts": "12:11"
     },
     "AAP": {
       "precio": 59.57,
@@ -20506,14 +20076,14 @@
       "ts": "15:45"
     },
     "BJ": {
-      "precio": 85.66,
-      "mom_15m": -0.157,
-      "mom_30m": 0.334,
-      "vol_ratio": 1.0,
-      "vwap_dev": -0.292,
-      "rsi": 46.5,
-      "señal": "debil_bajista",
-      "ts": "11:12"
+      "precio": 85.78,
+      "mom_15m": 0.052,
+      "mom_30m": -0.718,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.827,
+      "rsi": 26.8,
+      "señal": "LATERAL",
+      "ts": "14:49"
     },
     "DDOG": {
       "precio": 222.38,
@@ -20585,188 +20155,135 @@
       "señal": "debil_bajista",
       "ts": "14:49"
     },
-    "SNOW": {
-      "precio": 235.08,
-      "mom_15m": -0.276,
-      "mom_30m": -0.24,
-      "vol_ratio": 0.33,
-      "vwap_dev": -0.298,
-      "rsi": 36.8,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "ASAN": {
-      "precio": 6.71,
-      "mom_15m": -0.445,
-      "mom_30m": 1.053,
-      "vol_ratio": 0.2,
-      "vwap_dev": -0.35,
-      "rsi": 34.7,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "BURL": {
-      "precio": 302.41,
-      "mom_15m": 0.975,
-      "mom_30m": 0.25,
-      "vol_ratio": 0.23,
-      "vwap_dev": 0.335,
-      "rsi": 55.0,
-      "señal": "debil_alcista",
-      "ts": "11:12"
-    },
-    "AEO": {
-      "precio": 18.32,
-      "mom_15m": 0.411,
-      "mom_30m": 0.687,
-      "vol_ratio": 0.63,
-      "vwap_dev": 1.077,
-      "rsi": 84.4,
-      "señal": "debil_alcista",
-      "ts": "11:12"
-    },
-    "BBY": {
-      "precio": 74.8,
-      "mom_15m": 0.504,
-      "mom_30m": 1.04,
-      "vol_ratio": 0.24,
-      "vwap_dev": 1.845,
-      "rsi": 58.7,
-      "señal": "debil_alcista",
-      "ts": "11:12"
-    },
-    "BOX": {
-      "precio": 24.56,
-      "mom_15m": -0.163,
-      "mom_30m": 0.081,
-      "vol_ratio": 0.45,
-      "vwap_dev": -0.226,
-      "rsi": 41.7,
-      "señal": "debil_bajista",
-      "ts": "14:12"
-    },
-    "CRM": {
-      "precio": 179.03,
-      "mom_15m": -0.295,
-      "mom_30m": 0.55,
-      "vol_ratio": 0.4,
-      "vwap_dev": 0.17,
-      "rsi": 35.1,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "PATH": {
-      "precio": 11.69,
-      "mom_15m": -0.426,
-      "mom_30m": -0.128,
-      "vol_ratio": 0.73,
-      "vwap_dev": 0.178,
-      "rsi": 38.6,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "GAP": {
-      "precio": 24.82,
-      "mom_15m": 0.182,
-      "mom_30m": 0.405,
-      "vol_ratio": 0.42,
-      "vwap_dev": 0.639,
-      "rsi": 68.9,
-      "señal": "debil_alcista",
-      "ts": "11:12"
-    },
-    "NTNX": {
-      "precio": 48.58,
-      "mom_15m": 0.31,
-      "mom_30m": 1.483,
-      "vol_ratio": 0.68,
-      "vwap_dev": 1.556,
-      "rsi": 58.3,
-      "señal": "debil_alcista",
-      "ts": "11:12"
+    "BBAR": {
+      "precio": 17.77,
+      "mom_15m": 1.023,
+      "mom_30m": 1.98,
+      "vol_ratio": 0.77,
+      "vwap_dev": 1.061,
+      "rsi": 47.9,
+      "senal": "debil_alcista",
+      "ts": "12:11"
     },
     "NCNO": {
-      "precio": 16.02,
-      "mom_15m": -0.218,
-      "mom_30m": 0.596,
-      "vol_ratio": 0.28,
-      "vwap_dev": -0.203,
-      "rsi": 43.6,
-      "señal": "debil_bajista",
-      "ts": "11:12"
+      "precio": 15.76,
+      "mom_15m": -1.098,
+      "mom_30m": -1.438,
+      "vol_ratio": 0.44,
+      "vwap_dev": -1.826,
+      "rsi": 36.7,
+      "senal": "debil_bajista",
+      "ts": "12:11"
     },
-    "ANF": {
-      "precio": 80.37,
-      "mom_15m": 0.917,
-      "mom_30m": 0.1,
-      "vol_ratio": 1.0,
-      "vwap_dev": 0.513,
-      "rsi": 54.1,
-      "señal": "debil_alcista",
-      "ts": "11:12"
+    "NTNX": {
+      "precio": 49.61,
+      "mom_15m": 0.02,
+      "mom_30m": 0.242,
+      "vol_ratio": 0.0,
+      "vwap_dev": 1.468,
+      "rsi": 84.0,
+      "senal": "LATERAL",
+      "ts": "12:11"
     },
-    "KSS": {
-      "precio": 15.06,
-      "mom_15m": -0.986,
-      "mom_30m": -1.246,
-      "vol_ratio": 0.81,
-      "vwap_dev": -1.617,
-      "rsi": 45.1,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "OKTA": {
-      "precio": 93.58,
-      "mom_15m": -0.574,
-      "mom_30m": 0.873,
-      "vol_ratio": 0.58,
-      "vwap_dev": 0.701,
-      "rsi": 57.7,
-      "señal": "debil_bajista",
-      "ts": "11:12"
-    },
-    "DELL": {
-      "precio": 319.5,
-      "mom_15m": 0.824,
-      "mom_30m": 0.551,
-      "vol_ratio": 0.27,
-      "vwap_dev": 0.926,
-      "rsi": 62.6,
-      "señal": "debil_alcista",
-      "ts": "11:12"
-    },
-    "DKS": {
-      "precio": 225.66,
-      "mom_15m": 0.705,
-      "mom_30m": 1.091,
-      "vol_ratio": 0.43,
-      "vwap_dev": 1.697,
-      "rsi": 73.2,
-      "señal": "debil_alcista",
-      "ts": "11:12"
+    "SNOW": {
+      "precio": 239.97,
+      "mom_15m": -0.283,
+      "mom_30m": 0.067,
+      "vol_ratio": 0.0,
+      "vwap_dev": 1.09,
+      "rsi": 71.2,
+      "senal": "debil_bajista",
+      "ts": "12:11"
     },
     "PD": {
-      "precio": 7.42,
-      "mom_15m": -0.603,
-      "mom_30m": 0.406,
-      "vol_ratio": 1.0,
-      "vwap_dev": -0.27,
-      "rsi": 50.0,
-      "señal": "debil_bajista",
-      "ts": "11:12"
+      "precio": 7.43,
+      "mom_15m": 0.067,
+      "mom_30m": -0.2,
+      "vol_ratio": 0.63,
+      "vwap_dev": -0.061,
+      "rsi": 42.9,
+      "senal": "LATERAL",
+      "ts": "12:11"
     },
-    "BBAR": {
-      "precio": 17.52,
-      "mom_15m": -1.38,
-      "mom_30m": -2.559,
-      "vol_ratio": 1.0,
-      "vwap_dev": -2.177,
-      "rsi": 23.5,
-      "señal": "debil_bajista",
-      "ts": "11:12"
+    "KSS": {
+      "precio": 15.11,
+      "mom_15m": -0.33,
+      "mom_30m": 0.232,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.07,
+      "rsi": 58.4,
+      "senal": "debil_bajista",
+      "ts": "12:11"
+    },
+    "ASAN": {
+      "precio": 6.61,
+      "mom_15m": -0.301,
+      "mom_30m": -0.526,
+      "vol_ratio": 0.21,
+      "vwap_dev": -0.507,
+      "rsi": 32.1,
+      "senal": "debil_bajista",
+      "ts": "12:11"
+    },
+    "DELL": {
+      "precio": 325.84,
+      "mom_15m": -0.196,
+      "mom_30m": 0.189,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.992,
+      "rsi": 88.9,
+      "senal": "debil_bajista",
+      "ts": "12:11"
+    },
+    "AEO": {
+      "precio": 18.35,
+      "mom_15m": -0.245,
+      "mom_30m": -0.082,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.16,
+      "rsi": 60.3,
+      "senal": "debil_bajista",
+      "ts": "12:11"
+    },
+    "PATH": {
+      "precio": 11.72,
+      "mom_15m": -0.061,
+      "mom_30m": -0.018,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.027,
+      "rsi": 48.0,
+      "senal": "LATERAL",
+      "ts": "12:11"
     }
   },
-  "sentinel_signals": [],
+  "sentinel_signals": [
+    {
+      "ticker": "SNOW",
+      "score": 5.0,
+      "asimetria": 18.75,
+      "whisper": 0.38,
+      "consensus": 0.32,
+      "earnings_fecha": "2026-05-27",
+      "earnings_timing": "after-hours",
+      "detectado": "sentinel-preopen",
+      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-holiday"
+    },
+    {
+      "ticker": "CRM",
+      "score": 4.0,
+      "asimetria": 4.81,
+      "whisper": 3.27,
+      "consensus": 3.12,
+      "earnings_fecha": "2026-05-27",
+      "earnings_timing": "after-hours",
+      "detectado": "sentinel-preopen",
+      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-holiday"
+    }
+  ],
   "skip_analysis": {
     "semana_2026-05-04": {
       "SMCI": {
@@ -21532,59 +21049,6 @@
       "consensus_beat_pct": 6.67,
       "reaccion_ah_pct": 0.0,
       "revenue_growth_yoy": 3.72
-    },
-    {
-      "ticker": "AZO",
-      "fecha": "2026-05-26",
-      "resultado": "beat",
-      "eps_actual": 38.07,
-      "eps_consensus": 36.65,
-      "eps_whisper": null,
-      "consensus_beat_pct": 3.9,
-      "whisper_beat_pct": 0.0,
-      "reaccion_ah_pct": -10.0,
-      "revenue_growth_yoy": 8.4,
-      "fuente_datos": "websearch",
-      "notas": "Beat EPS pero revenue miss + sell-the-news -10%. Pre-drift descontado."
-    },
-    {
-      "ticker": "ZS",
-      "fecha": "2026-05-26",
-      "resultado": "beat",
-      "eps_actual": 1.08,
-      "eps_whisper": 1.03,
-      "eps_consensus": 1.01,
-      "whisper_beat_pct": 4.85,
-      "consensus_beat_pct": 6.93,
-      "reaccion_ah_pct": -17.0,
-      "revenue_growth_yoy": 25.43,
-      "guidance_proximo": "Q4 EPS $1.08-$1.09 (above) | rev $875-$878M (in-line). FY26 EPS raised to $4.10-$4.11."
-    },
-    {
-      "ticker": "BBAR",
-      "fecha": "2026-05-26",
-      "resultado": "beat",
-      "eps_actual": 0.27,
-      "eps_whisper": 0.19,
-      "eps_consensus": 0.17,
-      "whisper_beat_pct": 42.11,
-      "consensus_beat_pct": 58.82,
-      "reaccion_ah_pct": 7.42,
-      "revenue_growth_yoy": 26.26,
-      "guidance_proximo": "2026 loan growth revised to 15-20% (down from 25-30%)."
-    },
-    {
-      "ticker": "VNET",
-      "fecha": "2026-05-26",
-      "resultado": "miss",
-      "eps_actual": -1.2,
-      "eps_whisper": -0.02,
-      "eps_consensus": 0.0,
-      "whisper_beat_pct": -5900.0,
-      "consensus_beat_pct": 0.0,
-      "reaccion_ah_pct": 0.0,
-      "revenue_growth_yoy": 26.04,
-      "guidance_proximo": "2026 revenue $1.69B-$1.74B (reaffirmed)"
     }
   ],
   "kpis_actuales": {
@@ -21789,44 +21253,5 @@
       "Reducir universo bot a <3000 símbolos para evitar OOM (BIQ-OOM-W21 nueva).",
       "PRIORIDAD máxima: añadir stops a GO, SLB, YETI ANTES de cualquier entrada nueva."
     ]
-  },
-  "ultima_ew_daily": {
-    "fecha": "2026-05-26",
-    "procesado_el": "2026-05-27T21:42:55.563067+00:00",
-    "empresas_procesadas": [
-      "ZS",
-      "BBAR",
-      "VNET",
-      "BOX"
-    ],
-    "beats": [
-      "ZS",
-      "BBAR",
-      "BOX"
-    ],
-    "misses": [
-      "VNET"
-    ],
-    "continuation_generados": [
-      "BBAR(score=9.5)"
-    ],
-    "actualizados_portfolio": [
-      "BOX"
-    ],
-    "lecciones_nuevas": 6
-  },
-  "scan_runs": [
-    {
-      "ts": "2026-05-28T14:34:26.411732+00:00",
-      "tipo": "pre-market-earnings-scan",
-      "fecha": "2026-05-28",
-      "candidatos_analizados": 9,
-      "ejecutados": 0,
-      "descartados": 9,
-      "macro_score": 0.6,
-      "vix": 20.0,
-      "razon_no_ejecucion": "Todos AH HOY (D-1 blockea) + cowork lleno (2/2) + scores 6.13-7.23 < 8.75",
-      "top_candidato": "PD"
-    }
-  ]
+  }
 }
