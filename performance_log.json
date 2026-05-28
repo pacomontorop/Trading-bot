@@ -39,7 +39,7 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-05-23",
+    "ultima_actualizacion": "2026-05-28T14:34:26.411757+00:00",
     "motivo_actualizacion": "W21 review: min_signal_score=8.75",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
@@ -437,6 +437,14 @@
       "accion_futura": "LECCION: para SaaS con earnings, además de EPS+whisper monitorizar FCF margin guide. Si emisor mantiene gross margin pero baja FCF margin >300bps → continuation NO viable. Añadir filtro pre-earnings: si capex/rev acelera → reducir size 50%.",
       "impacto_score": -0.6,
       "caso_estudio": true
+    },
+    {
+      "fecha": "2026-05-28",
+      "tipo": "observacion_pipeline",
+      "titulo": "EW calendar headless devuelve 0 tickers — JS-rendered",
+      "descripcion": "La página /calendar de EW carga los tickers vía JavaScript. Sin un navegador con JS (Chrome MCP), no se puede obtener calendar automáticamente. Solo se pueden enriquecer tickers que llegan del email EW (procesado por weekend-ew-intel o post-market). Hoy se procesaron 9 candidatos provenientes del log y EW devolvió datos completos para todos.",
+      "accion_correctiva": "Mantener dependencia del email EW como fuente primaria de la lista de earnings de mañana. No depender del calendar scraping. La fetch individual /stocks/{ticker} sigue funcionando correctamente para enriquecer asimetría.",
+      "tarea_origen": "pre-market-earnings-scan"
     }
   ],
   "operaciones": [
@@ -4109,11 +4117,13 @@
     }
   ],
   "macro_context": {
-    "ts_actualizado": "2026-05-27T14:12",
-    "macro_score": 0.2,
+    "ts_actualizado": "2026-05-28T14:27:52.974313+00:00",
+    "macro_score": 0.6,
     "macro_bonus_pm": 0.24,
     "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "contexto_resumen": [
+      "Tech fuerte (+0.7%)"
+    ],
     "tarea_origen": "pre-market-earnings-scan",
     "notas": "Today is Memorial Day US holiday. No live market data. Scoring used neutral defaults (C/D/F neutros, sin WebSearch en vivo). Next trading day: 2026-05-26.",
     "sentinel_ultimo_check": {
@@ -4127,7 +4137,7 @@
       "contexto": "PCE+3.8 hot, Iran conflict, oil>$91, Fed hawkish"
     },
     "fecha_actualizacion": "2026-05-25",
-    "vix": 16.73,
+    "vix": 20.0,
     "regimen": "RISK_ON_EARNINGS_SEASON",
     "narrativa_dominante": "ACTUALIZACIÓN 2026-05-25 (Memorial Day, mercados cerrados): Friday 22-may S&P 500 cerró en máximo histórico 7,473 (+0.37%), 8ª semana consecutiva de subidas. Dow récord 50,580 (+0.58%), Nasdaq 26,344 (+0.19%). VIX 16.76, calm. Drivers de la subida: (1) US-Iran avanzando hacia acuerdo, baja riesgo geopolítico, (2) AI capex super-cycle continua tras beat NVDA $1.87 vs $1.78 (rev +85.2% YoY), (3) earnings beats generalizados (INTU, HD, NIO). Semana 25-29 mayo: rica en datos macro (PCE inflación, GDP, personal income) y earnings (ZS martes, MRVL/CRM/SNOW miércoles, DELL/MDB/COST/BBY jueves). Mañana 2026-05-26 reopen: expectativa volatilidad por digestión de noticias del fin de semana largo.",
     "sector_prioridades": {
@@ -4179,18 +4189,15 @@
       "Gmail post-market 2026-05-25: EW weekly preview 23-may, EW daily summary 22-may, Bloomberg morning briefings"
     ],
     "sectores_hoy": {
-      "lider": "tech",
-      "tech_chg": 0,
-      "all": {
-        "tech": 0,
-        "financials": 0,
-        "energy": 0,
-        "healthcare": 0,
-        "industrials": 0,
-        "consumer_disc": 0,
-        "utilities": 0
-      },
-      "ts": "10:16"
+      "tech": 0.6507592190889309,
+      "financial": -0.3013219284603444,
+      "energy": 0.061419671843474063,
+      "healthcare": 1.4648568740760697,
+      "industrial": -0.3412577786699544,
+      "consumer_disc": -0.024687294272548663,
+      "communication": 0.2235982112143147,
+      "staples": 0.2306054872279957,
+      "utilities": -0.18832391713747837
     },
     "macro_bonus_ew": 0.06,
     "futuros": {
@@ -4229,7 +4236,9 @@
     "uso_change": -2.55,
     "gld_change": -0.47,
     "websearch_oil_tension": "US strikes Iran overnight, Brent $100→$99. Mercado descuenta paz. XLE -2% pese al spike.",
-    "spy_change_intraday": 0
+    "spy_change_intraday": 0,
+    "macro_bonus": 0.18,
+    "fuente": "pre-market-earnings-scan 10:25 ET"
   },
   "operaciones_crypto": [
     {
@@ -21782,5 +21791,19 @@
       "BOX"
     ],
     "lecciones_nuevas": 6
-  }
+  },
+  "scan_runs": [
+    {
+      "ts": "2026-05-28T14:34:26.411732+00:00",
+      "tipo": "pre-market-earnings-scan",
+      "fecha": "2026-05-28",
+      "candidatos_analizados": 9,
+      "ejecutados": 0,
+      "descartados": 9,
+      "macro_score": 0.6,
+      "vix": 20.0,
+      "razon_no_ejecucion": "Todos AH HOY (D-1 blockea) + cowork lleno (2/2) + scores 6.13-7.23 < 8.75",
+      "top_candidato": "PD"
+    }
+  ]
 }
