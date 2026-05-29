@@ -3075,23 +3075,30 @@
     ],
     "notas_adicionales": "Memorial Day = sólo 4 días trading (martes-viernes). Earnings W22 destacados: AI/memory: NTNX, ASAN, PD (5/28); Retail: ANF, KSS, AEO; SNOW (5/27 AH); Software: PATH, CRWD posiblemente.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-05-28T15:17",
+      "timestamp": "2026-05-29T09:16",
       "nivel": "normal",
       "shocks": [],
-      "bloquear_entradas": true,
+      "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.75,
-      "score_min_real_efectivo": 9.0
+      "score_min_real_efectivo": 9.0,
+      "modo": "pre_apertura"
     },
-    "macro_score": 0.0,
+    "macro_score": 0.7,
     "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "contexto_resumen": [
+      "US-Iran tentative agreement to reopen Strait of Hormuz",
+      "Oil WTI -1.4% to $87.66 (geopolitical de-escalation)",
+      "PCE April 0.4% headline / 0.2% core (slightly below expectations)",
+      "S&P futures +0.1%, Nasdaq futures +0.1%, Dow +0.2%",
+      "No major earnings or data scheduled May 29 (BKE, GCO, MESO, EH only — small caps)"
+    ],
     "futuros": {
       "ES": 0,
       "NQ": 0
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-05-28T15:17",
+    "ts_actualizado": "2026-05-29T09:16",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -3109,7 +3116,7 @@
       },
       "ts": "13:13"
     },
-    "macro_bonus_ew": 0.0,
+    "macro_bonus_ew": 0.21,
     "bonos": {
       "tlt_chg": 0,
       "yield_10y": 0.0
@@ -3137,7 +3144,32 @@
         ],
         "fuente": "BEA + Benzinga"
       }
-    ]
+    ],
+    "eventos_clave_hoy": {
+      "fecha": "2026-05-29",
+      "iran_us_deal": "tentative, 60-day window, Trump not yet signed off",
+      "oil_wti_usd": 87.66,
+      "oil_change_pct": -1.4,
+      "pce_april_headline": 0.4,
+      "pce_april_core_yoy": 3.3,
+      "futuros_es_pct": 0.1,
+      "futuros_nq_pct": 0.1,
+      "earnings_today_calendar": [
+        "BKE",
+        "GCO",
+        "MESO",
+        "EH"
+      ],
+      "earnings_lunes_calendar": [
+        "SAIC",
+        "CRDO",
+        "HPE"
+      ],
+      "macro_data_lunes": [
+        "Construction spending",
+        "ISM Manufacturing PMI"
+      ]
+    }
   },
   "operaciones_crypto": [
     {
@@ -18700,6 +18732,18 @@
       "oportunidades": 0,
       "cowork_abiertas": 4,
       "vix": 15.7
+    },
+    {
+      "ts": "2026-05-29T09:16:09.151502+00:00",
+      "modo": "pre_apertura",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 4,
+      "vix": null,
+      "macro_nivel": "normal",
+      "macro_score": 0.7,
+      "notas": "Pre-apertura Friday: macro ligeramente positivo (Iran-US deal, oil down, PCE OK). Sin nuevas oportunidades EW (calendario muy ligero — solo small caps reportan hoy)."
     }
   ],
   "momentum_15m": {
@@ -19164,47 +19208,7 @@
       "ts": "15:17"
     }
   },
-  "sentinel_signals": [
-    {
-      "ticker": "SNOW",
-      "score": 5.0,
-      "asimetria": 18.75,
-      "whisper": 0.38,
-      "consensus": 0.32,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "detectado": "sentinel-preopen",
-      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday"
-    },
-    {
-      "ticker": "CRM",
-      "score": 4.0,
-      "asimetria": 4.81,
-      "whisper": 3.27,
-      "consensus": 3.12,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "detectado": "sentinel-preopen",
-      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday"
-    },
-    {
-      "ticker": "SNOW",
-      "score_estimado": 8.0,
-      "tipo": "post_earnings_continuation_watch",
-      "descripcion": "Q1 double beat + $6B AWS AI deal, +25-36% intraday, multiple PT raises",
-      "razon": "Q1 double beat + $6B AWS AI deal, +25-36% intraday, multiple PT raises",
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "ts_detected": "2026-05-28T15:16:57.170851+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-websearch",
-      "asimetria": 0
-    }
-  ],
+  "sentinel_signals": [],
   "skip_analysis": {
     "semana_2026-05-04": {
       "SMCI": {
