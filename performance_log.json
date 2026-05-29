@@ -130,430 +130,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-11",
-      "tipo": "BUG_STOP_DETECTION_SHORT",
-      "titulo": "Shorts muestran SL=⚠️NONE — _stop_real_alpaca no detecta buy-side stops",
-      "descripcion": "SAIC (posición SHORT) mostró SL=⚠️NONE en el Telegram del intraday-monitor. La función _stop_real_alpaca solo busca órdenes sell (o.side == 'sell') para verificar stops de posiciones largas. Para cortos, el stop-to-cover es una orden BUY — nunca detectada.",
-      "accion_futura": "En intraday-monitor SKILL.md: extender _stop_real_alpaca para que cuando qty < 0 (short), busque órdenes GTC de tipo BUY en lugar de SELL. Condición: if position.qty < 0: check buy-side stops.",
-      "patron": "shorts_stop_buy — posición corta siempre tiene stop BUY (no sell)",
-      "regla_filosofia": "Ya está documentada en filosofia_decision.reglas_de_oro.shorts_stop_buy pero no implementada en código",
-      "tarea_pendiente": "Fix _stop_real_alpaca en intraday-monitor/SKILL.md"
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "BUG_CRYPTO_STOP_NONE",
-      "titulo": "Crypto (ADAUSD, LINKUSD, BTCUSD) muestran SL=⚠️NONE",
-      "descripcion": "El Telegram del intraday-monitor mostró SL=⚠️NONE para las 3 posiciones crypto abiertas. El crypto-scan coloca órdenes stop_limit separadas (no brackets) vía Alpaca crypto API. El intraday-monitor busca stops via /v2/orders?status=open pero posiblemente el formato de símbolo difiere (ADAUSD vs ADA/USD) o las órdenes stop fueron rechazadas silenciosamente.",
-      "causa_probable": "Mismatch de símbolo: Alpaca crypto puede devolver posiciones como 'ADAUSD' pero las órdenes stop se buscaban con 'ADA/USD' o viceversa. También posible: las órdenes stop_limit crypto se rechazan durante horas de madrugada con error 422.",
-      "accion_futura": "1) Verificar en Alpaca paper API: GET /v2/orders?status=open para ver si los stops están realmente colocados y con qué símbolo. 2) En _stop_real_alpaca: normalizar símbolo (quitar '/' para crypto). 3) Si stops no existen: re-colocar en próxima ejecución crypto-weekday-scan.",
-      "regla_de_oro": "NUNCA dejar posición crypto sin stop. Verificar placement en Telegram con precio explícito tras colocación."
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "BUG_POST_MARKET_PATH",
-      "titulo": "Post-market falla cuando Cowork está cerrado — solución y workaround",
-      "descripcion": "El post-market corre a las 22:22 CEST (10:22 PM Madrid). Si Cowork está cerrado, el filesystem no está montado y el log no es accesible. El .scheduled/ es de solo lectura del sistema — no se puede escribir ahí. Fix: mantener Cowork abierto hasta ~22:45 CEST para que el post-market guarde al log.",
-      "raiz_causa": "Las tareas programadas solo pueden acceder al filesystem cuando Cowork está activo (sesión open y folder Scheduled seleccionado). Sin Cowork abierto → MODO LECTURA automático.",
-      "accion_usuario": "Mantener Cowork abierto hasta las 22:45 CEST (16:45 ET) para que el post-market actualice la memoria. Si se cierra antes → modo lectura (Telegram funciona pero no actualiza log).",
-      "workaround_tecnico": "Se añadió path canónico /sessions/wizardly-loving-carson/mnt/Scheduled/ como PRIMER candidato en todos los SKILL.md. Cuando Cowork está abierto, este path siempre funciona independientemente del session ID."
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "MEJORA_OCO_ORDENES",
-      "titulo": "OCO (One-Cancels-Other) implementado para todas las posiciones — TP + Stop en una sola orden",
-      "descripcion": "Detectado: el bot coloca TPs (limit sell) que bloquean todo el qty disponible, impidiendo añadir stops adicionales (Alpaca retorna 403 insufficient qty). Solución: cancelar TP individual → re-colocar como OCO (take_profit + stop_loss en una sola orden Alpaca). Cuando una leg se ejecuta, la otra se cancela automáticamente.",
-      "posiciones_arregladas": {
-        "real": [
-          "AMD: TP=$483.83 SL=$435.00",
-          "ABNB: TP=$155.13 SL=$131.00",
-          "ENB: TP=$57.68 SL=$51.50",
-          "JD: TP=$32.06 SL=$28.85"
-        ],
-        "paper": [
-          "JD: TP=$32.06 SL=$28.85"
-        ]
-      },
-      "formato_oco_alpaca": {
-        "type": "limit",
-        "order_class": "oco",
-        "take_profit": {
-          "limit_price": "XX.XX"
-        },
-        "stop_loss": {
-          "stop_price": "YY.YY",
-          "limit_price": "YY.ZZ"
-        }
-      },
-      "regla_futura": "SIEMPRE usar OCO cuando se coloca un TP en una posición. Nunca colocar TP limit sin stop — bloquea el qty. Los sistemas de bot/pre-market deben usar bracket o OCO por defecto."
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "PLAN_MARTES_12_MAY",
-      "titulo": "Plan operativo martes 12-may: triple evento — JD earnings BMO + CPI + HIMS continuation",
-      "categoria": "plan_operativo",
-      "descripcion": "Martes 12-may es el día de mayor riesgo de W20. Tres eventos simultáneos: (1) JD reporta BMO 8AM ET, (2) CPI April sale 8:30 ET, (3) HIMS puede tener continuation play si batió AH hoy.",
-      "acciones": [
-        {
-          "ticker": "JD",
-          "prioridad": "CRITICA",
-          "accion": "Pre-apertura 8:30 ET: revisar JD earnings resultado. Si BEAT Y CPI ok (SPY no cae) → mantener con trailing stop $29.28. Si MISS O CPI hot → CERRAR JD inmediatamente en apertura 09:30 ET.",
-          "stop_actual": 29.28,
-          "tp": 32.06,
-          "regla": "JD BMO + CPI mismo día = doble riesgo. El sistema no puede mantener una posición si ambos eventos son adversos."
-        },
-        {
-          "ticker": "HIMS",
-          "prioridad": "ALTA",
-          "accion": "Si HIMS batió AH (>$0.06 actual) Y reacción AH >= +5%: entrar 09:40 ET con sizing 50%. Condicionado a CPI benigno.",
-          "condicion": "BEAT AH + CPI ok + SPY +0.5% a las 09:45"
-        },
-        {
-          "ticker": "CANDIDATES_CPI_GATE",
-          "prioridad": "MEDIA",
-          "accion": "Todos los candidatos del martes (NXT, HIMS, y cualquier nuevo) están bloqueados hasta 09:45 ET si hay CPI. La tarea market-open-execution tiene el bloque CPI conditional implementado.",
-          "alerta_cpi": true
-        }
-      ]
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "MISS_RESULTADO_CRITICO",
-      "titulo": "HIMS: MISS catastrófico (2026-05-11) — EPS -$0.18 vs whisper $0.06 (-400%), AH -9.0%",
-      "descripcion": "HIMS reportó AH Q1 2026: EPS adj -$0.18 (GAAP -$0.40) vs whisper $0.06 / cons $0.04. Revenue $608.1M vs $616.9M cons (miss). Guidance Q2 Adj EBITDA $35-55M vs $70M expected (MISS guidance). AH: -9.0%. CRÍTICO: la asimetría whisper-vs-consensus (+50%) NO siempre predice beat. En este caso, los costes del pivote GLP-1 (restructuring + inventory write-downs) destruyeron el quarter. Continuation candidate cancelado correctamente por condiciones explícitas (requiere beat + AH+5%).",
-      "accion_futura": "NUEVA REGLA: Si una empresa anuncia \"strategic pivot\" / restructuring activo en el quarter, penalizar el score de asimetría whisper. La asimetría >+30% es engañosa si hay one-time charges previsibles. Verificar: ¿hay restructuring announcements en últimos 90 días? Si sí, derate score 30-50%. Las condiciones explícitas de entrada (beat + AH+5%) salvaron la operación — mantener este patrón.",
-      "impacto_score": -0.5,
-      "tags": [
-        "HIMS",
-        "sell_the_news",
-        "asimetria_enganosa",
-        "restructuring_risk"
-      ]
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "CLSK: MISS (2026-05-11) — pérdida -$1.52 vs cons -$0.23, AH -5.0%",
-      "descripcion": "CleanSpark reportó Q2 2026 fiscal: pérdida -$1.52 EPS vs cons -$0.23 (much wider miss). AH -5%. Sector crypto miner — alta volatilidad esperada. No estaba en candidatos validados (no impacto portfolio).",
-      "accion_futura": "CLSK no era candidato (sector crypto miner = excluido). Mantener exclusión.",
-      "impacto_score": 0.0,
-      "tags": [
-        "CLSK",
-        "crypto_miner",
-        "not_candidate"
-      ]
-    },
-    {
-      "fecha": "2026-05-11",
-      "tipo": "SISTEMA_CONFIRMACION",
-      "titulo": "Sistema condiciones explícitas (HIMS): FUNCIONÓ (2026-05-11) — pérdida potencial evitada",
-      "descripcion": "HIMS continuation candidate creado domingo W20 con condiciones explícitas: beat + AH>=+5%. Resultado real: MISS catastrófico + AH -9%. Las condiciones bloquearon entrada automáticamente. Si se hubiera entrado sin condiciones a 50% sizing → pérdida estimada -8 a -10% en sizing reducido. Las condiciones de entrada explícitas son CRÍTICAS para asimetrías altas en sectores volátiles.",
-      "accion_futura": "MANTENER PATRÓN: cualquier continuation play con asimetría >+30% en sector healthcare/biotech DEBE tener condiciones explícitas: (1) beat confirmado (2) AH+5% mínimo (3) CPI/macro OK. Replicar este patrón para todos los high-asymmetry plays.",
-      "impacto_score": 0.5,
-      "tags": [
-        "HIMS",
-        "risk_management",
-        "condiciones_explicitas",
-        "sistema_funcionando"
-      ]
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "BUG_PRE_MARKET_TP_SIN_STOP",
-      "titulo": "Pre-market coloca TPs limit solos (sin bracket/OCO) → no pueden añadirse stops después",
-      "descripcion": "El pre-market-earnings-scan ejecuta bracket orders (market buy + TP + stop). Pero cuando el log no está accesible (sesión aislada), el scan usa defaults y puede colocar órdenes sin el stop leg correctamente. Resultado: REZI y NXT entraron con TP limit solo → las shares quedaron 'held' → imposible añadir stop extra. Fix manual: cancelar TP → re-colocar como OCO.",
-      "accion_implementada": "Colocar OCOs manualmente en sesión Cowork activa para REZI y NXT. Documentar que el pre-market DEBE usar OCO siempre, no bracket traditional que falla sin log.",
-      "accion_futura": "En pre-market-earnings-scan SKILL.md: cambiar orden de bracket a OCO explícito (order_class: oco) que siempre incluye tanto TP como stop en una sola orden atómica.",
-      "impacto": "Posiciones con AH earnings overnight sin stop = gap risk no mitigado"
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "SISTEMA_FUNCIONANDO_CPI",
-      "titulo": "CPI gate funcionó correctamente: NXT bloqueado en market-open, ejecutado por pre-market",
-      "descripcion": "El market-open-execution bloqueó NXT correctamente (CPI day, SPY -0.04% < +0.5% requerido). PERO el pre-market-earnings-scan lo ejecutó igualmente 45 min después con score 8.46. El pre-market no tiene el CPI gate porque no accede al performance_log (que tiene alerta_cpi field). El midday-monitor correctamente cerró NXT paper antes de earnings.",
-      "resultado": "Sistema multi-capa correcto: market-open gate (CPI) → pre-market override (señal fuerte 8.46) → midday close pre-earnings (risk management). Las 3 capas funcionaron.",
-      "accion_futura": "En pre-market: añadir check de SPY momentum mínimo en días con eventos macro críticos (CPI/FOMC). Si SPY < -0.5% en el día → solo entrar con score ≥ 8.5."
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "WIN_AMD_TRAILING",
-      "titulo": "AMD paper: trailing stop $446.92 activado → +$699 profit (WIN)",
-      "descripcion": "AMD paper (20 acc @ $411.94) tenía trailing stop a $446.92 activado por intraday-monitor el 11-may. El 12-may el selloff de CPI (tech -1.4%, Nasdaq -1.94%) bajó AMD de ~$458 a $446.92 activando el stop. Resultado: WIN +$699.60 paper. Posición real (1 acc @ $411.76) sigue abierta con stop OCO a $435.",
-      "pnl_paper": 699.6,
-      "patron": "Trailing stop funcionando perfectamente — capturó el 8.5% de ganancia asegurada incluso con el selloff",
-      "lección": "El trailing stop multi-tier del intraday-monitor FUNCIONA. No hay que intervenir manualmente. Dejar correr al sistema."
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "MACRO_CPI_OIL_SHOCK",
-      "titulo": "Día macro doble: CPI hot + Iran/Hormuz oil spike — sistema respondió correctamente",
-      "descripcion": "CPI April: 3.8% anual, core 2.8% YoY (sobre meta Fed). WTI $101.51 (+3.5%), Brent $107.65. Sentinel bloqueó entradas EW normales, ejecutó macro plays (XOM, CVX, SLB paper) en el spike de oil. Nasdaq -1.94%, Russell -2.34%. CPI gate en market-open funcionó.",
-      "macro_plays_ejecutados": [
-        "XOM paper 7acc @$151.43 stop=$146.90 TP=$159.02",
-        "CVX paper 5acc @$186.44 stop=$180.85 TP=$195.76",
-        "SLB paper 19acc @$55.41 stop=$53.74 TP=$58.18"
-      ],
-      "notas": "Sentinel correcto en identificar shock y actuar. OCOs colocados en sesión manual para todos los macro plays."
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "MEJORA_FAILSAFE_STOP_VERIFICATION",
-      "titulo": "Failsafe de verificación de stop post-orden implementado en TODOS los módulos de ejecución",
-      "descripcion": "Causa raíz de todas las posiciones sin stop: Alpaca bracket a veces no crea el leg de stop (race condition, timeout, error silencioso). Solución sistémica: después de cada bracket order, esperar 1.5s → query /orders?nested=true → verificar que existe leg stop_limit side=sell → si NO existe, colocar stop_limit GTC standalone de forma inmediata (FAILSAFE). Implementado en: pre-market-earnings-scan (paper + real), market-open-execution (paper + real), sentinel EW plays (paper + real), sentinel macro plays (paper).",
-      "modulos_actualizados": [
-        "pre-market-earnings-scan/SKILL.md — PASO 6 paper + real",
-        "market-open-execution/SKILL.md — PASO 1 paper + real",
-        "sentinel/SKILL.md — PASO 5 EW paper + real + PASO 4B macro plays"
-      ],
-      "patron": "COWORK-FAILSAFE-P-{ticker}-{YYYYMMDD} / COWORK-FAILSAFE-R-{ticker}-{YYYYMMDD}",
-      "lección": "Nunca asumir que un bracket order creó el stop. Siempre verificar. El costo de la verificación (1.5s) es ínfimo comparado con el riesgo de posición naked."
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "BEAT_RESULTADO_FUERTE",
-      "titulo": "JD: BEAT FUERTE cons=+37.0% AH=+0.0% (2026-05-12)",
-      "descripcion": "EPS actual=$0.74 vs consensus=$0.54. BMO. Non-GAAP EPS $0.74 vs cons $0.54 (+37%). Revenue +4.9% YoY. Profitability return, food delivery losses narrowing.",
-      "accion_futura": "Patrón confirmado para JD: beat fuerte + AH positivo = continuation viable.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "ZBRA: beat cons=+9.7% confirmado AH=+15.4%",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=4.75 vs cons=4.33.",
-      "accion_futura": "Si ZBRA repite patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "BEAT_RESULTADO_FUERTE",
-      "titulo": "DSP: BEAT FUERTE cons=+133.3% AH=+7.0% (2026-05-11)",
-      "descripcion": "EPS actual=$0.07 vs consensus=$0.03. Reportado May 11 post-cierre. EPS $0.07 vs $0.03 (+133%). Rev +25% YoY. CTV >50% spend. AH +7%. Q2 guide arriba.",
-      "accion_futura": "Patrón confirmado para DSP: beat fuerte + AH positivo = continuation viable.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "DSP: beat cons=+133.3% confirmado AH=+7.0%",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.07 vs cons=0.03.",
-      "accion_futura": "Si DSP repite patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "WIN_NXT_REAL",
-      "titulo": "NXT real: +$26.63 WIN (+21.7%) — TP OCO ejecutado por encima del objetivo",
-      "descripcion": "NXT comprado real 1 acc @$122.60 (12-may). Earnings beat AH → gapped up. OCO TP $144.36 ejecutado pero con slippage positivo: filled @$149.23. P&L real = +$26.63. El sistema funcionó correctamente en este caso.",
-      "pnl_real": 26.63,
-      "pnl_pct": 21.7,
-      "lección": "Cuando el OCO TP está bien colocado y el earnings beat es fuerte, el sistema captura más upside del esperado (gap above limit → fills at best available)."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "WIN_JD_REAL",
-      "titulo": "JD real: +$19.28 WIN (+6.3%) — TP OCO ejecutado",
-      "descripcion": "JD comprado real 11 acc @$30.677 (11-may). Earnings beat +48%. OCO TP ejecutado @$32.43. P&L real = +$19.28.",
-      "pnl_real": 19.28,
-      "pnl_pct": 6.3,
-      "lección": "JD earnings beat confirmó la tesis. El sizing conservador (11 shares @ $30) limitó tanto las ganancias como el riesgo."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "LOSS_REZI_GAP_EARNINGS",
-      "titulo": "REZI paper/real: LOSS crítico por gap post-earnings miss — stop_limit inútil en gaps",
-      "descripcion": "REZI entró 12-may @$36.94 paper (233 acc) y @$36.90 real (6 acc) con stop $33.84/$33.50 (stop_limit OCO). Earnings AH 12-may fueron miss. Stock gappeó de ~$36 a ~$30.11 en la apertura del 13-may. Stop_limit NO se ejecutó porque el precio pasó directamente de ~$36 a ~$30 (gap-through). Resultado: real cerrado por bot @$30.39 (cid=LIVE.BLOWNSTOP) → pérdida real -$39.06. Paper OCO cancelado en apertura → posición paper abierta -$1,591. El pre-close-manager del 12-may probablemente intentó cerrar REZI paper pero falló porque los bracket legs (held) bloqueaban la qty. Cowork estaba apagado el 13-may → no corrió el gap check. REZI paper se cerrará el 14-may a mercado.",
-      "pnl_paper": -1591.0,
-      "pnl_real": -39.06,
-      "causa_raiz": "1) Stop_limit no protege gaps overnight post-earnings. 2) Pre-close R0 no cancela bracket legs (held status). 3) Sin gap-check en apertura.",
-      "fixes_aplicados": [
-        "pre-close-manager: cancelar bracket legs (status=all nested=true) antes de R0 close",
-        "market-open-execution: GAP CHECK — cierra posiciones que abrieron bajo su stop",
-        "Regla nueva: NUNCA entrar en earnings play el MISMO DÍA de earnings AH — solo D-1"
-      ],
-      "lección": "El mayor enemigo del sistema son los gaps post-earnings cuando el ordenador está apagado. Fix estructural: 1) Pre-close R0 con cancel completo (incluyendo held legs). 2) Gap check en apertura. 3) Regla D-1: no entrar en earnings si son AH el mismo día de entrada."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "BUG_PRECLOSE_R0_BRACKET_HELD",
-      "titulo": "Bug crítico: pre-close R0 no cancelaba bracket legs (status=held) → shares bloqueadas",
-      "descripcion": "El pre-close R0 cancelaba órdenes status='open', pero bracket legs están en status='held'. Al intentar cerrar una posición con bracket activo, Alpaca retorna 403 insufficient qty porque todas las shares están held_for_orders. Fix: usar /orders?status=all&nested=true y cancelar todos los órdenes activos incluyendo held antes de colocar el market close.",
-      "fix_aplicado": "pre-close-manager/SKILL.md PASO 2: cancelar con status=all nested=true antes de market sell",
-      "lección": "NUNCA asumir que cancelar status=open es suficiente cuando hay bracket orders. Siempre usar status=all&nested=true."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "MEJORA_GAP_CHECK_APERTURA",
-      "titulo": "Gap check en apertura implementado en market-open-execution",
-      "descripcion": "Nuevo bloque en market-open-execution que en cada apertura verifica: si alguna posición paper abre con precio < stop_price conocido (del performance_log) → cerrar inmediatamente con market order cancelando todos los orders previos. También cierra defensivamente si pérdida > 12% sin stop conocido. Previene la situación REZI: apagón + gap post-earnings + sin gap check = posición abierta -18.5%.",
-      "lección": "El gap check de apertura es la última línea de defensa cuando el pre-close falla (ordenador apagado, error en R0). Coste: ~5 segundos por ciclo. Beneficio: protección ante catástrofes tipo REZI."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "REGLA_D1_EARNINGS",
-      "titulo": "Regla nueva: no entrar en earnings play el mismo día que los earnings — solo D-1",
-      "descripcion": "REZI se entró el 12-may, mismos AH del 12-may. El pre-close corrió pero no pudo cerrar. Si hubiéramos entrado el 11-may (D-1), el pre-close del 12-may habría tenido más oportunidades de cerrar la posición. Regla: si earnings_timing=after-hours y earnings_fecha=today → NO entrar. Solo entrar si earnings_fecha=mañana o posterior.",
-      "fix_pendiente": "pre-market-earnings-scan: añadir check 'if earnings_fecha == today and earnings_timing == after-hours → skip (regla D-1)'",
-      "lección": "Las posiciones de drift EW son D-1: entrar el día ANTES de earnings. Si los earnings son AH hoy, el drift ya es máximo → no hay más drift que capturar → no entrar."
-    },
-    {
-      "fecha": "2026-05-16",
-      "tipo": "PIVOTE_ESTRATEGICO_W20",
-      "titulo": "Pivote estratégico W20: calidad sobre cantidad, cuenta real desactivada",
-      "descripcion": "Análisis exhaustivo tras n=19 trades Cowork: win_rate=42%, profit_factor=0.84, P&L neto=-$456. El sistema está operando sin ventaja estadística demostrada. Diagnóstico raíz: (1) scoring system con poder predictivo insuficiente — demasiados factores correlacionados sin validación empírica; (2) exceso de operaciones diluye el edge; (3) cuenta real expuesta sin PF≥1.5 confirmado.",
-      "cambios_implementados": {
-        "min_signal_score": "7.5 → 8.5 (filtrar solo señales top-tier)",
-        "max_cowork_positions": "5 → 2 (concentración: mejores 2 jugadas, no spray-and-pray)",
-        "max_posiciones_paper_simultaneas": "6 → 2",
-        "score_threshold_real_account": "7.5 → 99.0 (cuenta real DESACTIVADA hasta PF≥1.5)",
-        "filtro_beat_rate": "≥60% añadido — evitar compañías con historial de miss (PFE, OXY tipo)",
-        "archivos_actualizados": [
-          "performance_log.json",
-          "pre-market-earnings-scan/SKILL.md",
-          "sentinel/SKILL.md",
-          "market-open-execution/SKILL.md"
-        ]
-      },
-      "criterio_reactivacion_real": "Paper muestra PF≥1.5 Y win_rate≥50% sostenido durante 8 semanas consecutivas (mínimo n=30 trades paper). Solo entonces revisar score_threshold_real_account.",
-      "lección": "La mejora continua requiere medir primero, cambiar después. n=19 es suficiente para detectar ausencia de edge. El capital real merece más certeza antes de arriesgarlo."
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "CSCO: BEAT cons +6.0% / AH +15.0% (2026-05-13) ✅",
-      "descripcion": "EPS actual=$1.06 vs consensus=$1.0. Reacción AH: +15.0%. Rev YoY: 12.0%.",
-      "accion_futura": "Confirma pipeline. Si AH ≥5% → continuation play válido.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "CSCO: beat cons=+6.0% confirmado AH=+15.0% (2026-05-13)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=1.06 vs cons=1.0. Whisper=NO disponible.",
-      "accion_futura": "Si CSCO repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "BABA: MISS cons -89.3% / AH -8.9% (2026-05-13)",
-      "descripcion": "EPS actual=$0.09 vs consensus=$0.84. Reacción AH: -8.9%. Revenue YoY: 9.24%.",
-      "accion_futura": "Revisar perfil de BABA: guidance, sector, momentum pre-earnings. Reacción AH muy negativa — confirmed bearish.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "DOCS: MISS cons -7.9% / AH -11.1% (2026-05-13)",
-      "descripcion": "EPS actual=$0.26 vs consensus=$0.282. Reacción AH: -11.1%. Revenue YoY: 5.1%.",
-      "accion_futura": "Revisar perfil de DOCS: guidance, sector, momentum pre-earnings. Reacción AH muy negativa — confirmed bearish.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "EOSE: BEAT cons +150.0% / AH +20.0% (2026-05-13) ✅",
-      "descripcion": "EPS actual=$0.12 vs consensus=$-0.24. Reacción AH: +20.0%. Rev YoY: 445.0%.",
-      "accion_futura": "Confirma pipeline. Si AH ≥5% → continuation play válido.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-13",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "EOSE: beat cons=+150.0% confirmado AH=+20.0% (2026-05-13)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.12 vs cons=-0.24. Whisper=NO disponible.",
-      "accion_futura": "Si EOSE repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-12",
-      "tipo": "WHISPER_MISS_TECNICO",
-      "titulo": "OKLO (2026-05-12): beat consensus pero clasificado \"miss\" por EW (whisper más optimista)",
-      "descripcion": "EPS=-$0.19 vs cons=-$0.20 (beat técnico) pero EW marcó \"missed expectations\" → whisper más exigente. AH=-2.29% confirma underwhelm.",
-      "accion_futura": "Para small-caps con cobertura ligera: whisper EW > consensus oficial. Validar siempre con EW antes de continuation play.",
-      "impacto_score": -0.1
-    },
-    {
-      "fecha": "2026-05-14",
-      "titulo": "Bug intraday PASO 1.8: field 'score_total' no existe - candidatos usan 'score'/'score_ajustado'",
-      "descripcion": "El check 'score_total >= 8.5' en PASO 1.8 falla porque los candidatos almacenan el score como 'score' o 'score_ajustado'. Esto resultó en intento erroneo de cierre AMAT (score 8.5, validado). El bracket order lo protegio (insufficient qty), pero el bug existe.",
-      "accion_correctiva": "Cambiar 'score_total' por la primera de ['score_ajustado','score','score_total'] disponible",
-      "tarea_afectada": "intraday-monitor",
-      "old_text": "score_ok = candidatos_validados_tickers.get(sym, {}).get('score_total', 0) >= 8.5",
-      "new_text": "_cv = candidatos_validados_tickers.get(sym, {}); score_ok = max(_cv.get('score',0), _cv.get('score_ajustado',0), _cv.get('score_total',0)) >= 8.5",
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-05-14",
-      "titulo": "BUG CRÍTICO pre-close: R0 (earnings AH hoy) overrideado por elif posicion_reciente",
-      "descripcion": "El SKILL pre-close-manager evalúa decisiones en dos bloques if/elif separados. El primero detecta R0 (earnings AH HOY → CERRAR). El segundo bloque incluye reglas como 'posicion_reciente_<=2d_pnl>-3pct → MANTENER' que sobrescriben decision sin verificar el estado previo. AMAT (2026-05-14) fue marcada R0 pero overrideada a mantener. Violación crítica de regla SAGRADA — lección MEDP 2026-04-23 aplicable.",
-      "accion_correctiva": "Fix permanente en SKILL pre-close: envolver bloque R1-R4/M1-M3 en 'if decision == \"mantener\":' O consolidar todas las reglas en una sola cadena if/elif priorizada (R0 primero, luego R0-EXT, luego R1-R4, luego M1-M3).",
-      "severidad": "critica",
-      "implementada": false,
-      "componente": "pre-close-manager"
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "AMAT: BEAT cons +6.7% / AH +6.5% (2026-05-14)",
-      "descripcion": "EPS=$2.86 vs cons=$2.68 vs whisper=$2.71. Rev YoY=11.4.",
-      "accion_futura": "Continuation play candidato.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "AMAT: beat cons=+6.7% confirmado AH=+6.5% (2026-05-14)",
-      "descripcion": "Mercado confirmo beat con AH fuerte.",
-      "accion_futura": "AMAT: AH confirmacion = senal validada continuation 1-3d.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "NU: MISS cons -5.2% / whisper -15.4% / AH -3.5% (2026-05-14)",
-      "descripcion": "EPS=$0.1776 vs cons=$0.1874 vs whisper=$0.21. Rev YoY=None.",
-      "accion_futura": "Revisar perfil NU: pre-drift descontaba? guidance?",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "BOOT: beat marginal cons +1.4% (2026-05-14)",
-      "descripcion": "EPS=$1.45 vs cons=$1.43."
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "GO: BEAT cons +66.7% / AH +10.8% (2026-05-14)",
-      "descripcion": "EPS=$0.05 vs cons=$0.03 vs whisper=$None. Rev YoY=3.6.",
-      "accion_futura": "Continuation play candidato.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "GO: beat cons=+66.7% confirmado AH=+10.8% (2026-05-14)",
-      "descripcion": "Mercado confirmo beat con AH fuerte.",
-      "accion_futura": "GO: AH confirmacion = senal validada continuation 1-3d.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "KLAR: BEAT cons +95.0% / AH +13.6% (2026-05-14)",
-      "descripcion": "EPS=$-0.01 vs cons=$-0.2 vs whisper=$None. Rev YoY=44.0.",
-      "accion_futura": "Continuation play candidato.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-14",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "KLAR: beat cons=+95.0% confirmado AH=+13.6% (2026-05-14)",
-      "descripcion": "Mercado confirmo beat con AH fuerte.",
-      "accion_futura": "KLAR: AH confirmacion = senal validada continuation 1-3d.",
-      "impacto_score": 0.3
-    },
-    {
       "fecha": "2026-05-14",
       "tipo": "LECCION_PRE_DRIFT_NEGATIVO",
       "titulo": "NU (2026-05-14): pre-drift -11.5%/-14.3% predijo miss",
@@ -996,6 +572,16 @@
       "descripcion": "SNOW EPS $0.39 vs cons $0.32. RevYoY +33.5%. $6B AWS deal + Natoma acquisition. AH+37%. Patron: AI infra beat + acquisition + multi-year deal = continuation 2-5d high-prob. Whisper no disponible pero magnitud cons+AH suficiente.",
       "accion_futura": "SaaS/AI infra: cons>15% + AH>20% + RevYoY>30% -> score continuation max (9.5), sizing 1.0x.",
       "impacto_score": 0.5
+    },
+    {
+      "fecha": "2026-05-29",
+      "titulo": "pre-market-scan Friday W22: HPE/CRDO Monday earnings extremadamente descontados",
+      "descripcion": "HPE (12 sem alcistas, +83% vs MA200) y CRDO (cerca 52w high, beat magnitude shrinking) ambos con asimetría EW positiva pero score <4 por anti_descuento extremo. Ningún candidato nuevo qualifica para ejecución hoy.",
+      "accion_correctiva": "Cuando vs_MA200>50% Y mom5d>15%, el drift positivo ya está consumado. La lección PFE/OXY se confirma: extensión técnica trumps asimetría EW. NO entrar aunque score base sea alto.",
+      "tickers": [
+        "HPE",
+        "CRDO"
+      ]
     }
   ],
   "operaciones": [
@@ -4362,6 +3948,66 @@
       "umbral_real": 7.5,
       "max_hold_dias": 3,
       "play_horizon": "post_earnings_1_3d"
+    },
+    {
+      "ticker": "HPE",
+      "estado": "descartado",
+      "score": 5.76,
+      "score_componentes": {
+        "asim": 3.0,
+        "beat": 2.0,
+        "reaccion": 1.0,
+        "anti_desc": -2.1,
+        "guidance": 1.0,
+        "news_web": 0.5,
+        "macro": 0.06
+      },
+      "asimetria_pct": 6.04,
+      "whisper": 0.562,
+      "consensus": 0.53,
+      "earnings_fecha": "2026-06-01",
+      "earnings_timing": "after-hours",
+      "beat_rate_historico": 92,
+      "anti_descuento_score": -6,
+      "mom5d_pct": 30.26,
+      "vs_ma200_pct": 82.94,
+      "precio_actual": 44.25,
+      "expira": "2026-06-01T14:30:00Z",
+      "fecha_validacion": "2026-05-29T14:33:25+00:00",
+      "accion_recomendada": "no_entrar",
+      "motivo_descarte": "anti_descuento_extremo: vs_MA200=+82.94% mom5d=+30.26% — 12 semanas consecutivas alza, AI/Juniper rally completamente descontado. Guidance positive ya en precio.",
+      "notas": "EW asim +6.04% (whisper 0.562 vs cons 0.53). FY26 guidance subida $2.30-$2.50 ya conocida. Morgan Stanley target $33 (precio ya $44). Score 5.76 < 8.75 paper threshold. NO ENTRAR.",
+      "fuente": "pre-market-earnings-scan 2026-05-29 10:30 ET"
+    },
+    {
+      "ticker": "CRDO",
+      "estado": "descartado",
+      "score": 3.76,
+      "score_componentes": {
+        "asim": 3.0,
+        "beat": 1.0,
+        "reaccion": 1.5,
+        "anti_desc": -2.1,
+        "guidance": 0.3,
+        "news_web": 0,
+        "macro": 0.06
+      },
+      "asimetria_pct": 7.18,
+      "whisper": 1.104,
+      "consensus": 1.03,
+      "earnings_fecha": "2026-06-01",
+      "earnings_timing": "after-hours",
+      "beat_rate_historico": 67,
+      "anti_descuento_score": -6,
+      "mom5d_pct": 18.33,
+      "vs_ma200_pct": 57.61,
+      "precio_actual": 228.84,
+      "expira": "2026-06-01T14:30:00Z",
+      "fecha_validacion": "2026-05-29T14:33:25+00:00",
+      "accion_recomendada": "no_entrar",
+      "motivo_descarte": "anti_descuento_extremo: vs_MA200=+57.61% mom5d=+18.33%, cerca 52-week high. Beat magnitude estrechándose (44%→13.75%). Last_beat=False. Score 3.76 < 8.75.",
+      "notas": "EW asim +7.18% (whisper 1.104 vs cons 1.03). Pre-announce revenue guidance ya conocido. Earnings ESP 0.00%. Score muy bajo por extensión extrema.",
+      "fuente": "pre-market-earnings-scan 2026-05-29 10:30 ET"
     }
   ],
   "macro_context": {
@@ -20562,7 +20208,9 @@
       "detectado": "sentinel-preopen",
       "ts_detected": "2026-05-25T09:12:32.214533+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday"
+      "fuente": "sentinel-preopen-holiday",
+      "procesado": true,
+      "procesado_ts": "2026-05-29T14:33:25+00:00"
     },
     {
       "ticker": "CRM",
@@ -20575,7 +20223,9 @@
       "detectado": "sentinel-preopen",
       "ts_detected": "2026-05-25T09:12:32.214533+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday"
+      "fuente": "sentinel-preopen-holiday",
+      "procesado": true,
+      "procesado_ts": "2026-05-29T14:33:25+00:00"
     }
   ],
   "skip_analysis": {
@@ -21625,5 +21275,19 @@
       "Reducir universo bot a <3000 símbolos para evitar OOM (BIQ-OOM-W21 nueva).",
       "PRIORIDAD máxima: añadir stops a GO, SLB, YETI ANTES de cualquier entrada nueva."
     ]
-  }
+  },
+  "scan_history": [
+    {
+      "ts": "2026-05-29T14:33:25+00:00",
+      "task": "pre-market-earnings-scan",
+      "fecha": "2026-05-29",
+      "candidatos_evaluados": 2,
+      "candidatos_ejecutados": 0,
+      "motivo_no_ejecucion": "ambos descartados por anti_descuento; ya MAX_COWORK=2 positions abiertas (GO+P+AS=3 paper cowork)",
+      "macro_score": 0.2,
+      "macro_nivel": "normal",
+      "score_min_paper": 8.75,
+      "score_min_real": 9.0
+    }
+  ]
 }
