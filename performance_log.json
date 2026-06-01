@@ -132,14 +132,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-15",
-      "tipo": "CONTINUATION_PERDIDO",
-      "titulo": "FIG: beat cons +66.7% no detectado en run Thursday → missed +12% Friday",
-      "descripcion": "FIG reportó Q1 2026 tras cierre Thursday May 14. EPS $0.10 vs cons $0.06 (+66.7%), revenue +46% YoY, AH=+6.86%. Continuation play habría dado +12.13% Friday. No estaba en parsing del EW email (posiblemente sólo en footer del email o fuente externa).",
-      "accion_futura": "Ampliar fuentes Gmail (motley fool, marketbeat) para capturar earnings AC del día. Considerar también búsqueda explícita por sector hot (tech/growth) tras cierre cada día.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-05-15",
       "tipo": "MACRO_RIESGO_CONTINUATION",
       "titulo": "Friday 15-may: selloff semis -4 a -6.6% por Iran tensions",
       "descripcion": "S&P -1.54%, NVDA -4.4%, INTC -6%, AMD -5.7%, MU -6.6% por miedo a Iran energy escalation. Esto impacta continuation plays semi-related: AMAT (continuation Thursday→Friday) probablemente cerró negativo. KLAR (BNPL, no semi) Friday morning +15% — el sector matters.",
@@ -582,6 +574,15 @@
       "descripcion": "Operaciones Cowork con bracket OCO en Alpaca (TP limit + SL stop_limit con status='held') quedan en el log con stop_loss=None. El estado 'held' de Alpaca es VÁLIDO (OCO leg waiting), pero el código no lo lee. Sentinel/intraday/pre-close no pueden calcular R ni saber si la posición está protegida.",
       "accion_correctiva": "Modificar la lógica de query de stops en TODAS las tareas: incluir orders con status in ('new', 'accepted', 'held', 'pending_new'). En cada PASO de stops review, sincronizar plog['operaciones'][i]['stop_loss'] desde stop_price de Alpaca.",
       "tarea_afectada": "intraday-monitor, post-market-review, sentinel, pre-close-manager",
+      "auto_generado": true,
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-06-01",
+      "titulo": "HPE/CRDO Monday AH earnings — extremadamente descontados Friday W22, no se entró",
+      "descripcion": "Lección Friday W22 (2026-05-29) identificó HPE+CRDO Monday earnings descontados. En post-market 2026-06-01: HPE reportó +9% rev beat y guidance up. CRDO awaiting actual. Sistema marcó la observación pero no se generó candidato_validado con accion=entrar_apertura_desde el viernes. Hueco en el pipeline: lección sin ejecutable.",
+      "accion_correctiva": "Post-market viernes debe generar candidatos_validados con earnings_fecha=lunes y accion_recomendada=entrar_apertura cuando hay drift play obvio. Esta sesión añade HPE+CRDO como drift para martes.",
+      "tarea_afectada": "post-market-review",
       "auto_generado": true,
       "aplicada": false
     }
@@ -1419,7 +1420,7 @@
       "score_ajustado": 8.6,
       "score_override": 8.6,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-28",
       "accion_recomendada": "entrar_apertura",
@@ -1438,12 +1439,13 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-05-28",
       "expira": "2026-05-29T21:00:00Z",
-      "notas": "Post-earnings continuation. Cons +21.9% AH +37.0%. Entrar apertura 2026-05-29. Stop low earnings day o ATR1.5. Target 2xATR. Max 3d.",
+      "notas": "Post-earnings continuation. Cons +21.9% AH +37.0%. Entrar apertura 2026-05-29. Stop low earnings day o ATR1.5. Target 2xATR. Max 3d. | Auto-expirado 2026-06-01 en post-market",
       "asimetria_pct": 6.563999999999999,
       "ts_creado": "2026-05-28T21:45:34.740182+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_expiracion": "2026-06-01"
     },
     {
       "ticker": "HPE",
@@ -1553,21 +1555,88 @@
       "alerta_earnings_overnight": "Earnings reportados antes de apertura — no hay riesgo overnight.",
       "conviction_tier": "no_entry",
       "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
+    },
+    {
+      "ticker": "PANW",
+      "score": 7.0,
+      "score_total": 9.0,
+      "fecha_deteccion": "2026-06-01",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-02",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "NO_ENTRAR_pre_earnings — vigilar drift miércoles",
+      "ventana_entrada": "2026-06-03 09:40-10:30 ET si bate AH",
+      "stop_tipo": "ATR×2.5 ventana drift mié",
+      "sizing": "normal post-beat",
+      "argumento": "PANW Q3/26 AH martes. Cons EPS $0.81 / rev $2.94B (+28% YoY). NGS ARR +56%. Stock all-time-highs $271-273, upgrades Jefferies/Wedbush $300. NATO partnership. Sector cybersecurity prioridad+2.",
+      "sector": "cybersecurity",
+      "estado": "pendiente_ew",
+      "expira": "2026-06-03T18:29:25.927911Z",
+      "score_macro_bonus": 2,
+      "notas": "AH earnings 2026-06-02. Si bate → drift miércoles apertura. Si miss → evitar.",
+      "alerta_earnings_overnight": "NO ENTRAR pre-earnings AH martes — riesgo gap overnight",
+      "conviction_tier": "conviction_alta",
+      "sizing_multiplier": 1.0
+    },
+    {
+      "ticker": "ULTA",
+      "score": 6.0,
+      "score_total": 5.0,
+      "fecha_deteccion": "2026-06-01",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-02",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilancia_solamente",
+      "ventana_entrada": "2026-06-03 09:40-10:30 ET (solo si gran beat)",
+      "stop_tipo": "ATR×2.5",
+      "sizing": "small",
+      "argumento": "ULTA Q1/26 AH martes. EPS cons $6.87 (+2.5% YoY) / rev $3.08B (+8.2%). Beat rate 4/4 últimos 4Q (11% avg surprise). Pero stock -16.7% desde último earnings → sentiment cauteloso. Rare Beauty launch + K-Beauty.",
+      "sector": "consumer_discretionary",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-03T18:29:25.927911Z",
+      "score_macro_bonus": -1,
+      "notas": "Sector consumer_disc bonus=-1. Stock down 16.7% YTD → \"Sell the news\" risk. Solo vigilar.",
+      "alerta_earnings_overnight": "NO ENTRAR pre-earnings — observar reacción miércoles",
+      "conviction_tier": "conviction_media",
+      "sizing_multiplier": 0.5
+    },
+    {
+      "ticker": "AVGO",
+      "score": 8.0,
+      "score_total": 10.0,
+      "fecha_deteccion": "2026-06-01",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-03",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "entrar_apertura_desde_20260602",
+      "ventana_entrada": "2026-06-02 09:40-13:00 ET",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET día earnings (post-pre-market)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "AVGO Q2/26 PRE-MARKET miércoles. Guidance Q2 revenue ~$22B (+47% YoY), AI chip revenue $10.7B. AI infrastructure sector prioridad+2. Setup drift play 1 día antes.",
+      "sector": "ai_infrastructure",
+      "estado": "pendiente",
+      "expira": "2026-06-03T16:29:25.927911Z",
+      "score_macro_bonus": 2,
+      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza.",
+      "alerta_earnings_overnight": "CERRAR antes 16:00 ET 2026-06-02 — earnings pre-market 2026-06-03",
+      "conviction_tier": "conviction_alta",
+      "sizing_multiplier": 1.0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-05-23",
+    "fecha_actualizacion": "2026-06-01",
     "semana": "2026-W22",
     "regimen": "AI_TECH_RALLY",
-    "vix": 15.8,
+    "vix": 16.01,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "NVDA beat masivo 5/20 ($81.6B revenue vs $79.2B est) reactiva narrativa AI. Bloomberg: 'It's still all about AI' — sin AI no hay rally amplio. Yield curve flatteando (0.54→0.43) — preocupación growth. Fed pausada 3.50-3.75%, minutas Warsh hawkish con Iran inflación. Memorial Day 5/25 mercado cerrado. Sell-in-May sentiment (EW Whisper Report) en contra de AI strength.",
+    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-01: S&P 500 supera 7,600 por 1ª vez (SPY=$758.54, +0.27%). Tech +2% liderado por NVDA (+2% nuevo chip PC). Energy +2%. ISM Manufacturing PMI May=55.3 batió 53.8 esperado — expansión confirmada. VIX cerró 16.01 (+4.5% vs viernes pero aún en risk-on). HPE & CRDO reportaron AH — HPE batió revenue $10.7B vs $9.82B esp (+9%) y guidance up. Esta semana cargada: PANW+ULTA Mar AH | AVGO+CRWD Mié | NFP/JOLTS macro.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
       "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
-      "Alpaca data SPY"
+      "Alpaca data SPY",
+      "WebSearch post-market 2026-06-01: EW calendar Jun 2-3, HPE/CRDO results, PANW/ULTA previews, AVGO Wed preview"
     ],
     "sector_prioridades": {
       "ai_infrastructure": 2,
@@ -1583,18 +1652,25 @@
       "consumer_discretionary": -1,
       "consumer_staples": -1,
       "utilities": -1,
-      "real_estate": -2
+      "real_estate": -2,
+      "cybersecurity": 2
     },
     "sectores_a_vigilar_esta_semana": [
       "ai_infrastructure",
       "memory_chips",
-      "technology"
+      "technology",
+      "energy",
+      "industrials",
+      "defense",
+      "communication",
+      "materials",
+      "cybersecurity"
     ],
     "sectores_a_evitar_esta_semana": [
-      "real_estate",
+      "consumer_discretionary",
       "consumer_staples",
       "utilities",
-      "consumer_discretionary"
+      "real_estate"
     ],
     "eventos_macro_proxima_semana": [
       {
@@ -1684,7 +1760,22 @@
     "spy_chg_pct": 0.23,
     "ndx_chg_pct": 0.41,
     "oil_wti": 90.55,
-    "oil_wti_chg": 3.7
+    "oil_wti_chg": 3.7,
+    "spy_close": 758.54,
+    "eventos_recientes": [
+      {
+        "fecha": "2026-06-01",
+        "evento": "S&P 500 cierra >7600 por 1ª vez. ISM Manuf PMI May 55.3 (>53.8 esp). NVDA +2% nuevo chip PC. HPE reportó AH +40% revenue YoY guidance up.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "ai_infrastructure",
+          "semiconductors",
+          "manufacturing"
+        ],
+        "fuente": "TheStreet/Reuters/SEC 8-K"
+      }
+    ]
   },
   "operaciones_crypto": [
     {
@@ -7367,13 +7458,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-05-29",
+    "_ultima_actualizacion": "2026-06-01",
     "rendimiento_global": {
-      "equity_paper_actual": 109924.64,
+      "equity_paper_actual": 109998.08,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 4424.64,
-      "pnl_total_paper_pct": 4.19,
-      "equity_real_actual": 4544.52,
+      "pnl_total_paper_dolares": 4498.08,
+      "pnl_total_paper_pct": 4.26,
+      "equity_real_actual": 4548.07,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
       "pnl_total_real_pct": 0.39,
@@ -7496,7 +7587,7 @@
       "max_drawdown_real_pct": 0,
       "max_drawdown_paper_fecha": "2026-04-25",
       "max_drawdown_real_fecha": null,
-      "equity_paper_peak": 109924.64,
+      "equity_paper_peak": 109998.08,
       "equity_real_peak": 4537.95,
       "dias_en_drawdown_paper": 0,
       "dias_en_drawdown_real": 0,
@@ -7681,6 +7772,16 @@
         "avg_r_acumulado": -0.1,
         "operaciones_acumuladas": 18,
         "vix": 15.74
+      },
+      {
+        "fecha": "2026-06-01",
+        "equity_paper": 109998.08,
+        "equity_real": 4548.07,
+        "pnl_dia_paper": 214.93,
+        "pnl_dia_paper_pct": 0.2,
+        "vix": 16.01,
+        "regimen": "AI_TECH_RALLY",
+        "spy": 758.54
       }
     ],
     "objetivos": {
@@ -12344,6 +12445,37 @@
       ],
       "evento_clave": "S&P 500 9ª semana alcista consecutiva (longest streak desde 2023); Dow >50k 1ª vez. Iran ceasefire 60d. AI rally intacto.",
       "leccion": "Régimen AI_TECH_RALLY en racha histórica — momentum estructural, VIX en mínimos. Riesgo asimetría: corrección eventual será violenta."
+    },
+    {
+      "fecha": "2026-06-01",
+      "dia": "Lunes",
+      "equity_paper_cierre": 109998.08,
+      "variacion_dia": 214.93,
+      "variacion_pct": 0.2,
+      "vix": 16.01,
+      "spy_close": 758.54,
+      "regimen_macro": "AI_TECH_RALLY",
+      "trades_paper": [],
+      "evento_clave": "S&P 500 supera 7600 por 1ª vez. ISM Manuf May 55.3 batió. HPE reportó AH beat +9% revenue y guidance up. Tech +2% liderado NVDA.",
+      "leccion": "HPE/CRDO marcados extremadamente descontados Friday W22 no se compraron en Cowork (sólo info). HPE batió revenue +9% y guidance up — drift play válido para mañana.",
+      "r_tracking": {
+        "AS": {
+          "R": 0.58,
+          "stop_BE": false
+        },
+        "BBAR": {
+          "R": 0.82,
+          "stop_BE": false
+        },
+        "GO": {
+          "R": null,
+          "stop_BE": true
+        },
+        "P": {
+          "R": 0.56,
+          "stop_BE": false
+        }
+      }
     }
   ],
   "alertas_criticas": [
@@ -12495,6 +12627,15 @@
       "impacto_esperado": "Sentinel y pre-close-manager podrán calcular R correctamente y disparar parciales/cierres a tiempo. Evita ceguera del sistema durante ventana de stops 'held'.",
       "implementada": true,
       "tarea_afectada": "intraday-monitor, post-market-review"
+    },
+    {
+      "fecha": "2026-06-01",
+      "tipo": "regla_anadida",
+      "descripcion": "Generar candidatos_validados desde el viernes para Monday earnings con accion_recomendada=entrar_apertura cuando hay drift play obvio",
+      "evidencia": "2026-06-01: HPE/CRDO marcados extremadamente descontados Friday W22 pero sin candidato ejecutable. HPE batió rev +9% y guidance up.",
+      "archivo_modificado": "workflow procedural — no SKILL.md change",
+      "impacto_esperado": "Capturar drift plays cuando earnings Monday y la observación se hace Friday",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -13791,63 +13932,49 @@
   },
   "posiciones_paper_snapshot": [
     {
-      "fecha": "2026-04-23",
-      "timestamp": "2026-04-23T21:23:59.237277+00:00",
-      "equity": 106568.73,
-      "buying_power": 325580.12,
-      "posiciones": [
-        {
-          "symbol": "BTCUSD",
-          "qty": 0.208926,
-          "tipo": "long",
-          "entry_price": 75929.48,
-          "current_price": 77771.5,
-          "pnl_abs": 384.85,
-          "pnl_pct": 2.43,
-          "stop_activo": {
-            "side": "sell",
-            "type": "stop_limit",
-            "stop_price": 76145.04,
-            "limit_price": 75764.31
-          },
-          "stop_ok": true
-        },
-        {
-          "symbol": "GE",
-          "qty": 18,
-          "tipo": "long",
-          "entry_price": 286.57,
-          "current_price": 281.7,
-          "pnl_abs": -87.66,
-          "pnl_pct": -1.7,
-          "stop_activo": {
-            "side": "sell",
-            "type": "stop_limit",
-            "stop_price": 269.28,
-            "limit_price": 268.74
-          },
-          "stop_ok": true,
-          "nota": "Stop en $269.28, ~6% bajo entrada. GE en pérdida -1.7%. Vigilar: si llega a -5% → revisar tesis."
-        },
-        {
-          "symbol": "SAIC",
-          "qty": -21,
-          "tipo": "short",
-          "entry_price": 94.36,
-          "current_price": 95.27,
-          "pnl_abs": -19.11,
-          "pnl_pct": -0.96,
-          "stop_activo": {
-            "side": "buy",
-            "type": "stop_limit",
-            "stop_price": 100.6,
-            "limit_price": 101.1
-          },
-          "stop_ok": true,
-          "nota": "SHORT SAIC: stop_buy en $100.60 (+6.6% sobre entrada). P&L -0.96%, dentro del riesgo normal."
-        }
-      ],
-      "evaluacion_global": "TODAS las posiciones tienen stops activos. GE en pérdida moderada, dentro de riesgo. SAIC short con stop buy correcto. BTC en ganancia +2.4%. Sistema funcionando correctamente."
+      "symbol": "AS",
+      "qty": 25,
+      "avg_entry": 34.96,
+      "current": 35.82,
+      "stop": 33.48,
+      "limit_tp": null,
+      "pl_pct": 2.45,
+      "R": 0.58,
+      "snapshot_at": "2026-06-01T20:29:25.927872Z"
+    },
+    {
+      "symbol": "BBAR",
+      "qty": 494,
+      "avg_entry": 17.91,
+      "current": 18.81,
+      "stop": 16.81,
+      "limit_tp": 20.37,
+      "pl_pct": 5.03,
+      "R": 0.82,
+      "snapshot_at": "2026-06-01T20:29:25.927872Z"
+    },
+    {
+      "symbol": "GO",
+      "qty": 1107,
+      "avg_entry": 7.75,
+      "current": 8.19,
+      "stop": 7.88,
+      "limit_tp": null,
+      "pl_pct": 5.68,
+      "R": null,
+      "stop_in_profit": true,
+      "snapshot_at": "2026-06-01T20:29:25.927872Z"
+    },
+    {
+      "symbol": "P",
+      "qty": 56,
+      "avg_entry": 78.87,
+      "current": 84.4,
+      "stop": 68.99,
+      "limit_tp": 98.19,
+      "pl_pct": 7.01,
+      "R": 0.56,
+      "snapshot_at": "2026-06-01T20:29:25.927872Z"
     }
   ],
   "historial_sistema": [
@@ -13918,6 +14045,13 @@
       "posiciones_abiertas": 2,
       "parametros_version": "2026-05-23",
       "mejora_hoy": "Auto-sync stop_loss desde Alpaca bracket OCO al performance_log: cuando una operación Cowork tiene estado='abierta' y st"
+    },
+    {
+      "fecha": "2026-06-01",
+      "lecciones_acumuladas": 60,
+      "mejoras_acumuladas": 16,
+      "candidatos_activos": 3,
+      "mejora_hoy": "Post-market añade candidatos drift Monday→Tuesday cuando hay observación Friday previa (HPE/CRDO)."
     }
   ],
   "motor_alpha_diario": {
