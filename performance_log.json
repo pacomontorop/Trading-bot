@@ -16,8 +16,9 @@
     ],
     "total_candidatos_validados": 33,
     "ultima_actualizacion_ew_daily": "2026-05-19T21:43:46.711986+00:00",
-    "ultima_actualizacion": "2026-05-29 market-open-execution",
-    "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session."
+    "ultima_actualizacion": "2026-06-01T14:29:14.533903+00:00",
+    "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
+    "ultima_tarea": "pre-market-earnings-scan"
   },
   "parametros_activos": {
     "min_signal_score": 8.75,
@@ -1471,7 +1472,7 @@
       "fecha_validacion": "2026-05-29T14:33:25+00:00",
       "accion_recomendada": "NO_ENTRAR",
       "motivo_descarte": "anti_descuento_extremo: vs_MA200=+82.94% mom5d=+30.26% — 12 semanas consecutivas alza, AI/Juniper rally completamente descontado. Guidance positive ya en precio.",
-      "notas": "Pre-market-scan Friday W22 ya descartó por extensión técnica. Confirmado por post-market 5/29. Esperar pullback post-earnings.",
+      "notas": "Pre-market-scan Friday W22 ya descartó por extensión técnica. Confirmado por post-market 5/29. Esperar pullback post-earnings. | pre-market-scan 06-01 10:24 ET: cur=$45.31 +5.16% gap+1.87% — drift continuó, decisión Friday validada. REGLA D-1 blocking.",
       "fuente": "pre-market-earnings-scan 2026-05-29 10:30 ET",
       "score_ajustado": 6.0,
       "score_total": 8.0,
@@ -1484,7 +1485,8 @@
       "sector": "ai_infrastructure",
       "score_macro_bonus": 2,
       "alerta_earnings_overnight": "NO HOLD overnight. AH 2026-06-01.",
-      "conviction_tier": "no_entry"
+      "conviction_tier": "no_entry",
+      "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
     },
     {
       "ticker": "CRDO",
@@ -1513,7 +1515,7 @@
       "fecha_validacion": "2026-05-29T14:33:25+00:00",
       "accion_recomendada": "NO_ENTRAR",
       "motivo_descarte": "anti_descuento_extremo: vs_MA200=+57.61% mom5d=+18.33%, cerca 52-week high. Beat magnitude estrechándose (44%→13.75%). Last_beat=False. Score 3.76 < 8.75.",
-      "notas": "Pre-market-scan Friday W22 ya descartó por extensión. Beat asegurado pero precio ya descuenta. Esperar reacción.",
+      "notas": "Pre-market-scan Friday W22 ya descartó por extensión. Beat asegurado pero precio ya descuenta. Esperar reacción. | pre-market-scan 06-01 10:24 ET: cur=$231.38 -2.07% gap+1.59% — pullback hoy pero earnings AH HOY = REGLA D-1.",
       "fuente": "pre-market-earnings-scan 2026-05-29 10:30 ET",
       "score_ajustado": 6.5,
       "score_total": 8.5,
@@ -1526,7 +1528,8 @@
       "sector": "ai_infrastructure",
       "score_macro_bonus": 2,
       "alerta_earnings_overnight": "NO HOLD overnight. AH 2026-06-01.",
-      "conviction_tier": "no_entry"
+      "conviction_tier": "no_entry",
+      "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
     },
     {
       "ticker": "SAIC",
@@ -1543,12 +1546,13 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "SAIC Q1 FY27 BMO 6/1. Defense services + mission IT. Iran ceasefire reduce prima defensa (-1 macro) pero government IT/AI integration sigue fuerte. Reacción dependerá de book-to-bill y guidance FY27.",
       "sector": "defense",
-      "estado": "vigilar_cauteloso",
+      "estado": "descartado_extension",
       "expira": "2026-06-01T20:29:50.637560Z",
       "score_macro_bonus": -0.5,
-      "notas": "Único candidato pre-market lunes. Cuidado con stop wider en ventana 09:30-10:30 ET (ATR×2.5).",
+      "notas": "Único candidato pre-market lunes. Cuidado con stop wider en ventana 09:30-10:30 ET (ATR×2.5). | pre-market-scan 06-01 10:24 ET: cur=$118.49 +13.72% gap+12.70% — earnings YA reportados pre-market, gap consumido.",
       "alerta_earnings_overnight": "Earnings reportados antes de apertura — no hay riesgo overnight.",
-      "conviction_tier": "no_entry"
+      "conviction_tier": "no_entry",
+      "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
     }
   ],
   "macro_context": {
@@ -18936,6 +18940,30 @@
       "macro_nivel": "normal",
       "score_min_paper": 8.75,
       "score_min_real": 9.0
+    }
+  ],
+  "pre_market_scan_log": [
+    {
+      "fecha": "2026-06-01",
+      "hora_et": "10:24",
+      "macro_score": 0.5,
+      "macro_nivel": "normal",
+      "macro_resumen": "tech (+1.26%) + energy (+2.42%) líderes; small caps -1.16%, defensives -1.36% débiles; VIXY $23.4",
+      "candidatos_analizados": 3,
+      "entradas_paper": 0,
+      "entradas_real": 0,
+      "motivo_no_entradas": [
+        "cowork_limit_excedido (4>2)",
+        "REGLA_D-1 (HPE/CRDO earnings AH HOY)",
+        "SAIC ya reportó pre-market (+12.7% gap)"
+      ],
+      "verificaciones": {
+        "AS": "stop $33.26 OK",
+        "BBAR": "stop $16.81 (OCO leg) OK",
+        "GO": "stop $7.88 OK",
+        "P": "stop $68.99 (held bracket leg) OK"
+      },
+      "leccion_validada": "Friday W22 marcó HPE/CRDO descartado_extension. Hoy HPE +5.16% confirma drift consumido, SAIC +13.72% confirma gap risk."
     }
   ]
 }
