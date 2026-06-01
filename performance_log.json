@@ -1559,7 +1559,7 @@
     "fecha_actualizacion": "2026-05-23",
     "semana": "2026-W22",
     "regimen": "AI_TECH_RALLY",
-    "vix": 16.6,
+    "vix": 15.8,
     "yield_spread_10y2y": 0.43,
     "narrativa_dominante": "NVDA beat masivo 5/20 ($81.6B revenue vs $79.2B est) reactiva narrativa AI. Bloomberg: 'It's still all about AI' — sin AI no hay rally amplio. Yield curve flatteando (0.54→0.43) — preocupación growth. Fed pausada 3.50-3.75%, minutas Warsh hawkish con Iran inflación. Memorial Day 5/25 mercado cerrado. Sell-in-May sentiment (EW Whisper Report) en contra de AI strength.",
     "fuentes_consultadas": [
@@ -1628,17 +1628,26 @@
     ],
     "notas_adicionales": "Memorial Day = sólo 4 días trading (martes-viernes). Earnings W22 destacados: AI/memory: NTNX, ASAN, PD (5/28); Retail: ANF, KSS, AEO; SNOW (5/27 AH); Software: PATH, CRWD posiblemente.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-06-01T14:13",
-      "nivel": "normal",
+      "timestamp": "2026-06-01T15:14",
+      "nivel": "alerta",
       "shocks": [],
+      "shock_tipo_clasificado": "oil_spike",
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.75,
-      "score_min_real_efectivo": 9.0
+      "score_min_real_efectivo": 9.0,
+      "web_context": "Iran-US strikes, oil up, markets up but cautious",
+      "note": "Sentinel detecto oil_spike via WebSearch pero VIX calmo (15.8), SPY +0.23%, NDX +0.41% — mercados absorben. Oportunidades XLE/LMT/RTX disponibles si escalada."
     },
-    "macro_score": 0.2,
-    "macro_nivel": "normal",
+    "macro_score": 0.5,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Y10 bajo (0.00%)"
+      "SPY +0.23% NDX +0.41% — markets up",
+      "Energy +2.5% (oil spike)",
+      "Tech +1.67% (NVDA new PC chip)",
+      "WTI +3.7% $90.55 Brent +3.2% $94",
+      "Iran-US strikes Middle East tensions",
+      "Israel troops to Lebanon",
+      "VIX 15.8 calm"
     ],
     "futuros": {
       "ES": 0,
@@ -1646,7 +1655,7 @@
     },
     "yield_10y": 0.0,
     "oil_price": 0,
-    "ts_actualizado": "2026-06-01T14:13",
+    "ts_actualizado": "2026-06-01T15:14",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1663,11 +1672,19 @@
       },
       "ts": "14:13"
     },
-    "macro_bonus_ew": 0.06,
+    "macro_bonus_ew": 0.15,
     "bonos": {
       "tlt_chg": 0,
       "yield_10y": 0.0
-    }
+    },
+    "shock_tipo_detectado": "oil_spike",
+    "web_context": "Iran-US strikes, oil +3.7% to $90.55, markets up SPY +0.23% NDX +0.41%, NVDA new PC chip, Energy +2.5%",
+    "tech_chg": 1.67,
+    "energy_chg": 2.5,
+    "spy_chg_pct": 0.23,
+    "ndx_chg_pct": 0.41,
+    "oil_wti": 90.55,
+    "oil_wti_chg": 3.7
   },
   "operaciones_crypto": [
     {
@@ -17419,18 +17436,29 @@
       "oportunidades": 0,
       "cowork_abiertas": 4,
       "vix": 15.7
+    },
+    {
+      "ts": "2026-06-01T15:14:17.843106+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 4,
+      "vix": 15.8,
+      "spy_chg": 0,
+      "macro_nivel": "normal",
+      "macro_score": 0.0
     }
   ],
   "momentum_15m": {
     "GO": {
-      "precio": 8.19,
-      "mom_15m": 0.0,
-      "mom_30m": 0.061,
-      "vol_ratio": 0.55,
-      "vwap_dev": 0.488,
-      "rsi": 69.0,
+      "precio": 8.09,
+      "mom_15m": -0.002,
+      "mom_30m": -0.614,
+      "vol_ratio": 0.92,
+      "vwap_dev": -0.776,
+      "rsi": 26.6,
       "señal": "LATERAL",
-      "ts": "14:13"
+      "ts": "15:14"
     },
     "HD": {
       "precio": 317.92,
@@ -17493,14 +17521,14 @@
       "ts": "11:16"
     },
     "AS": {
-      "precio": 35.63,
-      "mom_15m": -0.21,
-      "mom_30m": -0.241,
-      "vol_ratio": 0.38,
-      "vwap_dev": 0.151,
-      "rsi": 62.6,
+      "precio": 35.69,
+      "mom_15m": -0.335,
+      "mom_30m": -0.028,
+      "vol_ratio": 0.46,
+      "vwap_dev": 0.004,
+      "rsi": 53.4,
       "señal": "debil_bajista",
-      "ts": "14:13"
+      "ts": "15:14"
     },
     "AAP": {
       "precio": 59.57,
@@ -17783,14 +17811,14 @@
       "ts": "14:49"
     },
     "BBAR": {
-      "precio": 18.88,
-      "mom_15m": -0.254,
-      "mom_30m": -0.608,
-      "vol_ratio": 0.16,
-      "vwap_dev": -0.687,
-      "rsi": 35.7,
-      "señal": "debil_bajista",
-      "ts": "14:13"
+      "precio": 18.77,
+      "mom_15m": 0.133,
+      "mom_30m": -0.053,
+      "vol_ratio": 0.1,
+      "vwap_dev": -0.526,
+      "rsi": 37.7,
+      "señal": "LATERAL",
+      "ts": "15:14"
     },
     "NCNO": {
       "precio": 16.0,
@@ -17813,14 +17841,14 @@
       "ts": "13:11"
     },
     "SNOW": {
-      "precio": 280.13,
-      "mom_15m": -0.057,
-      "mom_30m": 0.07,
-      "vol_ratio": 0.51,
-      "vwap_dev": 0.239,
-      "rsi": 61.2,
+      "precio": 283.01,
+      "mom_15m": -0.102,
+      "mom_30m": 0.701,
+      "vol_ratio": 0.77,
+      "vwap_dev": 0.636,
+      "rsi": 65.2,
       "señal": "LATERAL",
-      "ts": "14:13"
+      "ts": "15:14"
     },
     "PD": {
       "precio": 9.73,
@@ -17883,14 +17911,14 @@
       "ts": "13:11"
     },
     "P": {
-      "precio": 84.02,
-      "mom_15m": -0.85,
-      "mom_30m": -0.785,
-      "vol_ratio": 0.8,
-      "vwap_dev": -0.296,
-      "rsi": 42.2,
-      "señal": "debil_bajista",
-      "ts": "14:13"
+      "precio": 84.25,
+      "mom_15m": 0.327,
+      "mom_30m": 0.495,
+      "vol_ratio": 0.79,
+      "vwap_dev": 0.167,
+      "rsi": 38.4,
+      "señal": "debil_alcista",
+      "ts": "15:14"
     },
     "SPY": {
       "precio": 755.63,
