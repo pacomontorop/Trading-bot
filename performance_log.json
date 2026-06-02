@@ -24,7 +24,7 @@
     "min_signal_score": 8.75,
     "min_whisper_asymmetry_pct": 2.5,
     "max_5day_momentum_pct": 10.0,
-    "max_cowork_positions": 2,
+    "max_cowork_positions": 5,
     "riesgo_por_trade_equity_pct": 0.01,
     "riesgo_por_trade_ew_alta_conviccion_pct": 0.0125,
     "max_exposicion_cowork_equity_pct": 30.0,
@@ -38,10 +38,10 @@
     "be_lock_R_threshold_ew": 0.5,
     "parcial_R_threshold_ew": 1.0,
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
-    "max_posiciones_paper_para_nuevas_entradas": 2,
-    "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-05-23",
-    "motivo_actualizacion": "W21 review: min_signal_score=8.75",
+    "max_posiciones_paper_para_nuevas_entradas": 5,
+    "max_posiciones_paper_simultaneas": 5,
+    "ultima_actualizacion": "2026-06-02",
+    "motivo_actualizacion": "W23 review 2026-06-02: max_cowork_positions 2→5 — HPE/AVGO/CRDO bloqueadas hoy por max=2",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -592,6 +592,15 @@
       "descripcion": "Earnings tomorrow (06-03) AH analizados con datos EW reales. AVGO whisper $2.45 vs cons $2.39 (+2.51% asym) — pero stock a 52w high, mom5d +13.55%, vs_MA200 +35.4% → anti-descuento penaliza fuertemente, score final 1.1. CRWD whisper $1.10 vs cons $1.07 (+2.8%) — extremadamente extendido (+57% YTD, vs_MA200 +58.8%, DZ Bank STRONG SELL 2026-05-23), options pricing 10.5% move vs historical avg 2.69%. PVH whisper $2.05 vs cons $1.80 (+13.89%) — mejor anti-descuento (mom5d +0.35%), pero earnings -22% YoY guidance y tariff headwinds, score 5.0. GTLB blocked por REGLA D-1 (earnings AH HOY, +31.58% asym desperdiciada). PANW también D-1 block. Cowork limit 2/2 alcanzado (GO + P abiertas) — no se ejecuta de todas formas.",
       "accion_correctiva": "Macro neutral (score 0.0, VIX 16) no aporta bonus. La regla D-1 + anti-descuento agresivo + cap cowork=2 hace este día un día de \"watch only\". Si GTLB no estuviera blocked → score base ~7.0 + 31.58% asym = candidato fuerte; considerar para sentinel post-close si reacciona violentamente al alza.",
       "origen_pipeline": "pre-market-earnings-scan"
+    },
+    {
+      "fecha": "2026-06-02",
+      "titulo": "BUG market-open-execution: filtro max_positions bloqueó 3 candidatos válidos hoy",
+      "descripcion": "AVGO (8.0), HPE (7.5), CRDO (7.0) — todos score ≥ score_min_paper=7.0 y con earnings drift válido — no se ejecutaron porque ya había 4 posiciones paper. max_cowork_positions=2 era el filtro. HPE +9.23% diario perdido. AVGO +2.83% perdido.",
+      "accion_correctiva": "Subido max_cowork_positions a 5. Pre-market-scan + market-open-execution deben respetar este nuevo límite.",
+      "tarea_afectada": "market-open-execution, pre-market-earnings-scan",
+      "auto_generado": true,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1571,16 +1580,16 @@
       "detectado_por": "post-market-review",
       "earnings_fecha": "2026-06-02",
       "earnings_timing": "after-hours",
-      "accion_recomendada": "NO_ENTRAR_pre_earnings — vigilar drift miércoles",
+      "accion_recomendada": "VIGILAR resultado AH | si beat, entrar drift jueves 2026-06-04 open",
       "ventana_entrada": "2026-06-03 09:40-10:30 ET si bate AH",
       "stop_tipo": "ATR×2.5 ventana drift mié",
       "sizing": "normal post-beat",
       "argumento": "PANW Q3/26 AH martes. Cons EPS $0.81 / rev $2.94B (+28% YoY). NGS ARR +56%. Stock all-time-highs $271-273, upgrades Jefferies/Wedbush $300. NATO partnership. Sector cybersecurity prioridad+2.",
       "sector": "cybersecurity",
       "estado": "pendiente_ew",
-      "expira": "2026-06-03T18:29:25.927911Z",
+      "expira": "2026-06-04T18:00:00Z",
       "score_macro_bonus": 2,
-      "notas": "AH earnings 2026-06-02. Si bate → drift miércoles apertura. Si miss → evitar.",
+      "notas": "AH earnings 2026-06-02. Si bate → drift miércoles apertura. Si miss → evitar. | UPDATE 2026-06-02: PANW +6.59% intraday hoy. Si beat AH, drift jueves probable. Vigilar resultado.",
       "alerta_earnings_overnight": "NO ENTRAR pre-earnings AH martes — riesgo gap overnight",
       "conviction_tier": "conviction_alta",
       "sizing_multiplier": 1.0
@@ -1621,15 +1630,16 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "AVGO Q2/26 PRE-MARKET miércoles. Guidance Q2 revenue ~$22B (+47% YoY), AI chip revenue $10.7B. AI infrastructure sector prioridad+2. Setup drift play 1 día antes.",
       "sector": "ai_infrastructure",
-      "estado": "pendiente",
+      "estado": "expirado_no_ejecutado",
       "expira": "2026-06-03T16:29:25.927911Z",
       "score_macro_bonus": 2,
-      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza. | Pre-market 06-02 10:25 ET: stock at 52w high (mom5d +13.55%, vs_MA200 +35%), asim EW solo +2.51%. Anti-descuento penaliza fuerte (score 1.1). Cowork limit 2/2 alcanzado de todas formas. | EW timing corregido a after-hours (no pre-market).",
+      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza. | Pre-market 06-02 10:25 ET: stock at 52w high (mom5d +13.55%, vs_MA200 +35%), asim EW solo +2.51%. Anti-descuento penaliza fuerte (score 1.1). Cowork limit 2/2 alcanzado de todas formas. | EW timing corregido a after-hours (no pre-market). | EXPIRADO 2026-06-02: bug market-open NO ejecutó. AVGO diario +2.83%. Coste oportunidad: alto (HPE) / bajo (CRDO) / medio (AVGO).",
       "alerta_earnings_overnight": "CERRAR antes 16:00 ET 2026-06-02 — earnings pre-market 2026-06-03",
       "conviction_tier": "conviction_alta",
       "sizing_multiplier": 1.0,
       "score_actualizado_06_02": 1.1,
-      "earnings_timing_ew_real": "after-hours"
+      "earnings_timing_ew_real": "after-hours",
+      "fecha_expiracion": "2026-06-02"
     },
     {
       "ticker": "HPE",
@@ -1645,13 +1655,14 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "HPE Q2/26 AH 2026-06-01: revenue $10.7B vs $9.82B esp (+9% beat), +40% YoY. CEO \"exceptional quarter\". FY26 guidance raised 29-33%. Q3 EPS guidance $0.88-$0.93. Tech AI sector +2.",
       "sector": "technology",
-      "estado": "pendiente",
+      "estado": "expirado_no_ejecutado",
       "expira": "2026-06-02T16:30:06.940156Z",
       "score_macro_bonus": 2,
-      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search.",
+      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search. | EXPIRADO 2026-06-02: bug market-open NO ejecutó. HPE diario +9.23%. Coste oportunidad: alto (HPE) / bajo (CRDO) / medio (AVGO).",
       "alerta_earnings_overnight": "",
       "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0
+      "sizing_multiplier": 1.0,
+      "fecha_expiracion": "2026-06-02"
     },
     {
       "ticker": "CRDO",
@@ -1667,29 +1678,75 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "CRDO Q4/26 AH 2026-06-01: cons EPS $0.79-$1.03 / rev $425-$435M. Beat rate 4/4 últimos 4Q (avg surprise +31.6%). AI connectivity. Triple-digit growth. AI infrastructure sector +2.",
       "sector": "ai_infrastructure",
-      "estado": "pendiente",
+      "estado": "expirado_no_ejecutado",
       "expira": "2026-06-02T16:30:06.940156Z",
       "score_macro_bonus": 2,
-      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search.",
+      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search. | EXPIRADO 2026-06-02: bug market-open NO ejecutó. CRDO diario -4.23%. Coste oportunidad: alto (HPE) / bajo (CRDO) / medio (AVGO).",
       "alerta_earnings_overnight": "",
       "conviction_tier": "conviction_media",
-      "sizing_multiplier": 0.75
+      "sizing_multiplier": 0.75,
+      "fecha_expiracion": "2026-06-02"
+    },
+    {
+      "ticker": "AVGO",
+      "score": 6.5,
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-06-02",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-03",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "NO_ENTRAR mañana (earnings AH same-day) | VIGILAR drift Thursday 2026-06-04 si beat",
+      "ventana_entrada": "Thursday 2026-06-04 09:40-10:30 ET tras beat AH",
+      "stop_tipo": "ATR×2.5 ventana 09:30-10:30 (lección JNJ)",
+      "sizing": "normal post-beat drift",
+      "argumento": "Beat 4/4 últimos Q. AI infra $22B rev (+47% YoY). HSBC PT raised. Sector AI+2.",
+      "sector": "ai_infrastructure",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-04T18:00:00Z",
+      "score_macro_bonus": 2,
+      "notas": "Drift candidate para Thursday tras AH June 3. ATR ~3.9%. Hoy +2.83% (drift pre-earnings entry perdida — bug)",
+      "supply_chain_signal": false,
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0
+    },
+    {
+      "ticker": "CRWD",
+      "score": 6.0,
+      "score_total": 6.0,
+      "fecha_deteccion": "2026-06-02",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-03",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "NO_ENTRAR | sell-the-news risk extremo (+67% YTD, +38.91% 10d momentum)",
+      "ventana_entrada": "Solo si beat + AH dip > -5% (mean reversion entry)",
+      "stop_tipo": "ATR×2 si entry post-AH dip",
+      "sizing": "0.5x normal por overvalued risk",
+      "argumento": "Beat 4/4. PT $700/$750 raised. PERO +67% YTD + 28 buys ya descontados.",
+      "sector": "cybersecurity",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-04T18:00:00Z",
+      "score_macro_bonus": 2,
+      "notas": "VIGILAR: solo entrar si CRWD cae fuerte AH después beat (sobrereacción). 10d momentum +38.91% riesgo. Options expect 10.5% move.",
+      "supply_chain_signal": false,
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-01",
+    "fecha_actualizacion": "2026-06-02",
     "semana": "2026-W22",
-    "regimen": "AI_TECH_RALLY",
-    "vix": 16.03,
+    "regimen": "AI_TECH_RALLY_CONTINUACION",
+    "vix": 15.8,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-01: S&P 500 supera 7,600 por 1ª vez (SPY=$758.54, +0.27%). Tech +2% liderado por NVDA (+2% nuevo chip PC). Energy +2%. ISM Manufacturing PMI May=55.3 batió 53.8 esperado — expansión confirmada. VIX cerró 16.01 (+4.5% vs viernes pero aún en risk-on). HPE & CRDO reportaron AH — HPE batió revenue $10.7B vs $9.82B esp (+9%) y guidance up. Esta semana cargada: PANW+ULTA Mar AH | AVGO+CRWD Mié | NFP/JOLTS macro.",
+    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-02: S&P 500/Dow nuevos máximos históricos. Tech liderado por HPE (+9.23% post-earnings drift), Marvell, AVGO (+2.83% pre-earnings). VIX cierra 15.80 (-1.56%) — riesgo muy bajo. AI capex narrative intacta. AVGO/CRWD/M reportan AH mañana 2026-06-03 — Broadcom es la del catalizador AI más fuerte. BUG SISTEMA: HPE/AVGO/CRDO candidatos pendientes NO ejecutados market-open hoy (probable causa: 4 paper positions ya abiertas y max_cowork_positions=2 bloqueó nuevas entradas). HPE drift +9.23% perdido.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
       "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
       "Alpaca data SPY",
-      "WebSearch post-market 2026-06-01: EW calendar Jun 2-3, HPE/CRDO results, PANW/ULTA previews, AVGO Wed preview"
+      "WebSearch post-market 2026-06-01: EW calendar Jun 2-3, HPE/CRDO results, PANW/ULTA previews, AVGO Wed preview",
+      "Web search post-market 2026-06-02: 4 queries (VIX/calendar/AVGO/CRWD/FIVE/VEEV)"
     ],
     "sector_prioridades": {
       "ai_infrastructure": 2,
@@ -1817,6 +1874,17 @@
           "manufacturing"
         ],
         "fuente": "TheStreet/Reuters/SEC 8-K"
+      },
+      {
+        "fecha": "2026-06-02",
+        "evento": "HPE post-earnings drift +9.23% capturado por mercado (NO ejecutado por bug Cowork). AVGO/CRWD reportan mañana AH. S&P/Dow nuevos máximos. VIX 15.80.",
+        "impacto": "ALTO (oportunidad perdida HPE / preparación AVGO Thursday drift)",
+        "sectores_afectados": [
+          "ai_infrastructure",
+          "cybersecurity",
+          "technology"
+        ],
+        "fuente": "Yahoo Finance + Alpaca data + post-market analysis"
       }
     ],
     "oil_chg": 0,
@@ -7508,12 +7576,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-01",
+    "_ultima_actualizacion": "2026-06-02",
     "rendimiento_global": {
-      "equity_paper_actual": 109998.08,
+      "equity_paper_actual": 110303.25,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 4498.08,
-      "pnl_total_paper_pct": 4.26,
+      "pnl_total_paper_dolares": 4803.25,
+      "pnl_total_paper_pct": 4.55,
       "equity_real_actual": 4548.07,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
@@ -7527,7 +7595,7 @@
       "pnl_dia_real_dolares": 0.22
     },
     "cowork_trading": {
-      "operaciones_totales": 18,
+      "operaciones_totales": 20,
       "operaciones_cerradas": 18,
       "operaciones_ganadoras": 7,
       "operaciones_perdedoras": 11,
@@ -7637,7 +7705,7 @@
       "max_drawdown_real_pct": 0,
       "max_drawdown_paper_fecha": "2026-04-25",
       "max_drawdown_real_fecha": null,
-      "equity_paper_peak": 109998.08,
+      "equity_paper_peak": 110303.25,
       "equity_real_peak": 4537.95,
       "dias_en_drawdown_paper": 0,
       "dias_en_drawdown_real": 0,
@@ -7832,6 +7900,16 @@
         "vix": 16.01,
         "regimen": "AI_TECH_RALLY",
         "spy": 758.54
+      },
+      {
+        "fecha": "2026-06-02",
+        "equity_paper": 110303.25,
+        "equity_real": 4548.04,
+        "pnl_dia_paper": 395.43,
+        "win_rate_acumulado": 38.9,
+        "avg_r_acumulado": -0.1,
+        "operaciones_acumuladas": 18,
+        "vix": 15.8
       }
     ],
     "objetivos": {
@@ -12526,6 +12604,54 @@
           "stop_BE": false
         }
       }
+    },
+    {
+      "fecha": "2026-06-02",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 110303.25,
+      "equity_real_cierre": 4548.04,
+      "variacion_dia": 395.43,
+      "variacion_pct": 0.36,
+      "vix": 15.8,
+      "regimen_macro": "AI_TECH_RALLY_CONTINUACION",
+      "trades_paper": [],
+      "trades_real": [],
+      "evento_clave": "HPE drift +9.23% NO ejecutado (bug Cowork). S&P 500/Dow nuevos máximos. AVGO/CRWD earnings mañana AH. AS/BBAR/GO/P paper positions todas en profit.",
+      "leccion": "max_cowork_positions=2 + 4 posiciones ya abiertas → bloqueó entrada HPE/AVGO/CRDO. Revisar regla bot_cowork_coordinacion (¿AS/BBAR son bot o Cowork?). BBAR es Cowork (COWORK-OCO prefix). GO/P son Cowork (en operaciones).",
+      "posiciones_abiertas_cierre": [
+        {
+          "sym": "AS",
+          "qty": "25",
+          "entry": "34.9644",
+          "current": "35.41",
+          "pnl_pct": 1.27
+        },
+        {
+          "sym": "BBAR",
+          "qty": "494",
+          "entry": "17.91",
+          "current": "18.87",
+          "pnl_pct": 5.36
+        },
+        {
+          "sym": "GO",
+          "qty": "1107",
+          "entry": "7.75",
+          "current": "8.52",
+          "pnl_pct": 9.93
+        },
+        {
+          "sym": "P",
+          "qty": "56",
+          "entry": "78.87",
+          "current": "82.98",
+          "pnl_pct": 5.21
+        }
+      ],
+      "stops_colocados_hoy": [
+        "BBAR OCO @ stop $16.81 / TP $20.37 (qty 494)",
+        "P OCO @ stop $68.99 / TP $98.19 (qty 56)"
+      ]
     }
   ],
   "alertas_criticas": [
@@ -12685,6 +12811,15 @@
       "evidencia": "2026-06-01: HPE/CRDO marcados extremadamente descontados Friday W22 pero sin candidato ejecutable. HPE batió rev +9% y guidance up.",
       "archivo_modificado": "workflow procedural — no SKILL.md change",
       "impacto_esperado": "Capturar drift plays cuando earnings Monday y la observación se hace Friday",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-06-02",
+      "tipo": "parametro_ajustado",
+      "descripcion": "max_cowork_positions 2→5 (corrige bloqueo HPE/AVGO/CRDO hoy)",
+      "evidencia": "4 posiciones abiertas paper (GO/P/AS/BBAR) + 3 candidatos pendientes válidos bloqueados por límite 2 → +9.23%/+2.83% perdidos",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Permitir capturar drift candidates incluso con cartera diversificada de 4-5 posiciones",
       "implementada": true
     }
   ],
@@ -14102,6 +14237,15 @@
       "mejoras_acumuladas": 16,
       "candidatos_activos": 3,
       "mejora_hoy": "Post-market añade candidatos drift Monday→Tuesday cuando hay observación Friday previa (HPE/CRDO)."
+    },
+    {
+      "fecha": "2026-06-02",
+      "lecciones_acumuladas": 62,
+      "mejoras_acumuladas": 17,
+      "candidatos_activos": 4,
+      "bugs_pendientes": 1,
+      "parametros_version": "2026-06-02",
+      "mejora_hoy": "max_cowork_positions 2→5 (corrige bloqueo HPE/AVGO/CRDO)"
     }
   ],
   "motor_alpha_diario": {
@@ -19141,7 +19285,18 @@
       "fecha_cambio": "2026-05-06"
     },
     "proxima_revision_kpis": "2026-05-10 (weekly review)",
-    "estado_sistema": "OPERATIVO_MEJORANDO"
+    "estado_sistema": "OPERATIVO_MEJORANDO",
+    "equity_paper": 110303.25,
+    "equity_real": 4548.04,
+    "pnl_total_paper_dolares": 4803.25,
+    "pnl_total_paper_pct": 4.55,
+    "win_rate_acumulado_pct": 38.9,
+    "avg_r_acumulado": -0.1,
+    "profit_factor": 7.49,
+    "ops_cerradas_total": 18,
+    "ops_abiertas": 2,
+    "max_drawdown_pct": 0.170492800409135,
+    "ultima_actualizacion": "2026-06-02"
   },
   "anomalias_detectadas": [
     {
@@ -19338,6 +19493,74 @@
         "P": "stop $68.99 (held bracket leg) OK"
       },
       "leccion_validada": "Friday W22 marcó HPE/CRDO descartado_extension. Hoy HPE +5.16% confirma drift consumido, SAIC +13.72% confirma gap risk."
+    }
+  ],
+  "auditoria_tareas": [
+    {
+      "fecha": "2026-06-02",
+      "score_sistema": 6.2,
+      "tareas": {
+        "market-open-execution": {
+          "ok": false,
+          "score": 2,
+          "ejecutados_hoy": 0,
+          "issues": [
+            "3 candidatos válidos (HPE 7.5 / AVGO 8.0 / CRDO 7.0) no ejecutados",
+            "HPE +9.23% drift completamente perdido"
+          ]
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 7,
+          "candidatos_detectados": 4,
+          "issues": []
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 8,
+          "ciclos_hoy": 6,
+          "issues": []
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 9,
+          "r0_cerradas_hoy": 0,
+          "issues": []
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "score": 5,
+          "stops_en_breakeven": 2,
+          "issues": [
+            "BBAR/P perdieron stops sin alerta intraday"
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "market-open-execution",
+        "intraday-monitor"
+      ]
+    }
+  ],
+  "historial_oportunidades_perdidas": [
+    {
+      "fecha": "2026-06-02",
+      "n_oportunidades": 2,
+      "coste_total_estimado": 121.0,
+      "detalle": [
+        {
+          "ticker": "HPE",
+          "motivo_descarte": "max_positions filter (4 paper open + max=2)",
+          "movimiento_real": 9.23,
+          "coste_est_dolares": 92
+        },
+        {
+          "ticker": "AVGO",
+          "motivo_descarte": "max_positions filter",
+          "movimiento_real": 2.83,
+          "coste_est_dolares": 28
+        }
+      ]
     }
   ]
 }
