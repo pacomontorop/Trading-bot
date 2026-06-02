@@ -585,6 +585,13 @@
       "tarea_afectada": "post-market-review",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-06-02",
+      "titulo": "pre-market-scan W23 Tuesday: AVGO/CRWD/PVH D-1 candidates evaluated, none scores ≥8.75",
+      "descripcion": "Earnings tomorrow (06-03) AH analizados con datos EW reales. AVGO whisper $2.45 vs cons $2.39 (+2.51% asym) — pero stock a 52w high, mom5d +13.55%, vs_MA200 +35.4% → anti-descuento penaliza fuertemente, score final 1.1. CRWD whisper $1.10 vs cons $1.07 (+2.8%) — extremadamente extendido (+57% YTD, vs_MA200 +58.8%, DZ Bank STRONG SELL 2026-05-23), options pricing 10.5% move vs historical avg 2.69%. PVH whisper $2.05 vs cons $1.80 (+13.89%) — mejor anti-descuento (mom5d +0.35%), pero earnings -22% YoY guidance y tariff headwinds, score 5.0. GTLB blocked por REGLA D-1 (earnings AH HOY, +31.58% asym desperdiciada). PANW también D-1 block. Cowork limit 2/2 alcanzado (GO + P abiertas) — no se ejecuta de todas formas.",
+      "accion_correctiva": "Macro neutral (score 0.0, VIX 16) no aporta bonus. La regla D-1 + anti-descuento agresivo + cap cowork=2 hace este día un día de \"watch only\". Si GTLB no estuviera blocked → score base ~7.0 + 31.58% asym = candidato fuerte; considerar para sentinel post-close si reacciona violentamente al alza.",
+      "origen_pipeline": "pre-market-earnings-scan"
     }
   ],
   "operaciones": [
@@ -1617,10 +1624,12 @@
       "estado": "pendiente",
       "expira": "2026-06-03T16:29:25.927911Z",
       "score_macro_bonus": 2,
-      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza.",
+      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza. | Pre-market 06-02 10:25 ET: stock at 52w high (mom5d +13.55%, vs_MA200 +35%), asim EW solo +2.51%. Anti-descuento penaliza fuerte (score 1.1). Cowork limit 2/2 alcanzado de todas formas. | EW timing corregido a after-hours (no pre-market).",
       "alerta_earnings_overnight": "CERRAR antes 16:00 ET 2026-06-02 — earnings pre-market 2026-06-03",
       "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0
+      "sizing_multiplier": 1.0,
+      "score_actualizado_06_02": 1.1,
+      "earnings_timing_ew_real": "after-hours"
     },
     {
       "ticker": "HPE",
@@ -1671,7 +1680,7 @@
     "fecha_actualizacion": "2026-06-01",
     "semana": "2026-W22",
     "regimen": "AI_TECH_RALLY",
-    "vix": 16.01,
+    "vix": 16.03,
     "yield_spread_10y2y": 0.43,
     "narrativa_dominante": "ACTUALIZACIÓN 2026-06-01: S&P 500 supera 7,600 por 1ª vez (SPY=$758.54, +0.27%). Tech +2% liderado por NVDA (+2% nuevo chip PC). Energy +2%. ISM Manufacturing PMI May=55.3 batió 53.8 esperado — expansión confirmada. VIX cerró 16.01 (+4.5% vs viernes pero aún en risk-on). HPE & CRDO reportaron AH — HPE batió revenue $10.7B vs $9.82B esp (+9%) y guidance up. Esta semana cargada: PANW+ULTA Mar AH | AVGO+CRWD Mié | NFP/JOLTS macro.",
     "fuentes_consultadas": [
@@ -1755,16 +1764,22 @@
       "score_min_paper_efectivo": 8.75,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": 0.2,
+    "macro_score": 0.0,
     "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "contexto_resumen": [
+      "VIX=16.0 normal",
+      "Tech XLK +0.43%",
+      "Energy XLE liderando +0.79%",
+      "Comm XLC débil -1.22%",
+      "Futuros mixtos (NQ +0.21%, ES -0.06%)"
+    ],
     "futuros": {
       "ES": 0,
       "NQ": 0
     },
-    "yield_10y": 0.0,
+    "yield_10y": 4.453,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-06-02T10:11",
+    "ts_actualizado": "2026-06-02T14:31:05Z",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1810,7 +1825,9 @@
         "fuente": "TheStreet/Reuters/SEC 8-K"
       }
     ],
-    "oil_chg": 0
+    "oil_chg": 0,
+    "lider_sectorial": "XLE",
+    "origen": "pre-market-earnings-scan 10:25 ET"
   },
   "operaciones_crypto": [
     {
