@@ -632,6 +632,18 @@
       "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.79 vs cons=0.53. Whisper=no disponible.",
       "accion_futura": "HPE: AH confirmación válida para continuation incluso sin whisper.",
       "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-06-03",
+      "titulo": "Pre-market 2026-06-03: 0 candidatos pasan umbral 8.75 — análisis Defensivo",
+      "descripcion": "8 candidatos analizados (4 hoy AH bloqueados por REGLA D-1: PVH, CRWD, AVGO, VEEV; 1 desc por asim negativa: CHPT; 3 tomorrow eligibles fallaron scoring: LULU 5.22 (analyst cuts -1.0, guidance -1.0), DOCU 5.17 (extendido +9.5% 5d), CIEN 3.87 (vs_MA200 +115.8% extremo). MAX_COWORK ya en 3/2 sobre límite. Sin ejecuciones. Macro neutro -0.10.",
+      "accion_correctiva": "Continuar monitorizando reentradas post-earnings de LULU/DOCU si caída +5-7% intraday con beat histórico fuerte. CIEN evitar hasta corrección significativa MA200.",
+      "tags": [
+        "pre-market",
+        "no-execution",
+        "D-1-rule",
+        "over-limit"
+      ]
     }
   ],
   "operaciones": [
@@ -1617,13 +1629,15 @@
       "sizing": "normal post-beat",
       "argumento": "PANW Q3/26 AH martes. Cons EPS $0.81 / rev $2.94B (+28% YoY). NGS ARR +56%. Stock all-time-highs $271-273, upgrades Jefferies/Wedbush $300. NATO partnership. Sector cybersecurity prioridad+2.",
       "sector": "cybersecurity",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "expira": "2026-06-03T18:29:25.927911Z",
       "score_macro_bonus": 2,
       "notas": "AH earnings 2026-06-02. Si bate → drift miércoles apertura. Si miss → evitar.",
       "alerta_earnings_overnight": "NO ENTRAR pre-earnings AH martes — riesgo gap overnight",
       "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0
+      "sizing_multiplier": 1.0,
+      "fecha_descarte": "2026-06-03",
+      "razon_descarte": "Earnings 2026-06-02 ya pasó, candidato no ejecutado en su ventana"
     },
     {
       "ticker": "ULTA",
@@ -1809,10 +1823,10 @@
     },
     {
       "ticker": "LULU",
-      "score": 4.0,
-      "score_ajustado": 4.0,
+      "score": 5.22,
+      "score_ajustado": 5.22,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "descartado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 4.79,
       "whisper": 1.75,
@@ -1820,19 +1834,21 @@
       "earnings_fecha": "2026-06-04",
       "earnings_timing": "after-hours",
       "expira": "2026-06-04T20:00:00Z",
-      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET.",
+      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. | Pre-market 2026-06-03: score_completo=5.22 < 8.75 → descartado. Block_E=-1.0 (cuts), Block_G=-1.0 (guidance lowered)",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "fecha_deteccion": "2026-06-03",
       "ts_creado": "2026-06-03T09:15:19.380276+00:00",
-      "beat_rate_4q": 0.75
+      "beat_rate_4q": 0.75,
+      "fecha_descarte": "2026-06-03",
+      "razon_descarte": "Pre-market scan score 5.22 < 8.75 | Multiple price target CUTS, tariff headwinds $380M, NA guidance lowered. Stock beaten down (-27.6% vs MA200, mom5d -4.98%) pero web sentiment muy negativo"
     },
     {
       "ticker": "PVH",
       "score": 5.0,
       "score_ajustado": 5.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "descartado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 13.89,
       "whisper": 2.05,
@@ -1840,12 +1856,54 @@
       "earnings_fecha": "2026-06-03",
       "earnings_timing": "after-hours",
       "expira": "2026-06-03T20:00:00Z",
-      "notas": "Score=5.0 — pendiente scoring completo en pre-market scan 10:15 ET.",
+      "notas": "Score=5.0 — pendiente scoring completo en pre-market scan 10:15 ET. | Pre-market 2026-06-03: REGLA D-1 bloqueo — earnings AH hoy, no entrar mismo día.",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "fecha_deteccion": "2026-06-03",
       "ts_creado": "2026-06-03T09:15:19.380276+00:00",
-      "beat_rate_4q": 0.75
+      "beat_rate_4q": 0.75,
+      "fecha_descarte": "2026-06-03",
+      "razon_descarte": "REGLA D-1: earnings AH HOY → gap risk máximo, drift consumido"
+    },
+    {
+      "ticker": "DOCU",
+      "fecha_validacion": "2026-06-03",
+      "fecha_descarte": "2026-06-03",
+      "estado": "descartado",
+      "score": 5.17,
+      "score_ajustado": 5.17,
+      "asimetria_pct": 7.17,
+      "whisper": 0.99,
+      "consensus": 0.92,
+      "beat_rate": 100,
+      "avg_surp_pct": 11.97,
+      "earnings_fecha": "2026-06-04",
+      "earnings_timing": "after-hours",
+      "precio_validacion": 52.96,
+      "razon_descarte": "Score 5.17 < 8.75 (umbral paper). Block_F=-0.35 (mom5d +9.5% extendido), análisis sentiment 20% strongBuy. Avg target $58.81 = +3.87% upside escaso.",
+      "notas": "beat_rate 100% histórico (12/12), avg surp +11.97%. Q4 reciente +42%. Pero stock ya +9.5% últimos 5d → drift parcial descontado.",
+      "expira": "2026-06-04T14:31:55Z",
+      "source": "pre-market-earnings-scan"
+    },
+    {
+      "ticker": "CIEN",
+      "fecha_validacion": "2026-06-03",
+      "fecha_descarte": "2026-06-03",
+      "estado": "descartado",
+      "score": 3.87,
+      "score_ajustado": 3.87,
+      "asimetria_pct": 6.26,
+      "whisper": 1.45,
+      "consensus": 1.36,
+      "beat_rate": 83,
+      "avg_surp_pct": 25.6,
+      "earnings_fecha": "2026-06-04",
+      "earnings_timing": "pre-market",
+      "precio_validacion": 626.5,
+      "razon_descarte": "Anti-descuento score=-6 (EXTREMO). vs_MA200=+115.8% (extremadamente extendido). Stock +609% YoY, +130% YTD. Analyst targets $550-585 < current $626 = no upside.",
+      "notas": "AI optical hypercycle ya completamente descontado. Beat histórico fuerte (83%, avg+25.6%) y guidance raised, pero valoración ya quemada. Saltar.",
+      "expira": "2026-06-04T14:31:55Z",
+      "source": "pre-market-earnings-scan"
     }
   ],
   "macro_context": {
