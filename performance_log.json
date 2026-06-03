@@ -132,6 +132,14 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-15",
+      "tipo": "CONTINUATION_PERDIDO",
+      "titulo": "FIG: beat cons +66.7% no detectado en run Thursday → missed +12% Friday",
+      "descripcion": "FIG reportó Q1 2026 tras cierre Thursday May 14. EPS $0.10 vs cons $0.06 (+66.7%), revenue +46% YoY, AH=+6.86%. Continuation play habría dado +12.13% Friday. No estaba en parsing del EW email (posiblemente sólo en footer del email o fuente externa).",
+      "accion_futura": "Ampliar fuentes Gmail (motley fool, marketbeat) para capturar earnings AC del día. Considerar también búsqueda explícita por sector hot (tech/growth) tras cierre cada día.",
+      "impacto_score": -0.4
+    },
+    {
+      "fecha": "2026-05-15",
       "tipo": "MACRO_RIESGO_CONTINUATION",
       "titulo": "Friday 15-may: selloff semis -4 a -6.6% por Iran tensions",
       "descripcion": "S&P -1.54%, NVDA -4.4%, INTC -6%, AMD -5.7%, MU -6.6% por miedo a Iran energy escalation. Esto impacta continuation plays semi-related: AMAT (continuation Thursday→Friday) probablemente cerró negativo. KLAR (BNPL, no semi) Friday morning +15% — el sector matters.",
@@ -576,74 +584,6 @@
       "tarea_afectada": "intraday-monitor, post-market-review, sentinel, pre-close-manager",
       "auto_generado": true,
       "aplicada": false
-    },
-    {
-      "fecha": "2026-06-01",
-      "titulo": "HPE/CRDO Monday AH earnings — extremadamente descontados Friday W22, no se entró",
-      "descripcion": "Lección Friday W22 (2026-05-29) identificó HPE+CRDO Monday earnings descontados. En post-market 2026-06-01: HPE reportó +9% rev beat y guidance up. CRDO awaiting actual. Sistema marcó la observación pero no se generó candidato_validado con accion=entrar_apertura_desde el viernes. Hueco en el pipeline: lección sin ejecutable.",
-      "accion_correctiva": "Post-market viernes debe generar candidatos_validados con earnings_fecha=lunes y accion_recomendada=entrar_apertura cuando hay drift play obvio. Esta sesión añade HPE+CRDO como drift para martes.",
-      "tarea_afectada": "post-market-review",
-      "auto_generado": true,
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-06-02",
-      "titulo": "pre-market-scan W23 Tuesday: AVGO/CRWD/PVH D-1 candidates evaluated, none scores ≥8.75",
-      "descripcion": "Earnings tomorrow (06-03) AH analizados con datos EW reales. AVGO whisper $2.45 vs cons $2.39 (+2.51% asym) — pero stock a 52w high, mom5d +13.55%, vs_MA200 +35.4% → anti-descuento penaliza fuertemente, score final 1.1. CRWD whisper $1.10 vs cons $1.07 (+2.8%) — extremadamente extendido (+57% YTD, vs_MA200 +58.8%, DZ Bank STRONG SELL 2026-05-23), options pricing 10.5% move vs historical avg 2.69%. PVH whisper $2.05 vs cons $1.80 (+13.89%) — mejor anti-descuento (mom5d +0.35%), pero earnings -22% YoY guidance y tariff headwinds, score 5.0. GTLB blocked por REGLA D-1 (earnings AH HOY, +31.58% asym desperdiciada). PANW también D-1 block. Cowork limit 2/2 alcanzado (GO + P abiertas) — no se ejecuta de todas formas.",
-      "accion_correctiva": "Macro neutral (score 0.0, VIX 16) no aporta bonus. La regla D-1 + anti-descuento agresivo + cap cowork=2 hace este día un día de \"watch only\". Si GTLB no estuviera blocked → score base ~7.0 + 31.58% asym = candidato fuerte; considerar para sentinel post-close si reacciona violentamente al alza.",
-      "origen_pipeline": "pre-market-earnings-scan"
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "CRDO: BEAT +5.5% vs whisper (2026-06-01) ✅",
-      "descripcion": "EPS=$1.16 vs whisper=$1.1 vs cons=$1.03. Rev YoY=157.02%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parámetros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "CRDO: SELL-THE-NEWS — beat cons=+12.6% pero AH=-10.5% (2026-06-01)",
-      "descripcion": "El mercado vendió en el beat. Causa probable: drift pre-earnings, guidance Q1 decepcionante (Roth $300, Jefferies $270 PTs pero guidance Q1 débil).",
-      "accion_futura": "CRDO: verificar drift pre-earnings y forward guidance antes de continuation. NO entrar si AH negativo.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "SAIC: BEAT +31.8% vs whisper (2026-06-01) ✅",
-      "descripcion": "EPS=$3.23 vs whisper=$2.45 vs cons=$2.26. Rev YoY=1.55%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parámetros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "SAIC: beat cons=+42.9% confirmado AH=+15.3% (2026-06-01)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=3.23 vs cons=2.26. Whisper=sí.",
-      "accion_futura": "SAIC: AH confirmación válida para continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "HPE: beat cons=+49.1% confirmado AH=+28.0% (2026-06-01)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.79 vs cons=0.53. Whisper=no disponible.",
-      "accion_futura": "HPE: AH confirmación válida para continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-06-03",
-      "titulo": "Pre-market 2026-06-03: 0 candidatos pasan umbral 8.75 — análisis Defensivo",
-      "descripcion": "8 candidatos analizados (4 hoy AH bloqueados por REGLA D-1: PVH, CRWD, AVGO, VEEV; 1 desc por asim negativa: CHPT; 3 tomorrow eligibles fallaron scoring: LULU 5.22 (analyst cuts -1.0, guidance -1.0), DOCU 5.17 (extendido +9.5% 5d), CIEN 3.87 (vs_MA200 +115.8% extremo). MAX_COWORK ya en 3/2 sobre límite. Sin ejecuciones. Macro neutro -0.10.",
-      "accion_correctiva": "Continuar monitorizando reentradas post-earnings de LULU/DOCU si caída +5-7% intraday con beat histórico fuerte. CIEN evitar hasta corrección significativa MA200.",
-      "tags": [
-        "pre-market",
-        "no-execution",
-        "D-1-rule",
-        "over-limit"
-      ]
     }
   ],
   "operaciones": [
@@ -1479,7 +1419,7 @@
       "score_ajustado": 8.6,
       "score_override": 8.6,
       "source": "log_validated",
-      "estado": "expirado",
+      "estado": "pendiente_ew",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-28",
       "accion_recomendada": "entrar_apertura",
@@ -1498,13 +1438,12 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-05-28",
       "expira": "2026-05-29T21:00:00Z",
-      "notas": "Post-earnings continuation. Cons +21.9% AH +37.0%. Entrar apertura 2026-05-29. Stop low earnings day o ATR1.5. Target 2xATR. Max 3d. | Auto-expirado 2026-06-01 en post-market",
+      "notas": "Post-earnings continuation. Cons +21.9% AH +37.0%. Entrar apertura 2026-05-29. Stop low earnings day o ATR1.5. Target 2xATR. Max 3d.",
       "asimetria_pct": 6.563999999999999,
       "ts_creado": "2026-05-28T21:45:34.740182+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d",
-      "fecha_expiracion": "2026-06-01"
+      "play_horizon": "post_earnings_1_3d"
     },
     {
       "ticker": "HPE",
@@ -1614,312 +1553,21 @@
       "alerta_earnings_overnight": "Earnings reportados antes de apertura — no hay riesgo overnight.",
       "conviction_tier": "no_entry",
       "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
-    },
-    {
-      "ticker": "PANW",
-      "score": 7.0,
-      "score_total": 9.0,
-      "fecha_deteccion": "2026-06-01",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-06-02",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "NO_ENTRAR_pre_earnings — vigilar drift miércoles",
-      "ventana_entrada": "2026-06-03 09:40-10:30 ET si bate AH",
-      "stop_tipo": "ATR×2.5 ventana drift mié",
-      "sizing": "normal post-beat",
-      "argumento": "PANW Q3/26 AH martes. Cons EPS $0.81 / rev $2.94B (+28% YoY). NGS ARR +56%. Stock all-time-highs $271-273, upgrades Jefferies/Wedbush $300. NATO partnership. Sector cybersecurity prioridad+2.",
-      "sector": "cybersecurity",
-      "estado": "expirado",
-      "expira": "2026-06-03T18:29:25.927911Z",
-      "score_macro_bonus": 2,
-      "notas": "AH earnings 2026-06-02. Si bate → drift miércoles apertura. Si miss → evitar.",
-      "alerta_earnings_overnight": "NO ENTRAR pre-earnings AH martes — riesgo gap overnight",
-      "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0,
-      "fecha_descarte": "2026-06-03",
-      "razon_descarte": "Earnings 2026-06-02 ya pasó, candidato no ejecutado en su ventana"
-    },
-    {
-      "ticker": "ULTA",
-      "score": 6.0,
-      "score_total": 5.0,
-      "fecha_deteccion": "2026-06-01",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-06-02",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "vigilancia_solamente",
-      "ventana_entrada": "2026-06-03 09:40-10:30 ET (solo si gran beat)",
-      "stop_tipo": "ATR×2.5",
-      "sizing": "small",
-      "argumento": "ULTA Q1/26 AH martes. EPS cons $6.87 (+2.5% YoY) / rev $3.08B (+8.2%). Beat rate 4/4 últimos 4Q (11% avg surprise). Pero stock -16.7% desde último earnings → sentiment cauteloso. Rare Beauty launch + K-Beauty.",
-      "sector": "consumer_discretionary",
-      "estado": "vigilar_cauteloso",
-      "expira": "2026-06-03T18:29:25.927911Z",
-      "score_macro_bonus": -1,
-      "notas": "Sector consumer_disc bonus=-1. Stock down 16.7% YTD → \"Sell the news\" risk. Solo vigilar.",
-      "alerta_earnings_overnight": "NO ENTRAR pre-earnings — observar reacción miércoles",
-      "conviction_tier": "conviction_media",
-      "sizing_multiplier": 0.5
-    },
-    {
-      "ticker": "AVGO",
-      "score": 8.0,
-      "score_total": 10.0,
-      "fecha_deteccion": "2026-06-01",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-06-03",
-      "earnings_timing": "pre-market",
-      "accion_recomendada": "entrar_apertura_desde_20260602",
-      "ventana_entrada": "2026-06-02 09:40-13:00 ET",
-      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET día earnings (post-pre-market)",
-      "sizing": "entrada escalonada 50%+50%",
-      "argumento": "AVGO Q2/26 PRE-MARKET miércoles. Guidance Q2 revenue ~$22B (+47% YoY), AI chip revenue $10.7B. AI infrastructure sector prioridad+2. Setup drift play 1 día antes.",
-      "sector": "ai_infrastructure",
-      "estado": "descartado_apertura",
-      "expira": "2026-06-03T16:29:25.927911Z",
-      "score_macro_bonus": 2,
-      "notas": "Pre-market miércoles. Entrar martes 09:40 (drift 1d antes). CERRAR antes 15:30 ET el martes si no bate confianza. | Pre-market 06-02 10:25 ET: stock at 52w high (mom5d +13.55%, vs_MA200 +35%), asim EW solo +2.51%. Anti-descuento penaliza fuerte (score 1.1). Cowork limit 2/2 alcanzado de todas formas. | EW timing corregido a after-hours (no pre-market).",
-      "alerta_earnings_overnight": "CERRAR antes 16:00 ET 2026-06-02 — earnings pre-market 2026-06-03",
-      "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0,
-      "score_actualizado_06_02": 1.1,
-      "earnings_timing_ew_real": "after-hours",
-      "descartado_motivo": "score 8.0 < 8.75",
-      "descartado_ts": "2026-06-03T13:47:19.391601+00:00"
-    },
-    {
-      "ticker": "HPE",
-      "score": 7.5,
-      "score_total": 9.5,
-      "fecha_deteccion": "2026-06-01",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-06-01",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "entrar_apertura_drift",
-      "ventana_entrada": "2026-06-02 09:40-10:30 ET",
-      "stop_tipo": "ATR×2.5 ventana drift play",
-      "sizing": "entrada escalonada 50%+50%",
-      "argumento": "HPE Q2/26 AH 2026-06-01: revenue $10.7B vs $9.82B esp (+9% beat), +40% YoY. CEO \"exceptional quarter\". FY26 guidance raised 29-33%. Q3 EPS guidance $0.88-$0.93. Tech AI sector +2.",
-      "sector": "technology",
-      "estado": "resultado_conocido",
-      "expira": "2026-06-02T16:30:06.940156Z",
-      "score_macro_bonus": 2,
-      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search.",
-      "alerta_earnings_overnight": "",
-      "conviction_tier": "conviction_alta",
-      "sizing_multiplier": 1.0,
-      "resultado_real": "beat",
-      "eps_actual": 0.79,
-      "eps_whisper": null,
-      "eps_consensus": 0.53,
-      "whisper_beat_pct": 0,
-      "consensus_beat_pct": 49.06,
-      "reaccion_ah_pct": 28.0,
-      "estado_anterior": "pendiente",
-      "ts_resultado": "2026-06-02T21:41:35.138116+00:00",
-      "revenue_growth_yoy_real": 40.0,
-      "guidance_proximo": "Q3 EPS $0.88-$0.93, FY26 EPS $3.35-$3.45 vs prior $2.30-$2.50"
-    },
-    {
-      "ticker": "CRDO",
-      "score": 7.0,
-      "score_total": 9.0,
-      "fecha_deteccion": "2026-06-01",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-06-01",
-      "earnings_timing": "after-hours",
-      "accion_recomendada": "entrar_apertura_drift_si_gap_positive",
-      "ventana_entrada": "2026-06-02 09:40-10:30 ET",
-      "stop_tipo": "ATR×2.5 ventana drift play",
-      "sizing": "entrada escalonada 50%+50%",
-      "argumento": "CRDO Q4/26 AH 2026-06-01: cons EPS $0.79-$1.03 / rev $425-$435M. Beat rate 4/4 últimos 4Q (avg surprise +31.6%). AI connectivity. Triple-digit growth. AI infrastructure sector +2.",
-      "sector": "ai_infrastructure",
-      "estado": "resultado_conocido",
-      "expira": "2026-06-02T16:30:06.940156Z",
-      "score_macro_bonus": 2,
-      "notas": "Drift play post-earnings AH 2026-06-01. Resultado positivo confirmado por web search.",
-      "alerta_earnings_overnight": "",
-      "conviction_tier": "conviction_media",
-      "sizing_multiplier": 0.75,
-      "resultado_real": "beat",
-      "eps_actual": 1.16,
-      "eps_whisper": 1.1,
-      "eps_consensus": 1.03,
-      "whisper_beat_pct": 5.45,
-      "consensus_beat_pct": 12.62,
-      "reaccion_ah_pct": -10.5,
-      "estado_anterior": "pendiente",
-      "ts_resultado": "2026-06-02T21:41:35.138068+00:00",
-      "revenue_growth_yoy_real": 157.02,
-      "guidance_proximo": "Q1/27 revenue $465-475M vs cons $456M"
-    },
-    {
-      "ticker": "SAIC",
-      "score": 9.5,
-      "score_ajustado": 9.5,
-      "score_override": 9.5,
-      "source": "log_validated",
-      "estado": "descartado_apertura",
-      "tipo": "post_earnings_continuation",
-      "earnings_fecha": "2026-06-01",
-      "accion_recomendada": "entrar_apertura",
-      "ventana_entrada": "2026-06-03 09:40-10:15 ET — continuación post-beat",
-      "stop_tipo": "low_earnings_day_or_ATR1.5",
-      "sizing": "1.0x",
-      "argumento": "SAIC batió whisper en 31.84% (2026-06-01). EPS=3.23 vs whisper=2.45. AH: +15.3%. Rev YoY=1.55%. Continuación post-beat (whisper_confirmado).",
-      "beat_pct_vs_whisper": 31.84,
-      "consensus_beat_pct": 42.92,
-      "reaccion_ah_pct": 15.3,
-      "continuation_ruta": "whisper_confirmado",
-      "eps_actual": 3.23,
-      "eps_whisper": 2.45,
-      "revenue_growth_yoy": 1.55,
-      "fuente": "ew-daily-results-continuation",
-      "detectado_por": "ew-daily-results",
-      "fecha_deteccion": "2026-06-02",
-      "expira": "2026-06-03T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat +31.8% vs whisper. Entrar apertura 2026-06-03. Stop bajo low día earnings o ATR×1.5. Target 2×ATR. Max hold: 3d.",
-      "asimetria_pct": 19.104,
-      "ts_creado": "2026-06-02T21:41:35.138152+00:00",
-      "umbral_real": 7.5,
-      "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d",
-      "descartado_motivo": "MAX_COWORK (2/2)",
-      "descartado_ts": "2026-06-03T13:47:19.391609+00:00"
-    },
-    {
-      "ticker": "HPE",
-      "score": 9.5,
-      "score_ajustado": 9.5,
-      "score_override": 9.5,
-      "source": "log_validated",
-      "estado": "descartado_apertura",
-      "tipo": "post_earnings_continuation",
-      "earnings_fecha": "2026-06-01",
-      "accion_recomendada": "entrar_apertura",
-      "ventana_entrada": "2026-06-03 09:40-10:15 ET — continuación post-beat",
-      "stop_tipo": "low_earnings_day_or_ATR1.5",
-      "sizing": "1.0x",
-      "argumento": "HPE beat consensus en 49.06% (whisper no disponible) (2026-06-01). EPS=0.79 vs consensus=0.53. AH: +28.0%. Rev YoY=40.0%. Continuación post-beat (consensus_proxy_ah_confirmado).",
-      "beat_pct_vs_whisper": 0,
-      "consensus_beat_pct": 49.06,
-      "reaccion_ah_pct": 28.0,
-      "continuation_ruta": "consensus_proxy_ah_confirmado",
-      "eps_actual": 0.79,
-      "eps_whisper": null,
-      "revenue_growth_yoy": 40.0,
-      "fuente": "ew-daily-results-continuation",
-      "detectado_por": "ew-daily-results",
-      "fecha_deteccion": "2026-06-02",
-      "expira": "2026-06-03T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat +0.0% vs whisper. Entrar apertura 2026-06-03. Stop bajo low día earnings o ATR×1.5. Target 2×ATR. Max hold: 3d.",
-      "asimetria_pct": 0.0,
-      "ts_creado": "2026-06-02T21:41:35.138170+00:00",
-      "umbral_real": 7.5,
-      "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d",
-      "descartado_motivo": "MAX_COWORK (2/2)",
-      "descartado_ts": "2026-06-03T13:47:19.391611+00:00"
-    },
-    {
-      "ticker": "LULU",
-      "score": 5.22,
-      "score_ajustado": 5.22,
-      "score_macro_bonus": 0,
-      "estado": "descartado",
-      "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": 4.79,
-      "whisper": 1.75,
-      "consensus": 1.67,
-      "earnings_fecha": "2026-06-04",
-      "earnings_timing": "after-hours",
-      "expira": "2026-06-04T20:00:00Z",
-      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. | Pre-market 2026-06-03: score_completo=5.22 < 8.75 → descartado. Block_E=-1.0 (cuts), Block_G=-1.0 (guidance lowered)",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)",
-      "fecha_deteccion": "2026-06-03",
-      "ts_creado": "2026-06-03T09:15:19.380276+00:00",
-      "beat_rate_4q": 0.75,
-      "fecha_descarte": "2026-06-03",
-      "razon_descarte": "Pre-market scan score 5.22 < 8.75 | Multiple price target CUTS, tariff headwinds $380M, NA guidance lowered. Stock beaten down (-27.6% vs MA200, mom5d -4.98%) pero web sentiment muy negativo"
-    },
-    {
-      "ticker": "PVH",
-      "score": 5.0,
-      "score_ajustado": 5.0,
-      "score_macro_bonus": 0,
-      "estado": "descartado",
-      "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": 13.89,
-      "whisper": 2.05,
-      "consensus": 1.8,
-      "earnings_fecha": "2026-06-03",
-      "earnings_timing": "after-hours",
-      "expira": "2026-06-03T20:00:00Z",
-      "notas": "Score=5.0 — pendiente scoring completo en pre-market scan 10:15 ET. | Pre-market 2026-06-03: REGLA D-1 bloqueo — earnings AH hoy, no entrar mismo día.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)",
-      "fecha_deteccion": "2026-06-03",
-      "ts_creado": "2026-06-03T09:15:19.380276+00:00",
-      "beat_rate_4q": 0.75,
-      "fecha_descarte": "2026-06-03",
-      "razon_descarte": "REGLA D-1: earnings AH HOY → gap risk máximo, drift consumido"
-    },
-    {
-      "ticker": "DOCU",
-      "fecha_validacion": "2026-06-03",
-      "fecha_descarte": "2026-06-03",
-      "estado": "descartado",
-      "score": 5.17,
-      "score_ajustado": 5.17,
-      "asimetria_pct": 7.17,
-      "whisper": 0.99,
-      "consensus": 0.92,
-      "beat_rate": 100,
-      "avg_surp_pct": 11.97,
-      "earnings_fecha": "2026-06-04",
-      "earnings_timing": "after-hours",
-      "precio_validacion": 52.96,
-      "razon_descarte": "Score 5.17 < 8.75 (umbral paper). Block_F=-0.35 (mom5d +9.5% extendido), análisis sentiment 20% strongBuy. Avg target $58.81 = +3.87% upside escaso.",
-      "notas": "beat_rate 100% histórico (12/12), avg surp +11.97%. Q4 reciente +42%. Pero stock ya +9.5% últimos 5d → drift parcial descontado.",
-      "expira": "2026-06-04T14:31:55Z",
-      "source": "pre-market-earnings-scan"
-    },
-    {
-      "ticker": "CIEN",
-      "fecha_validacion": "2026-06-03",
-      "fecha_descarte": "2026-06-03",
-      "estado": "descartado",
-      "score": 3.87,
-      "score_ajustado": 3.87,
-      "asimetria_pct": 6.26,
-      "whisper": 1.45,
-      "consensus": 1.36,
-      "beat_rate": 83,
-      "avg_surp_pct": 25.6,
-      "earnings_fecha": "2026-06-04",
-      "earnings_timing": "pre-market",
-      "precio_validacion": 626.5,
-      "razon_descarte": "Anti-descuento score=-6 (EXTREMO). vs_MA200=+115.8% (extremadamente extendido). Stock +609% YoY, +130% YTD. Analyst targets $550-585 < current $626 = no upside.",
-      "notas": "AI optical hypercycle ya completamente descontado. Beat histórico fuerte (83%, avg+25.6%) y guidance raised, pero valoración ya quemada. Saltar.",
-      "expira": "2026-06-04T14:31:55Z",
-      "source": "pre-market-earnings-scan"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-01",
+    "fecha_actualizacion": "2026-05-23",
     "semana": "2026-W22",
     "regimen": "AI_TECH_RALLY",
-    "vix": 16.03,
+    "vix": 16.6,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-01: S&P 500 supera 7,600 por 1ª vez (SPY=$758.54, +0.27%). Tech +2% liderado por NVDA (+2% nuevo chip PC). Energy +2%. ISM Manufacturing PMI May=55.3 batió 53.8 esperado — expansión confirmada. VIX cerró 16.01 (+4.5% vs viernes pero aún en risk-on). HPE & CRDO reportaron AH — HPE batió revenue $10.7B vs $9.82B esp (+9%) y guidance up. Esta semana cargada: PANW+ULTA Mar AH | AVGO+CRWD Mié | NFP/JOLTS macro.",
+    "narrativa_dominante": "NVDA beat masivo 5/20 ($81.6B revenue vs $79.2B est) reactiva narrativa AI. Bloomberg: 'It's still all about AI' — sin AI no hay rally amplio. Yield curve flatteando (0.54→0.43) — preocupación growth. Fed pausada 3.50-3.75%, minutas Warsh hawkish con Iran inflación. Memorial Day 5/25 mercado cerrado. Sell-in-May sentiment (EW Whisper Report) en contra de AI strength.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
       "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
-      "Alpaca data SPY",
-      "WebSearch post-market 2026-06-01: EW calendar Jun 2-3, HPE/CRDO results, PANW/ULTA previews, AVGO Wed preview"
+      "Alpaca data SPY"
     ],
     "sector_prioridades": {
       "ai_infrastructure": 2,
@@ -1935,25 +1583,18 @@
       "consumer_discretionary": -1,
       "consumer_staples": -1,
       "utilities": -1,
-      "real_estate": -2,
-      "cybersecurity": 2
+      "real_estate": -2
     },
     "sectores_a_vigilar_esta_semana": [
       "ai_infrastructure",
       "memory_chips",
-      "technology",
-      "energy",
-      "industrials",
-      "defense",
-      "communication",
-      "materials",
-      "cybersecurity"
+      "technology"
     ],
     "sectores_a_evitar_esta_semana": [
-      "consumer_discretionary",
+      "real_estate",
       "consumer_staples",
       "utilities",
-      "real_estate"
+      "consumer_discretionary"
     ],
     "eventos_macro_proxima_semana": [
       {
@@ -1987,23 +1628,30 @@
     ],
     "notas_adicionales": "Memorial Day = sólo 4 días trading (martes-viernes). Earnings W22 destacados: AI/memory: NTNX, ASAN, PD (5/28); Retail: ANF, KSS, AEO; SNOW (5/27 AH); Software: PATH, CRWD posiblemente.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-06-03 12:13",
-      "nivel": "normal",
+      "timestamp": "2026-06-03T13:16",
+      "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.75,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": 0.2,
-    "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "macro_score": -2.1,
+    "macro_nivel": "alerta",
+    "contexto_resumen": [
+      "Futuros bajistas -0.57%",
+      "Oil $96",
+      "Tech débil -1.4%",
+      "F&G=57 (Greed)",
+      "Tariffs Section 301 (10-12.5% 60 partners)",
+      "Iran-US tensions (Hormuz strikes)"
+    ],
     "futuros": {
-      "ES": 0,
-      "NQ": 0
+      "ES": -0.66,
+      "NQ": -0.49
     },
-    "yield_10y": 4.453,
+    "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-06-03 12:13",
+    "ts_actualizado": "2026-06-03T13:16",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -2019,43 +1667,27 @@
         "materials": 0,
         "realestate": 0
       },
-      "ts": "10:11"
+      "ts": "13:11"
     },
-    "macro_bonus_ew": 0.06,
+    "macro_bonus_ew": -0.63,
     "bonos": {
-      "tlt_chg": 0,
-      "yield_10y": 0.0
+      "tlt_chg": -0.5,
+      "yield_10y": 4.49
     },
-    "shock_tipo_detectado": "ninguno",
-    "web_context": "Trump preparing Fed Chair pick; HPE +26% on earnings; tech leading; jobs data this week; no shock detected",
-    "tech_chg": 1.67,
-    "energy_chg": 2.5,
-    "spy_chg_pct": 0.23,
-    "ndx_chg_pct": 0.41,
-    "oil_wti": 90.55,
-    "oil_wti_chg": 3.7,
-    "spy_close": 758.54,
-    "eventos_recientes": [
-      {
-        "fecha": "2026-06-01",
-        "evento": "S&P 500 cierra >7600 por 1ª vez. ISM Manuf PMI May 55.3 (>53.8 esp). NVDA +2% nuevo chip PC. HPE reportó AH +40% revenue YoY guidance up.",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "technology",
-          "ai_infrastructure",
-          "semiconductors",
-          "manufacturing"
-        ],
-        "fuente": "TheStreet/Reuters/SEC 8-K"
-      }
-    ],
-    "oil_chg": 0,
-    "lider_sectorial": "XLE",
-    "origen": "pre-market-earnings-scan 10:25 ET",
-    "futuros_proxies": {
-      "spy_day_pct": 0.17140446178998398,
-      "qqq_day_pct": 0.3905197953137594
-    }
+    "commodities": {
+      "oil_p": 95.78,
+      "oil_chg": 2.15,
+      "oro_chg": -0.37
+    },
+    "fx": {
+      "dxy_chg": 0.38
+    },
+    "sectores": {
+      "xlk": -1.41,
+      "xlf": -1.0,
+      "xle": 2.18
+    },
+    "fear_greed": 57
   },
   "operaciones_crypto": [
     {
@@ -7280,24 +6912,6 @@
       "candidatos": [],
       "ordenes": [],
       "notas": "F&G 23 (Extreme Fear) — bloqueo duro. Sin posiciones crypto abiertas, nada que trailear. No se ejecutó CoinGecko/Alpaca bars/WebSearch al abortarse el escaneo en PASO 1."
-    },
-    {
-      "id": "CRYPTO-SCAN-20260603-0536",
-      "fecha": "2026-06-03 05:36 ET",
-      "tipo": "crypto_scan",
-      "estado": "ABORTADO",
-      "razon_abort": "Fear & Greed = 11 (Extreme Fear) < 25 (bloqueo duro)",
-      "fear_greed": 11,
-      "fear_greed_class": "Extreme Fear",
-      "modo": "WEEKDAY_OFFHOURS",
-      "candidatos_evaluados": 0,
-      "ordenes_ejecutadas": 0,
-      "posiciones_crypto_tras_scan": 0,
-      "exposicion_crypto_pct": 0.0,
-      "candidatos": [],
-      "ordenes": [],
-      "trailing_updates": 0,
-      "notas": "Scan abortado al inicio por F&G en zona de pánico extremo. Sin candidatos evaluados ni operaciones. Sin posiciones crypto abiertas: nada que trail-ear."
     }
   ],
   "parametros_crypto": {
@@ -7756,13 +7370,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-01",
+    "_ultima_actualizacion": "2026-05-29",
     "rendimiento_global": {
-      "equity_paper_actual": 109998.08,
+      "equity_paper_actual": 109924.64,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 4498.08,
-      "pnl_total_paper_pct": 4.26,
-      "equity_real_actual": 4548.07,
+      "pnl_total_paper_dolares": 4424.64,
+      "pnl_total_paper_pct": 4.19,
+      "equity_real_actual": 4544.52,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
       "pnl_total_real_pct": 0.39,
@@ -7885,7 +7499,7 @@
       "max_drawdown_real_pct": 0,
       "max_drawdown_paper_fecha": "2026-04-25",
       "max_drawdown_real_fecha": null,
-      "equity_paper_peak": 109998.08,
+      "equity_paper_peak": 109924.64,
       "equity_real_peak": 4537.95,
       "dias_en_drawdown_paper": 0,
       "dias_en_drawdown_real": 0,
@@ -8070,16 +7684,6 @@
         "avg_r_acumulado": -0.1,
         "operaciones_acumuladas": 18,
         "vix": 15.74
-      },
-      {
-        "fecha": "2026-06-01",
-        "equity_paper": 109998.08,
-        "equity_real": 4548.07,
-        "pnl_dia_paper": 214.93,
-        "pnl_dia_paper_pct": 0.2,
-        "vix": 16.01,
-        "regimen": "AI_TECH_RALLY",
-        "spy": 758.54
       }
     ],
     "objetivos": {
@@ -12629,89 +12233,6 @@
         }
       ],
       "pnl_dia_abs": 0
-    },
-    {
-      "timestamp": "2026-06-02T18:43:10.837730+00:00",
-      "evaluaciones": [
-        {
-          "symbol": "AS",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 1.83,
-          "pnl_abs": 16.01,
-          "dias": 6,
-          "price_now": 35.605,
-          "entry_price": 34.9644,
-          "stop_actual": 0.0,
-          "shares": 25
-        },
-        {
-          "symbol": "BBAR",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 4.13,
-          "pnl_abs": 365.56,
-          "dias": 5,
-          "price_now": 18.65,
-          "entry_price": 17.91,
-          "stop_actual": 0.0,
-          "shares": 494
-        },
-        {
-          "symbol": "GO",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 8.71,
-          "pnl_abs": 747.23,
-          "dias": 18,
-          "price_now": 8.425,
-          "entry_price": 7.75,
-          "stop_actual": 0.0,
-          "shares": 1107
-        },
-        {
-          "symbol": "P",
-          "decision": "mantener",
-          "razon": "mantener_estandar",
-          "pnl_pct": 4.79,
-          "pnl_abs": 211.4,
-          "dias": 4,
-          "price_now": 82.645,
-          "entry_price": 78.87,
-          "stop_actual": 0.0,
-          "shares": 56
-        }
-      ],
-      "posiciones_cerrar": 0,
-      "posiciones_mantener": 4,
-      "cierres_ejecutados": [],
-      "cierres_fallidos": [],
-      "stops_overnight": [
-        {
-          "symbol": "AS",
-          "old_stop": 0.0,
-          "new_stop": 33.54,
-          "pnl_pct": 1.83,
-          "tier": "overnight_break_even",
-          "atr": 1.3795
-        },
-        {
-          "symbol": "BBAR",
-          "old_stop": 16.81,
-          "new_stop": 16.81,
-          "pnl_pct": 4.13,
-          "tier": "bracket_leg_held"
-        },
-        {
-          "symbol": "GO",
-          "old_stop": 0.0,
-          "new_stop": 7.82,
-          "pnl_pct": 8.71,
-          "tier": "overnight_ajustado_6pct",
-          "atr": 0.6075
-        }
-      ],
-      "pnl_dia_abs": 0
     }
   ],
   "historial_diario_notas": [
@@ -12826,37 +12347,6 @@
       ],
       "evento_clave": "S&P 500 9ª semana alcista consecutiva (longest streak desde 2023); Dow >50k 1ª vez. Iran ceasefire 60d. AI rally intacto.",
       "leccion": "Régimen AI_TECH_RALLY en racha histórica — momentum estructural, VIX en mínimos. Riesgo asimetría: corrección eventual será violenta."
-    },
-    {
-      "fecha": "2026-06-01",
-      "dia": "Lunes",
-      "equity_paper_cierre": 109998.08,
-      "variacion_dia": 214.93,
-      "variacion_pct": 0.2,
-      "vix": 16.01,
-      "spy_close": 758.54,
-      "regimen_macro": "AI_TECH_RALLY",
-      "trades_paper": [],
-      "evento_clave": "S&P 500 supera 7600 por 1ª vez. ISM Manuf May 55.3 batió. HPE reportó AH beat +9% revenue y guidance up. Tech +2% liderado NVDA.",
-      "leccion": "HPE/CRDO marcados extremadamente descontados Friday W22 no se compraron en Cowork (sólo info). HPE batió revenue +9% y guidance up — drift play válido para mañana.",
-      "r_tracking": {
-        "AS": {
-          "R": 0.58,
-          "stop_BE": false
-        },
-        "BBAR": {
-          "R": 0.82,
-          "stop_BE": false
-        },
-        "GO": {
-          "R": null,
-          "stop_BE": true
-        },
-        "P": {
-          "R": 0.56,
-          "stop_BE": false
-        }
-      }
     }
   ],
   "alertas_criticas": [
@@ -13008,15 +12498,6 @@
       "impacto_esperado": "Sentinel y pre-close-manager podrán calcular R correctamente y disparar parciales/cierres a tiempo. Evita ceguera del sistema durante ventana de stops 'held'.",
       "implementada": true,
       "tarea_afectada": "intraday-monitor, post-market-review"
-    },
-    {
-      "fecha": "2026-06-01",
-      "tipo": "regla_anadida",
-      "descripcion": "Generar candidatos_validados desde el viernes para Monday earnings con accion_recomendada=entrar_apertura cuando hay drift play obvio",
-      "evidencia": "2026-06-01: HPE/CRDO marcados extremadamente descontados Friday W22 pero sin candidato ejecutable. HPE batió rev +9% y guidance up.",
-      "archivo_modificado": "workflow procedural — no SKILL.md change",
-      "impacto_esperado": "Capturar drift plays cuando earnings Monday y la observación se hace Friday",
-      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -14313,49 +13794,63 @@
   },
   "posiciones_paper_snapshot": [
     {
-      "symbol": "AS",
-      "qty": 25,
-      "avg_entry": 34.96,
-      "current": 35.82,
-      "stop": 33.48,
-      "limit_tp": null,
-      "pl_pct": 2.45,
-      "R": 0.58,
-      "snapshot_at": "2026-06-01T20:29:25.927872Z"
-    },
-    {
-      "symbol": "BBAR",
-      "qty": 494,
-      "avg_entry": 17.91,
-      "current": 18.81,
-      "stop": 16.81,
-      "limit_tp": 20.37,
-      "pl_pct": 5.03,
-      "R": 0.82,
-      "snapshot_at": "2026-06-01T20:29:25.927872Z"
-    },
-    {
-      "symbol": "GO",
-      "qty": 1107,
-      "avg_entry": 7.75,
-      "current": 8.19,
-      "stop": 7.88,
-      "limit_tp": null,
-      "pl_pct": 5.68,
-      "R": null,
-      "stop_in_profit": true,
-      "snapshot_at": "2026-06-01T20:29:25.927872Z"
-    },
-    {
-      "symbol": "P",
-      "qty": 56,
-      "avg_entry": 78.87,
-      "current": 84.4,
-      "stop": 68.99,
-      "limit_tp": 98.19,
-      "pl_pct": 7.01,
-      "R": 0.56,
-      "snapshot_at": "2026-06-01T20:29:25.927872Z"
+      "fecha": "2026-04-23",
+      "timestamp": "2026-04-23T21:23:59.237277+00:00",
+      "equity": 106568.73,
+      "buying_power": 325580.12,
+      "posiciones": [
+        {
+          "symbol": "BTCUSD",
+          "qty": 0.208926,
+          "tipo": "long",
+          "entry_price": 75929.48,
+          "current_price": 77771.5,
+          "pnl_abs": 384.85,
+          "pnl_pct": 2.43,
+          "stop_activo": {
+            "side": "sell",
+            "type": "stop_limit",
+            "stop_price": 76145.04,
+            "limit_price": 75764.31
+          },
+          "stop_ok": true
+        },
+        {
+          "symbol": "GE",
+          "qty": 18,
+          "tipo": "long",
+          "entry_price": 286.57,
+          "current_price": 281.7,
+          "pnl_abs": -87.66,
+          "pnl_pct": -1.7,
+          "stop_activo": {
+            "side": "sell",
+            "type": "stop_limit",
+            "stop_price": 269.28,
+            "limit_price": 268.74
+          },
+          "stop_ok": true,
+          "nota": "Stop en $269.28, ~6% bajo entrada. GE en pérdida -1.7%. Vigilar: si llega a -5% → revisar tesis."
+        },
+        {
+          "symbol": "SAIC",
+          "qty": -21,
+          "tipo": "short",
+          "entry_price": 94.36,
+          "current_price": 95.27,
+          "pnl_abs": -19.11,
+          "pnl_pct": -0.96,
+          "stop_activo": {
+            "side": "buy",
+            "type": "stop_limit",
+            "stop_price": 100.6,
+            "limit_price": 101.1
+          },
+          "stop_ok": true,
+          "nota": "SHORT SAIC: stop_buy en $100.60 (+6.6% sobre entrada). P&L -0.96%, dentro del riesgo normal."
+        }
+      ],
+      "evaluacion_global": "TODAS las posiciones tienen stops activos. GE en pérdida moderada, dentro de riesgo. SAIC short con stop buy correcto. BTC en ganancia +2.4%. Sistema funcionando correctamente."
     }
   ],
   "historial_sistema": [
@@ -14426,13 +13921,6 @@
       "posiciones_abiertas": 2,
       "parametros_version": "2026-05-23",
       "mejora_hoy": "Auto-sync stop_loss desde Alpaca bracket OCO al performance_log: cuando una operación Cowork tiene estado='abierta' y st"
-    },
-    {
-      "fecha": "2026-06-01",
-      "lecciones_acumuladas": 60,
-      "mejoras_acumuladas": 16,
-      "candidatos_activos": 3,
-      "mejora_hoy": "Post-market añade candidatos drift Monday→Tuesday cuando hay observación Friday previa (HPE/CRDO)."
     }
   ],
   "motor_alpha_diario": {
@@ -17923,141 +17411,28 @@
       "notas": "Iran/oil moderando (oil -20% from peak). Rate cut odds 0% para 2026 — Fed hawkish bias. Tech liderando (NVDA +3.79%, MSFT +2.62%). Posiciones Cowork con stops verificados. P&L: AS+0.1%, BBAR+3.9%, GO+6.0%, P+5.4%. Sin nuevas entradas (cowork 4/2 ya por encima del límite)."
     },
     {
-      "ts": "2026-06-01T12:11:25.260257+00:00",
+      "ts": "2026-06-03T13:16:46.371437+00:00",
       "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.0,
-      "macro_nivel": "normal",
-      "macro_score": 0.2
-    },
-    {
-      "ts": "2026-06-01T13:19:09.040683+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.0,
-      "spy_change": 0.09,
-      "macro_score": 0.6,
-      "macro_nivel": "normal",
-      "modo": "observacion_limite_cowork"
-    },
-    {
-      "ts": "2026-06-01T14:13:28.807677+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 15.7
-    },
-    {
-      "ts": "2026-06-01T15:14:17.843106+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 15.8,
-      "spy_chg": 0,
-      "macro_nivel": "normal",
-      "macro_score": 0.0
-    },
-    {
-      "ts": "2026-06-02T10:11:44.749606+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.1,
-      "macro_nivel": "normal",
-      "macro_score": 0.2,
-      "notas": "Cowork=4/2 capacity excedida, no entries. Macro normal. HPE+CRDO post-earnings positive. PANW/ULTA earnings AH hoy (sin posicion)."
-    },
-    {
-      "ts": "2026-06-02T11:13:47.221989+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.0,
-      "macro_score": 0.8,
-      "nota": "cowork_max_reached_no_new_entries"
-    },
-    {
-      "ts": "2026-06-02T12:18:14.422963+00:00",
-      "alertas": 0,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.0
-    },
-    {
-      "ts": "2026-06-02T13:18:37.659670+00:00",
-      "alertas": 1,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 1,
-      "vix_proxy_vixy": -0.8805031446540915,
-      "spy_day_pct": 0.17140446178998398,
-      "macro_score": 0.7,
-      "macro_nivel": "normal",
-      "note": "sin ejecuciones — candidatos PANW/AVGO/HPE/CRDO por debajo umbral 8.75 (+macro bonus 0.21)"
-    },
-    {
-      "ts": "2026-06-02T14:16:51.011738+00:00",
-      "alertas": 2,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 15.98,
-      "macro_nivel": "normal",
-      "macro_score": 0.2
-    },
-    {
-      "ts": "2026-06-03T09:15:19.380276+00:00",
-      "mode": "pre-open-scan",
-      "cv_added": 2,
-      "signals_added": 3,
-      "total_scanned": 6
-    },
-    {
-      "ts": "2026-06-03T10:10:45.935499+00:00",
-      "alertas": 4,
       "acciones": 0,
       "oportunidades": 0,
       "cowork_abiertas": 4,
       "vix": 16.27,
-      "macro_nivel": "alerta"
-    },
-    {
-      "ts": "2026-06-03T11:18:06.221433+00:00",
-      "alertas": 3,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.0,
-      "macro_nivel": "alerta"
-    },
-    {
-      "ts": "2026-06-03T12:13:20.111074+00:00",
-      "alertas": 1,
-      "acciones": 0,
-      "oportunidades": 0,
-      "cowork_abiertas": 4,
-      "vix": 16.3
+      "spy_pct": 0,
+      "macro_score": -2.1,
+      "macro_nivel": "alerta",
+      "no_exec_reason": "cowork_over_limit_4_of_2"
     }
   ],
   "momentum_15m": {
     "GO": {
-      "precio": 8.37,
-      "mom_15m": -0.653,
-      "mom_30m": 0.12,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.018,
-      "rsi": 45.7,
-      "señal": "debil_bajista",
-      "ts": "12:13"
+      "precio": 8.35,
+      "mom_15m": 0.24,
+      "mom_30m": -0.12,
+      "vol_ratio": 0.36,
+      "vwap_dev": -0.125,
+      "rsi": 42.9,
+      "señal": "debil_alcista",
+      "ts": "13:16"
     },
     "HD": {
       "precio": 317.92,
@@ -18120,14 +17495,14 @@
       "ts": "11:16"
     },
     "AS": {
-      "precio": 34.44,
-      "mom_15m": -0.102,
-      "mom_30m": 0.379,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.816,
-      "rsi": 72.3,
-      "señal": "LATERAL",
-      "ts": "12:13"
+      "precio": 34.31,
+      "mom_15m": 0.175,
+      "mom_30m": 0.117,
+      "vol_ratio": 0.47,
+      "vwap_dev": -0.122,
+      "rsi": 44.4,
+      "señal": "debil_alcista",
+      "ts": "13:16"
     },
     "AAP": {
       "precio": 59.57,
@@ -18230,14 +17605,14 @@
       "ts": "15:45"
     },
     "PANW": {
-      "precio": 294.41,
-      "mom_15m": 0.698,
-      "mom_30m": 0.156,
-      "vol_ratio": 1.2,
-      "vwap_dev": 0.181,
-      "rsi": 48.0,
+      "precio": 247.81,
+      "mom_15m": 0.409,
+      "mom_30m": 0.373,
+      "vol_ratio": 0.51,
+      "vwap_dev": 0.283,
+      "rsi": 64.2,
       "señal": "debil_alcista",
-      "ts": "14:16"
+      "ts": "15:16"
     },
     "RL": {
       "precio": 375.48,
@@ -18330,14 +17705,14 @@
       "ts": "15:45"
     },
     "BJ": {
-      "precio": 88.04,
-      "mom_15m": 0.114,
-      "mom_30m": 0.273,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.056,
-      "rsi": 49.8,
-      "señal": "LATERAL",
-      "ts": "11:15"
+      "precio": 89.0,
+      "mom_15m": 0.208,
+      "mom_30m": 0.09,
+      "vol_ratio": 1.27,
+      "vwap_dev": 0.414,
+      "rsi": 72.0,
+      "señal": "debil_alcista",
+      "ts": "13:16"
     },
     "DDOG": {
       "precio": 222.38,
@@ -18410,14 +17785,14 @@
       "ts": "14:49"
     },
     "BBAR": {
-      "precio": 17.9,
-      "mom_15m": 0.0,
-      "mom_30m": 0.28,
+      "precio": 17.85,
+      "mom_15m": 0.113,
+      "mom_30m": -0.584,
       "vol_ratio": 0.0,
-      "vwap_dev": -0.49,
-      "rsi": 33.3,
+      "vwap_dev": -0.222,
+      "rsi": 37.9,
       "señal": "LATERAL",
-      "ts": "12:13"
+      "ts": "13:16"
     },
     "NCNO": {
       "precio": 16.0,
@@ -18440,14 +17815,14 @@
       "ts": "13:11"
     },
     "SNOW": {
-      "precio": 283.01,
-      "mom_15m": -0.102,
-      "mom_30m": 0.701,
-      "vol_ratio": 0.77,
-      "vwap_dev": 0.636,
-      "rsi": 65.2,
-      "señal": "LATERAL",
-      "ts": "15:14"
+      "precio": 244.9,
+      "mom_15m": -0.253,
+      "mom_30m": -0.165,
+      "vol_ratio": 0.56,
+      "vwap_dev": -0.378,
+      "rsi": 29.2,
+      "señal": "debil_bajista",
+      "ts": "13:16"
     },
     "PD": {
       "precio": 9.73,
@@ -18510,14 +17885,14 @@
       "ts": "13:11"
     },
     "P": {
-      "precio": 82.86,
-      "mom_15m": 0.278,
-      "mom_30m": 1.0,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.256,
-      "rsi": 45.5,
+      "precio": 81.84,
+      "mom_15m": 0.153,
+      "mom_30m": 0.356,
+      "vol_ratio": 0.18,
+      "vwap_dev": -0.581,
+      "rsi": 39.6,
       "señal": "debil_alcista",
-      "ts": "12:13"
+      "ts": "13:16"
     },
     "SPY": {
       "precio": 755.63,
@@ -18540,24 +17915,24 @@
       "ts": "11:16"
     },
     "HPE": {
-      "precio": 54.76,
-      "mom_15m": 0.764,
-      "mom_30m": 0.473,
-      "vol_ratio": 0.7,
-      "vwap_dev": 0.82,
-      "rsi": 52.6,
-      "señal": "debil_alcista",
-      "ts": "14:16"
+      "precio": 43.24,
+      "mom_15m": -1.391,
+      "mom_30m": 0.441,
+      "vol_ratio": 1.56,
+      "vwap_dev": 0.72,
+      "rsi": 56.3,
+      "señal": "BAJISTA",
+      "ts": "11:16"
     },
     "CRDO": {
-      "precio": 224.27,
-      "mom_15m": 1.682,
-      "mom_30m": 1.553,
-      "vol_ratio": 0.7,
-      "vwap_dev": 1.302,
-      "rsi": 60.2,
-      "señal": "debil_alcista",
-      "ts": "14:16"
+      "precio": 228.11,
+      "mom_15m": 0.14,
+      "mom_30m": -0.188,
+      "vol_ratio": 0.42,
+      "vwap_dev": -0.117,
+      "rsi": 36.0,
+      "señal": "LATERAL",
+      "ts": "11:16"
     },
     "AMD": {
       "precio": 511.63,
@@ -18579,86 +17954,47 @@
       "señal": "debil_alc",
       "ts": "11:16"
     },
-    "AVGO": {
-      "precio": 473.0,
-      "mom_15m": -0.524,
-      "mom_30m": -0.861,
-      "vol_ratio": 1.01,
-      "vwap_dev": -1.013,
-      "rsi": 27.5,
-      "señal": "debil_bajista",
-      "ts": "14:16"
-    },
     "CRM": {
-      "precio": 192.05,
-      "mom_15m": -0.317,
-      "mom_30m": -0.213,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.335,
-      "rsi": 40.7,
-      "señal": "debil_bajista",
-      "ts": "11:15"
-    },
-    "ULTA": {
-      "precio": 471.92,
-      "mom_15m": 1.074,
-      "mom_30m": 1.394,
-      "vol_ratio": 0.0,
-      "vwap_dev": 1.089,
-      "rsi": 75.2,
-      "señal": "debil_alcista",
-      "ts": "11:15"
+      "precio": 191.87,
+      "mom_15m": 0.065,
+      "mom_30m": -0.12,
+      "vol_ratio": 0.7,
+      "vwap_dev": 0.116,
+      "rsi": 54.1,
+      "señal": "LATERAL",
+      "ts": "13:16"
     }
   },
   "sentinel_signals": [
     {
-      "ticker": "PANW",
-      "score": 4.5,
-      "asimetria": 7.5,
-      "whisper": 0.86,
-      "consensus": 0.8,
-      "earnings_fecha": "2026-06-02",
+      "ticker": "SNOW",
+      "score": 5.0,
+      "asimetria": 18.75,
+      "whisper": 0.38,
+      "consensus": 0.32,
+      "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
       "detectado": "sentinel-preopen",
-      "ts_detected": "2026-06-02T09:11:45.410676+00:00",
+      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-preopen-scan"
+      "fuente": "sentinel-preopen-holiday",
+      "procesado": true,
+      "procesado_ts": "2026-05-29T14:33:25+00:00"
     },
     {
-      "ticker": "LULU",
+      "ticker": "CRM",
       "score": 4.0,
-      "tipo": "earnings_ew",
-      "asimetria": 4.79,
-      "earnings_fecha": "2026-06-04",
+      "asimetria": 4.81,
+      "whisper": 3.27,
+      "consensus": 3.12,
+      "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
-      "razon": "asim=4.8% br=0.75 → sentinel_preview",
-      "ts_detected": "2026-06-03T09:15:19.380276+00:00",
+      "detectado": "sentinel-preopen",
+      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-preopen-scan"
-    },
-    {
-      "ticker": "PVH",
-      "score": 5.0,
-      "tipo": "earnings_ew",
-      "asimetria": 13.89,
-      "earnings_fecha": "2026-06-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=13.9% br=0.75 → sentinel_preview",
-      "ts_detected": "2026-06-03T09:15:19.380276+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preopen-scan"
-    },
-    {
-      "ticker": "CRWD",
-      "score": 2.5,
-      "tipo": "earnings_ew",
-      "asimetria": 2.8,
-      "earnings_fecha": "2026-06-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=2.8% br=0.5",
-      "ts_detected": "2026-06-03T09:15:19.380276+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preopen-scan"
+      "fuente": "sentinel-preopen-holiday",
+      "procesado": true,
+      "procesado_ts": "2026-05-29T14:33:25+00:00"
     }
   ],
   "skip_analysis": {
@@ -19504,42 +18840,6 @@
       "reaccion_ah_pct": -8.6,
       "revenue_growth_yoy": null,
       "fuente_datos": "websearch"
-    },
-    {
-      "ticker": "CRDO",
-      "fecha": "2026-06-01",
-      "resultado": "beat",
-      "eps_actual": 1.16,
-      "eps_whisper": 1.1,
-      "eps_consensus": 1.03,
-      "whisper_beat_pct": 5.45,
-      "consensus_beat_pct": 12.62,
-      "reaccion_ah_pct": -10.5,
-      "revenue_growth_yoy": 157.02
-    },
-    {
-      "ticker": "SAIC",
-      "fecha": "2026-06-01",
-      "resultado": "beat",
-      "eps_actual": 3.23,
-      "eps_whisper": 2.45,
-      "eps_consensus": 2.26,
-      "whisper_beat_pct": 31.84,
-      "consensus_beat_pct": 42.92,
-      "reaccion_ah_pct": 15.3,
-      "revenue_growth_yoy": 1.55
-    },
-    {
-      "ticker": "HPE",
-      "fecha": "2026-06-01",
-      "resultado": "beat",
-      "eps_actual": 0.79,
-      "eps_whisper": null,
-      "eps_consensus": 0.53,
-      "whisper_beat_pct": 0,
-      "consensus_beat_pct": 49.06,
-      "reaccion_ah_pct": 28.0,
-      "revenue_growth_yoy": 40.0
     }
   ],
   "kpis_actuales": {
