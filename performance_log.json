@@ -40,7 +40,7 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-05-23",
+    "ultima_actualizacion": "2026-06-03",
     "motivo_actualizacion": "W21 review: min_signal_score=8.75",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
@@ -77,7 +77,11 @@
       "cowork_solo_entra_si": "El ticker está en candidatos_validados Y el bot NO tiene ya posición en ese ticker",
       "cowork_monitora_bot": "post-market-review revisa posiciones del bot y alerta si hay sin stop o en pérdida > 10%",
       "motivo": "Separar responsabilidades: bot opera con su algoritmo, Cowork opera solo con señales validadas"
-    }
+    },
+    "score_min_paper": 7.0,
+    "riesgo_por_trade_equity_pct_real": 0.005,
+    "atr_multiplier_stop": 2.0,
+    "atr_multiplier_tp": 3.0
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -130,253 +134,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-05-15",
-      "tipo": "CONTINUATION_PERDIDO",
-      "titulo": "FIG: beat cons +66.7% no detectado en run Thursday → missed +12% Friday",
-      "descripcion": "FIG reportó Q1 2026 tras cierre Thursday May 14. EPS $0.10 vs cons $0.06 (+66.7%), revenue +46% YoY, AH=+6.86%. Continuation play habría dado +12.13% Friday. No estaba en parsing del EW email (posiblemente sólo en footer del email o fuente externa).",
-      "accion_futura": "Ampliar fuentes Gmail (motley fool, marketbeat) para capturar earnings AC del día. Considerar también búsqueda explícita por sector hot (tech/growth) tras cierre cada día.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-05-15",
-      "tipo": "MACRO_RIESGO_CONTINUATION",
-      "titulo": "Friday 15-may: selloff semis -4 a -6.6% por Iran tensions",
-      "descripcion": "S&P -1.54%, NVDA -4.4%, INTC -6%, AMD -5.7%, MU -6.6% por miedo a Iran energy escalation. Esto impacta continuation plays semi-related: AMAT (continuation Thursday→Friday) probablemente cerró negativo. KLAR (BNPL, no semi) Friday morning +15% — el sector matters.",
-      "accion_futura": "Para continuation plays, comprobar correlación sectorial: si SOX/sector ETF cae >2% pre-open, considerar reducir size 50% o skip. Geopolitical risk = stop más cerca.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-16",
-      "tipo": "RESULTADO",
-      "titulo": "AMAT: BEAT (snippet Gmail)",
-      "descripcion": "Cerrado por scheduled weekend-ew-intel run con resultado de email snippet."
-    },
-    {
-      "fecha": "2026-05-17",
-      "tipo": "RESULTADO_OBSERVADO",
-      "titulo": "SURG: MISS (2026-05-15)",
-      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
-      "fuente": "epsguidance snippet"
-    },
-    {
-      "fecha": "2026-05-17",
-      "tipo": "RESULTADO_OBSERVADO",
-      "titulo": "AMAT: BEAT (2026-05-14)",
-      "descripcion": "Reportado en Gmail epsguidance snippet — beat. Sin datos EPS exactos por snippet limitado.",
-      "fuente": "epsguidance snippet"
-    },
-    {
-      "fecha": "2026-05-17",
-      "tipo": "RESULTADO_OBSERVADO",
-      "titulo": "NBIS: BEAT (2026-05-13)",
-      "descripcion": "Reportado en Gmail epsguidance snippet — beat. Sin datos EPS exactos por snippet limitado.",
-      "fuente": "epsguidance snippet"
-    },
-    {
-      "fecha": "2026-05-17",
-      "tipo": "RESULTADO_OBSERVADO",
-      "titulo": "OKLO: MISS (2026-05-12)",
-      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
-      "fuente": "epsguidance snippet"
-    },
-    {
-      "fecha": "2026-05-17",
-      "tipo": "RESULTADO_OBSERVADO",
-      "titulo": "HIMS: MISS (2026-05-11)",
-      "descripcion": "Reportado en Gmail epsguidance snippet — miss. Sin datos EPS exactos por snippet limitado.",
-      "fuente": "epsguidance snippet"
-    },
-    {
-      "fecha": "2026-05-18",
-      "tipo": "WHISPER_HIGH_VS_CONSENSUS",
-      "titulo": "BIDU: beat consensus +3.5% pero MISS whisper -12.5% (2026-05-18)",
-      "descripcion": "EPS=1.75 vs cons=1.69 vs whisper=2.0. Whisper estaba por encima del consensus. Reacción AH apenas ++2.3%.",
-      "accion_futura": "Cuando whisper > consensus en >5%, beat-consensus solo no basta. Penalizar pre-trade si whisper supera consensus por >10%.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-18",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "AGYS: BEAT +18.9% vs whisper (2026-05-18) ✅",
-      "descripcion": "EPS actual=$0.63 vs whisper=$0.53 vs consensus=$0.5.",
-      "accion_futura": "Confirma pipeline EW. Mantener parámetros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-18",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "AGYS: beat cons=+26.0% confirmado AH=+14.0% (2026-05-18)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=0.63 vs cons=0.5. Whisper disponible.",
-      "accion_futura": "Si AGYS repite este patrón: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "BEAT_MARGINAL",
-      "titulo": "HD: beat marginal +0.6% (2026-05-19)",
-      "descripcion": "EPS actual=$3.43 vs cons=$3.41. AH=+0.0%.",
-      "accion_futura": "Beat marginal. Verificar guidance y reacción AH."
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ECX: BEAT cons +57.1% (2026-05-19) ✅",
-      "descripcion": "EPS actual=$-0.03 vs cons=$-0.07. AH=+5.8%. Rev YoY=None.",
-      "accion_futura": "Confirma pipeline. Mantener parámetros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "ECX: beat cons=+57.1% confirmado AH=+5.8% (2026-05-19)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=-0.03 vs cons=-0.07.",
-      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "TOL: BEAT cons +5.8% (2026-05-19) ✅",
-      "descripcion": "EPS actual=$2.72 vs cons=$2.57. AH=+5.5%. Rev YoY=-7.4.",
-      "accion_futura": "Confirma pipeline. Mantener parámetros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "TOL: beat cons=+5.8% confirmado AH=+5.5% (2026-05-19)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=2.72 vs cons=2.57.",
-      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "BEAT_MARGINAL",
-      "titulo": "CAVA: beat marginal +4.8% (2026-05-19)",
-      "descripcion": "EPS actual=$None vs cons=$None. AH=+6.0%.",
-      "accion_futura": "Beat marginal. Verificar guidance y reacción AH."
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "CAVA: beat cons=+4.8% confirmado AH=+6.0% (2026-05-19)",
-      "descripcion": "Mercado confirmó beat con reacción AH fuerte. EPS=None vs cons=None.",
-      "accion_futura": "Patrón validado: AH confirmación es señal de continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-19",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "BILI: BEAT cons +12.2% (2026-05-19) ✅",
-      "descripcion": "EPS actual=$1.29 vs cons=$1.15. AH=+0.0%. Rev YoY=None.",
-      "accion_futura": "Confirma pipeline. Mantener parámetros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "LION: BEAT +93.3% (2026-05-21) OK",
-      "descripcion": "EPS actual=$0.29 vs whisper=$None vs cons=$0.15. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "TTWO: MISS -143.2% (2026-05-21)",
-      "descripcion": "EPS actual=$-0.32 vs whisper=$0.74 vs cons=$0.56. Rev YoY=6.15%.",
-      "accion_futura": "Revisar perfil de TTWO: guidance / deuda / sectorial.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "WDAY: BEAT +6.8% (2026-05-21) OK",
-      "descripcion": "EPS actual=$2.66 vs whisper=$None vs cons=$2.49. AH=+10.8%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "WDAY: beat cons=+6.8% confirmado AH=+10.8% (2026-05-21)",
-      "descripcion": "Mercado confirmo beat con AH fuerte. EPS=2.66 vs cons=2.49.",
-      "accion_futura": "Si WDAY repite: AH confirmacion = senal continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "DECK: BEAT +15.7% (2026-05-21) OK",
-      "descripcion": "EPS actual=$0.96 vs whisper=$None vs cons=$0.83. AH=+4.5%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "RL: MISS -32.7% (2026-05-21)",
-      "descripcion": "EPS actual=$2.8 vs whisper=$None vs cons=$4.16. Rev YoY=12.0%.",
-      "accion_futura": "Revisar perfil de RL: guidance / deuda / sectorial.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "AAP: BEAT +67.4% (2026-05-21) OK",
-      "descripcion": "EPS actual=$0.77 vs whisper=$None vs cons=$0.46. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "WMS: BEAT +12.6% (2026-05-21) OK",
-      "descripcion": "EPS actual=$1.07 vs whisper=$None vs cons=$0.95. AH=-5.2%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "WMS: SELL-THE-NEWS — beat cons=+12.6% pero AH=-5.2% (2026-05-21)",
-      "descripcion": "Mercado vendio en el beat. Probable pre-drift alto o guidance decepcionante.",
-      "accion_futura": "Para WMS: verificar pre-drift. Si mom5d>15% -> alta prob sell-the-news.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "NVDA: BEAT +5.1% (2026-05-20) OK",
-      "descripcion": "EPS actual=$1.87 vs whisper=$1.78 vs cons=$1.7. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "GLNG: BEAT +58.1% (2026-05-20) OK",
-      "descripcion": "EPS actual=$0.49 vs whisper=$None vs cons=$0.31. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "PERI: MISS -280.0% (2026-05-20)",
-      "descripcion": "EPS actual=$-0.09 vs whisper=$0.05 vs cons=$0.06. Rev YoY=1.16%.",
-      "accion_futura": "Revisar perfil de PERI: guidance / deuda / sectorial.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ELF: BEAT +10.3% (2026-05-20) OK",
-      "descripcion": "EPS actual=$0.32 vs whisper=$None vs cons=$0.29. AH=+4.5%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
     {
       "fecha": "2026-05-21",
       "tipo": "BEAT_RESULTADO",
@@ -584,6 +341,24 @@
       "tarea_afectada": "intraday-monitor, post-market-review, sentinel, pre-close-manager",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-06-03",
+      "titulo": "stops emergencia OCO restablecidos para BBAR y P tras cancelación 2-jun",
+      "descripcion": "Detectado al inicio post-market: BBAR (494 sh) y P (56 sh) tenían SOLO limit-sell, sin stop. Las ordenes COWORK-STOP-{BBAR,P}-2026-06-02 fueron canceladas durante hoy. Sustituidas por OCO (limit + stop_loss): BBAR stop $17.01 / limit $20.37; P stop $76.50 / limit $98.19. Posiciones ahora protegidas overnight.",
+      "accion_correctiva": "Añadir verificación en intraday-monitor: cuando se cancele una orden COWORK-STOP-*, auto-detectar y replazar con nueva OCO en la siguiente iteración.",
+      "tarea_afectada": "intraday-monitor, post-market-review",
+      "auto_generado": false,
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-06-03",
+      "titulo": "Régimen cambia: AI_TECH_RALLY → GEOPOLITICAL_UNCERTAINTY_RENEWED",
+      "descripcion": "Iran lanza misiles a Kuwait/Bahrain (1 muerto en Kuwait); EEUU ataca Qeshm Island. Mercado rompe racha de récords: SPX -0.74%, RUT -1.25%, oil +3%. Sectores defensivos (energy, defense, healthcare, staples) suben; tech/fin/small caps bajan.",
+      "accion_correctiva": "Sector_prioridades actualizado: defense+2, energy+2, ai/tech bajado +2→+1, consumer_disc -1, financials -1. Mañana priorizar candidatos en sectores defensivos.",
+      "tarea_afectada": "pre-market-earnings-scan, market-open-execution",
+      "auto_generado": false,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1559,80 +1334,134 @@
       "alerta_earnings_overnight": "Earnings reportados antes de apertura — no hay riesgo overnight.",
       "conviction_tier": "no_entry",
       "fecha_actualizacion": "2026-06-01T14:29:14.533903+00:00"
+    },
+    {
+      "ticker": "CIEN",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 5.5,
+      "fecha_deteccion": "2026-06-03",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-04",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura_si_score≥7_post-earnings",
+      "ventana_entrada": "2026-06-04 09:40-10:30 ET (post-earnings reaction)",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings BMO)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "AI networking demand (Q1 récord $1.43B rev). Zacks Rank #1, ESP +0.99%. Beat rate EPS 75%, rev 100%. Riesgo: NFP día sgte + tech sector bajo presión geopolítica.",
+      "sector": "ai_infrastructure",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-04T18:31:14.666652Z",
+      "score_macro_bonus": 1,
+      "notas": "Post-market 3-jun: CIEN BMO 4-jun. Esperar reacción inicial 9:30-9:45, entrar solo si confirma +0.5% post 15min.",
+      "alerta_earnings_overnight": null,
+      "supply_chain_signal": false,
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0,
+      "sector_win_rate": null
+    },
+    {
+      "ticker": "DOCU",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "score_total": 4.0,
+      "fecha_deteccion": "2026-06-03",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-04",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilar — solo entrar 1-2d antes con score≥7",
+      "ventana_entrada": "2026-06-04 10:15-13:00 ET (pre-AH drift)",
+      "stop_tipo": "ATR×1.5",
+      "sizing": "posición normal",
+      "argumento": "Polymarket 95% prob de batir EPS 99c. Riesgo: software bajo presión + AH report misma noche → no overnight.",
+      "sector": "technology",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-04T18:31:14.666652Z",
+      "score_macro_bonus": 1,
+      "notas": "Si entra: CERRAR ANTES 15:30 ET el 4-jun — earnings AH esa noche.",
+      "alerta_earnings_overnight": "CERRAR antes 15:30 ET el 2026-06-04 — earnings AH esa noche",
+      "supply_chain_signal": false,
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0,
+      "sector_win_rate": null
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-05-23",
-    "semana": "2026-W22",
-    "regimen": "AI_TECH_RALLY",
-    "vix": 16.6,
+    "fecha_actualizacion": "2026-06-03",
+    "semana": "2026-W23",
+    "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
+    "vix": 16.07,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "NVDA beat masivo 5/20 ($81.6B revenue vs $79.2B est) reactiva narrativa AI. Bloomberg: 'It's still all about AI' — sin AI no hay rally amplio. Yield curve flatteando (0.54→0.43) — preocupación growth. Fed pausada 3.50-3.75%, minutas Warsh hawkish con Iran inflación. Memorial Day 5/25 mercado cerrado. Sell-in-May sentiment (EW Whisper Report) en contra de AI strength.",
+    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-03: Iran lanza misiles a Kuwait y Bahrain — 1 muerto en aeropuerto de Kuwait, interceptados en Bahrain. EEUU ataca isla de Qeshm. Frágil alto el fuego puesto a prueba. Mercados rompen su racha de récords: S&P -0.74%, Nasdaq -0.89%, Russell -1.25%. Brent +2.1% ($96.29), WTI +2.4% (>$90). Oil de vuelta al premium geopolítico. VIX 16.07 (+1.90%) sigue contenido pero alerta. Earnings hoy AH: AVGO (rev miss leve $22.187B vs $22.27B est, EPS likely beat), CRWD y VEEV reportaron. Energy XLE +1.29% beneficiado; tech XLK -1.00% y financials XLF -1.15% castigados; healthcare XLV +0.79% defensivo. Sentimiento bot trading: rotación parcial de AI/tech a defense/energy mientras dure escalada.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
       "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
-      "Alpaca data SPY"
+      "Alpaca data SPY",
+      "WebSearch 2026-06-03: TheStreet, Motley Fool, CNBC, Benzinga, Times of Israel, NPR — Iran/Kuwait/Bahrain + earnings + oil + macro"
     ],
     "sector_prioridades": {
-      "ai_infrastructure": 2,
-      "memory_chips": 2,
-      "technology": 2,
-      "energy": 1,
+      "defense": 2,
+      "energy": 2,
+      "ai_infrastructure": 1,
+      "memory_chips": 1,
+      "technology": 1,
       "industrials": 1,
-      "defense": 1,
-      "financials": 0,
-      "communication": 1,
+      "financials": -1,
+      "communication": 0,
       "materials": 1,
-      "healthcare": 0,
+      "healthcare": 1,
       "consumer_discretionary": -1,
-      "consumer_staples": -1,
-      "utilities": -1,
-      "real_estate": -2
+      "consumer_staples": 0,
+      "utilities": 0,
+      "real_estate": -1
     },
     "sectores_a_vigilar_esta_semana": [
+      "defense",
+      "energy",
       "ai_infrastructure",
       "memory_chips",
-      "technology"
+      "technology",
+      "industrials",
+      "materials",
+      "healthcare"
     ],
     "sectores_a_evitar_esta_semana": [
-      "real_estate",
-      "consumer_staples",
-      "utilities",
-      "consumer_discretionary"
+      "financials",
+      "consumer_discretionary",
+      "real_estate"
     ],
     "eventos_macro_proxima_semana": [
       {
-        "fecha": "2026-05-25",
-        "evento": "MEMORIAL DAY",
-        "hora_et": "todo el día",
-        "impacto": "CIERRE_MERCADO"
+        "fecha": "2026-06-04",
+        "evento": "CIEN earnings BMO ($1.45 EPS, $1.50B rev exp)",
+        "hora_et": "BMO",
+        "impacto": "BAJO_INDIVIDUAL"
       },
       {
-        "fecha": "2026-05-27",
-        "evento": "FOMC Speakers (TBD)",
-        "hora_et": "TBD",
-        "impacto": "MEDIO"
+        "fecha": "2026-06-04",
+        "evento": "Initial jobless claims (semanal)",
+        "hora_et": "08:30",
+        "impacto": "BAJO"
       },
       {
-        "fecha": "2026-05-29",
-        "evento": "PCE Core (mes anterior)",
+        "fecha": "2026-06-05",
+        "evento": "NFP — Non-farm payrolls May",
         "hora_et": "08:30",
         "impacto": "ALTO"
       },
       {
-        "fecha": "2026-05-30",
-        "evento": "Consumer Sentiment Final",
-        "hora_et": "10:00",
-        "impacto": "BAJO"
+        "fecha": "2026-06-05",
+        "evento": "Unemployment rate",
+        "hora_et": "08:30",
+        "impacto": "ALTO"
       }
     ],
     "dias_riesgo_macro": [
-      "2026-05-25",
-      "2026-05-29"
+      "2026-06-05"
     ],
-    "notas_adicionales": "Memorial Day = sólo 4 días trading (martes-viernes). Earnings W22 destacados: AI/memory: NTNX, ASAN, PD (5/28); Retail: ANF, KSS, AEO; SNOW (5/27 AH); Software: PATH, CRWD posiblemente.",
+    "notas_adicionales": "Cambio de régimen: AI_TECH_RALLY (con 5/29) → GEOPOLITICAL_UNCERTAINTY_RENEWED (3/6). Mantener AI/tech como sobreponderado (+1) por earnings AVGO/CRWD AH potencialmente positivos. Sobreponderar defense/energy (+2). NFP viernes — riesgo macro principal de la semana.",
     "sentinel_ultimo_check": {
       "timestamp": "2026-06-03T15:12",
       "nivel": "alerta",
@@ -1645,16 +1474,22 @@
       "wti": 0.0,
       "cowork_abiertas": 4
     },
-    "macro_score": 0.0,
-    "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "macro_score": -1.0,
+    "macro_nivel": "elevated",
+    "contexto_resumen": [
+      "Iran-Kuwait/Bahrain missile exchange → fragil ceasefire test",
+      "Oil +3% back to premium geopolítico (Brent $96, WTI >$90)",
+      "Rotación intra-día: energy/defense/healthcare/staples (defensivos) suben; tech/fin/RUT (riesgo) bajan",
+      "VIX 16.07 contenido — todavía no panic mode, pero alerta",
+      "Tomorrow: CIEN earnings pre-market; jueves jobless claims; viernes NFP"
+    ],
     "futuros": {
       "ES": 0,
       "NQ": 0
     },
     "yield_10y": 0.0,
-    "oil_price": 0.0,
-    "ts_actualizado": "2026-05-29T13:11",
+    "oil_price": 90.5,
+    "ts_actualizado": "2026-06-03T20:27",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1676,7 +1511,42 @@
     "bonos": {
       "tlt_chg": 0,
       "yield_10y": 4.0
-    }
+    },
+    "eventos_recientes": [
+      {
+        "fecha": "2026-06-03",
+        "evento": "Iran misiles a Kuwait (1 muerto en aeropuerto) y Bahrain (interceptados). EEUU ataca Qeshm Island.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "energy",
+          "defense",
+          "airlines",
+          "tech_global"
+        ],
+        "fuente": "TheStreet / Times of Israel / CNN / NPR"
+      },
+      {
+        "fecha": "2026-06-03",
+        "evento": "Mercado cierra rojo: SPX -0.74%, NDX -0.89%, RUT -1.25%, oil +3%, VIX +1.90%.",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "all"
+        ],
+        "fuente": "Motley Fool / CNBC"
+      },
+      {
+        "fecha": "2026-06-03",
+        "evento": "AVGO reporta AH: rev $22.187B vs $22.27B est (narrow miss); EPS expected beat. CRWD/VEEV pendientes.",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "semiconductors",
+          "ai_infrastructure",
+          "cybersecurity",
+          "software"
+        ],
+        "fuente": "Benzinga / Investing.com"
+      }
+    ]
   },
   "operaciones_crypto": [
     {
@@ -7359,13 +7229,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-05-29",
+    "_ultima_actualizacion": "2026-06-03",
     "rendimiento_global": {
-      "equity_paper_actual": 109924.64,
+      "equity_paper_actual": 109216.44,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 4424.64,
-      "pnl_total_paper_pct": 4.19,
-      "equity_real_actual": 4544.52,
+      "pnl_total_paper_dolares": 3716.44,
+      "pnl_total_paper_pct": 3.52,
+      "equity_real_actual": 4548.02,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
       "pnl_total_real_pct": 0.39,
@@ -7375,7 +7245,8 @@
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
       "pnl_dia_paper_dolares": 385.38,
-      "pnl_dia_real_dolares": 0.22
+      "pnl_dia_real_dolares": 0.22,
+      "equity_paper_peak": 109216.44
     },
     "cowork_trading": {
       "operaciones_totales": 18,
@@ -7673,6 +7544,16 @@
         "avg_r_acumulado": -0.1,
         "operaciones_acumuladas": 18,
         "vix": 15.74
+      },
+      {
+        "fecha": "2026-06-03",
+        "equity_paper": 109216.44,
+        "equity_real": 4548.02,
+        "pnl_dia_paper": -697.25,
+        "win_rate_acumulado": 38.9,
+        "avg_r_acumulado": -0.1,
+        "operaciones_acumuladas": 18,
+        "vix": 16.07
       }
     ],
     "objetivos": {
@@ -12336,6 +12217,18 @@
       ],
       "evento_clave": "S&P 500 9ª semana alcista consecutiva (longest streak desde 2023); Dow >50k 1ª vez. Iran ceasefire 60d. AI rally intacto.",
       "leccion": "Régimen AI_TECH_RALLY en racha histórica — momentum estructural, VIX en mínimos. Riesgo asimetría: corrección eventual será violenta."
+    },
+    {
+      "fecha": "2026-06-03",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 109216.44,
+      "variacion_dia": -697.25,
+      "variacion_pct": -0.63,
+      "vix": 16.07,
+      "regimen_macro": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
+      "trades_paper": [],
+      "evento_clave": "Iran misiles a Kuwait/Bahrain rompen racha de récords. Oil +3%. SPX -0.74%.",
+      "leccion": "Régimen geopolítico revierte: AI rally se pausa, defensivos lideran. Estar listo para rotación."
     }
   ],
   "alertas_criticas": [
@@ -12354,6 +12247,12 @@
       "severidad": "media",
       "mensaje": "MIN_SCORE=7.0 imposible sin EW input. Revisar si nuestro Earnings Whisper feed está vivo en producción.",
       "accion_sugerida": "Procesar en weekly-performance-review 09:00 → auto-mejora aplica cambios"
+    },
+    {
+      "fecha": "2026-06-03",
+      "tipo": "info",
+      "mensaje": "Auto-reparación OCO: BBAR y P recibieron OCO emergencia ($17.01/$20.37, $76.50/$98.19)",
+      "resuelto": true
     }
   ],
   "mejoras_sistema": [
@@ -12487,6 +12386,15 @@
       "impacto_esperado": "Sentinel y pre-close-manager podrán calcular R correctamente y disparar parciales/cierres a tiempo. Evita ceguera del sistema durante ventana de stops 'held'.",
       "implementada": true,
       "tarea_afectada": "intraday-monitor, post-market-review"
+    },
+    {
+      "fecha": "2026-06-03",
+      "tipo": "regla_añadida",
+      "descripcion": "Post-market PASO 3 detecta posiciones COWORK sin stop tras cancelaciones y automáticamente coloca OCO emergencia (preservando take_profit existente).",
+      "evidencia": "BBAR y P quedaron desnudas tras cancel ordenes 2-jun; OCO ahora coloca stop+limit en una sola orden.",
+      "archivo_modificado": "post-market-review/SKILL.md",
+      "impacto_esperado": "Evitar gaps overnight en posiciones sin protección.",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -13910,6 +13818,15 @@
       "posiciones_abiertas": 2,
       "parametros_version": "2026-05-23",
       "mejora_hoy": "Auto-sync stop_loss desde Alpaca bracket OCO al performance_log: cuando una operación Cowork tiene estado='abierta' y st"
+    },
+    {
+      "fecha": "2026-06-03",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 16,
+      "candidatos_activos": 2,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-05-23",
+      "mejora_hoy": "Post-market PASO 3 detecta posiciones COWORK sin stop tras cancelaciones y automáticamente coloca OCO emergencia (preservando take_profit existente)."
     }
   ],
   "motor_alpha_diario": {
