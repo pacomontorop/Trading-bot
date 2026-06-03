@@ -1288,7 +1288,7 @@
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 3.85,
       "whisper": 1.08,
@@ -1300,7 +1300,9 @@
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-05-21",
       "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00"
+      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
+      "ts_expirado": "2026-06-03T20:11:32.341424+00:00",
+      "razon_expiracion": "expira=2026-05-22 < hoy=2026-06-03"
     },
     {
       "ticker": "SNOW",
@@ -1366,7 +1368,7 @@
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "expirado",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 4.81,
       "earnings_fecha": "2026-05-27",
@@ -1375,7 +1377,9 @@
       "notas": "Score=4.0 — detectado en pre-apertura holiday (Memorial Day). Sesión próxima: 2026-05-26.",
       "detectado_por": "sentinel-preopen-holiday",
       "ventana_entrada": "10:15 ET (pre-market scan)",
-      "fecha_deteccion": "2026-05-25"
+      "fecha_deteccion": "2026-05-25",
+      "ts_expirado": "2026-06-03T20:11:32.341428+00:00",
+      "razon_expiracion": "expira=2026-05-27 < hoy=2026-06-03"
     },
     {
       "ticker": "P",
@@ -1419,7 +1423,7 @@
       "score_ajustado": 8.6,
       "score_override": 8.6,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-05-28",
       "accion_recomendada": "entrar_apertura",
@@ -1443,7 +1447,9 @@
       "ts_creado": "2026-05-28T21:45:34.740182+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "ts_expirado": "2026-06-03T20:11:32.341429+00:00",
+      "razon_expiracion": "expira=2026-05-29 < hoy=2026-06-03"
     },
     {
       "ticker": "HPE",
@@ -17402,6 +17408,18 @@
       "vix": 16.1,
       "macro_nivel": "alerta",
       "shock_tipo": "oil_spike"
+    },
+    {
+      "ts": "2026-06-03T20:11:32.341379+00:00",
+      "modo": "standby_post_close",
+      "et_hour": 16,
+      "et_minute": 11,
+      "weekday": 2,
+      "market_open": false,
+      "razon": "Mercado cerrado (post-close 16:00 ET). Task spec exits via sys.exit(0). No es weekend ni pre-open.",
+      "cowork_abiertas_ultimo_check": 4,
+      "macro_nivel_ultimo": "alerta",
+      "vix_ultimo": 16.1
     }
   ],
   "momentum_15m": {
