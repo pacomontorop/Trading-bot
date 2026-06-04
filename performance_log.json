@@ -1463,33 +1463,35 @@
     ],
     "notas_adicionales": "Cambio de régimen: AI_TECH_RALLY (con 5/29) → GEOPOLITICAL_UNCERTAINTY_RENEWED (3/6). Mantener AI/tech como sobreponderado (+1) por earnings AVGO/CRWD AH potencialmente positivos. Sobreponderar defense/energy (+2). NFP viernes — riesgo macro principal de la semana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-06-03T15:12",
+      "timestamp": "2026-06-04T09:15",
       "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 8.75,
+      "score_min_paper_efectivo": 8.0,
       "score_min_real_efectivo": 9.0,
-      "vix": 16.1,
-      "spy_daily": 0,
-      "wti": 0.0,
-      "cowork_abiertas": 4
+      "vix": 16.37,
+      "spy_daily": -0.7,
+      "wti": 92.6,
+      "cowork_abiertas": 0,
+      "modo": "pre_apertura"
     },
-    "macro_score": -1.0,
-    "macro_nivel": "elevated",
+    "macro_score": -1.5,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Iran-Kuwait/Bahrain missile exchange → fragil ceasefire test",
-      "Oil +3% back to premium geopolítico (Brent $96, WTI >$90)",
-      "Rotación intra-día: energy/defense/healthcare/staples (defensivos) suben; tech/fin/RUT (riesgo) bajan",
-      "VIX 16.07 contenido — todavía no panic mode, pero alerta",
-      "Tomorrow: CIEN earnings pre-market; jueves jobless claims; viernes NFP"
+      "Futuros bajistas (avg -0.71%) — NQ debil (-1.11%)",
+      "Tech rotando a value (YM +0.97% vs NQ -1.11%)",
+      "VIX=16.37 (+1.9%) — modesto stress",
+      "Oil $92.6 (-3.56%) — alivia presion inflacion",
+      "Gold +2.15% — leve risk-off"
     ],
     "futuros": {
-      "ES": 0,
-      "NQ": 0
+      "ES": -0.3,
+      "NQ": -1.11,
+      "YM": 0.97
     },
     "yield_10y": 0.0,
     "oil_price": 90.5,
-    "ts_actualizado": "2026-06-03T20:27",
+    "ts_actualizado": "2026-06-04T09:15",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1507,10 +1509,10 @@
       },
       "ts": "13:11"
     },
-    "macro_bonus_ew": 0.0,
+    "macro_bonus_ew": -0.45,
     "bonos": {
-      "tlt_chg": 0,
-      "yield_10y": 4.0
+      "tlt_chg": -0.4,
+      "yield_10y": 4.46
     },
     "eventos_recientes": [
       {
@@ -17337,6 +17339,16 @@
       "cowork_abiertas_ultimo_check": 4,
       "macro_nivel_ultimo": "alerta",
       "vix_ultimo": 16.1
+    },
+    {
+      "ts": "2026-06-04T09:15:47.633714+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 1,
+      "cowork_abiertas": 0,
+      "vix": 16.37,
+      "modo": "pre_apertura",
+      "macro_score": -1.5
     }
   ],
   "momentum_15m": {
@@ -17873,34 +17885,16 @@
   },
   "sentinel_signals": [
     {
-      "ticker": "SNOW",
-      "score": 5.0,
-      "asimetria": 18.75,
-      "whisper": 0.38,
-      "consensus": 0.32,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "detectado": "sentinel-preopen",
-      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
+      "ticker": "CIEN",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 6.12,
+      "earnings_fecha": "2026-06-04",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=1.56 cons=1.47 asim=+6.1%",
+      "ts_detected": "2026-06-04T09:15:47.633714+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday",
-      "procesado": true,
-      "procesado_ts": "2026-05-29T14:33:25+00:00"
-    },
-    {
-      "ticker": "CRM",
-      "score": 4.0,
-      "asimetria": 4.81,
-      "whisper": 3.27,
-      "consensus": 3.12,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "detectado": "sentinel-preopen",
-      "ts_detected": "2026-05-25T09:12:32.214533+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preopen-holiday",
-      "procesado": true,
-      "procesado_ts": "2026-05-29T14:33:25+00:00"
+      "fuente": "sentinel-pre-apertura"
     }
   ],
   "skip_analysis": {
