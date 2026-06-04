@@ -16,7 +16,7 @@
     ],
     "total_candidatos_validados": 33,
     "ultima_actualizacion_ew_daily": "2026-05-19T21:43:46.711986+00:00",
-    "ultima_actualizacion": "2026-06-01T14:29:14.533903+00:00",
+    "ultima_actualizacion": "2026-06-04T14:33:51.734055+00:00",
     "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
     "ultima_tarea": "pre-market-earnings-scan"
   },
@@ -359,6 +359,15 @@
       "tarea_afectada": "pre-market-earnings-scan, market-open-execution",
       "auto_generado": false,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-06-04",
+      "id": "L_2026-06-04_D1_VALIDADA_CIEN",
+      "titulo": "REGLA D-1 validada empíricamente con CIEN BMO 6/4",
+      "descripcion": "CIEN reportó BMO 6/4 con asim_whisper +6.1%, pero la reacción real fue -19.36% intraday (gap -10.96% en apertura). El sentinel detectó la señal pero score 4.5 < umbral 8.5 evitó la entrada. Tres señales claves: (a) asimetría positiva NO garantiza reacción positiva, (b) el umbral 8.5 actúa correctamente como filtro de calidad, (c) REGLA D-1 también habría protegido — entrar el día antes con asim+6% en mañana BMO también habría sido pérdida.",
+      "accion_correctiva": "Mantener score≥8.75 (paper) y score≥9.0 (real). Reforzar REGLA D-1: no entrar AH mismo día. Considerar añadir filtro beat_rate>70% Y avg_move_dir>0% para evitar nombres como LULU/DOCU con beat consistente pero reacción negativa.",
+      "aplicada": true,
+      "fuente_validacion": "CIEN 2026-06-04 BMO post-mortem"
     }
   ],
   "operaciones": [
@@ -1549,7 +1558,34 @@
         ],
         "fuente": "Benzinga / Investing.com"
       }
-    ]
+    ],
+    "macro_score_pm": -0.8,
+    "macro_bonus_pm": -0.24,
+    "macro_nivel_pm": "normal",
+    "contexto_resumen_pm": [
+      "Futuros bajistas (-0.60%)",
+      "VIX=15.8 bajo",
+      "Tech débil (-2.6%)",
+      "Oil cae -4.1%"
+    ],
+    "sectores_hoy_pm": {
+      "xlk": -2.583698810486271,
+      "xlf": 2.319638942308233,
+      "xle": -0.39175531565824423,
+      "xlv": 3.137912252295463,
+      "xli": 0.8330921705361862,
+      "xly": 0.852390206950507,
+      "xlp": 1.1441026900114737,
+      "xlu": 0.08007286237748416,
+      "xlb": 0.8037906105842886,
+      "xlc": 1.940574042496707,
+      "xlre": 0.9538058642534095
+    },
+    "sector_lider_pm": "xlv",
+    "spy_chg_pm": -0.027837417827017635,
+    "qqq_chg_pm": -1.0037531768895895,
+    "vix_pm": 15.819999694824219,
+    "ts_pm_actualizado": "2026-06-04T14:33:51.734055+00:00"
   },
   "operaciones_crypto": [
     {
@@ -12232,6 +12268,85 @@
       "trades_paper": [],
       "evento_clave": "Iran misiles a Kuwait/Bahrain rompen racha de récords. Oil +3%. SPX -0.74%.",
       "leccion": "Régimen geopolítico revierte: AI rally se pausa, defensivos lideran. Estar listo para rotación."
+    },
+    {
+      "fecha": "2026-06-04",
+      "tarea": "pre-market-earnings-scan",
+      "ts_ejecucion": "2026-06-04T14:33:51.734055+00:00",
+      "macro_score": -0.8,
+      "umbral_paper": 8.75,
+      "umbral_real": 9.0,
+      "posiciones_cowork_abiertas": 2,
+      "limite_cowork": 2,
+      "candidatos_analizados": 9,
+      "candidatos_ejecutados": 0,
+      "razon_no_ejecucion": "REGLA D-1 bloqueó todos los AH de hoy (LULU,DOCU,COO,GWRE,RBRK,IOT,TTAN). ABM (mañana BMO) bloqueado por asim_neg + beat_rate<60%. AGX (asim 0%, MA+67%). Adicionalmente max_cowork_positions=2 ya alcanzado.",
+      "candidatos_top": [
+        {
+          "ticker": "LULU",
+          "score": 7.26,
+          "asim_pct": 4.79,
+          "beat_rate": 92,
+          "avg_move_dir": -6.23,
+          "mom_5d": -3.49,
+          "vs_ma200": -26.16,
+          "skip_reasons": [
+            "REGLA_D-1_AH_HOY"
+          ]
+        },
+        {
+          "ticker": "GWRE",
+          "score": 5.91,
+          "asim_pct": 14.86,
+          "beat_rate": 83,
+          "avg_move_dir": 7.66,
+          "mom_5d": 13.89,
+          "vs_ma200": -11.85,
+          "skip_reasons": [
+            "REGLA_D-1_AH_HOY"
+          ]
+        },
+        {
+          "ticker": "RBRK",
+          "score": 5.71,
+          "asim_pct": -33.33,
+          "beat_rate": 100,
+          "avg_move_dir": 0.67,
+          "mom_5d": 9.9,
+          "vs_ma200": 13.61,
+          "skip_reasons": [
+            "REGLA_D-1_AH_HOY",
+            "asim_neg_-33.3%"
+          ]
+        },
+        {
+          "ticker": "IOT",
+          "score": 5.71,
+          "asim_pct": 23.08,
+          "beat_rate": 100,
+          "avg_move_dir": 10.88,
+          "mom_5d": 17.36,
+          "vs_ma200": 8.47,
+          "skip_reasons": [
+            "REGLA_D-1_AH_HOY"
+          ]
+        },
+        {
+          "ticker": "ABM",
+          "score": 5.51,
+          "asim_pct": -3.26,
+          "beat_rate": 58,
+          "avg_move_dir": -2.57,
+          "mom_5d": 0.25,
+          "vs_ma200": -6.71,
+          "skip_reasons": [
+            "asim_neg_-3.3%",
+            "beat_rate_bajo_58%"
+          ]
+        }
+      ],
+      "sentinel_outcome_cien": "NO_ENTRADA (score 4.5 < 8.5) — reportó -19.36% intraday → validación umbral correcto",
+      "macro_resumen": "Sector rotation tech→value: XLK -2.58%, XLV +3.14%, XLF +2.32%. SPY flat, QQQ -1.00%. VIX 15.82. Oil -4.09%."
     }
   ],
   "alertas_criticas": [
@@ -17906,7 +18021,12 @@
       "razon": "whisper=1.56 cons=1.47 asim=+6.1%",
       "ts_detected": "2026-06-04T09:15:47.633714+00:00",
       "ejecutado": false,
-      "fuente": "sentinel-pre-apertura"
+      "fuente": "sentinel-pre-apertura",
+      "outcome": "NO_EJECUTADO_score_bajo_acierto_confirmado",
+      "outcome_detail": "CIEN reportó BMO 6/4: gap -10.96% open vs prev_close, last -19.36% intraday. Sentinel score 4.5 < 8.5 → no entry. Si hubiera entrado, pérdida catastrófica. Refuerza valor del umbral.",
+      "precio_post_reporte": 500.26,
+      "cambio_post_pct": -19.36,
+      "ts_validado_outcome": "2026-06-04T14:33:51.734055+00:00"
     }
   ],
   "skip_analysis": {
