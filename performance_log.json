@@ -368,6 +368,26 @@
       "accion_correctiva": "Mantener score≥8.75 (paper) y score≥9.0 (real). Reforzar REGLA D-1: no entrar AH mismo día. Considerar añadir filtro beat_rate>70% Y avg_move_dir>0% para evitar nombres como LULU/DOCU con beat consistente pero reacción negativa.",
       "aplicada": true,
       "fuente_validacion": "CIEN 2026-06-04 BMO post-mortem"
+    },
+    {
+      "fecha": "2026-06-04",
+      "titulo": "Beat-and-raise insuficiente si expectativas infladas (CIEN -17% pese a beat +10% + guidance raised)",
+      "descripcion": "CIEN reportó Q2 con BEAT consenso +10% (EPS $1.64 vs $1.49), revenue $1.57B +40% YoY, y RAISED FY26 guidance a $6.3B (+32% YoY). Stock cayó -17% intraday. Razón: stock subió +165% en 2026, el mercado quería ver 'materially better than expected'. Mismo patrón que AVGO ayer. Score 5.5 (vigilar_cauteloso) FUE CORRECTO — el sistema EVITÓ una pérdida -17% potencial.",
+      "accion_correctiva": "AÑADIR al BLOQUE 7 (Factores de riesgo) en pre-market-earnings-scan: Si ticker en sector AI/semi/optical Y rally YTD > +100% → -2 pts. AI hyperscale plays están entrando en fase 'sell the news' — descontar agresivo.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": false,
+      "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
+      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - lección CIEN 2026-06-04 -17% post-beat-raise)",
+      "auto_generado": false
+    },
+    {
+      "fecha": "2026-06-04",
+      "titulo": "Geopolitical relief + AI selloff → rotación CLARA hacia defensivos (Healthcare, Financials, RE +1.87-3.14%)",
+      "descripcion": "Hoy Dow +1.73% (record 51,561) lidera SPY +0.39%. Nasdaq -0.09%, QQQ -0.48%, XLK -1.58%. Healthcare +3.14%, Financials +2.67%, Real Estate +1.87% lideraron. Tech/Semis en venta. El régimen ha cambiado: relief geopolítico + drenaje de la euforia AI.",
+      "accion_correctiva": "macro_context sector_prioridades actualizado: healthcare/financials/real_estate +2, tech/semi -1/-2, energy/defense rebajados.",
+      "tarea_afectada": "post-market-review",
+      "aplicada": true,
+      "auto_generado": false
     }
   ],
   "operaciones": [
@@ -789,10 +809,12 @@
       "pnl_r": null,
       "leccion": null,
       "stop_loss": 7.88,
-      "precio_actual": 8.55,
+      "precio_actual": 8.46,
       "pnl_pct_latente": 10.32,
       "pnl_abs_latente": 885.6,
-      "ultima_actualizacion": "2026-05-29"
+      "ultima_actualizacion": "2026-06-04",
+      "pnl_latente_pct": 9.16,
+      "pnl_latente_abs": 785.97
     },
     {
       "id": "COWORK-2026-05-19-PANW",
@@ -842,10 +864,12 @@
       "pnl_r": null,
       "leccion": null,
       "stop_loss": 68.99,
-      "precio_actual": 79.51,
+      "precio_actual": 78.51,
       "pnl_pct_latente": 0.81,
       "pnl_abs_latente": 35.84,
-      "ultima_actualizacion": "2026-05-29"
+      "ultima_actualizacion": "2026-06-04",
+      "pnl_latente_pct": -0.46,
+      "pnl_latente_abs": -20.16
     }
   ],
   "candidatos_validados": [
@@ -1359,15 +1383,24 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "AI networking demand (Q1 récord $1.43B rev). Zacks Rank #1, ESP +0.99%. Beat rate EPS 75%, rev 100%. Riesgo: NFP día sgte + tech sector bajo presión geopolítica.",
       "sector": "ai_infrastructure",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-04T18:31:14.666652Z",
       "score_macro_bonus": 1,
-      "notas": "Post-market 3-jun: CIEN BMO 4-jun. Esperar reacción inicial 9:30-9:45, entrar solo si confirma +0.5% post 15min.",
+      "notas": "Post-market 3-jun: CIEN BMO 4-jun. Esperar reacción inicial 9:30-9:45, entrar solo si confirma +0.5% post 15min. | RESULTADO 2026-06-04: BEAT $1.64 vs $1.49 consenso (+10%). Revenue $1.57B (+40% YoY) — guidance RAISED.",
       "alerta_earnings_overnight": null,
       "supply_chain_signal": false,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "sector_win_rate": null
+      "sector_win_rate": null,
+      "eps_real_reportado": 1.64,
+      "eps_consenso": 1.49,
+      "batio_whisper": true,
+      "batio_consenso": true,
+      "revenue_real": 1570.74,
+      "revenue_consenso": 1533.69,
+      "guidance_resultado": "RAISED 2026 a $6.3B ±100M (+32% YoY)",
+      "leccion": "CIEN beat fuerte (+10% EPS) + guidance raised + 40% rev growth. Score 5.5 (vigilar) era CONSERVADOR — debería haber sido 7.5+. AI infra story sigue intacta a nivel óptico (no chips).",
+      "accion_mejora": "AÑADIR: si optical AI play con revenue YoY >25% en preview → +1pt extra al BLOQUE 5 'momentum'"
     },
     {
       "ticker": "DOCU",
@@ -1384,62 +1417,68 @@
       "sizing": "posición normal",
       "argumento": "Polymarket 95% prob de batir EPS 99c. Riesgo: software bajo presión + AH report misma noche → no overnight.",
       "sector": "technology",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-04T18:31:14.666652Z",
       "score_macro_bonus": 1,
-      "notas": "Si entra: CERRAR ANTES 15:30 ET el 4-jun — earnings AH esa noche.",
+      "notas": "Si entra: CERRAR ANTES 15:30 ET el 4-jun — earnings AH esa noche. | RESULTADO 2026-06-04: revenue $830M (+9% YoY, incl 1.6% FX). Sin gran sorpresa.",
       "alerta_earnings_overnight": "CERRAR antes 15:30 ET el 2026-06-04 — earnings AH esa noche",
       "supply_chain_signal": false,
       "conviction_tier": "no_entry",
       "sizing_multiplier": 0,
-      "sector_win_rate": null
+      "sector_win_rate": null,
+      "revenue_real": 830.2,
+      "revenue_yoy_pct": 9.0,
+      "fx_impact_pct": 1.6,
+      "leccion": "DOCU revenue +9% YoY (incl 1.6% FX) — moderado, sin gran beat. Score 4.0 (vigilar) era APROPIADO."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-03",
+    "fecha_actualizacion": "2026-06-04",
     "semana": "2026-W23",
-    "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 15.3,
+    "regimen": "GEOPOLITICAL_RELIEF_RALLY_TECH_ROTATION_OUT",
+    "vix": 15.36,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-03: Iran lanza misiles a Kuwait y Bahrain — 1 muerto en aeropuerto de Kuwait, interceptados en Bahrain. EEUU ataca isla de Qeshm. Frágil alto el fuego puesto a prueba. Mercados rompen su racha de récords: S&P -0.74%, Nasdaq -0.89%, Russell -1.25%. Brent +2.1% ($96.29), WTI +2.4% (>$90). Oil de vuelta al premium geopolítico. VIX 16.07 (+1.90%) sigue contenido pero alerta. Earnings hoy AH: AVGO (rev miss leve $22.187B vs $22.27B est, EPS likely beat), CRWD y VEEV reportaron. Energy XLE +1.29% beneficiado; tech XLK -1.00% y financials XLF -1.15% castigados; healthcare XLV +0.79% defensivo. Sentimiento bot trading: rotación parcial de AI/tech a defense/energy mientras dure escalada.",
+    "narrativa_dominante": "ACTUALIZACIÓN 2026-06-04: Dow +1.73% (record 51,561) y SPY +0.39% (record 7,584) rompen al alza tras anuncio de alto el fuego Israel-Líbano. Rotación clara: Healthcare +3.14%, Financials +2.67%, Real Estate +1.87% lideran; Tech/Semis caen tras decepción AVGO (reportó AH ayer, -X% hoy). Nasdaq -0.09%, QQQ -0.48%, XLK -1.58%. VIX 15.36 (-4.4%) refleja calma. Brent baja a $95.22 desde picos. Mañana NFP 8:30 ET (consenso 100k, unemp 4.3%) — máximo riesgo macro. Régimen: relief rally con rotación OUT de tech hacia defensivos/value.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
       "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
       "Alpaca data SPY",
-      "WebSearch 2026-06-03: TheStreet, Motley Fool, CNBC, Benzinga, Times of Israel, NPR — Iran/Kuwait/Bahrain + earnings + oil + macro"
+      "WebSearch 2026-06-03: TheStreet, Motley Fool, CNBC, Benzinga, Times of Israel, NPR — Iran/Kuwait/Bahrain + earnings + oil + macro",
+      "WebSearch post-market 2026-06-04: TheStreet+CNBC+Schwab — 4 fuentes confirmadas"
     ],
     "sector_prioridades": {
-      "defense": 2,
-      "energy": 2,
-      "ai_infrastructure": 1,
-      "memory_chips": 1,
-      "technology": 1,
+      "defense": 1,
+      "energy": 0,
+      "ai_infrastructure": 0,
+      "memory_chips": -1,
+      "technology": -1,
       "industrials": 1,
-      "financials": -1,
+      "financials": 2,
       "communication": 0,
       "materials": 1,
-      "healthcare": 1,
-      "consumer_discretionary": -1,
-      "consumer_staples": 0,
-      "utilities": 0,
-      "real_estate": -1
+      "healthcare": 2,
+      "consumer_discretionary": 0,
+      "consumer_staples": 1,
+      "utilities": 1,
+      "real_estate": 2,
+      "semiconductors": -2
     },
     "sectores_a_vigilar_esta_semana": [
       "defense",
-      "energy",
-      "ai_infrastructure",
-      "memory_chips",
-      "technology",
       "industrials",
+      "financials",
       "materials",
-      "healthcare"
+      "healthcare",
+      "consumer_staples",
+      "utilities",
+      "real_estate"
     ],
     "sectores_a_evitar_esta_semana": [
-      "financials",
-      "consumer_discretionary",
-      "real_estate"
+      "memory_chips",
+      "technology",
+      "semiconductors"
     ],
     "eventos_macro_proxima_semana": [
       {
@@ -1547,6 +1586,19 @@
           "software"
         ],
         "fuente": "Benzinga / Investing.com"
+      },
+      {
+        "fecha": "2026-06-04",
+        "evento": "Israel-Líbano alto el fuego + AVGO selloff → rotación clara tech→defensivos. Dow record 51,561",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "healthcare",
+          "financials",
+          "real_estate",
+          "semiconductors",
+          "technology"
+        ],
+        "fuente": "TheStreet/CNBC/WebSearch"
       }
     ],
     "macro_score_pm": -0.8,
@@ -1586,7 +1638,14 @@
       ],
       "lectura": "Idiosincratico (no macro). Rotacion tech->value (UNH/JPM/WMT lideran Dow +1.8%)."
     },
-    "spy_intraday_pct": 0.34
+    "spy_intraday_pct": 0.34,
+    "riesgo_macro_mañana": {
+      "fecha": "2026-06-05",
+      "evento": "NFP mayo 2026 8:30 ET",
+      "consenso": "100k jobs, unemployment 4.3%",
+      "implicacion": "Print >130k → dollar strong, bonds caen, tech afecta. Print <80k → cuts October ON, todo rally.",
+      "recomendacion": "Evitar entradas pre-NFP. Esperar 9:45 ET post-reaccion para evaluar."
+    }
   },
   "operaciones_crypto": [
     {
@@ -7269,13 +7328,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-03",
+    "_ultima_actualizacion": "2026-06-04",
     "rendimiento_global": {
-      "equity_paper_actual": 109216.44,
+      "equity_paper_actual": 109410.23,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 3716.44,
-      "pnl_total_paper_pct": 3.52,
-      "equity_real_actual": 4548.02,
+      "pnl_total_paper_dolares": 3910.23,
+      "pnl_total_paper_pct": 3.71,
+      "equity_real_actual": 4548.01,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 17.39,
       "pnl_total_real_pct": 0.39,
@@ -7296,7 +7355,7 @@
       "operaciones_break_even": 0,
       "win_rate_pct": 38.9,
       "avg_r_logrado": -0.1,
-      "profit_factor": 7.49,
+      "profit_factor": 1.49,
       "avg_pnl_por_operacion_dolares": 76.78,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 616.21,
@@ -7315,7 +7374,8 @@
       "_w19_summary": "10 cerradas + 3 abiertas. Wins acum: 5/10 (50%). Losses dominados por pre-earnings closes pequeños (-$15 a -$179) y OXY UPL grande. AMD abierta +$865 UPL.",
       "_w20_comentario": "W20: AMD cerrada +10.5% (A_open), OXY reconciled -10.53% (D_open), PFE reconciled -2.73% (D_open). Net W20 ops cerradas: 1W/2L.",
       "_w21_comentario": "W21: 1 op nueva PANW (-2.73% UPL al cierre). Bot cerró PANW 5/20 pre-NVDA. Solo 1 op Cowork por filtro de calidad post-W20 pivot.",
-      "operaciones_abiertas_hoy": 2
+      "operaciones_abiertas_hoy": 2,
+      "avg_pnl_pct": 0.6
     },
     "calidad_señal": {
       "score_medio_entradas": null,
@@ -7395,9 +7455,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 0.170492800409135,
+      "max_drawdown_paper_pct": 0.47,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-04-25",
+      "max_drawdown_paper_fecha": "2026-06-04",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4537.95,
@@ -7594,6 +7654,15 @@
         "avg_r_acumulado": -0.1,
         "operaciones_acumuladas": 18,
         "vix": 16.07
+      },
+      {
+        "fecha": "2026-06-04",
+        "equity_paper": 109410.23,
+        "equity_real": 4548.01,
+        "pnl_dia_paper_dolares": 188.77,
+        "win_rate_acumulado": 38.9,
+        "operaciones_acumuladas": 18,
+        "vix": 15.359999656677246
       }
     ],
     "objetivos": {
@@ -12272,82 +12341,16 @@
     },
     {
       "fecha": "2026-06-04",
-      "tarea": "pre-market-earnings-scan",
-      "ts_ejecucion": "2026-06-04T14:33:51.734055+00:00",
-      "macro_score": -0.8,
-      "umbral_paper": 8.75,
-      "umbral_real": 9.0,
-      "posiciones_cowork_abiertas": 2,
-      "limite_cowork": 2,
-      "candidatos_analizados": 9,
-      "candidatos_ejecutados": 0,
-      "razon_no_ejecucion": "REGLA D-1 bloqueó todos los AH de hoy (LULU,DOCU,COO,GWRE,RBRK,IOT,TTAN). ABM (mañana BMO) bloqueado por asim_neg + beat_rate<60%. AGX (asim 0%, MA+67%). Adicionalmente max_cowork_positions=2 ya alcanzado.",
-      "candidatos_top": [
-        {
-          "ticker": "LULU",
-          "score": 7.26,
-          "asim_pct": 4.79,
-          "beat_rate": 92,
-          "avg_move_dir": -6.23,
-          "mom_5d": -3.49,
-          "vs_ma200": -26.16,
-          "skip_reasons": [
-            "REGLA_D-1_AH_HOY"
-          ]
-        },
-        {
-          "ticker": "GWRE",
-          "score": 5.91,
-          "asim_pct": 14.86,
-          "beat_rate": 83,
-          "avg_move_dir": 7.66,
-          "mom_5d": 13.89,
-          "vs_ma200": -11.85,
-          "skip_reasons": [
-            "REGLA_D-1_AH_HOY"
-          ]
-        },
-        {
-          "ticker": "RBRK",
-          "score": 5.71,
-          "asim_pct": -33.33,
-          "beat_rate": 100,
-          "avg_move_dir": 0.67,
-          "mom_5d": 9.9,
-          "vs_ma200": 13.61,
-          "skip_reasons": [
-            "REGLA_D-1_AH_HOY",
-            "asim_neg_-33.3%"
-          ]
-        },
-        {
-          "ticker": "IOT",
-          "score": 5.71,
-          "asim_pct": 23.08,
-          "beat_rate": 100,
-          "avg_move_dir": 10.88,
-          "mom_5d": 17.36,
-          "vs_ma200": 8.47,
-          "skip_reasons": [
-            "REGLA_D-1_AH_HOY"
-          ]
-        },
-        {
-          "ticker": "ABM",
-          "score": 5.51,
-          "asim_pct": -3.26,
-          "beat_rate": 58,
-          "avg_move_dir": -2.57,
-          "mom_5d": 0.25,
-          "vs_ma200": -6.71,
-          "skip_reasons": [
-            "asim_neg_-3.3%",
-            "beat_rate_bajo_58%"
-          ]
-        }
-      ],
-      "sentinel_outcome_cien": "NO_ENTRADA (score 4.5 < 8.5) — reportó -19.36% intraday → validación umbral correcto",
-      "macro_resumen": "Sector rotation tech→value: XLK -2.58%, XLV +3.14%, XLF +2.32%. SPY flat, QQQ -1.00%. VIX 15.82. Oil -4.09%."
+      "dia": "Jueves",
+      "equity_paper_cierre": 109410.23,
+      "equity_real_cierre": 4548.01,
+      "variacion_dia": 188.77,
+      "variacion_pct": 0.17,
+      "vix": 15.359999656677246,
+      "regimen_macro": "GEOPOLITICAL_RELIEF_RALLY_TECH_ROTATION_OUT",
+      "trades_paper": [],
+      "evento_clave": "Israel-Líbano ceasefire + AVGO selloff → rotación tech→defensivos. Dow record +1.73%. CIEN BEAT pero -17% (sell the news AI overcrowded).",
+      "leccion": "Beat-and-raise NO basta si expectativas infladas. AI/semis pueden vender la noticia. Defensivos lideran tras geopolitical relief. Mañana NFP — defensivo total."
     }
   ],
   "alertas_criticas": [
@@ -12372,6 +12375,26 @@
       "tipo": "info",
       "mensaje": "Auto-reparación OCO: BBAR y P recibieron OCO emergencia ($17.01/$20.37, $76.50/$98.19)",
       "resuelto": true
+    },
+    {
+      "fecha": "2026-06-04",
+      "tipo": "stop_emergencia_colocado",
+      "tickers": [
+        "P"
+      ],
+      "mensaje": "P Cowork sin stop → cancelado TP $98.19 + colocado stop GTC $75.72 (-4% entry $78.87). TP debe re-añadirse mañana.",
+      "accion_tomada": "Stop colocado vía Alpaca API. Order ID en logs.",
+      "resuelto": true
+    },
+    {
+      "fecha": "2026-06-04",
+      "tipo": "bot_position_sin_stop",
+      "tickers": [
+        "BBAR"
+      ],
+      "mensaje": "BBAR posición bot (494 shares, -0.89%) tiene TP limit $20.37 pero NO stop. Bot debe colocar stop mañana.",
+      "accion_tomada": "Alerta registrada. Bot intraday debe verificar.",
+      "resuelto": false
     }
   ],
   "mejoras_sistema": [
@@ -12514,6 +12537,26 @@
       "archivo_modificado": "post-market-review/SKILL.md",
       "impacto_esperado": "Evitar gaps overnight en posiciones sin protección.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-06-04",
+      "tipo": "regla_añadida",
+      "descripcion": "Rebalance completo de sector_prioridades en macro_context post-rotación 4-jun: defensivos a +1/+2, tech/semis a -1/-2",
+      "evidencia": "Dow +1.73% Healthcare +3.14% Financials +2.67% RE +1.87% lideran. Nasdaq -0.09% chips -1.58%.",
+      "archivo_modificado": "performance_log.json/macro_context/sector_prioridades",
+      "impacto_esperado": "Próximos scans priorizarán defensivos. AI/semis penalizados hasta que 'sell the news' termine.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-06-04",
+      "tipo": "filtro_nuevo",
+      "descripcion": "Documentar en pre-market-earnings-scan SKILL.md: AI/semi/optical con rally YTD>+100% → -2 pts (CIEN -17% post-beat lección)",
+      "evidencia": "CIEN beat +10%/raised guidance +32%/rev +40% → stock -17%. Mismo patrón AVGO. Sector saturado en expectativas.",
+      "archivo_modificado": "Scheduled/pre-market-earnings-scan/SKILL.md",
+      "impacto_esperado": "Evitar entradas long en earnings AI plays sobrecalentados. Reducir falsos positivos en sector AI.",
+      "implementada": false,
+      "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
+      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - CIEN -17% 2026-06-04)"
     }
   ],
   "industry_intelligence": {
@@ -13329,6 +13372,22 @@
           "alpha_vs_spy_pct": -2.57,
           "_nota": "Win rate 50% pero P&L negativo arrastrado por MEDP (-$1293) y CACI (-$291)"
         }
+      ],
+      "daily_checks": [
+        {
+          "fecha": "2026-06-04",
+          "bot_positions": 2,
+          "bot_sin_stop": 0,
+          "cowork_positions": 2,
+          "tickers_bot": [
+            "AS",
+            "BBAR"
+          ],
+          "tickers_cowork": [
+            "GO",
+            "P"
+          ]
+        }
       ]
     },
     "comparacion_bot_vs_cowork": {
@@ -13810,63 +13869,40 @@
   },
   "posiciones_paper_snapshot": [
     {
-      "fecha": "2026-04-23",
-      "timestamp": "2026-04-23T21:23:59.237277+00:00",
-      "equity": 106568.73,
-      "buying_power": 325580.12,
-      "posiciones": [
-        {
-          "symbol": "BTCUSD",
-          "qty": 0.208926,
-          "tipo": "long",
-          "entry_price": 75929.48,
-          "current_price": 77771.5,
-          "pnl_abs": 384.85,
-          "pnl_pct": 2.43,
-          "stop_activo": {
-            "side": "sell",
-            "type": "stop_limit",
-            "stop_price": 76145.04,
-            "limit_price": 75764.31
-          },
-          "stop_ok": true
-        },
-        {
-          "symbol": "GE",
-          "qty": 18,
-          "tipo": "long",
-          "entry_price": 286.57,
-          "current_price": 281.7,
-          "pnl_abs": -87.66,
-          "pnl_pct": -1.7,
-          "stop_activo": {
-            "side": "sell",
-            "type": "stop_limit",
-            "stop_price": 269.28,
-            "limit_price": 268.74
-          },
-          "stop_ok": true,
-          "nota": "Stop en $269.28, ~6% bajo entrada. GE en pérdida -1.7%. Vigilar: si llega a -5% → revisar tesis."
-        },
-        {
-          "symbol": "SAIC",
-          "qty": -21,
-          "tipo": "short",
-          "entry_price": 94.36,
-          "current_price": 95.27,
-          "pnl_abs": -19.11,
-          "pnl_pct": -0.96,
-          "stop_activo": {
-            "side": "buy",
-            "type": "stop_limit",
-            "stop_price": 100.6,
-            "limit_price": 101.1
-          },
-          "stop_ok": true,
-          "nota": "SHORT SAIC: stop_buy en $100.60 (+6.6% sobre entrada). P&L -0.96%, dentro del riesgo normal."
-        }
-      ],
-      "evaluacion_global": "TODAS las posiciones tienen stops activos. GE en pérdida moderada, dentro de riesgo. SAIC short con stop buy correcto. BTC en ganancia +2.4%. Sistema funcionando correctamente."
+      "symbol": "AS",
+      "qty": 25.0,
+      "entry": 34.9644,
+      "current": 34.49,
+      "pnl_pct": -1.36,
+      "pnl_abs": -11.86,
+      "snapshot_ts": "2026-06-04T20:34:26.880411+00:00"
+    },
+    {
+      "symbol": "BBAR",
+      "qty": 494.0,
+      "entry": 17.91,
+      "current": 17.75,
+      "pnl_pct": -0.89,
+      "pnl_abs": -79.04,
+      "snapshot_ts": "2026-06-04T20:34:26.880411+00:00"
+    },
+    {
+      "symbol": "GO",
+      "qty": 1107.0,
+      "entry": 7.75,
+      "current": 8.46,
+      "pnl_pct": 9.16,
+      "pnl_abs": 785.97,
+      "snapshot_ts": "2026-06-04T20:34:26.880411+00:00"
+    },
+    {
+      "symbol": "P",
+      "qty": 56.0,
+      "entry": 78.87,
+      "current": 78.51,
+      "pnl_pct": -0.46,
+      "pnl_abs": -20.16,
+      "snapshot_ts": "2026-06-04T20:34:26.880411+00:00"
     }
   ],
   "historial_sistema": [
@@ -13946,6 +13982,15 @@
       "bugs_pendientes": 0,
       "parametros_version": "2026-05-23",
       "mejora_hoy": "Post-market PASO 3 detecta posiciones COWORK sin stop tras cancelaciones y automáticamente coloca OCO emergencia (preservando take_profit existente)."
+    },
+    {
+      "fecha": "2026-06-04",
+      "lecciones_acumuladas": 33,
+      "mejoras_acumuladas": 18,
+      "candidatos_activos": 0,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Sector prioridades rebalanceadas + filtro AI overcrowded documentado"
     }
   ],
   "motor_alpha_diario": {
@@ -18958,6 +19003,16 @@
       "reaccion_ah_pct": -8.6,
       "revenue_growth_yoy": null,
       "fuente_datos": "websearch"
+    },
+    {
+      "fecha": "2026-06-04",
+      "equity_paper": 109410.23,
+      "var_dia_dolares": 188.77,
+      "var_pct": 0.17,
+      "vix": 15.359999656677246,
+      "regimen": "GEOPOLITICAL_RELIEF_RALLY_TECH_ROTATION_OUT",
+      "posiciones_abiertas": 4,
+      "trades_cerrados_hoy": 0
     }
   ],
   "kpis_actuales": {
@@ -19199,6 +19254,54 @@
         "P": "stop $68.99 (held bracket leg) OK"
       },
       "leccion_validada": "Friday W22 marcó HPE/CRDO descartado_extension. Hoy HPE +5.16% confirma drift consumido, SAIC +13.72% confirma gap risk."
+    }
+  ],
+  "acciones_pendientes_manana": [
+    {
+      "symbol": "GO",
+      "qty_parcial": 553,
+      "entry": 7.75,
+      "current": 8.46,
+      "R_actual": 2.84,
+      "accion": "vender_parcial_apertura_manana",
+      "stop_target_post_parcial": 7.75,
+      "razon": "R=2.84 (>1.5) sin parcial ejecutado hoy. Lock 50% profit."
+    }
+  ],
+  "auditoria_tareas": [
+    {
+      "fecha": "2026-06-04",
+      "score_sistema": 8.5,
+      "tareas": {
+        "sentinel": {
+          "ok": true,
+          "ciclos_hoy": 7,
+          "issues": [],
+          "score": 9
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "issues": [],
+          "score": 8
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "issues": [],
+          "score": 8
+        },
+        "pre-market-scan": {
+          "ok": true,
+          "candidatos_detectados": 2,
+          "issues": [],
+          "score": 8
+        },
+        "market-open-execution": {
+          "ok": true,
+          "issues": [],
+          "score": 8
+        }
+      },
+      "tareas_con_issues": []
     }
   ]
 }
