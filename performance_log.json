@@ -397,6 +397,15 @@
       "tarea_afectada": "market-open-execution|pre-market-earnings-scan",
       "auto_generado": false,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "titulo": "EW paywall bloquea whisper — usar emails diarios como fuente primaria",
+      "descripcion": "Weekend-ew-intel corrió en modo degradado (sin whisper) porque EW web requiere login premium. Los emails epsguidance@earningswhispers.com y wr@earningswhispers.com SÍ contienen whisper numbers en texto. Parsear emails ES la solución correcta, no scraping web.",
+      "accion_correctiva": "weekend-ew-intel debe leer emails EW (Gmail MCP) PRIMERO, extraer whisper/consensus de texto, y solo como fallback usar el web scraping headless. Ver email 2026-05-23 'Most Anticipated Releases' como ejemplo de formato.",
+      "tarea_afectada": "weekend-ew-intel",
+      "impacto": "ALTO — sin whisper no hay scoring EW real, el sistema opera en modo degradado toda la semana",
+      "implementada": false
     }
   ],
   "operaciones": [
@@ -1105,27 +1114,6 @@
       "nota_cierre": "Cerrado manualmente 2026-05-20 antes de earnings AH hoy. Ganancia +2.2% (+\\8)."
     },
     {
-      "ticker": "BJ",
-      "score": 4.0,
-      "score_ajustado": 4.0,
-      "score_macro_bonus": 0,
-      "estado": "expirado",
-      "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": 3.85,
-      "whisper": 1.08,
-      "consensus": 1.04,
-      "earnings_fecha": "2026-05-22",
-      "earnings_timing": "pre-market",
-      "expira": "2026-05-22T20:00:00Z",
-      "notas": "Score=4.0 — pendiente premarket scan completo.",
-      "detectado_por": "sentinel-preopen",
-      "fecha_deteccion": "2026-05-21",
-      "ventana_entrada": "10:15 ET",
-      "ts_creado": "2026-05-21T09:15:50.895356+00:00",
-      "ts_expirado": "2026-06-03T20:11:32.341424+00:00",
-      "razon_expiracion": "expira=2026-05-22 < hoy=2026-06-03"
-    },
-    {
       "ticker": "SNOW",
       "earnings_fecha": "2026-05-27",
       "earnings_timing": "after-hours",
@@ -1185,24 +1173,6 @@
       "guidance_proximo": "$6B AWS multi-year deal + Natoma acquisition"
     },
     {
-      "ticker": "CRM",
-      "score": 4.0,
-      "score_ajustado": 4.0,
-      "score_macro_bonus": 0,
-      "estado": "expirado",
-      "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": 4.81,
-      "earnings_fecha": "2026-05-27",
-      "earnings_timing": "after-hours",
-      "expira": "2026-05-27T20:00:00Z",
-      "notas": "Score=4.0 — detectado en pre-apertura holiday (Memorial Day). Sesión próxima: 2026-05-26.",
-      "detectado_por": "sentinel-preopen-holiday",
-      "ventana_entrada": "10:15 ET (pre-market scan)",
-      "fecha_deteccion": "2026-05-25",
-      "ts_expirado": "2026-06-03T20:11:32.341428+00:00",
-      "razon_expiracion": "expira=2026-05-27 < hoy=2026-06-03"
-    },
-    {
       "ticker": "P",
       "score": 9.3,
       "score_ajustado": 9.3,
@@ -1237,40 +1207,6 @@
       "orden_id": "b1d79016-e079-4a6d-8172-d4ed1450642b",
       "precio_ejecucion": 78.7249984741211,
       "stop_propuesto": 68.99
-    },
-    {
-      "ticker": "SNOW",
-      "score": 8.6,
-      "score_ajustado": 8.6,
-      "score_override": 8.6,
-      "source": "log_validated",
-      "estado": "expirado",
-      "tipo": "post_earnings_continuation",
-      "earnings_fecha": "2026-05-28",
-      "accion_recomendada": "entrar_apertura",
-      "ventana_entrada": "2026-05-29 09:40-10:15 ET - continuacion post-beat",
-      "stop_tipo": "low_earnings_day_or_ATR1.5",
-      "sizing": "1.0x",
-      "argumento": "SNOW beat cons 21.9% (sin whisper) (2026-05-28). EPS=0.39 vs cons=0.32. AH=+37.0%. RevYoY=33.5%. Continuacion post-beat (consensus_proxy_ah_confirmado).",
-      "beat_pct_vs_whisper": 0,
-      "consensus_beat_pct": 21.88,
-      "reaccion_ah_pct": 37.0,
-      "continuation_ruta": "consensus_proxy_ah_confirmado",
-      "eps_actual": 0.39,
-      "eps_whisper": null,
-      "revenue_growth_yoy": 33.5,
-      "fuente": "ew-daily-results-continuation",
-      "detectado_por": "ew-daily-results",
-      "fecha_deteccion": "2026-05-28",
-      "expira": "2026-05-29T21:00:00Z",
-      "notas": "Post-earnings continuation. Cons +21.9% AH +37.0%. Entrar apertura 2026-05-29. Stop low earnings day o ATR1.5. Target 2xATR. Max 3d.",
-      "asimetria_pct": 6.563999999999999,
-      "ts_creado": "2026-05-28T21:45:34.740182+00:00",
-      "umbral_real": 7.5,
-      "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d",
-      "ts_expirado": "2026-06-03T20:11:32.341429+00:00",
-      "razon_expiracion": "expira=2026-05-29 < hoy=2026-06-03"
     },
     {
       "ticker": "HPE",
@@ -1461,12 +1397,52 @@
       "expira": "2026-06-08T20:27:26.789599Z",
       "score_macro_bonus": 1,
       "notas": "fuente: websearch_fallback — EW y Gmail no disponibles en run autonomo"
+    },
+    {
+      "ticker": "ORCL",
+      "estado": "pendiente_ew",
+      "score": 8.0,
+      "conviction": "conviction_alta",
+      "earnings_fecha": "2026-06-10",
+      "earnings_timing": "after-hours",
+      "asimetria_pct": null,
+      "notas": "AI cloud +19.9%YoY. Weekend EW intel proxy=4.5 (degradado sin whisper). Entrar martes 09-jun pre-drift. Cerrar ANTES 16:00 ET martes. Cautela: tech rotation out vigente post-NFP. Solo si VIX<20 martes.",
+      "source": "weekend_ew_intel_W24_degradado",
+      "guidance_tipo": "positivo",
+      "vs_ma200": 3.8,
+      "mom5d": -5.4,
+      "drift_desde_earnings": 0.0,
+      "fecha_añadido": "2026-06-07",
+      "regimen_alerta": "TECH_ROTATION_OUT — solo si VIX<18 y tech green el martes",
+      "max_sizing_pct": 0.5,
+      "options_flow": "",
+      "short_interest_change_pct": 0.0
+    },
+    {
+      "ticker": "ADBE",
+      "estado": "pendiente_ew",
+      "score": 7.0,
+      "conviction": "conviction_media",
+      "earnings_fecha": "2026-06-11",
+      "earnings_timing": "after-hours",
+      "asimetria_pct": null,
+      "notas": "Rev +10%YoY. MA200 -16.6% (bajo MA200 = menos extendido). Tech rotation out risk. Sólo si ORCL reacciona bien mié-pre. Entrar mié 10-jun. sizing 0.5x. Cerrar antes 16:00 ET mié.",
+      "source": "weekend_ew_intel_W24_degradado",
+      "guidance_tipo": "neutro",
+      "vs_ma200": -16.6,
+      "mom5d": -3.0,
+      "drift_desde_earnings": 0.0,
+      "fecha_añadido": "2026-06-07",
+      "regimen_alerta": "TECH_ROTATION_OUT — solo si régimen mejora",
+      "max_sizing_pct": 0.5,
+      "options_flow": "",
+      "short_interest_change_pct": 0.0
     }
   ],
   "macro_context": {
     "fecha_actualizacion": "2026-06-05",
     "semana": "2026-W23",
-    "regimen": "VOLATILITY_SPIKE_RATE_FEARS_TECH_SELLOFF",
+    "regimen": "DEFENSIVE_VIX_RECOVERY",
     "vix": 21.13,
     "yield_spread_10y2y": 0.43,
     "narrativa_dominante": "ACTUALIZACION 2026-06-05: Jornada risk-off fuerte. Informe de empleo (NFP) mas fuerte de lo esperado reaviva temores de subida de tipos -> selloff amplio. SPX -2.64% (~7,380), Nasdaq -4% con caida de semiconductores que borro ~$1T de capitalizacion; ademas informe esceptico sobre AI y oferta secundaria de Meta presionaron tech. VIX +~30% a ~21 (>20 = modo defensivo). Confirma rotacion fuera de tech/semis hacia defensivos; rate-sensitive (real estate) penalizado por temor a tipos. Posicion defensiva GO (Grocery Outlet, staples) aguanto +10.5%.",
@@ -1565,7 +1541,7 @@
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-06-04T15:16",
+    "ts_actualizado": "2026-06-06T22:25:59.058741",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1690,7 +1666,23 @@
       "consenso": "100k jobs, unemployment 4.3%",
       "implicacion": "Print >130k → dollar strong, bonds caen, tech afecta. Print <80k → cuts October ON, todo rally.",
       "recomendacion": "Evitar entradas pre-NFP. Esperar 9:45 ET post-reaccion para evaluar."
-    }
+    },
+    "notas_regimen": "VIX 15→21 por NFP fuerte. Tech/semis selloff. Defensivos (staples/healthcare/financials) preferidos. No entrar tech si VIX>20.",
+    "restricciones_activas": [
+      "NO_TECH_IF_VIX_GT_20",
+      "NO_AI_SEMIS_IF_YTD_GT_100PCT"
+    ],
+    "sectores_preferidos": [
+      "defensegov",
+      "healthcare",
+      "financials",
+      "staples"
+    ],
+    "sectores_evitar": [
+      "techai",
+      "semis",
+      "memory_chips"
+    ]
   },
   "operaciones_crypto": [
     {
