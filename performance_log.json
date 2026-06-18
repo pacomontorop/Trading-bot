@@ -1510,15 +1510,36 @@
       "guidance_proximo": "Q3 EPS $6.05-6.10, rev $6.67-6.72B; FY26 EPS $24.35-24.45 (subida)",
       "ts_resultado": "2026-06-13T14:55:24.991816+00:00",
       "earnings_fecha_real": "2026-06-11"
+    },
+    {
+      "ticker": "KBH",
+      "score": 5.0,
+      "score_ajustado": 5.0,
+      "score_total": 5.0,
+      "fecha_deteccion": "2026-06-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-22",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilar_apertura_lunes",
+      "ventana_entrada": "2026-06-22 09:40-13:00 ET",
+      "stop_tipo": "ATR x1.5 normal",
+      "sizing": "no_entry hasta validar con datos EW",
+      "argumento": "KB Home reporta lunes AH. Homebuilder con headwind: Fed proyecta inflacion mas alta -> tipos higher-for-longer presiona sector vivienda (real_estate priority bajado a 0). Sin datos premium EW (scraping bloqueado, navegador no disponible en sesion autonoma) -> no se puede validar asimetria/beat-rate/reaccion. Mantener en vigilancia, re-escanear en pre-market scan del lunes.",
+      "sector": "real_estate",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-22T23:00:00Z",
+      "score_macro_bonus": 0,
+      "notas": "Fuente: WebSearch (Zacks/Globe&Mail earnings preview). EW premium NO disponible.",
+      "conviction_tier": "no_entry"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-17",
+    "fecha_actualizacion": "2026-06-18",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_RELIEF_RALLY",
-    "vix": 16.41,
+    "vix": 18.44,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-17: VIX 16.41, mercado en calma (regimen relief-rally se mantiene). Sin posiciones paper abiertas; cuenta real solo con fragmento BTC residual. Manana 18-jun: jobless claims semanales + earnings ACN (Accenture) y KR (Kroger). Viernes 19-jun mercado CERRADO (Juneteenth).",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-18: Fed (1a reunion de Warsh) mantiene tipos sin cambios pero proyecta crecimiento mas lento e inflacion mas alta -> sesgo hawkish-de-fondo pese al alivio inmediato. Mercado en rally de alivio: S&P500 +1.15%, Nasdaq +1.5%, Dow +0.80%; Russell2000 -0.72% (small caps rezagadas). Tech lidera. Firmado acuerdo interino de paz EEUU-Iran -> EEUU levanta bloqueo del Estrecho de Ormuz, petroleo a la baja, presion sobre energia/defensa. VIX sube a 18.44 (desde 16.41) pese al rally -> cautela de fondo. MANANA 19-jun: MERCADO CERRADO (Juneteenth). Proxima sesion: lunes 22-jun. Lunes solo earnings notable: KB Home (KBH, AH, homebuilder). Semana: FedEx+Carnival (23), Micron (24), Nike.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1529,7 +1550,8 @@
       "WebSearch post-market 2026-06-04: TheStreet+CNBC+Schwab — 4 fuentes confirmadas",
       "WebSearch post-market 2026-06-05: market close + Monday earnings",
       "WebSearch post-market 2026-06-13: VIX, earnings Mon 15-jun, economic calendar FOMC week",
-      "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma)."
+      "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma).",
+      "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana"
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -1545,7 +1567,7 @@
       "consumer_discretionary": 1,
       "consumer_staples": 1,
       "utilities": 1,
-      "real_estate": 1,
+      "real_estate": 0,
       "semiconductors": -2
     },
     "sectores_a_vigilar_esta_semana": [
@@ -1556,23 +1578,18 @@
       "healthcare",
       "consumer_discretionary",
       "consumer_staples",
-      "utilities",
-      "real_estate"
+      "utilities"
     ],
     "sectores_a_evitar_esta_semana": [
       "energy",
       "memory_chips",
       "semiconductors"
     ],
-    "eventos_macro_proxima_semana": [
-      "FOMC decision + SEP (mié 17-jun 14:00 ET)",
-      "Ventas minoristas mayo (17-jun)",
-      "Juneteenth - mercado cerrado (vie 19-jun)"
-    ],
+    "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
     "dias_riesgo_macro": [
-      "2026-06-17"
+      "2026-06-26 (PCE inflacion mayo)"
     ],
-    "notas_adicionales": "Cambio de régimen: AI_TECH_RALLY (con 5/29) → GEOPOLITICAL_UNCERTAINTY_RENEWED (3/6). Mantener AI/tech como sobreponderado (+1) por earnings AVGO/CRWD AH potencialmente positivos. Sobreponderar defense/energy (+2). NFP viernes — riesgo macro principal de la semana.",
+    "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
       "timestamp": "2026-06-18T12:17",
       "nivel": "normal",
@@ -1698,6 +1715,20 @@
           "airlines"
         ],
         "fuente": "TheStreet/Bloomberg/Yahoo Finance"
+      },
+      {
+        "fecha": "2026-06-18",
+        "evento": "Fed (Warsh) mantiene tipos sin cambios; proyecta crecimiento mas lento e inflacion mas alta. Acuerdo paz EEUU-Iran firmado. S&P+1.15%, Nasdaq+1.5%.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "technology",
+          "energy",
+          "defense",
+          "real_estate",
+          "all"
+        ],
+        "fuente": "WebSearch (TheStreet/Yahoo Finance)"
       }
     ],
     "macro_score_pm": -0.8,
@@ -1725,20 +1756,11 @@
     "sector_lider_pm": "xlv",
     "spy_chg_pm": -0.027837417827017635,
     "qqq_chg_pm": -1.0037531768895895,
-    "vix_pm": 16.18,
+    "vix_pm": 18.44,
     "ts_pm_actualizado": "2026-06-04T14:33:51.734055+00:00",
-    "evento_destacado_hoy": {
-      "ticker": "AVGO",
-      "cambio_pct": -15.0,
-      "descripcion": "Broadcom -15% por Q3 AI guidance $16B vs $17.2B esperado",
-      "arrastres": [
-        "AMD -4%",
-        "INTC -3%"
-      ],
-      "lectura": "Idiosincratico (no macro). Rotacion tech->value (UNH/JPM/WMT lideran Dow +1.8%)."
-    },
+    "evento_destacado_hoy": "Fed mantiene tipos (Warsh) + acuerdo paz EEUU-Iran; rally risk-on, VIX 18.44",
     "spy_intraday_pct": 0.34,
-    "riesgo_macro_mañana": true,
+    "riesgo_macro_mañana": false,
     "notas_regimen": "US-Iran peace deal reabre Estrecho de Ormuz. Risk-on fuerte, petroleo cae. Pero FOMC mié 17-jun (decisión+SEP) limita nuevas entradas mitad de semana.",
     "restricciones_activas": [
       "FOMC_SEMANA: evitar nuevas entradas significativas hasta despues de la decision Fed (mié 17-jun 14:00 ET)",
@@ -7437,15 +7459,15 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-15",
+    "_ultima_actualizacion": "2026-06-18",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4548.03,
+      "equity_real_actual": 4548.0,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.03,
+      "pnl_total_real_dolares": 48.0,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
@@ -7790,6 +7812,16 @@
         "avg_r_acumulado": -0.01,
         "operaciones_acumuladas": 20,
         "vix": 16.18
+      },
+      {
+        "fecha": "2026-06-18",
+        "equity_paper": 109380.24,
+        "equity_real": 4548.0,
+        "pnl_dia_paper": 80.92,
+        "win_rate_acumulado": 36.8,
+        "avg_r_acumulado": -0.01,
+        "operaciones_acumuladas": 19,
+        "vix": 18.44
       }
     ],
     "objetivos": {
@@ -12540,6 +12572,18 @@
       "trades_paper": [],
       "evento_clave": "Dia tranquilo. 0 posiciones paper, 0 ordenes. Real: solo dust BTC. VIX 16.41.",
       "leccion": "Sin operaciones ni earnings-loop hoy; revision en modo gestion."
+    },
+    {
+      "fecha": "2026-06-18",
+      "dia": "Thursday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 80.92,
+      "variacion_pct": 0.07,
+      "vix": 18.44,
+      "regimen_macro": "GEOPOLITICAL_RELIEF_RALLY",
+      "trades_paper": [],
+      "evento_clave": "Fed (Warsh) mantiene tipos pero proyecta inflacion mas alta; acuerdo paz EEUU-Iran. Rally: S&P+1.15%, Nasdaq+1.5%. VIX 18.44. Manana CERRADO (Juneteenth).",
+      "leccion": "Sin posiciones ni earnings-loop hoy. VIX +12% pese a rally -> cautela de fondo por sesgo Fed. Real_estate priority bajado 1->0 (homebuilders vs tipos higher-for-longer ante KBH lunes)."
     }
   ],
   "alertas_criticas": [
@@ -13576,6 +13620,14 @@
             "GO",
             "P"
           ]
+        },
+        {
+          "fecha": "2026-06-18",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [],
+          "nota": "Paper 0 posiciones. Real: solo BTCUSD dust (qty 0.0000083, ~$0.52, -46.5% pero importe negligible, sin stop)."
         }
       ]
     },
@@ -14196,6 +14248,15 @@
       "candidatos_activos": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Sin cambio de parametros. Documentadas observaciones; sin edicion de SKILL.md (sesion autonoma, sin evidencia para auto-fix)."
+    },
+    {
+      "fecha": "2026-06-18",
+      "lecciones_acumuladas": 42,
+      "mejoras_acumuladas": 18,
+      "candidatos_activos": 1,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Sin cambio parametrico (0 trades hoy). Macro actualizado: real_estate 1->0 ante Fed higher-inflation + KBH lunes. Nota: navegador EW no disponible en sesion autonoma -> candidatos sin datos premium."
     }
   ],
   "motor_alpha_diario": {
@@ -19608,6 +19669,21 @@
       "fecha": "2026-06-15",
       "score_sistema": 10.0,
       "nota": "Sin posiciones abiertas ni candidatos ejecutables hoy. Sistema integro. Earnings manana ligeros + FOMC esta semana.",
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-06-18",
+      "score_sistema": 8.0,
+      "tareas": {
+        "post-market-review": {
+          "ok": true,
+          "score": 8,
+          "issues": [
+            "EW premium/navegador no disponible en sesion autonoma -> scan candidatos limitado a WebSearch",
+            "Manana cerrado (Juneteenth) -> sin sesion que preparar, foco en lunes 22"
+          ]
+        }
+      },
       "tareas_con_issues": []
     }
   ]
