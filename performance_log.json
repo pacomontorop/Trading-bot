@@ -464,7 +464,16 @@
       "accion_futura": "Revisar CGC: pérdida ampliada pese a crecimiento de revenue. ¿costes/guidance?",
       "impacto_score": -0.2
     },
-    "2026-06-22: EarningsWhispers inaccesible desde sandbox de tareas (old.earningswhispers.com timeout; www. JS-render; /api/card=PNG). Scan EW headless no funciona en este entorno; usar yfinance para earnings date/beat-rate como fallback."
+    "2026-06-22: EarningsWhispers inaccesible desde sandbox de tareas (old.earningswhispers.com timeout; www. JS-render; /api/card=PNG). Scan EW headless no funciona en este entorno; usar yfinance para earnings date/beat-rate como fallback.",
+    {
+      "fecha": "2026-06-22",
+      "titulo": "Dia tranquilo sin señales — disciplina de no-entrada",
+      "descripcion": "Sin posiciones abiertas. Earnings de manana (CCL 6.5, FDX 5.5) no superan umbral fuerte 7.5 ni paper 8.75. FDX ademas AH+guidance risk. Mercado en rotacion tech->value con VIX bajo.",
+      "accion_correctiva": "Mantener vigilancia CCL al open; NO entrar FDX pre-earnings (regla overnight + guidance gap).",
+      "tarea_afectada": "market-open-execution",
+      "auto_generado": true,
+      "aplicada": true
+    }
   ],
   "operaciones": [
     {
@@ -1527,11 +1536,12 @@
       "sizing": "no_entry hasta validar con datos EW",
       "argumento": "KB Home reporta lunes AH. Homebuilder con headwind: Fed proyecta inflacion mas alta -> tipos higher-for-longer presiona sector vivienda (real_estate priority bajado a 0). Sin datos premium EW (scraping bloqueado, navegador no disponible en sesion autonoma) -> no se puede validar asimetria/beat-rate/reaccion. Mantener en vigilancia, re-escanear en pre-market scan del lunes.",
       "sector": "real_estate",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-22T23:00:00Z",
       "score_macro_bonus": 0,
-      "notas": "Fuente: WebSearch (Zacks/Globe&Mail earnings preview). EW premium NO disponible.",
-      "conviction_tier": "no_entry"
+      "notas": "Fuente: WebSearch (Zacks/Globe&Mail earnings preview). EW premium NO disponible. | CIERRE LOOP 2026-06-22: KBH reporta Q2 (~AMC, consenso EPS ~$0.44-0.45, rev ~$1.09B, YoY -70% por mercado de vivienda debil). Score era 5.0 (vigilar) — NO se tomo posicion. Sin asimetria whisper clara y sector real_estate prioridad 0. Decision correcta: no entrar.",
+      "conviction_tier": "no_entry",
+      "leccion": "Homebuilders con earnings YoY muy negativos y sin asimetria whisper: mantener en vigilancia, no entrar."
     },
     {
       "ticker": "FDX",
@@ -1548,15 +1558,55 @@
       "notas": "Sentinel pre-apertura 2026-06-22. FDX reporta 6/23 AMC. Beat-rate 4/4 (+25.5/+17.2/+6.0/+4.6%). EarningsWhispers whisper/consensus NO accesible desde el entorno (old. inalcanzable, www. JS-render, /api/card devuelve PNG). Score parcial=3.0 (beat 2.0 + timing 1.0) sin bloque de asimetria. Pre-market scan 10:15 ET debe completar scoring.",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)"
+    },
+    {
+      "ticker": "CCL",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-06-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-23",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "monitorear_apertura",
+      "ventana_entrada": "2026-06-23 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 ventana apertura (lección JNJ)",
+      "sizing": "vigilar, no entrada automatica",
+      "sector": "consumer_discretionary",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-23T16:27:12.447827Z",
+      "score_macro_bonus": 1,
+      "argumento": "CCL reporta ~9:15 ET. Asimetria whisper modesta ~+2% (ESP +1.94%), pero beat rate 4/4 ultimos Q. Rev est $6.69B (+5.7% YoY), EPS $0.34. Consumer-disc prioridad +1. Asimetria pequeña -> vigilar, confirmar con reaccion de apertura antes de decidir.",
+      "notas": "Score 6.5 < 7.5 umbral fuerte y < 8.75 umbral paper. Solo vigilancia."
+    },
+    {
+      "ticker": "FDX",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 5.5,
+      "fecha_deteccion": "2026-06-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-23",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilar_no_entrada",
+      "ventana_entrada": "2026-06-23 AH — NO operable pre-open",
+      "stop_tipo": "N/A (riesgo gap AH)",
+      "sizing": "no entrar",
+      "sector": "industrials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-23T16:27:12.447827Z",
+      "score_macro_bonus": 1,
+      "argumento": "FedEx fiscal Q4 reporta AH. Asimetria whisper +3.8% (Most Accurate $6.13 vs cons $5.91), beat 4/4Q, cerca de maximos 52sem, Network 2.0 + spin-off freight. PERO: reporta AH (no operable pre-open) y riesgo guidance-gap alto (lección NFLX). Industrials prioridad +1. Riesgo > recompensa para entrada pre-earnings.",
+      "notas": "Score 5.5. AH + guidance risk. No tomar posicion overnight (regla no_holdings_earnings_overnight)."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-18",
+    "fecha_actualizacion": "2026-06-22",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_RELIEF_RALLY",
-    "vix": 16.78,
+    "vix": 17.55,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-18: Fed (1a reunion de Warsh) mantiene tipos sin cambios pero proyecta crecimiento mas lento e inflacion mas alta -> sesgo hawkish-de-fondo pese al alivio inmediato. Mercado en rally de alivio: S&P500 +1.15%, Nasdaq +1.5%, Dow +0.80%; Russell2000 -0.72% (small caps rezagadas). Tech lidera. Firmado acuerdo interino de paz EEUU-Iran -> EEUU levanta bloqueo del Estrecho de Ormuz, petroleo a la baja, presion sobre energia/defensa. VIX sube a 18.44 (desde 16.41) pese al rally -> cautela de fondo. MANANA 19-jun: MERCADO CERRADO (Juneteenth). Proxima sesion: lunes 22-jun. Lunes solo earnings notable: KB Home (KBH, AH, homebuilder). Semana: FedEx+Carnival (23), Micron (24), Nike.",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-22: Dia de rotacion. S&P500 -0.37% (7,472.79), Nasdaq -1.32% (26,166.60) arrastrado por tech; Dow +0.29% (+148pts) por value/defensivas. Alphabet -5% por fuga de talento AI -> presion sobre mega-cap tech. Conversaciones de paz US-Iran siguen en foco (sostienen el relief rally geopolitico). VIX 17.55 (+4.6%) — sigue bajo, sin estres. Sin datos macro mayores. Tono: rotacion desde tech hacia value/industrials/defensivas; mercado tranquilo a la espera de datos de inflacion.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1568,7 +1618,8 @@
       "WebSearch post-market 2026-06-05: market close + Monday earnings",
       "WebSearch post-market 2026-06-13: VIX, earnings Mon 15-jun, economic calendar FOMC week",
       "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma).",
-      "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana"
+      "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana",
+      "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)"
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -1744,6 +1795,17 @@
           "all"
         ],
         "fuente": "WebSearch (TheStreet/Yahoo Finance)"
+      },
+      {
+        "fecha": "2026-06-22",
+        "evento": "Alphabet -5% por fuga de talento AI; rotacion tech->value. US-Iran peace talks en foco.",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology",
+          "communication",
+          "industrials"
+        ],
+        "fuente": "Yahoo Finance/TheStreet/CNBC"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7474,24 +7536,24 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-18",
+    "_ultima_actualizacion": "2026-06-22",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4548.0,
+      "equity_real_actual": 4548.02,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.0,
+      "pnl_total_real_dolares": 48.02,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 385.38,
-      "pnl_dia_real_dolares": 0.22,
-      "equity_paper_peak": 109216.44
+      "pnl_dia_paper_dolares": 78.67,
+      "pnl_dia_real_dolares": 0.02,
+      "equity_paper_peak": 109380.24
     },
     "cowork_trading": {
       "operaciones_totales": 18,
@@ -7837,6 +7899,13 @@
         "avg_r_acumulado": -0.01,
         "operaciones_acumuladas": 19,
         "vix": 18.44
+      },
+      {
+        "fecha": "2026-06-22",
+        "equity_paper": 109380.24,
+        "equity_real": 4548.02,
+        "pnl_dia_paper": 78.67,
+        "vix": 17.55
       }
     ],
     "objetivos": {
@@ -12599,6 +12668,18 @@
       "trades_paper": [],
       "evento_clave": "Fed (Warsh) mantiene tipos pero proyecta inflacion mas alta; acuerdo paz EEUU-Iran. Rally: S&P+1.15%, Nasdaq+1.5%. VIX 18.44. Manana CERRADO (Juneteenth).",
       "leccion": "Sin posiciones ni earnings-loop hoy. VIX +12% pese a rally -> cautela de fondo por sesgo Fed. Real_estate priority bajado 1->0 (homebuilders vs tipos higher-for-longer ante KBH lunes)."
+    },
+    {
+      "fecha": "2026-06-22",
+      "dia": "Monday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 78.67,
+      "variacion_pct": 0.07,
+      "vix": 17.55,
+      "regimen_macro": "GEOPOLITICAL_RELIEF_RALLY",
+      "trades_paper": [],
+      "evento_clave": "Rotacion tech->value: Alphabet -5% (fuga talento AI), Nasdaq -1.3%, Dow +0.3%. VIX 17.55.",
+      "leccion": "Dia sin posiciones ni señales fuertes. Manana CCL/FDX en vigilancia (scores 6.5/5.5, ninguno >=7.5)."
     }
   ],
   "alertas_criticas": [
@@ -12805,6 +12886,15 @@
       "implementada": false,
       "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
       "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - CIEN -17% 2026-06-04)"
+    },
+    {
+      "fecha": "2026-06-22",
+      "tipo": "regla_validada",
+      "descripcion": "Confirmada disciplina: candidatos AH con guidance-gap risk (FDX) se marcan vigilar/no-entrada, no pendiente.",
+      "evidencia": "FDX score 5.5, reporta AH, riesgo guidance alto tras spin-off freight.",
+      "archivo_modificado": "performance_log",
+      "impacto_esperado": "Evita entradas overnight de alto riesgo.",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -14272,6 +14362,13 @@
       "bugs_pendientes": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Sin cambio parametrico (0 trades hoy). Macro actualizado: real_estate 1->0 ante Fed higher-inflation + KBH lunes. Nota: navegador EW no disponible en sesion autonoma -> candidatos sin datos premium."
+    },
+    {
+      "fecha": "2026-06-22",
+      "lecciones_acumuladas": 44,
+      "mejoras_acumuladas": 19,
+      "candidatos_activos": 2,
+      "mejora_hoy": "Disciplina no-entrada validada (FDX AH/guidance)"
     }
   ],
   "motor_alpha_diario": {
@@ -19711,6 +19808,12 @@
           ]
         }
       },
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-06-22",
+      "score_sistema": 10.0,
+      "resumen": "Sin posiciones que gestionar. macro_context actualizado, KBH loop cerrado, 2 candidatos vigilancia para manana.",
       "tareas_con_issues": []
     }
   ]
