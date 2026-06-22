@@ -463,7 +463,8 @@
       "descripcion": "EPS actual=$-0.17 vs consensus=$-0.06. Revenue YoY 13.7%. Sin dato whisper.",
       "accion_futura": "Revisar CGC: pérdida ampliada pese a crecimiento de revenue. ¿costes/guidance?",
       "impacto_score": -0.2
-    }
+    },
+    "2026-06-22: EarningsWhispers inaccesible desde sandbox de tareas (old.earningswhispers.com timeout; www. JS-render; /api/card=PNG). Scan EW headless no funciona en este entorno; usar yfinance para earnings date/beat-rate como fallback."
   ],
   "operaciones": [
     {
@@ -1531,6 +1532,22 @@
       "score_macro_bonus": 0,
       "notas": "Fuente: WebSearch (Zacks/Globe&Mail earnings preview). EW premium NO disponible.",
       "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "FDX",
+      "score": 3.0,
+      "score_ajustado": 3.0,
+      "score_macro_bonus": 0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-06-23",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 1.0,
+      "eps_estimate": 5.95,
+      "expira": "2026-06-23T20:00:00Z",
+      "notas": "Sentinel pre-apertura 2026-06-22. FDX reporta 6/23 AMC. Beat-rate 4/4 (+25.5/+17.2/+6.0/+4.6%). EarningsWhispers whisper/consensus NO accesible desde el entorno (old. inalcanzable, www. JS-render, /api/card devuelve PNG). Score parcial=3.0 (beat 2.0 + timing 1.0) sin bloque de asimetria. Pre-market scan 10:15 ET debe completar scoring.",
+      "detectado_por": "sentinel-preopen",
+      "ventana_entrada": "10:15 ET (pre-market scan)"
     }
   ],
   "macro_context": {
@@ -17875,6 +17892,15 @@
       "cowork_abiertas": 0,
       "vix": 16.9,
       "nota": "Run via Cowork. Mercado abierto 12:1x ET. Paper y Real flat. Macro normal/risk-on (VIX -8%, QQQ +2.2%, oil -3.8% por acuerdo US-Iran/Hormuz; overhang Fed hawkish 17-jun). EW scrape no accesible desde sandbox; candidatos del log obsoletos; mañana 19-jun Juneteenth (mercado CERRADO) -> sin continuation plays. Sin nuevas entradas. NOTA OPERADOR: no se ejecutan ordenes de dinero REAL de forma autonoma."
+    },
+    {
+      "ts": "2026-06-22T09:17:20.906410+00:00",
+      "modo": "pre-apertura",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "nota": "pre-open scan; EW inaccesible; FDX flagged watch",
+      "vix": null
     }
   ],
   "momentum_15m": {
@@ -18421,25 +18447,7 @@
       "ts": "14:15"
     }
   },
-  "sentinel_signals": [
-    {
-      "ticker": "CIEN",
-      "score": 4.5,
-      "tipo": "earnings_ew",
-      "asimetria": 6.12,
-      "earnings_fecha": "2026-06-04",
-      "earnings_timing": "pre-market",
-      "razon": "whisper=1.56 cons=1.47 asim=+6.1%",
-      "ts_detected": "2026-06-04T09:15:47.633714+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-pre-apertura",
-      "outcome": "NO_EJECUTADO_score_bajo_acierto_confirmado",
-      "outcome_detail": "CIEN reportó BMO 6/4: gap -10.96% open vs prev_close, last -19.36% intraday. Sentinel score 4.5 < 8.5 → no entry. Si hubiera entrado, pérdida catastrófica. Refuerza valor del umbral.",
-      "precio_post_reporte": 500.26,
-      "cambio_post_pct": -19.36,
-      "ts_validado_outcome": "2026-06-04T14:33:51.734055+00:00"
-    }
-  ],
+  "sentinel_signals": [],
   "skip_analysis": {
     "semana_2026-05-04": {
       "SMCI": {
