@@ -135,46 +135,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "VFC: BEAT +100.0% (2026-05-20) OK",
-      "descripcion": "EPS actual=$0.0 vs whisper=$None vs cons=$-0.01. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "URBN: BEAT +16.1% (2026-05-20) OK",
-      "descripcion": "EPS actual=$1.3 vs whisper=$None vs cons=$1.12. AH=+0.8%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "IMVT: MISS -19.7% (2026-05-20)",
-      "descripcion": "EPS actual=$-0.73 vs whisper=$None vs cons=$-0.61. Rev YoY=None%.",
-      "accion_futura": "Revisar perfil de IMVT: guidance / deuda / sectorial.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-21",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ARCO: BEAT +54.5% (2026-05-20) OK",
-      "descripcion": "EPS actual=$0.17 vs whisper=$None vs cons=$0.11. AH=+0.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-05-22",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "BAH: BEAT +23.6% vs whisper (2026-05-22) OK",
-      "descripcion": "EPS=1.78 vs whisper=1.44 vs cons=1.32. Rev YoY=-6.4%. AH=-1.9%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parámetros actuales.",
-      "impacto_score": 0.2
-    },
-    {
       "fecha": "2026-05-22",
       "tipo": "BEAT_RESULTADO",
       "titulo": "GSL: beat marginal +4.5% vs whisper (2026-05-22)",
@@ -472,6 +432,15 @@
       "accion_correctiva": "Mantener vigilancia CCL al open; NO entrar FDX pre-earnings (regla overnight + guidance gap).",
       "tarea_afectada": "market-open-execution",
       "auto_generado": true,
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "titulo": "Validacion guidance-risk: CCL beat +20% EPS pero -4.9% por guidance flojo",
+      "descripcion": "CCL batio ($0.41 vs $0.34) rev record pero -4.9% por guidance Q3/FY bajo. Sistema NO entro (6.5<8.75)=acierto.",
+      "accion_correctiva": "Mantener penalizacion guidance_risk. En consenso unanime bullish (MU manana) cautela extra sell-the-news.",
+      "tarea_afectada": "pre-market-earnings-scan, post-market-review",
+      "auto_generado": false,
       "aplicada": true
     }
   ],
@@ -1548,16 +1517,23 @@
       "score": 3.0,
       "score_ajustado": 3.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_premarket",
       "earnings_fecha": "2026-06-23",
       "earnings_timing": "after-hours",
       "beat_rate_4q": 1.0,
       "eps_estimate": 5.95,
       "expira": "2026-06-23T20:00:00Z",
-      "notas": "Sentinel pre-apertura 2026-06-22. FDX reporta 6/23 AMC. Beat-rate 4/4 (+25.5/+17.2/+6.0/+4.6%). EarningsWhispers whisper/consensus NO accesible desde el entorno (old. inalcanzable, www. JS-render, /api/card devuelve PNG). Score parcial=3.0 (beat 2.0 + timing 1.0) sin bloque de asimetria. Pre-market scan 10:15 ET debe completar scoring.",
+      "notas": "Sentinel pre-apertura 2026-06-22. FDX reporta 6/23 AMC. Beat-rate 4/4 (+25.5/+17.2/+6.0/+4.6%). EarningsWhispers whisper/consensus NO accesible desde el entorno (old. inalcanzable, www. JS-render, /api/card devuelve PNG). Score parcial=3.0 (beat 2.0 + timing 1.0) sin bloque de asimetria. Pre-market scan 10:15 ET debe completar scoring. | RESULTADO 2026-06-23: beat, guidance FY27 +11.8%.",
       "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "eps_consenso": 5.95,
+      "batio_consenso": true,
+      "batio_whisper": null,
+      "reaccion_precio_1dia_pct": -3.5,
+      "guidance_resultado": "Bate top&bottom AH; FY27 EPS ~$22.04 (+11.8%); 1er Q post spin-off Freight",
+      "leccion": "FDX bate AH guidance solido. No entramos (vigilar). Reaccion AH pendiente.",
+      "decision_cowork": "NO ENTRADA — neutral (AH)"
     },
     {
       "ticker": "CCL",
@@ -1573,11 +1549,19 @@
       "stop_tipo": "ATR x2.5 ventana apertura (lección JNJ)",
       "sizing": "vigilar, no entrada automatica",
       "sector": "consumer_discretionary",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-23T16:27:12.447827Z",
       "score_macro_bonus": 1,
       "argumento": "CCL reporta ~9:15 ET. Asimetria whisper modesta ~+2% (ESP +1.94%), pero beat rate 4/4 ultimos Q. Rev est $6.69B (+5.7% YoY), EPS $0.34. Consumer-disc prioridad +1. Asimetria pequeña -> vigilar, confirmar con reaccion de apertura antes de decidir.",
-      "notas": "Score 6.5 < 7.5 umbral fuerte y < 8.75 umbral paper. Solo vigilancia."
+      "notas": "Score 6.5 < 7.5 umbral fuerte y < 8.75 umbral paper. Solo vigilancia. | RESULTADO 2026-06-23: beat pero -4.9% sell-the-news.",
+      "eps_real_reportado": 0.41,
+      "eps_consenso": 0.34,
+      "batio_consenso": true,
+      "batio_whisper": true,
+      "reaccion_precio_1dia_pct": -4.9,
+      "guidance_resultado": "Q3 $1.35 vs $1.42 + FY $2.22 vs $2.23 flojo",
+      "leccion": "Beat +20% EPS pero -4.9% sell-the-news por guidance. NO entrar (6.5<umbral)=acierto.",
+      "decision_cowork": "NO ENTRADA — ACIERTO"
     },
     {
       "ticker": "FDX",
@@ -1593,20 +1577,65 @@
       "stop_tipo": "N/A (riesgo gap AH)",
       "sizing": "no entrar",
       "sector": "industrials",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-23T16:27:12.447827Z",
       "score_macro_bonus": 1,
       "argumento": "FedEx fiscal Q4 reporta AH. Asimetria whisper +3.8% (Most Accurate $6.13 vs cons $5.91), beat 4/4Q, cerca de maximos 52sem, Network 2.0 + spin-off freight. PERO: reporta AH (no operable pre-open) y riesgo guidance-gap alto (lección NFLX). Industrials prioridad +1. Riesgo > recompensa para entrada pre-earnings.",
-      "notas": "Score 5.5. AH + guidance risk. No tomar posicion overnight (regla no_holdings_earnings_overnight)."
+      "notas": "Score 5.5. AH + guidance risk. No tomar posicion overnight (regla no_holdings_earnings_overnight). | RESULTADO 2026-06-23: beat, guidance FY27 +11.8%.",
+      "eps_consenso": 5.95,
+      "batio_consenso": true,
+      "batio_whisper": null,
+      "reaccion_precio_1dia_pct": -3.5,
+      "guidance_resultado": "Bate top&bottom AH; FY27 EPS ~$22.04 (+11.8%); 1er Q post spin-off Freight",
+      "leccion": "FDX bate AH guidance solido. No entramos (vigilar). Reaccion AH pendiente.",
+      "decision_cowork": "NO ENTRADA — neutral (AH)"
+    },
+    {
+      "ticker": "PAYX",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "fecha_deteccion": "2026-06-23",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-24",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "monitorear_apertura",
+      "ventana_entrada": "2026-06-24 09:40-10:30 ET",
+      "stop_tipo": "ATR×2.5 si se entrara",
+      "sizing": "n/a",
+      "sector": "financials",
+      "argumento": "Paychex Q4 EPS est $1.31, rev $1.61B. Negocio estable payroll, baja asimetria. Implica ~6% move. Financials +2 pero bajo-catalizador.",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-24T16:29:35.511713Z",
+      "score_macro_bonus": 2,
+      "notas": "No clears 8.75. Vigilar apertura."
+    },
+    {
+      "ticker": "MU",
+      "score": 6.0,
+      "score_ajustado": 4.0,
+      "fecha_deteccion": "2026-06-23",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-24",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilar_no_entrada",
+      "ventana_entrada": "N/A (AH)",
+      "stop_tipo": "n/a",
+      "sizing": "n/a",
+      "sector": "memory_chips",
+      "argumento": "Micron Q3 AH: consenso ~$19.95 EPS/$34.66B, HBM sold out, margen ~81%, Wall St unanime bullish. PERO sector memory(-1)/semis(-2) penalizado, selloff chips HOY, crowd unanime=riesgo sell-the-news (como CCL). AH no ejecutable a apertura.",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-25T00:29:35.511713Z",
+      "score_macro_bonus": -1,
+      "notas": "Catalizador grande pero alto riesgo. NO entrada. Observar reaccion."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-22",
+    "fecha_actualizacion": "2026-06-23",
     "semana": "2026-W23",
-    "regimen": "GEOPOLITICAL_RELIEF_RALLY",
-    "vix": 19.51,
+    "regimen": "RISK_OFF",
+    "vix": 19.5,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-22: Dia de rotacion. S&P500 -0.37% (7,472.79), Nasdaq -1.32% (26,166.60) arrastrado por tech; Dow +0.29% (+148pts) por value/defensivas. Alphabet -5% por fuga de talento AI -> presion sobre mega-cap tech. Conversaciones de paz US-Iran siguen en foco (sostienen el relief rally geopolitico). VIX 17.55 (+4.6%) — sigue bajo, sin estres. Sin datos macro mayores. Tono: rotacion desde tech hacia value/industrials/defensivas; mercado tranquilo a la espera de datos de inflacion.",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-23: Sell-off global en tecnologia y semiconductores — memory chips lideran caidas y disparan dudas sobre el trade de IA (nota BofA sobre posible subida de tipos + tumbado de Asia). Nasdaq -1.3% (26,166.6), S&P 500 -0.4% (7,472.79), VIX ~19.5. Rotacion tech->value continua (Russell 2000 record ayer). CCL bate Q2 (+20% EPS) pero CAE -4.9% por guidance flojo = sell-the-news. FedEx bate top&bottom AH, guidance FY27 +11.8%. Regimen GEOPOLITICAL_RELIEF_RALLY -> RISK_OFF (tech/semis). Manana: MU (AH, penalizado) y PAYX (pre). Sin posiciones — modo gestion.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1619,14 +1648,15 @@
       "WebSearch post-market 2026-06-13: VIX, earnings Mon 15-jun, economic calendar FOMC week",
       "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma).",
       "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana",
-      "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)"
+      "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)",
+      "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)"
     ],
     "sector_prioridades": {
       "defense": 0,
       "energy": -1,
-      "ai_infrastructure": 0,
+      "ai_infrastructure": -1,
       "memory_chips": -1,
-      "technology": 1,
+      "technology": 0,
       "industrials": 1,
       "financials": 2,
       "communication": 0,
@@ -1639,7 +1669,6 @@
       "semiconductors": -2
     },
     "sectores_a_vigilar_esta_semana": [
-      "technology",
       "industrials",
       "financials",
       "materials",
@@ -1650,6 +1679,7 @@
     ],
     "sectores_a_evitar_esta_semana": [
       "energy",
+      "ai_infrastructure",
       "memory_chips",
       "semiconductors"
     ],
@@ -1803,6 +1833,18 @@
           "industrials"
         ],
         "fuente": "Yahoo Finance/TheStreet/CNBC"
+      },
+      {
+        "fecha": "2026-06-23",
+        "evento": "Sell-off global tech/semis (memory chips); dudas trade IA (BofA+Asia). Nasdaq -1.3%, S&P -0.4%, VIX ~19.5",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "semiconductors",
+          "memory_chips",
+          "ai_infrastructure",
+          "technology"
+        ],
+        "fuente": "TheStreet/Yahoo"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7535,24 +7577,24 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-22",
+    "_ultima_actualizacion": "2026-06-23",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4548.02,
+      "equity_real_actual": 4548.0,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.02,
+      "pnl_total_real_dolares": 48.0,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 78.67,
-      "pnl_dia_real_dolares": 0.02,
-      "equity_paper_peak": 109380.24
+      "pnl_dia_paper_dolares": 75.46,
+      "pnl_dia_real_dolares": -0.01,
+      "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
       "operaciones_totales": 18,
@@ -7905,6 +7947,15 @@
         "equity_real": 4548.02,
         "pnl_dia_paper": 78.67,
         "vix": 17.55
+      },
+      {
+        "fecha": "2026-06-23",
+        "equity_paper": 109380.24,
+        "equity_real": 4548.0,
+        "pnl_dia_paper": 75.46,
+        "win_rate_acumulado": 36.8,
+        "operaciones_acumuladas": 19,
+        "vix": 19.5
       }
     ],
     "objetivos": {
@@ -12679,6 +12730,18 @@
       "trades_paper": [],
       "evento_clave": "Rotacion tech->value: Alphabet -5% (fuga talento AI), Nasdaq -1.3%, Dow +0.3%. VIX 17.55.",
       "leccion": "Dia sin posiciones ni señales fuertes. Manana CCL/FDX en vigilancia (scores 6.5/5.5, ninguno >=7.5)."
+    },
+    {
+      "fecha": "2026-06-23",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 75.46,
+      "variacion_pct": 0.07,
+      "vix": 19.5,
+      "regimen_macro": "RISK_OFF",
+      "trades_paper": [],
+      "evento_clave": "Sell-off global tech/semis reaviva dudas trade IA; Nasdaq -1.3%. CCL bate pero -4.9% sell-the-news.",
+      "leccion": "Beat sin guidance fuerte en nombre crowded = sell-the-news. NO entrar CCL fue acierto."
     }
   ],
   "alertas_criticas": [
@@ -14368,6 +14431,14 @@
       "mejoras_acumuladas": 19,
       "candidatos_activos": 2,
       "mejora_hoy": "Disciplina no-entrada validada (FDX AH/guidance)"
+    },
+    {
+      "fecha": "2026-06-23",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 19,
+      "candidatos_activos": 2,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Sin cambio parametros (sin trades). Leccion guidance-risk reforzada."
     }
   ],
   "motor_alpha_diario": {
