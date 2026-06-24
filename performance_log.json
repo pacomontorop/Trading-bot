@@ -135,21 +135,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-22",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "GSL: beat marginal +4.5% vs whisper (2026-05-22)",
-      "descripcion": "EPS=2.56 vs whisper=2.45. AH=+0.0%.",
-      "accion_futura": "Verificar gap post-earnings. Beat marginal no garantiza continuation."
-    },
-    {
-      "fecha": "2026-05-22",
-      "tipo": "SELL_THE_NEWS",
-      "titulo": "BAH: skip continuation (2026-05-22) — AH negativo (-1.9%) + revenue declining (-6.4% YoY) — sell-the-news débil pero contexto desfavorable",
-      "descripcion": "beat_whisper=+23.6%, beat_cons=+34.9%, AH=-1.9%, rev_yoy=-6.4%. A pesar de beat fuerte, mercado no confirma. Contexto: FY27 EPS $6.00-$6.35, Revenue $11.20-$11.70B (vs consensus $6.17 / $11.59B — soft revenue guide)",
-      "accion_futura": "Verificar pre-drift y guidance forward. Para BAH: revenue declining + AH negativo = no continuation.",
-      "impacto_score": -0.5
-    },
-    {
       "fecha": "2026-05-23",
       "tipo": "RESULTADO",
       "titulo": "BIDU: MISS -11.5% vs whisper/consensus",
@@ -442,6 +427,22 @@
       "tarea_afectada": "pre-market-earnings-scan, post-market-review",
       "auto_generado": false,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "titulo": "PAYX: beat marginal + guidance flojo = sell-the-news (acierto no entrar)",
+      "descripcion": "PAYX bate $1.32 vs $1.31 pero -2.3% pre-market por guidance FY27 debil (menor interest income). Confirma patron: nombres de baja asimetria con beat marginal caen si el guidance decepciona.",
+      "accion_correctiva": "Mantener filtro de asimetria minima 2.5%. No entrar nombres defensivos de bajo catalizador aunque batan consenso.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "titulo": "MU: blowout reivindica tesis IA-memoria pese a momentum negativo previo",
+      "descripcion": "MU cayo -14.5% en 5d por miedo a capex IA (nota BofA) y aun asi reporto rev $41.5B y guide Q4 $50B con HBM sold-out. El selloff macro previo no predijo el resultado fundamental.",
+      "accion_correctiva": "Para semis con HBM/AI sold-out y consenso bullish unanime, el momentum negativo pre-earnings por miedo macro NO debe descartar automaticamente; ponderar mas la fortaleza fundamental. Pero earnings AH no ejecutables a apertura siguen siendo no-entrada.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1604,10 +1605,18 @@
       "sizing": "n/a",
       "sector": "financials",
       "argumento": "Paychex Q4 EPS est $1.31, rev $1.61B. Negocio estable payroll, baja asimetria. Implica ~6% move. Financials +2 pero bajo-catalizador.",
-      "estado": "vigilar_cauteloso",
+      "estado": "descartado",
       "expira": "2026-06-24T16:29:35.511713Z",
       "score_macro_bonus": 2,
-      "notas": "No clears 8.75. Vigilar apertura."
+      "notas": "No clears 8.75. Vigilar apertura. | LOOP CERRADO 2026-06-24: beat marginal, cayo -2.3% por guidance. Sistema acerto al no entrar.",
+      "resultado_real": {
+        "eps_real": 1.32,
+        "eps_consenso": 1.31,
+        "batio_consenso": true,
+        "reaccion_1d_pct": -2.29,
+        "guidance": "FY27 flojo: rev +5-6%, menor interest income"
+      },
+      "leccion": "Bate por poco ($1.32 vs $1.31) pero -2.3% por guidance FY27 flojo. Baja asimetria + sell-the-news. No entrar fue ACIERTO."
     },
     {
       "ticker": "MU",
@@ -1623,10 +1632,20 @@
       "sizing": "n/a",
       "sector": "memory_chips",
       "argumento": "Micron Q3 AH: consenso ~$19.95 EPS/$34.66B, HBM sold out, margen ~81%, Wall St unanime bullish. PERO sector memory(-1)/semis(-2) penalizado, selloff chips HOY, crowd unanime=riesgo sell-the-news (como CCL). AH no ejecutable a apertura.",
-      "estado": "vigilar_cauteloso",
+      "estado": "descartado",
       "expira": "2026-06-25T00:29:35.511713Z",
       "score_macro_bonus": -1,
-      "notas": "Catalizador grande pero alto riesgo. NO entrada. Observar reaccion."
+      "notas": "Catalizador grande pero alto riesgo. NO entrada. Observar reaccion. | LOOP CERRADO 2026-06-24: blowout (+9% AH). Reactiva tesis IA-memoria -> ajuste sector_prioridades.",
+      "resultado_real": {
+        "eps_real": 25.11,
+        "eps_consenso": 20.6,
+        "rev_real": "41.46B",
+        "rev_consenso": "35.6B",
+        "guide_q4": "50B vs 42.9B",
+        "batio_consenso": true,
+        "reaccion_ah_pct": "+9% -> +3%"
+      },
+      "leccion": "Blowout masivo + guide enorme. +9% AH (fade a +3%). Sistema no entro (AH no ejecutable, momentum -14.5% pre-print, sector penalizado). Upside perdido pero entrar falling knife pre-earnings era alto riesgo."
     },
     {
       "ticker": "MKC",
@@ -1663,15 +1682,35 @@
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "fuente": "sentinel-preopen-websearch",
       "ts_creado": "2026-06-24T13:15:01.667233+00:00"
+    },
+    {
+      "ticker": "MKC",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-06-24",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-06-25",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "monitorear_apertura",
+      "ventana_entrada": "2026-06-25 09:40-10:30 ET",
+      "stop_tipo": "ATR×2.5 si se entrara (ventana pre-market)",
+      "sizing": "n/a",
+      "sector": "consumer_staples",
+      "score_macro_bonus": 1,
+      "argumento": "McCormick Q2 reporta 6:30 ET. EPS est ~$0.69-0.70, rev $1.9B (+14.4% YoY). Surprise medio 4Q +4.5%. Defensivo, baja asimetria, sin catalizador fuerte. Sector consumer_staples +1.",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-06-25T16:28:01.550945Z",
+      "notas": "Nombre defensivo de bajo catalizador. Solo monitorear, improbable que alcance umbral de entrada (min_signal 8.75)."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-23",
+    "fecha_actualizacion": "2026-06-24",
     "semana": "2026-W23",
-    "regimen": "RISK_OFF",
-    "vix": 19.5,
+    "regimen": "EARNINGS_SEASON_NORMAL",
+    "vix": 18.61,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-23: Sell-off global en tecnologia y semiconductores — memory chips lideran caidas y disparan dudas sobre el trade de IA (nota BofA sobre posible subida de tipos + tumbado de Asia). Nasdaq -1.3% (26,166.6), S&P 500 -0.4% (7,472.79), VIX ~19.5. Rotacion tech->value continua (Russell 2000 record ayer). CCL bate Q2 (+20% EPS) pero CAE -4.9% por guidance flojo = sell-the-news. FedEx bate top&bottom AH, guidance FY27 +11.8%. Regimen GEOPOLITICAL_RELIEF_RALLY -> RISK_OFF (tech/semis). Manana: MU (AH, penalizado) y PAYX (pre). Sin posiciones — modo gestion.",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-24: La presion vendedora en tech/semis se modera tras el desplome del martes. S&P -0.1%, Nasdaq -0.4%, Dow +0.3%. VIX baja a 18.61 (-4.5%) volviendo a zona normal. CATALIZADOR CLAVE: Micron (MU) reporta blowout AH — rev $41.46B vs $35.6B est, EPS $25.11 vs $20.60, y guidance Q4 de $50B (+/-1B) vs $42.9B est; HBM sold-out, margen ~81%. MU +9% AH (luego ~+3%). Esto contradice directamente la narrativa BofA de fin del trade IA y da alivio a memoria/semis para manana. Petroleo se desploma a minimos pre-guerra US-Iran. PAYX bate por poco pero -2.3% por guidance FY27 flojo (sell-the-news).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1685,13 +1724,14 @@
       "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma).",
       "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana",
       "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)",
-      "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)"
+      "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)",
+      "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)"
     ],
     "sector_prioridades": {
       "defense": 0,
       "energy": -1,
       "ai_infrastructure": -1,
-      "memory_chips": -1,
+      "memory_chips": 0,
       "technology": 0,
       "industrials": 1,
       "financials": 2,
@@ -1702,7 +1742,7 @@
       "consumer_staples": 1,
       "utilities": 1,
       "real_estate": 0,
-      "semiconductors": -2
+      "semiconductors": -1
     },
     "sectores_a_vigilar_esta_semana": [
       "industrials",
@@ -1716,7 +1756,6 @@
     "sectores_a_evitar_esta_semana": [
       "energy",
       "ai_infrastructure",
-      "memory_chips",
       "semiconductors"
     ],
     "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
@@ -1884,6 +1923,26 @@
           "technology"
         ],
         "fuente": "TheStreet/Yahoo"
+      },
+      {
+        "fecha": "2026-06-24",
+        "evento": "Micron blowout AH (rev $41.5B, guide Q4 $50B, HBM sold-out) reactiva tesis IA-memoria",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "memory_chips",
+          "semiconductors",
+          "ai_infrastructure"
+        ],
+        "fuente": "TheStreet/SEC 8-K"
+      },
+      {
+        "fecha": "2026-06-24",
+        "evento": "VIX -4.5% a 18.61; presion vendedora tech se modera tras rout del martes",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology"
+        ],
+        "fuente": "Yahoo Finance"
       }
     ],
     "macro_score_pm": -0.8,
@@ -1911,9 +1970,9 @@
     "sector_lider_pm": "xlv",
     "spy_chg_pm": -0.027837417827017635,
     "qqq_chg_pm": -1.0037531768895895,
-    "vix_pm": 18.44,
+    "vix_pm": 18.61,
     "ts_pm_actualizado": "2026-06-04T14:33:51.734055+00:00",
-    "evento_destacado_hoy": "Fed mantiene tipos (Warsh) + acuerdo paz EEUU-Iran; rally risk-on, VIX 18.44",
+    "evento_destacado_hoy": "MU blowout AH reactiva tesis IA-memoria; VIX a 18.61",
     "spy_intraday_pct": 0.34,
     "riesgo_macro_mañana": false,
     "notas_regimen": "US-Iran peace deal reabre Estrecho de Ormuz. Risk-on fuerte, petroleo cae. Pero FOMC mié 17-jun (decisión+SEP) limita nuevas entradas mitad de semana.",
@@ -7616,15 +7675,15 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-23",
+    "_ultima_actualizacion": "2026-06-24",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4548.0,
+      "equity_real_actual": 4547.98,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.0,
+      "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
@@ -7995,6 +8054,14 @@
         "win_rate_acumulado": 36.8,
         "operaciones_acumuladas": 19,
         "vix": 19.5
+      },
+      {
+        "fecha": "2026-06-24",
+        "equity_paper": 109380.24,
+        "equity_real": 4547.98,
+        "pnl_dia_paper": 73.4,
+        "operaciones_acumuladas": 22,
+        "vix": 18.61
       }
     ],
     "objetivos": {
@@ -12781,6 +12848,18 @@
       "trades_paper": [],
       "evento_clave": "Sell-off global tech/semis reaviva dudas trade IA; Nasdaq -1.3%. CCL bate pero -4.9% sell-the-news.",
       "leccion": "Beat sin guidance fuerte en nombre crowded = sell-the-news. NO entrar CCL fue acierto."
+    },
+    {
+      "fecha": "2026-06-24",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 73.4,
+      "variacion_pct": 0.07,
+      "vix": 18.61,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "MU blowout AH (rev $41.5B, guide $50B); VIX -4.5% a 18.61; selloff tech se modera; PAYX bate pero -2.3%.",
+      "leccion": "Beat marginal+guidance flojo (PAYX)=sell-the-news. MU reivindica tesis IA-memoria pese a momentum negativo previo."
     }
   ],
   "alertas_criticas": [
@@ -14478,6 +14557,13 @@
       "candidatos_activos": 2,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Sin cambio parametros (sin trades). Leccion guidance-risk reforzada."
+    },
+    {
+      "fecha": "2026-06-24",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 19,
+      "candidatos_activos": 1,
+      "mejora_hoy": "Ajuste sector_prioridades (memory_chips -1->0, semis -2->-1) por blowout MU; 2 loops cerrados (PAYX/MU)."
     }
   ],
   "motor_alpha_diario": {
@@ -20002,6 +20088,12 @@
       "fecha": "2026-06-22",
       "score_sistema": 10.0,
       "resumen": "Sin posiciones que gestionar. macro_context actualizado, KBH loop cerrado, 2 candidatos vigilancia para manana.",
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-06-24",
+      "score_sistema": 9.0,
+      "resumen": "Dia sin posiciones abiertas ni trades. Cuentas verificadas, loops PAYX/MU cerrados, macro actualizado, 1 candidato (MKC) en vigilancia para manana.",
       "tareas_con_issues": []
     }
   ]
