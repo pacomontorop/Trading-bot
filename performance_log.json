@@ -1627,6 +1627,42 @@
       "expira": "2026-06-25T00:29:35.511713Z",
       "score_macro_bonus": -1,
       "notas": "Catalizador grande pero alto riesgo. NO entrada. Observar reaccion."
+    },
+    {
+      "ticker": "MKC",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "score_macro_bonus": 0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "tipo": "earnings_ew",
+      "earnings_fecha": "2026-06-25",
+      "earnings_timing": "pre-market",
+      "expira": "2026-06-25T20:00:00Z",
+      "notas": "McCormick reporta BMO manana 8:00 ET. Consumer staples defensivo, baja vol. Revisar en pre-market scan.",
+      "detectado_por": "sentinel-preopen",
+      "fecha_deteccion": "2026-06-24",
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fuente": "sentinel-preopen-websearch",
+      "ts_creado": "2026-06-24T13:15:01.667222+00:00"
+    },
+    {
+      "ticker": "WBA",
+      "score": 3.5,
+      "score_ajustado": 3.5,
+      "score_macro_bonus": 0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "tipo": "earnings_ew",
+      "earnings_fecha": "2026-06-25",
+      "earnings_timing": "pre-market",
+      "expira": "2026-06-25T20:00:00Z",
+      "notas": "Walgreens reporta BMO manana. Negocio en declive - candidato EW debil. Baja prioridad.",
+      "detectado_por": "sentinel-preopen",
+      "fecha_deteccion": "2026-06-24",
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fuente": "sentinel-preopen-websearch",
+      "ts_creado": "2026-06-24T13:15:01.667233+00:00"
     }
   ],
   "macro_context": {
@@ -1689,10 +1725,13 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-06-23T15:14",
-      "nivel": "alerta",
+      "timestamp": "2026-06-24T09:15",
+      "nivel": "normal",
       "shocks": [],
-      "bloquear_entradas": false
+      "bloquear_entradas": false,
+      "modo": "pre-open-scan",
+      "nota_macro": "Pre-apertura 09:1x ET. Futuros SPX al alza con earnings de Micron en foco (TheStreet). EW/yfinance no accesibles en sandbox -> scan via WebSearch. Candidatos preview pendientes de scoring completo en pre-market scan 10:15 ET.",
+      "evento_destacado_hoy": "Micron (MU) reporta AH hoy - posible continuation play manana"
     },
     "macro_score": -1.3,
     "macro_nivel": "alerta",
@@ -18112,6 +18151,15 @@
       "real_writes": "BLOCKED",
       "ew": "unreachable",
       "data": "yfinance_batch"
+    },
+    {
+      "ts": "2026-06-24T09:15:01.667183+00:00",
+      "modo": "pre-open",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 2,
+      "fuente": "websearch",
+      "nota": "EW/yf bloqueados en sandbox"
     }
   ],
   "momentum_15m": {
@@ -18658,7 +18706,52 @@
       "ts": "14:15"
     }
   },
-  "sentinel_signals": [],
+  "sentinel_signals": [
+    {
+      "ticker": "MU",
+      "score": 5.5,
+      "tipo": "post_earnings_continuation_watch",
+      "earnings_fecha": "2026-06-24",
+      "earnings_timing": "after-hours",
+      "razon": "Headline del dia: Micron reporta AH HOY. Setup muy alcista (27 analistas Strong Buy, HBM sold-out, GM>80% esperado, beat",
+      "ts_detected": "2026-06-24T09:15:01.667183+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-scan"
+    },
+    {
+      "ticker": "PAYX",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "earnings_fecha": "2026-06-24",
+      "earnings_timing": "after-hours",
+      "razon": "Paychex reporta AH HOY. Baja volatilidad. Revisar scoring completo en pre-market scan.",
+      "ts_detected": "2026-06-24T09:15:01.667183+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-scan"
+    },
+    {
+      "ticker": "MKC",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "earnings_fecha": "2026-06-25",
+      "earnings_timing": "pre-market",
+      "razon": "McCormick reporta BMO manana 8:00 ET. Consumer staples defensivo, baja vol. Revisar en pre-market scan.",
+      "ts_detected": "2026-06-24T09:15:01.667183+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-scan"
+    },
+    {
+      "ticker": "WBA",
+      "score": 3.5,
+      "tipo": "earnings_ew",
+      "earnings_fecha": "2026-06-25",
+      "earnings_timing": "pre-market",
+      "razon": "Walgreens reporta BMO manana. Negocio en declive - candidato EW debil. Baja prioridad.",
+      "ts_detected": "2026-06-24T09:15:01.667183+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-scan"
+    }
+  ],
   "skip_analysis": {
     "semana_2026-05-04": {
       "SMCI": {
