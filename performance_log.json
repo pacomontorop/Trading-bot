@@ -1652,31 +1652,32 @@
       "score": 4.0,
       "score_ajustado": 4.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_premarket",
       "tipo": "earnings_ew",
       "earnings_fecha": "2026-06-25",
       "earnings_timing": "pre-market",
       "expira": "2026-06-25T20:00:00Z",
-      "notas": "McCormick reporta BMO manana 8:00 ET. Consumer staples defensivo, baja vol. Revisar en pre-market scan.",
+      "notas": "McCormick reporta BMO manana 8:00 ET. Consumer staples defensivo, baja vol. Revisar en pre-market scan. | RESULTADO 2026-06-25: MKC adj EPS $0.80 vs ~$0.70 esp (BEAT +14%), net sales +16.7%, organico +1.7%, reafirma guidance FY26. Defensivo solido pero score bajo (no operado).",
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-06-24",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "fuente": "sentinel-preopen-websearch",
-      "ts_creado": "2026-06-24T13:15:01.667222+00:00"
+      "ts_creado": "2026-06-24T13:15:01.667222+00:00",
+      "batio_consenso": true
     },
     {
       "ticker": "WBA",
       "score": 3.5,
       "score_ajustado": 3.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_premarket",
       "tipo": "earnings_ew",
       "earnings_fecha": "2026-06-25",
       "earnings_timing": "pre-market",
       "expira": "2026-06-25T20:00:00Z",
-      "notas": "Walgreens reporta BMO manana. Negocio en declive - candidato EW debil. Baja prioridad.",
+      "notas": "Walgreens reporta BMO manana. Negocio en declive - candidato EW debil. Baja prioridad. | CIERRE LOOP 2026-06-25: WBA sin reporte publico claro (Walgreens privatizada por Sycamore en 2025) — candidato debil descartado correctamente.",
       "detectado_por": "sentinel-preopen",
       "fecha_deteccion": "2026-06-24",
       "ventana_entrada": "10:15 ET (pre-market scan)",
@@ -1699,18 +1700,47 @@
       "sector": "consumer_staples",
       "score_macro_bonus": 1,
       "argumento": "McCormick Q2 reporta 6:30 ET. EPS est ~$0.69-0.70, rev $1.9B (+14.4% YoY). Surprise medio 4Q +4.5%. Defensivo, baja asimetria, sin catalizador fuerte. Sector consumer_staples +1.",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-06-25T16:28:01.550945Z",
-      "notas": "Nombre defensivo de bajo catalizador. Solo monitorear, improbable que alcance umbral de entrada (min_signal 8.75)."
+      "notas": "Nombre defensivo de bajo catalizador. Solo monitorear, improbable que alcance umbral de entrada (min_signal 8.75). | RESULTADO 2026-06-25: MKC adj EPS $0.80 vs ~$0.70 esp (BEAT +14%), net sales +16.7%, organico +1.7%, reafirma guidance FY26. Defensivo solido pero score bajo (no operado).",
+      "batio_consenso": true
+    },
+    {
+      "ticker": "APOG",
+      "score": 4.5,
+      "earnings_fecha": "2026-06-26",
+      "earnings_timing": "pre-market",
+      "sector": "industrials",
+      "argumento": "Apogee Enterprises (vidrio arquitectonico). Small-cap, cobertura fina, sin asimetria whisper accesible. Beat-rate historico mixto. No alcanza umbral.",
+      "notas": "fuente: WebSearch earnings calendar Fri 26. Sin datos EW premium.",
+      "estado": "descartado",
+      "detectado_por": "post-market-review",
+      "fecha_deteccion": "2026-06-25",
+      "expira": "2026-06-26T16:57:17.972980Z",
+      "score_macro_bonus": 1
+    },
+    {
+      "ticker": "CNVS",
+      "score": 3.5,
+      "earnings_fecha": "2026-06-26",
+      "earnings_timing": "pre-market",
+      "sector": "communication",
+      "argumento": "Micro-cap, alta volatilidad/baja liquidez, sin senal de calidad. Descartar.",
+      "notas": "fuente: WebSearch earnings calendar Fri 26.",
+      "estado": "descartado",
+      "detectado_por": "post-market-review",
+      "fecha_deteccion": "2026-06-25",
+      "expira": "2026-06-26T16:57:17.972980Z",
+      "score_macro_bonus": 0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-24",
+    "fecha_actualizacion": "2026-06-25",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 18.61,
+    "vix": 18.9,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-24: La presion vendedora en tech/semis se modera tras el desplome del martes. S&P -0.1%, Nasdaq -0.4%, Dow +0.3%. VIX baja a 18.61 (-4.5%) volviendo a zona normal. CATALIZADOR CLAVE: Micron (MU) reporta blowout AH — rev $41.46B vs $35.6B est, EPS $25.11 vs $20.60, y guidance Q4 de $50B (+/-1B) vs $42.9B est; HBM sold-out, margen ~81%. MU +9% AH (luego ~+3%). Esto contradice directamente la narrativa BofA de fin del trade IA y da alivio a memoria/semis para manana. Petroleo se desploma a minimos pre-guerra US-Iran. PAYX bate por poco pero -2.3% por guidance FY27 flojo (sell-the-news).",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-25: Cierre mixto. Dow +0.14% (51,920.62), S&P -0.01% (7,357.49), Nasdaq -0.46% (25,358.60). PCE de mayo salio caliente reavivando dudas sobre ritmo de recortes Fed. Apple y Microsoft anunciaron subidas de precio (iPhone, Xbox) que arrastraron a los Mag7. Micron (MU) extendio su rally post-earnings (blowout AH del 24-jun, guide $50B) sosteniendo la tesis IA-memoria. Energia, communication y tech debiles; Dow y Russell 2000 al alza (rotacion value/small-cap). VIX ~18.9, regimen earnings-season normal sin estres.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1725,7 +1755,8 @@
       "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana",
       "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)",
       "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)",
-      "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)"
+      "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)",
+      "WebSearch post-market 2026-06-25: market close + MKC/WBA results + Fri 26 calendar"
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -1943,6 +1974,17 @@
           "technology"
         ],
         "fuente": "Yahoo Finance"
+      },
+      {
+        "fecha": "2026-06-25",
+        "evento": "PCE mayo caliente + Apple/MSFT suben precios; Mag7 cae, Dow +0.14% por rotacion value",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology",
+          "communication",
+          "energy"
+        ],
+        "fuente": "Yahoo Finance/TheStreet"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7675,13 +7717,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-24",
+    "_ultima_actualizacion": "2026-06-25",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4547.98,
+      "equity_real_actual": 4547.97,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -7695,22 +7737,22 @@
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
-      "operaciones_totales": 18,
-      "operaciones_cerradas": 19,
-      "operaciones_ganadoras": 7,
-      "operaciones_perdedoras": 12,
-      "operaciones_break_even": 0,
-      "win_rate_pct": 36.8,
-      "avg_r_logrado": -0.01,
-      "profit_factor": 3.7,
-      "avg_pnl_por_operacion_dolares": 116.66,
+      "operaciones_totales": 22,
+      "operaciones_cerradas": 22,
+      "operaciones_ganadoras": 9,
+      "operaciones_perdedoras": 11,
+      "operaciones_break_even": 2,
+      "win_rate_pct": 40.9,
+      "avg_r_logrado": -0.004,
+      "profit_factor": 2.23,
+      "avg_pnl_por_operacion_dolares": 87.26,
       "avg_hold_time_dias": null,
-      "mayor_ganancia_dolares": 1264.65,
-      "mayor_perdida_dolares": -182.9,
+      "mayor_ganancia_dolares": 1134.15,
+      "mayor_perdida_dolares": -904.8,
       "racha_ganadora_actual": 0,
       "racha_perdedora_actual": 0,
-      "racha_ganadora_max": 0,
-      "racha_perdedora_max": 0,
+      "racha_ganadora_max": 5,
+      "racha_perdedora_max": 5,
       "_nota": "Se actualiza al cerrar cada operación en post-market-review PASO 5B",
       "operaciones_abiertas_actuales": 0,
       "_comentario_W17": "MSFT entrada 24-abr abierta — earnings 29-abr AH (W18). KPIs Cowork pendientes hasta cierre.",
@@ -8062,6 +8104,16 @@
         "pnl_dia_paper": 73.4,
         "operaciones_acumuladas": 22,
         "vix": 18.61
+      },
+      {
+        "fecha": "2026-06-25",
+        "equity_paper": 109380.24,
+        "equity_real": 4547.97,
+        "pnl_dia_paper": 71.37,
+        "win_rate_acumulado": 40.9,
+        "avg_r_acumulado": -0.004,
+        "operaciones_acumuladas": 22,
+        "vix": 18.9
       }
     ],
     "objetivos": {
@@ -12860,6 +12912,18 @@
       "trades_paper": [],
       "evento_clave": "MU blowout AH (rev $41.5B, guide $50B); VIX -4.5% a 18.61; selloff tech se modera; PAYX bate pero -2.3%.",
       "leccion": "Beat marginal+guidance flojo (PAYX)=sell-the-news. MU reivindica tesis IA-memoria pese a momentum negativo previo."
+    },
+    {
+      "fecha": "2026-06-25",
+      "dia": "Thursday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 71.37,
+      "variacion_pct": 0.07,
+      "vix": 18.9,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "PCE mayo caliente + Apple/MSFT suben precios arrastran Mag7; Dow +0.14% por rotacion value, Nasdaq -0.46%. MU extiende rally.",
+      "leccion": "Dia sin posiciones ni senales. MKC beat solido (defensivo, no operado). Viernes 26 calendario earnings muy escaso — modo gestion."
     }
   ],
   "alertas_criticas": [
@@ -13074,6 +13138,15 @@
       "evidencia": "FDX score 5.5, reporta AH, riesgo guidance alto tras spin-off freight.",
       "archivo_modificado": "performance_log",
       "impacto_esperado": "Evita entradas overnight de alto riesgo.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-06-25",
+      "tipo": "regla_anadida",
+      "descripcion": "Adaptado calculo KPIs a esquema real del log (pnl_dolares/pnl_r en vez de pnl_pct/pnl_abs inexistentes) para evitar win_rate=0 espurio.",
+      "evidencia": "PASO 5B referenciaba campos ausentes; recomputado con n=22 ops, win_rate=40.9%.",
+      "archivo_modificado": "performance_log (kpis)",
+      "impacto_esperado": "KPIs fiables para auto-calibracion futura.",
       "implementada": true
     }
   ],
@@ -14564,6 +14637,14 @@
       "mejoras_acumuladas": 19,
       "candidatos_activos": 1,
       "mejora_hoy": "Ajuste sector_prioridades (memory_chips -1->0, semis -2->-1) por blowout MU; 2 loops cerrados (PAYX/MU)."
+    },
+    {
+      "fecha": "2026-06-25",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 20,
+      "candidatos_activos": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Adaptado calculo KPIs a esquema real del log (pnl_dolares/pnl_r en vez de pnl_pct/pnl_abs inexistentes) para evitar win_rate=0 espurio."
     }
   ],
   "motor_alpha_diario": {
