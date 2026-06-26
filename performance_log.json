@@ -135,92 +135,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "BIDU: MISS -11.5% vs whisper/consensus",
-      "descripcion": "Whisper 2.0 vs actual 1.77 (-11.5%). Revisar criterios.",
-      "accion_futura": "Penalizar perfiles similares a BIDU"
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "FATN: BEAT +129.4% — sistema confirmado",
-      "descripcion": "Actual 0.39 vs whisper None (+129.4%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "DUOT: MISS -400.0% vs whisper/consensus",
-      "descripcion": "Whisper None vs actual -0.15 (-400.0%). Revisar criterios.",
-      "accion_futura": "Penalizar perfiles similares a DUOT"
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "BEKE: BEAT +40.0% — sistema confirmado",
-      "descripcion": "Actual 0.21 vs whisper 0.15 (+40.0%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "CRNT: MISS -100.0% vs whisper/consensus",
-      "descripcion": "Whisper None vs actual 0.0 (-100.0%). Revisar criterios.",
-      "accion_futura": "Penalizar perfiles similares a CRNT"
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "NVDA: BEAT +5.1% — sistema confirmado",
-      "descripcion": "Actual 1.87 vs whisper 1.78 (+5.1%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "GLNG: BEAT +58.1% — sistema confirmado",
-      "descripcion": "Actual 0.49 vs whisper None (+58.1%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "PERI: MISS -280.0% vs whisper/consensus",
-      "descripcion": "Whisper 0.05 vs actual -0.09 (-280.0%). Revisar criterios.",
-      "accion_futura": "Penalizar perfiles similares a PERI"
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "LION: BEAT +93.3% — sistema confirmado",
-      "descripcion": "Actual 0.29 vs whisper None (+93.3%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "TTWO: MISS -143.2% vs whisper/consensus",
-      "descripcion": "Whisper 0.74 vs actual -0.32 (-143.2%). Revisar criterios.",
-      "accion_futura": "Penalizar perfiles similares a TTWO"
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "RESULTADO",
-      "titulo": "BAH: BEAT +23.6% — sistema confirmado",
-      "descripcion": "Actual 1.78 vs whisper 1.44 (+23.6%)."
-    },
-    {
-      "fecha": "2026-05-23",
-      "tipo": "WEEKLY_REVIEW",
-      "titulo": "W21: Pre-close vendiendo signals tier-1 antes del beat",
-      "descripcion": "NVDA: bot vendió 10 acciones a $224.77 el 5/20 antes del earnings AH. NVDA beat masivo ($81.6B revenue vs $79.2B est, EPS $1.87 vs $1.78). Polymarket indicaba 90% prob beat. Pre-close regla genérica nos costó la ganancia post-beat (~$50 perdido por 10 sh).",
-      "accion_futura": "Considerar excepción a pre-close para: (1) score_ew ≥ 4.5, (2) anticipation prob > 85%, (3) tier-1 AI infrastructure stocks. Crear BIQ-006."
-    },
-    {
-      "fecha": "2026-05-28",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "P: beat cons=+800.0% confirmado AH=+8.6% (2026-05-28)",
-      "descripcion": "Mercado confirmo beat con AH fuerte. Whisper=no.",
-      "accion_futura": "P: AH confirmacion es senal continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
       "fecha": "2026-05-28",
       "tipo": "MISS_RESULTADO",
       "titulo": "MNRO: MISS -220.0% vs whisper (2026-05-28)",
@@ -459,6 +373,15 @@
       "descripcion": "Mercado confirmo beat con AH fuerte. EPS=24.89 vs cons=20.98. Whisper=si.",
       "accion_futura": "MU: AH confirmacion = senal continuation.",
       "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-06-26",
+      "titulo": "Post-earnings continuation NO siempre continua — confirmar fuerza sectorial",
+      "descripcion": "MU continuation (score 8.5, beat +12% vs whisper, +13% AH) NO fue ejecutada en apertura 26-jun y MU cayo -2.5% el dia de entrada por selloff de chips. La penalizacion de sector memory(0)/semis(-1) suprimio correctamente la entrada. El beat masivo no garantiza continuation si el sector esta en risk-off.",
+      "accion_correctiva": "Para post_earnings_continuation, exigir que el sector NO este penalizado (>=0) Y que el ticker no haya ya faded >50% del pop AH. Si chips/sector venden, descartar continuation aunque score>8.",
+      "tarea_afectada": "market-open-execution | pre-market-earnings-scan",
+      "auto_generado": true,
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1755,7 +1678,7 @@
       "score_ajustado": 8.5,
       "score_override": 8.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-06-25",
       "accion_recomendada": "entrar_apertura",
@@ -1774,21 +1697,46 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-06-25",
       "expira": "2026-06-26T21:00:00Z",
-      "notas": "Post-earnings continuation MU. Beat +12.4% vs whisper. Earnings email 2026-06-24. Entrar apertura 2026-06-26. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3d.",
+      "notas": "Post-earnings continuation MU. Beat +12.4% vs whisper. Earnings email 2026-06-24. Entrar apertura 2026-06-26. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3d. | LOOP CERRADO 2026-06-26: continuation NO ejecutada en apertura. MU -2.5% hoy en selloff de chips (habia faded de +16% a +flat). SKIP CORRECTO: penalizacion sector memory(0)/semis(-1) + risk-off chips evito entrar en el fade. No fue oportunidad perdida — fue disciplina validada.",
       "asimetria_pct": 7.421999999999999,
       "ts_creado": "2026-06-25T21:03:04.266607+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_resolucion": "2026-06-26",
+      "reaccion_post_continuation_pct": -2.5,
+      "leccion": "Post-earnings continuation tras beat masivo NO siempre continua: MU fade -2.5% el dia de entrada por selloff sectorial. La penalizacion de sector hizo bien su trabajo al suprimir la entrada. Continuation plays necesitan confirmacion de fuerza sectorial, no solo beat."
+    },
+    {
+      "ticker": "PRGS",
+      "score": 5.0,
+      "score_ajustado": 5.0,
+      "score_total": 5.0,
+      "fecha_deteccion": "2026-06-26",
+      "detectado_por": "post-market-review-viernes-especial",
+      "earnings_fecha": "2026-06-30",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "vigilar_no_entrada",
+      "ventana_entrada": "N/A (AH martes) — observar reaccion miercoles 1-jul apertura",
+      "stop_tipo": "n/a",
+      "sizing": "n/a",
+      "sector": "technology",
+      "argumento": "Progress Software Q2 FY26 AH martes 30-jun. Cons EPS $1.49 (vs $1.40 yoy), rev $242.7M. Software small-cap. Analistas BAJARON targets pre-earnings (riesgo guidance miss tipo NFLX). AH no ejecutable a apertura. Beat-rate/whisper no confirmados via EW (sin sesion browser).",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-01T18:00:00Z",
+      "score_macro_bonus": 0,
+      "notas": "Viernes-especial: unico nombre identificable semana proxima. Riesgo guidance. NO entrada — observar.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-25",
+    "fecha_actualizacion": "2026-06-26",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 18.9,
+    "vix": 18.89,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-25: Cierre mixto. Dow +0.14% (51,920.62), S&P -0.01% (7,357.49), Nasdaq -0.46% (25,358.60). PCE de mayo salio caliente reavivando dudas sobre ritmo de recortes Fed. Apple y Microsoft anunciaron subidas de precio (iPhone, Xbox) que arrastraron a los Mag7. Micron (MU) extendio su rally post-earnings (blowout AH del 24-jun, guide $50B) sosteniendo la tesis IA-memoria. Energia, communication y tech debiles; Dow y Russell 2000 al alza (rotacion value/small-cap). VIX ~18.9, regimen earnings-season normal sin estres.",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-26 (viernes): Mercado plano. S&P 500 -0.01% (7,357.49), VIX 18.89 (+1.4%). Fuerte rotacion: Industrials (XLI) +2.2% lideran; debiles Consumer Discretionary -1.8%, Staples -1.1%, Communication -1.0%. Selloff en semiconductores: Micron (MU) -2.5% desvaneciendo el rally post-earnings (habia subido ~16% el dia previo tras blowout Q3 de $41.5B rev / $25.11 EPS, beat +24% y guide Q4 a $50B). El fade de MU pese al beat masivo confirma cautela en chips/memory. Semana proxima holiday-shortened: mercado CERRADO viernes 3-jul (4-jul cae sabado); NFP de junio probable jueves 2-jul. Calendario earnings muy escaso (transicion entre Q1 y Q2 season).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1804,7 +1752,8 @@
       "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)",
       "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)",
       "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)",
-      "WebSearch post-market 2026-06-25: market close + MKC/WBA results + Fri 26 calendar"
+      "WebSearch post-market 2026-06-25: market close + MKC/WBA results + Fri 26 calendar",
+      "WebSearch post-market 2026-06-26: VIX/SPX, MU reaccion, earnings semana 29-jun, calendario macro"
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -2032,6 +1981,18 @@
           "energy"
         ],
         "fuente": "Yahoo Finance/TheStreet"
+      },
+      {
+        "fecha": "2026-06-26",
+        "evento": "Industrials +2.2% lideran; chips venden (MU -2.5% fade post-beat). Mercado plano, VIX 18.89.",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "industrials",
+          "semiconductors",
+          "memory_chips",
+          "consumer_discretionary"
+        ],
+        "fuente": "Yahoo Finance / WebSearch"
       }
     ],
     "macro_score_pm": -0.8,
@@ -2083,7 +2044,20 @@
     "spy_day": -1.29,
     "narrativa_sentinel": "Tech-led selloff (chip rout: MU -13.6%, NVDA -3.7%, AI-trade reassessment, higher-for-longer). Oil falling on Iran de-escalation (no oil spike). VIX 19.5 (+12.7%) elevado pero <28. No flash-crash 30m. Nivel ALERTA.",
     "spy_chg": 0.2,
-    "nota_web": "VIX~18.9; rotacion fuera de tech; Iran/Hormuz de-escalado; MU reporto beat"
+    "nota_web": "VIX~18.9; rotacion fuera de tech; Iran/Hormuz de-escalado; MU reporto beat",
+    "preparacion_semana": "semana del 2026-06-29 (holiday-shortened, mercado CERRADO viernes 3-jul)",
+    "top_candidatos_lunes": [],
+    "candidatos_vigilancia_semana": [
+      "PRGS (AH 30-jun, riesgo guidance)"
+    ],
+    "preparado_en": "2026-06-26",
+    "num_candidatos_semana": 1,
+    "eventos_macro_semana": [
+      "NFP junio: probable jueves 2-jul (semana holiday-shortened)",
+      "Mercado CERRADO viernes 3-jul (Independence Day observado)",
+      "GBX (Greenbrier) Q3 AH miercoles 1-jul",
+      "Calendario earnings muy escaso — transicion Q1->Q2 season"
+    ]
   },
   "operaciones_crypto": [
     {
@@ -7766,13 +7740,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-25",
+    "_ultima_actualizacion": "2026-06-26",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4547.97,
+      "equity_real_actual": 4547.98,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -7781,8 +7755,8 @@
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 75.46,
-      "pnl_dia_real_dolares": -0.01,
+      "pnl_dia_paper_dolares": 66.66,
+      "pnl_dia_real_dolares": 0.01,
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
@@ -7962,8 +7936,8 @@
       "telegram_mensajes_enviados": 0,
       "telegram_fallos": 0,
       "alpaca_api_errores_semana": 0,
-      "gmail_mcp_disponible": true,
-      "chrome_mcp_disponible": true
+      "gmail_mcp_disponible": false,
+      "chrome_mcp_disponible": false
     },
     "historico_semanal": [
       {
@@ -8163,6 +8137,16 @@
         "avg_r_acumulado": -0.004,
         "operaciones_acumuladas": 22,
         "vix": 18.9
+      },
+      {
+        "fecha": "2026-06-26",
+        "equity_paper": 109380.24,
+        "equity_real": 4547.98,
+        "pnl_dia_paper": 66.66,
+        "win_rate_acumulado": 40.9,
+        "avg_r_acumulado": -0.004,
+        "operaciones_acumuladas": 22,
+        "vix": 18.89
       }
     ],
     "objetivos": {
@@ -12973,6 +12957,18 @@
       "trades_paper": [],
       "evento_clave": "PCE mayo caliente + Apple/MSFT suben precios arrastran Mag7; Dow +0.14% por rotacion value, Nasdaq -0.46%. MU extiende rally.",
       "leccion": "Dia sin posiciones ni senales. MKC beat solido (defensivo, no operado). Viernes 26 calendario earnings muy escaso — modo gestion."
+    },
+    {
+      "fecha": "2026-06-26",
+      "dia": "Friday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 66.66,
+      "variacion_pct": 0.06,
+      "vix": 18.89,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "MU -2.5% fade post-beat en selloff de chips; Industrials +2.2% lideran. Mercado plano.",
+      "leccion": "Skip de MU continuation validado (-2.5% hoy). Semana proxima holiday-shortened y earnings escasos."
     }
   ],
   "alertas_criticas": [
@@ -13197,6 +13193,15 @@
       "archivo_modificado": "performance_log (kpis)",
       "impacto_esperado": "KPIs fiables para auto-calibracion futura.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-06-26",
+      "tipo": "regla_anadida",
+      "descripcion": "Filtro continuation: descartar post_earnings_continuation si sector_prioridad<0 o el pop AH ya faded >50%. Evidencia: MU 26-jun (-2.5% el dia de entrada pese a beat +12%).",
+      "evidencia": "MU continuation expirada sin ejecutar -> MU -2.5% hoy en selloff chips. Skip fue correcto.",
+      "archivo_modificado": "performance_log (lecciones_sistema) — documentada para market-open-execution",
+      "impacto_esperado": "Menos entradas en continuations que fallan por debilidad sectorial; mejor seleccion.",
+      "implementada": false
     }
   ],
   "industry_intelligence": {
@@ -14035,6 +14040,14 @@
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": [],
           "nota": "Paper 0 posiciones. Real: solo BTCUSD dust (qty 0.0000083, ~$0.52, -46.5% pero importe negligible, sin stop)."
+        },
+        {
+          "fecha": "2026-06-26",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [],
+          "nota": "Paper 0 posiciones equity. Real: solo dust BTCUSD ~$0.49 (no accionable)."
         }
       ]
     },
@@ -14694,6 +14707,16 @@
       "candidatos_activos": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Adaptado calculo KPIs a esquema real del log (pnl_dolares/pnl_r en vez de pnl_pct/pnl_abs inexistentes) para evitar win_rate=0 espurio."
+    },
+    {
+      "fecha": "2026-06-26",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 21,
+      "candidatos_activos": 1,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "score_sistema": 8.8,
+      "mejora_hoy": "Filtro continuation: descartar post_earnings_continuation si sector_prioridad<0 o el pop AH ya faded >50%. Evidencia: MU"
     }
   ],
   "motor_alpha_diario": {
@@ -20284,6 +20307,43 @@
       "fecha": "2026-06-24",
       "score_sistema": 9.0,
       "resumen": "Dia sin posiciones abiertas ni trades. Cuentas verificadas, loops PAYX/MU cerrados, macro actualizado, 1 candidato (MKC) en vigilancia para manana.",
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-06-26",
+      "score_sistema": 8.8,
+      "tareas": {
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "nota": "MU continuation NO ejecutada — CORRECTO (sector penalizado, MU -2.5%). Sin missed opp."
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 7,
+          "nota": "Calendario escaso semana proxima; PRGS identificado (vigilancia). Sin candidatos fuertes."
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 8,
+          "nota": "Sin posiciones que vigilar; mercado plano."
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "nota": "Sin posiciones con earnings AH que cerrar."
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "nota": "Sin posiciones abiertas."
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 10,
+          "nota": "Ejecutado completo via GitHub log."
+        }
+      },
       "tareas_con_issues": []
     }
   ]
