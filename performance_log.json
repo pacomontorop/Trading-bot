@@ -136,14 +136,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-28",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "MNRO: MISS -220.0% vs whisper (2026-05-28)",
-      "descripcion": "EPS=-0.16 w=-0.05 cons=-0.04. RevYoY=-7.17. AH=+0.0%.",
-      "accion_futura": "Revisar perfil MNRO.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-05-28",
       "tipo": "AH_CONFIRMACION_BEAT",
       "titulo": "SNOW: beat cons=+21.9% confirmado AH=+37.0% (2026-05-28)",
       "descripcion": "Mercado confirmo beat con AH fuerte. Whisper=no.",
@@ -380,6 +372,15 @@
       "descripcion": "MU continuation (score 8.5, beat +12% vs whisper, +13% AH) NO fue ejecutada en apertura 26-jun y MU cayo -2.5% el dia de entrada por selloff de chips. La penalizacion de sector memory(0)/semis(-1) suprimio correctamente la entrada. El beat masivo no garantiza continuation si el sector esta en risk-off.",
       "accion_correctiva": "Para post_earnings_continuation, exigir que el sector NO este penalizado (>=0) Y que el ticker no haya ya faded >50% del pop AH. Si chips/sector venden, descartar continuation aunque score>8.",
       "tarea_afectada": "market-open-execution | pre-market-earnings-scan",
+      "auto_generado": true,
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-06-30",
+      "titulo": "PRGS: beat fuerte tras -22% pre-earnings; watch cauteloso (no entrada) razonable",
+      "descripcion": "PRGS batio (EPS 0.50 vs guid 0.35-0.41) pese a churn SaaS. Score 5.0 mantuvo fuera; reaccion a confirmar 1-jul.",
+      "accion_correctiva": "Revisar reaccion precio PRGS 1-jul: si rebote fuerte, el factor 'caida pre-earnings + beat' merece +0.5 en scoring de recuperacion.",
+      "tarea_afectada": "pre-market-earnings-scan",
       "auto_generado": true,
       "aplicada": false
     }
@@ -1722,21 +1723,30 @@
       "sizing": "n/a",
       "sector": "technology",
       "argumento": "Progress Software Q2 FY26 AH martes 30-jun. Cons EPS $1.49 (vs $1.40 yoy), rev $242.7M. Software small-cap. Analistas BAJARON targets pre-earnings (riesgo guidance miss tipo NFLX). AH no ejecutable a apertura. Beat-rate/whisper no confirmados via EW (sin sesion browser).",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-07-01T18:00:00Z",
       "score_macro_bonus": 0,
-      "notas": "Viernes-especial: unico nombre identificable semana proxima. Riesgo guidance. NO entrada — observar.",
+      "notas": "Viernes-especial: unico nombre identificable semana proxima. Riesgo guidance. NO entrada — observar. | UPDATE 2026-06-30: BEAT fuerte (EPS 0.50 vs guid 0.35-0.41; rev 253M). No se entro (score 5.0 < umbral 7.0 + churn SaaS reciente). Loop cerrado, sin posicion.",
       "conviction_tier": "no_entry",
-      "sizing_multiplier": 0.0
+      "sizing_multiplier": 0.0,
+      "resultado_real": {
+        "fecha_reporte": "2026-06-30",
+        "eps_real": 0.5,
+        "guidance_eps": "0.35-0.41",
+        "revenue_real": "253M",
+        "guidance_rev": "240-246M",
+        "batio": true,
+        "timing": "after-hours"
+      }
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-29",
+    "fecha_actualizacion": "2026-06-30",
     "semana": "2026-W23",
     "regimen": "RISK_ON",
-    "vix": 17.69,
+    "vix": 17.65,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-29 (lunes): Rally risk-on liderado por tech. S&P 500 +1.2%, Nasdaq +2.0%, Dow >52,000 record (Alphabet se une al Dow, +4%). VIX 17.69 (-3.9%) — calma. Driver: EEUU e Iran acuerdan frenar ataques -> geopolitical relief rally. Rebote en semis/tech tras el selloff del viernes (MU). Semana acortada por festivo (mercados cerrados viernes 3-jul). Nuevo Fed Chair Kevin Warsh interviene esta semana; datos de empleo (NFP) el jueves 2-jul. Sin earnings premarket relevantes manana 30-jun.",
+    "narrativa_dominante": "ACTUALIZACION 2026-06-30 (martes): Sesion tranquila, VIX 17.65 (sin cambios, calma). Regimen RISK_ON intacto tras el rally de ayer. PRGS reporto Q2 AH con BEAT fuerte (EPS $0.50 vs guidance $0.35-0.41; rev $253M vs $240-246M) tras caer ~22% pre-earnings por churn SaaS. Cuenta paper plana (+0.06%), 0 posiciones. MANANA 1-jul: macro relevante pre-apertura (ADP 7:15 ET fcst 118K, ISM Manufacturing PMI fcst 53.8, Fed Warsh 8:00 ET) -> precaucion antes de abrir. Calendario earnings fino (semana pre-festivo 4-jul); sin candidatos asimetricos claros para manana.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1754,7 +1764,8 @@
       "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)",
       "WebSearch post-market 2026-06-25: market close + MKC/WBA results + Fri 26 calendar",
       "WebSearch post-market 2026-06-26: VIX/SPX, MU reaccion, earnings semana 29-jun, calendario macro",
-      "WebSearch post-market 2026-06-29: mercado + earnings 30-jun + calendario macro semana"
+      "WebSearch post-market 2026-06-29: mercado + earnings 30-jun + calendario macro semana",
+      "WebSearch post-market 2026-06-30: PRGS earnings, VIX, calendario macro 1-jul"
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -2005,6 +2016,16 @@
           "energy"
         ],
         "fuente": "Yahoo Finance / TheStreet"
+      },
+      {
+        "fecha": "2026-06-30",
+        "evento": "PRGS Q2 beat fuerte AH (EPS 0.50 vs guid 0.35-0.41)",
+        "impacto": "BAJO",
+        "sectores_afectados": [
+          "technology",
+          "software"
+        ],
+        "fuente": "SEC 8-K / web"
       }
     ],
     "macro_score_pm": -0.8,
@@ -2069,7 +2090,17 @@
       "Mercado CERRADO viernes 3-jul (Independence Day observado)",
       "GBX (Greenbrier) Q3 AH miercoles 1-jul",
       "Calendario earnings muy escaso — transicion Q1->Q2 season"
-    ]
+    ],
+    "riesgo_macro_manana": {
+      "fecha": "2026-07-01",
+      "eventos": [
+        "ADP 7:15 ET",
+        "ISM Mfg PMI",
+        "Fed Warsh 8:00 ET",
+        "Crude inventories"
+      ],
+      "nivel": "MEDIO"
+    }
   },
   "operaciones_crypto": [
     {
@@ -7752,13 +7783,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-29",
+    "_ultima_actualizacion": "2026-06-30",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4547.98,
+      "equity_real_actual": 4547.97,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -8169,6 +8200,14 @@
         "avg_r_acumulado": -0.004,
         "operaciones_acumuladas": 22,
         "vix": 17.69
+      },
+      {
+        "fecha": "2026-06-30",
+        "equity_paper": 109380.24,
+        "equity_real": 4547.97,
+        "pnl_dia_paper": 66.47,
+        "operaciones_acumuladas": 22,
+        "vix": 17.65
       }
     ],
     "objetivos": {
@@ -13004,6 +13043,19 @@
       "evento_clave": "EEUU-Iran frenan ataques -> rally risk-on, Dow record >52k, Nasdaq +2%",
       "leccion": "Sin posiciones abiertas; sistema en cash. Manana 30-jun sin earnings premarket relevantes -> dia de gestion, no entradas. PRGS (AH martes) solo en vigilancia por riesgo guidance.",
       "run_note": "Ejecutado por asistente: solo lectura+analisis. NO se colocaron ordenes (politica). Hoy sin posiciones que requieran stop."
+    },
+    {
+      "fecha": "2026-06-30",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 66.47,
+      "variacion_pct": 0.06,
+      "vix": 17.65,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "posiciones_paper": 0,
+      "evento_clave": "PRGS beat fuerte AH; sesion tranquila VIX 17.65",
+      "leccion": "Watch cauteloso PRGS (score 5.0) acertado en NO entrar pese al beat: churn SaaS + score bajo justificaban espera; reaccion precio se vera 1-jul."
     }
   ],
   "alertas_criticas": [
@@ -14083,6 +14135,14 @@
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": [],
           "nota": "Paper 0 posiciones equity. Real: solo dust BTCUSD ~$0.49 (no accionable)."
+        },
+        {
+          "fecha": "2026-06-30",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [],
+          "nota": "Paper 0 posiciones. Real: solo BTCUSD dust ($0.49, -50%) sin stop -> inmaterial, no accion (no se colocan ordenes en cuenta real)."
         }
       ]
     },
@@ -14752,6 +14812,13 @@
       "parametros_version": "2026-06-03",
       "score_sistema": 8.8,
       "mejora_hoy": "Filtro continuation: descartar post_earnings_continuation si sector_prioridad<0 o el pop AH ya faded >50%. Evidencia: MU"
+    },
+    {
+      "fecha": "2026-06-30",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 21,
+      "candidatos_activos": 0,
+      "mejora_hoy": "Loop PRGS cerrado + macro_context actualizado (VIX 17.65, riesgo macro 1-jul marcado)"
     }
   ],
   "motor_alpha_diario": {
