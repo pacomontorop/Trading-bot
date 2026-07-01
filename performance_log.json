@@ -136,14 +136,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-28",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "SNOW: beat cons=+21.9% confirmado AH=+37.0% (2026-05-28)",
-      "descripcion": "Mercado confirmo beat con AH fuerte. Whisper=no.",
-      "accion_futura": "SNOW: AH confirmacion es senal continuation incluso sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-05-28",
       "tipo": "AH_NEGATIVO_FUERTE",
       "titulo": "BRZE: AH=-11.0% (2026-05-28)",
       "descripcion": "AH negativo fuerte.",
@@ -383,6 +375,15 @@
       "tarea_afectada": "pre-market-earnings-scan",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-07-01",
+      "titulo": "Higiene: purgar acciones_pendientes_manana cuando no hay posiciones",
+      "descripcion": "acciones_pendientes_manana debe reflejar solo posiciones abiertas actuales. Entradas huerfanas persisten si la posicion se cierra sin limpiar.",
+      "accion_correctiva": "Post-market: si paper esta flat, vaciar acciones_pendientes_manana. market-open debe validar que el symbol siga abierto antes de ejecutar parcial.",
+      "tarea_afectada": "market-open-execution",
+      "auto_generado": true,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1741,12 +1742,12 @@
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-06-30",
+    "fecha_actualizacion": "2026-07-01",
     "semana": "2026-W23",
     "regimen": "RISK_ON",
-    "vix": 17.65,
+    "vix": 16.6,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-06-30 (martes): Sesion tranquila, VIX 17.65 (sin cambios, calma). Regimen RISK_ON intacto tras el rally de ayer. PRGS reporto Q2 AH con BEAT fuerte (EPS $0.50 vs guidance $0.35-0.41; rev $253M vs $240-246M) tras caer ~22% pre-earnings por churn SaaS. Cuenta paper plana (+0.06%), 0 posiciones. MANANA 1-jul: macro relevante pre-apertura (ADP 7:15 ET fcst 118K, ISM Manufacturing PMI fcst 53.8, Fed Warsh 8:00 ET) -> precaucion antes de abrir. Calendario earnings fino (semana pre-festivo 4-jul); sin candidatos asimetricos claros para manana.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-01 (miercoles): Arranque de Q3. Indices mixtos: Dow -0.03% (record intradia antes de enfriarse), S&P -0.22% (7483), Nasdaq -0.66% (26040). Caterpillar -7% lastro industriales; comunicacion y financieras sostuvieron. Mercado digiriendo varios datos de empleo y a la espera del Fed Chair Warsh; tensiones EEUU-Iran de fondo. VIX 16.60 (calma). Regimen RISK_ON intacto. Semana corta: viernes 3-jul MERCADO CERRADO (Independence Day observado). CLAVE MANANA: informe de empleo (NFP junio) 8:30 ET jueves 2-jul (adelantado por el festivo) — consenso +115K, paro 4.3%. Cuenta paper plana (+0.06%, 0 posiciones); real plana ($4548, solo polvo BTC).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1765,7 +1766,8 @@
       "WebSearch post-market 2026-06-25: market close + MKC/WBA results + Fri 26 calendar",
       "WebSearch post-market 2026-06-26: VIX/SPX, MU reaccion, earnings semana 29-jun, calendario macro",
       "WebSearch post-market 2026-06-29: mercado + earnings 30-jun + calendario macro semana",
-      "WebSearch post-market 2026-06-30: PRGS earnings, VIX, calendario macro 1-jul"
+      "WebSearch post-market 2026-06-30: PRGS earnings, VIX, calendario macro 1-jul",
+      "WebSearch post-market 2026-07-01: TheStreet, CNBC, Kiplinger (NFP jul-2), Schwab; yfinance VIX/indices. Gmail/EW browser no disponibles en sesion aislada."
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -1800,7 +1802,7 @@
     ],
     "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
     "dias_riesgo_macro": [
-      "2026-06-26 (PCE inflacion mayo)"
+      "2026-07-02 (NFP junio 8:30 ET — adelantado por festivo)"
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
@@ -2026,6 +2028,17 @@
           "software"
         ],
         "fuente": "SEC 8-K / web"
+      },
+      {
+        "fecha": "2026-07-01",
+        "evento": "Arranque Q3 tras mejor semestre desde 2020 (S&P +9.6% H1). CAT -7%. Mercado espera al Fed Chair Warsh y al NFP de junio (adelantado a jue 2-jul por festivo del vie 3-jul).",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "industrials",
+          "communication",
+          "financials"
+        ],
+        "fuente": "TheStreet/CNBC/Kiplinger/Schwab (WebSearch)"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7783,13 +7796,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-06-30",
+    "_ultima_actualizacion": "2026-07-01",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4547.97,
+      "equity_real_actual": 4547.98,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -7803,14 +7816,14 @@
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
-      "operaciones_totales": 22,
-      "operaciones_cerradas": 22,
-      "operaciones_ganadoras": 9,
-      "operaciones_perdedoras": 11,
-      "operaciones_break_even": 2,
-      "win_rate_pct": 40.9,
-      "avg_r_logrado": -0.004,
-      "profit_factor": 2.23,
+      "operaciones_totales": 20,
+      "operaciones_cerradas": 20,
+      "operaciones_ganadoras": 8,
+      "operaciones_perdedoras": 12,
+      "operaciones_break_even": 0,
+      "win_rate_pct": 40.0,
+      "avg_r_logrado": -0.006,
+      "profit_factor": 2.22,
       "avg_pnl_por_operacion_dolares": 87.26,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1134.15,
@@ -8208,6 +8221,16 @@
         "pnl_dia_paper": 66.47,
         "operaciones_acumuladas": 22,
         "vix": 17.65
+      },
+      {
+        "fecha": "2026-07-01",
+        "equity_paper": 109380.24,
+        "equity_real": 4547.98,
+        "pnl_dia_paper": 65.79,
+        "win_rate_acumulado": 40.0,
+        "avg_r_acumulado": -0.006,
+        "operaciones_acumuladas": 20,
+        "vix": 16.6
       }
     ],
     "objetivos": {
@@ -13056,6 +13079,19 @@
       "posiciones_paper": 0,
       "evento_clave": "PRGS beat fuerte AH; sesion tranquila VIX 17.65",
       "leccion": "Watch cauteloso PRGS (score 5.0) acertado en NO entrar pese al beat: churn SaaS + score bajo justificaban espera; reaccion precio se vera 1-jul."
+    },
+    {
+      "fecha": "2026-07-01",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 65.79,
+      "variacion_pct": 0.06,
+      "vix": 16.6,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "posiciones_paper": 0,
+      "evento_clave": "Arranque Q3, indices mixtos, CAT -7%; foco en NFP jue 2-jul y Fed Chair Warsh",
+      "leccion": "Semana corta con NFP adelantado a jueves y viernes cerrado: prudencia, esperar dato de empleo antes de nuevas entradas."
     }
   ],
   "alertas_criticas": [
@@ -13289,6 +13325,15 @@
       "archivo_modificado": "performance_log (lecciones_sistema) — documentada para market-open-execution",
       "impacto_esperado": "Menos entradas en continuations que fallan por debilidad sectorial; mejor seleccion.",
       "implementada": false
+    },
+    {
+      "fecha": "2026-07-01",
+      "tipo": "bug_corregido",
+      "descripcion": "Limpieza de acciones_pendientes_manana obsoletas: quedaba una accion 'vender_parcial GO' de una posicion ya cerrada, con paper flat (0 posiciones).",
+      "evidencia": "Hoy 2026-07-01: 0 posiciones paper pero acciones_pendientes_manana contenia GO (posicion cerrada dias atras). Riesgo: el market-open podria intentar vender un parcial inexistente.",
+      "archivo_modificado": "performance_log",
+      "impacto_esperado": "Evita orden erronea en apertura; mantiene el estado de acciones pendientes consistente con las posiciones reales.",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -14819,6 +14864,13 @@
       "mejoras_acumuladas": 21,
       "candidatos_activos": 0,
       "mejora_hoy": "Loop PRGS cerrado + macro_context actualizado (VIX 17.65, riesgo macro 1-jul marcado)"
+    },
+    {
+      "fecha": "2026-07-01",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 22,
+      "candidatos_activos": 0,
+      "mejora_hoy": "Limpieza de acciones_pendientes_manana obsoletas: quedaba una accion 'vender_parcial GO' de una posicion ya cerrada, con paper flat (0 posiciones)."
     }
   ],
   "motor_alpha_diario": {
@@ -20335,18 +20387,7 @@
       "leccion_validada": "Friday W22 marcó HPE/CRDO descartado_extension. Hoy HPE +5.16% confirma drift consumido, SAIC +13.72% confirma gap risk."
     }
   ],
-  "acciones_pendientes_manana": [
-    {
-      "symbol": "GO",
-      "qty_parcial": 553,
-      "entry": 7.75,
-      "current": 8.56,
-      "R_actual": 3.48,
-      "accion": "vender_parcial_apertura_manana",
-      "stop_target_post_parcial": 7.75,
-      "razon": "GO +10.5% en regimen defensivo. Recomendado tomar parcial 50% el lunes y subir stop a break-even. (NO ejecutado por la tarea — accion manual)"
-    }
-  ],
+  "acciones_pendientes_manana": [],
   "auditoria_tareas": [
     {
       "fecha": "2026-06-04",
@@ -20454,6 +20495,23 @@
           "ok": true,
           "score": 10,
           "nota": "Ejecutado completo via GitHub log."
+        }
+      },
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-07-01",
+      "score_sistema": 9.5,
+      "tareas": {
+        "post-market-review": {
+          "ok": true,
+          "score": 10,
+          "nota": "macro+KPIs+limpieza OK"
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 9,
+          "nota": "sin posiciones que vigilar"
         }
       },
       "tareas_con_issues": []
