@@ -138,14 +138,6 @@
     {
       "fecha": "2026-05-28",
       "tipo": "AH_NEGATIVO_FUERTE",
-      "titulo": "BRZE: AH=-11.0% (2026-05-28)",
-      "descripcion": "AH negativo fuerte.",
-      "accion_futura": "Evitar continuation BRZE.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-28",
-      "tipo": "AH_NEGATIVO_FUERTE",
       "titulo": "AMSC: AH=-8.6% (2026-05-28)",
       "descripcion": "AH negativo fuerte.",
       "accion_futura": "Evitar continuation AMSC.",
@@ -401,6 +393,15 @@
       "descripcion": "beat_cons=+554.5%, whisper_beat=+100.0%, AH=-4.0%. Beat baja calidad (aranceles IEEPA +$0.52), China -12%. Mercado descontó el beat.",
       "accion_futura": "NO entrar continuation en NKE si AH negativo. Vigilar calidad del beat (one-offs).",
       "impacto_score": -0.5
+    },
+    {
+      "fecha": "2026-07-17",
+      "titulo": "Semana ligera + risk-off: priorizar preservacion",
+      "descripcion": "17-jul cierre con VIX +12% a 18.78 y chip selloff. Cartera plana (0 posiciones). Lunes 20-jul solo DPZ pre con setup debil (mal beat history, revisiones a la baja). Oportunidades reales llegan mie (GOOGL/TSLA).",
+      "accion_correctiva": "No forzar entradas lunes. Esperar setups mie con datos EW. Mantener umbral paper y no relajar filtros en regimen de volatilidad al alza.",
+      "tarea_afectada": "market-open-execution",
+      "auto_generado": false,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1758,79 +1759,27 @@
       }
     },
     {
-      "ticker": "TRV",
-      "score": 6.8,
-      "score_ajustado": 6.8,
-      "score_total": 8.8,
-      "fecha_deteccion": "2026-07-16",
+      "ticker": "DPZ",
+      "score": 3.5,
+      "score_ajustado": 3.5,
+      "fecha_deteccion": "2026-07-17",
       "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-07-17",
+      "earnings_fecha": "2026-07-20",
       "earnings_timing": "pre-market",
-      "accion_recomendada": "vigilar_apertura",
-      "ventana_entrada": "2026-07-17 09:40-10:30 ET",
-      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
-      "sizing": "vigilancia — sin datos EW premium para confirmar asimetria/beat rate",
-      "argumento": "Consensus $5.33 EPS / rev $11.03B. Revisiones al alza fuertes (+10.1% en 30d) = drift alcista de analistas. Financials priority +2. RIESGO: Benzinga alerta Q2 menor YoY; rango EPS muy amplio ($4.17-$7.37) = alta incertidumbre por perdidas por catastrofes Q2.",
-      "sector": "financials",
-      "estado": "vigilar_cauteloso",
-      "expira": "2026-07-17T16:45:14.633127Z",
-      "score_macro_bonus": 2,
-      "notas": "Rising estimates positivo pero cat-loss risk alto. Vigilar reaccion primeros 15min.",
-      "conviction_tier": "vigilancia",
-      "fuente_datos": "websearch_fallback (EW browser no disponible en run autonomo)"
-    },
-    {
-      "ticker": "TFC",
-      "score": 6.7,
-      "score_ajustado": 6.7,
-      "score_total": 8.7,
-      "fecha_deteccion": "2026-07-16",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-07-17",
-      "earnings_timing": "pre-market",
-      "accion_recomendada": "vigilar_apertura",
-      "ventana_entrada": "2026-07-17 09:40-10:30 ET",
-      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
-      "sizing": "vigilancia — sin datos EW premium para confirmar asimetria/beat rate",
-      "argumento": "Consensus $1.08 EPS (+20% YoY) / rev $5.24B. Tesis limpia: crecimiento de prestamos + fee income. Financials priority +2. Banco regional, reporta tras money-center banks.",
-      "sector": "financials",
-      "estado": "vigilar_cauteloso",
-      "expira": "2026-07-17T16:45:14.633143Z",
-      "score_macro_bonus": 2,
-      "notas": "Solido pero sin datos de beat rate/whisper. Entrada solo si confirma >0.5% sobre apertura.",
-      "conviction_tier": "vigilancia",
-      "fuente_datos": "websearch_fallback (EW browser no disponible en run autonomo)"
-    },
-    {
-      "ticker": "FITB",
-      "score": 6.2,
-      "score_ajustado": 6.2,
-      "score_total": 8.2,
-      "fecha_deteccion": "2026-07-16",
-      "detectado_por": "post-market-review",
-      "earnings_fecha": "2026-07-17",
-      "earnings_timing": "pre-market",
-      "accion_recomendada": "vigilar_apertura",
-      "ventana_entrada": "2026-07-17 09:40-10:30 ET",
-      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
-      "sizing": "vigilancia — sin datos EW premium para confirmar asimetria/beat rate",
-      "argumento": "Consensus $0.84 EPS / rev $3.25B. NII y loan growth positivos pero gastos elevados preocupan (guidance risk). Financials +2.",
-      "sector": "financials",
-      "estado": "vigilar_cauteloso",
-      "expira": "2026-07-17T16:45:14.633146Z",
-      "score_macro_bonus": 2,
-      "notas": "Watch. Riesgo de guidance por expenses. No prioritario.",
-      "conviction_tier": "vigilancia",
-      "fuente_datos": "websearch_fallback (EW browser no disponible en run autonomo)"
+      "estado": "descartado",
+      "sector": "consumer_discretionary",
+      "argumento": "Domino's reporta Q2 lun 6:05 ET. EPS est ~$4.10-4.17 vs $3.81 a/a. PERO historial de sorpresa POBRE (batio solo 1 de ultimos 4T), consenso revisado a la BAJA -2.2% en 30d, preocupacion por gasto de consumo blando. Fair value recortado a $392. Setup asimetrico NEGATIVO.",
+      "notas": "Descartado: mal beat history + revisiones a la baja + regimen risk-off (VIX 18.78). No es long asimetrico. Vigilar como posible fade si gap-up sin fundamento.",
+      "expira": "2026-07-20T18:00:00Z"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-16",
+    "fecha_actualizacion": "2026-07-17",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 17.0,
+    "vix": 18.78,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-16: Sesion risk-off. S&P -0.5%, Nasdaq -1.3% (2o dia de caida en chips). AI/semiconductores bajo presion por dudas sobre el boom de IA; Alphabet cae. Escalada de la guerra EE.UU.-Iran sigue pesando sobre el mercado (favorece defensa/energia). VIX 17.0 (+8.5% en el dia) pero aun <20 -> modo normal para entradas, sin bloqueo. Manana viernes: earnings de bancos (TRV, TFC, FITB pre-market) + Michigan sentiment prelim. Tendencia general: cautela, rotacion desde tech/chips hacia financieras y defensivos.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-17: Sesion risk-off. S&P -1.0%, Nasdaq -1.4%, Dow -0.7%; los semiconductores lideraron la caida (chip selloff) y el crudo subio. Netflix pesó tras resultados. VIX salto a 18.78 (+12.3%) — repunte claro de volatilidad aunque aún por debajo de 20. Semana con perdidas. Semis/AI-infra en presion; defensivos (healthcare, financials, utilities) preferidos. Semana entrante: FOMC 28-29 jul (no esta semana). Earnings clave: DPZ lun pre, GM/3M/HAL mar, GOOGL/TSLA/IBM/TXN mie, INTC/FCX/NEM + ECB jue.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1851,7 +1800,8 @@
       "WebSearch post-market 2026-06-29: mercado + earnings 30-jun + calendario macro semana",
       "WebSearch post-market 2026-06-30: PRGS earnings, VIX, calendario macro 1-jul",
       "WebSearch post-market 2026-07-01: TheStreet, CNBC, Kiplinger (NFP jul-2), Schwab; yfinance VIX/indices. Gmail/EW browser no disponibles en sesion aislada.",
-      "WebSearch post-market 2026-07-16: mercado, VIX, earnings manana, calendario macro"
+      "WebSearch post-market 2026-07-16: mercado, VIX, earnings manana, calendario macro",
+      "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -2137,6 +2087,18 @@
           "technology"
         ],
         "fuente": "Yahoo Finance / Bloomberg"
+      },
+      {
+        "fecha": "2026-07-17",
+        "evento": "Chip selloff generalizado; VIX +12% a 18.78; indices con perdidas semanales; crudo al alza",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "semiconductors",
+          "ai_infrastructure",
+          "technology",
+          "energy"
+        ],
+        "fuente": "Yahoo Finance / Schwab Market Update"
       }
     ],
     "macro_score_pm": -0.8,
@@ -2189,29 +2151,18 @@
     "narrativa_sentinel": "Tech-led selloff (chip rout: MU -13.6%, NVDA -3.7%, AI-trade reassessment, higher-for-longer). Oil falling on Iran de-escalation (no oil spike). VIX 19.5 (+12.7%) elevado pero <28. No flash-crash 30m. Nivel ALERTA.",
     "spy_chg": 0.2,
     "nota_web": "VIX~18.9; rotacion fuera de tech; Iran/Hormuz de-escalado; MU reporto beat",
-    "preparacion_semana": "semana del 2026-06-29 (holiday-shortened, mercado CERRADO viernes 3-jul)",
+    "preparacion_semana": "semana del 2026-07-20",
     "top_candidatos_lunes": [],
     "candidatos_vigilancia_semana": [
-      "PRGS (AH 30-jun, riesgo guidance)"
+      "GOOGL",
+      "TSLA",
+      "IBM",
+      "TXN"
     ],
-    "preparado_en": "2026-06-26",
-    "num_candidatos_semana": 1,
-    "eventos_macro_semana": [
-      "NFP junio: probable jueves 2-jul (semana holiday-shortened)",
-      "Mercado CERRADO viernes 3-jul (Independence Day observado)",
-      "GBX (Greenbrier) Q3 AH miercoles 1-jul",
-      "Calendario earnings muy escaso — transicion Q1->Q2 season"
-    ],
-    "riesgo_macro_manana": {
-      "fecha": "2026-07-01",
-      "eventos": [
-        "ADP 7:15 ET",
-        "ISM Mfg PMI",
-        "Fed Warsh 8:00 ET",
-        "Crude inventories"
-      ],
-      "nivel": "MEDIO"
-    }
+    "preparado_en": "2026-07-17",
+    "num_candidatos_semana": 0,
+    "eventos_macro_semana": "Lun DPZ pre (setup debil). Mar GM/3M/HAL. Mie GOOGL+TSLA (headliners), IBM, TXN. Jue INTC/FCX/NEM + ECB. FOMC 28-29 jul (siguiente semana). Sin macro US mayor esta semana.",
+    "riesgo_macro_manana": false
   },
   "operaciones_crypto": [
     {
@@ -7894,7 +7845,7 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-16",
+    "_ultima_actualizacion": "2026-07-17",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
@@ -7909,7 +7860,7 @@
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 68.36,
+      "pnl_dia_paper_dolares": 69.78,
       "pnl_dia_real_dolares": 0.0,
       "equity_paper_peak": 109924.64
     },
@@ -8329,6 +8280,16 @@
         "avg_r_acumulado": -0.006,
         "operaciones_acumuladas": 20,
         "vix": 16.6
+      },
+      {
+        "fecha": "2026-07-17",
+        "equity_paper": 109380.24,
+        "equity_real": 4548.01,
+        "pnl_dia_paper": 69.78,
+        "win_rate_acumulado": 40.0,
+        "avg_r_acumulado": -0.01,
+        "operaciones_acumuladas": 22,
+        "vix": 18.78
       }
     ],
     "objetivos": {
@@ -13202,6 +13163,18 @@
       "trades_paper": [],
       "evento_clave": "Escalada guerra EE.UU.-Iran + 2o dia de caida en chips por dudas IA (Nasdaq -1.3%).",
       "leccion": "Sin posiciones abiertas ni trades hoy; el sistema mantuvo cash en dia risk-off. VIX subio a 17 pero <20."
+    },
+    {
+      "fecha": "2026-07-17",
+      "dia": "Friday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 69.78,
+      "variacion_pct": 0.06,
+      "vix": 18.78,
+      "regimen_macro": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
+      "trades_paper": [],
+      "evento_clave": "Risk-off: chip selloff, VIX +12% a 18.78, indices con perdidas semanales",
+      "leccion": "Sin posiciones abiertas — dia de gestion/observacion. Lunes ligero (solo DPZ pre, setup debil)."
     }
   ],
   "alertas_criticas": [
@@ -14999,6 +14972,14 @@
       "bugs_pendientes": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Macro regime shift + 3 candidatos financieros en vigilancia para viernes"
+    },
+    {
+      "fecha": "2026-07-17",
+      "lecciones_acumuladas": 32,
+      "mejoras_acumuladas": 23,
+      "candidatos_activos": 0,
+      "bugs_pendientes": 0,
+      "mejora_hoy": "Dia sin posiciones ni trades. Prep semana entrante: DPZ descartado, headliners mie (GOOGL/TSLA) en vigilancia."
     }
   ],
   "motor_alpha_diario": {
