@@ -13,7 +13,7 @@ services:
     numInstances: 1
 
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn start:app --host 0.0.0.0 --workers 1
+    startCommand: uvicorn start:app --host 0.0.0.0 --workers 1 --ws none
 
     envVars:
       - key: WEB_CONCURRENCY
