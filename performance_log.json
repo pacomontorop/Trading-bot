@@ -137,14 +137,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-05-28",
-      "tipo": "AH_NEGATIVO_FUERTE",
-      "titulo": "AMSC: AH=-8.6% (2026-05-28)",
-      "descripcion": "AH negativo fuerte.",
-      "accion_futura": "Evitar continuation AMSC.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-28",
       "tipo": "WHISPER_MISS_DESPITE_CONS_INLINE",
       "titulo": "MRVL: whisper miss -4.76% confirma whisper > consensus signal (2026-05-28)",
       "descripcion": "MRVL inline vs cons pero falto whisper $0.84 con $0.80. AH=-4.59%. Guio Q2 muy por encima ($0.88-0.98 vs $0.89 cons, $2.7B vs $2.6B) pero mercado vendio. Narrativa AI bookings no compenso whisper miss.",
@@ -402,6 +394,15 @@
       "tarea_afectada": "market-open-execution",
       "auto_generado": false,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-07-21",
+      "titulo": "Dia risk-on capturado con 0 exposicion (paper flat, real dust)",
+      "descripcion": "VIX cayo a 17.22 en dia risk-on IA/semis (+5%) y cripto. Ambas cuentas planas: paper 0 posiciones, real solo BTC polvo. El sistema no tenia candidatos ejecutados y perdio el upside del dia.",
+      "accion_correctiva": "Mantener pipeline de candidatos earnings vivo incluso en semanas de pico (GOOGL/TSLA AH manana). Priorizar validacion EW en pre-market scan de nombres menos seguidos con sector tailwind (financials +2, healthcare +2).",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "auto_generado": true,
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1771,15 +1772,97 @@
       "argumento": "Domino's reporta Q2 lun 6:05 ET. EPS est ~$4.10-4.17 vs $3.81 a/a. PERO historial de sorpresa POBRE (batio solo 1 de ultimos 4T), consenso revisado a la BAJA -2.2% en 30d, preocupacion por gasto de consumo blando. Fair value recortado a $392. Setup asimetrico NEGATIVO.",
       "notas": "Descartado: mal beat history + revisiones a la baja + regimen risk-off (VIX 18.78). No es long asimetrico. Vigilar como posible fade si gap-up sin fundamento.",
       "expira": "2026-07-20T18:00:00Z"
+    },
+    {
+      "ticker": "GEV",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_total": 7.5,
+      "fecha_deteccion": "2026-07-21",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-22",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_validar_ew_apertura",
+      "ventana_entrada": "2026-07-22 09:40-10:30 ET (validar EW primero)",
+      "stop_tipo": "ATR x2.5 ventana apertura",
+      "sizing": "solo si score EW>=8.75 (umbral real alto)",
+      "argumento": "GE Vernova reporta BMO 22-jul. Previews muy alcistas (energia/grid, IA capex). Sector industrials +1. RIESGO: nombre muy seguido y ya corrido ('no-brainer buy' = crowded).",
+      "sector": "industrials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-22T16:28:31.393870Z",
+      "score_macro_bonus": 1,
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+    },
+    {
+      "ticker": "PFBC",
+      "score": 6.0,
+      "score_ajustado": 6.0,
+      "score_total": 8.0,
+      "fecha_deteccion": "2026-07-21",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-22",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_validar_ew_apertura",
+      "ventana_entrada": "2026-07-22 09:40-10:30 ET (validar EW primero)",
+      "stop_tipo": "ATR x2.5 ventana apertura",
+      "sizing": "solo si score EW>=8.75 (umbral real alto)",
+      "argumento": "Preferred Bank (regional) reporta 22-jul BMO. Financials +2 en regimen actual. Nombre poco seguido (encaja filosofia asimetria). Falta whisper/beat-rate EW para confirmar.",
+      "sector": "financials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-22T16:28:31.393892Z",
+      "score_macro_bonus": 2,
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+    },
+    {
+      "ticker": "T",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 5.5,
+      "fecha_deteccion": "2026-07-21",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-22",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_validar_ew_apertura",
+      "ventana_entrada": "2026-07-22 09:40-10:30 ET (validar EW primero)",
+      "stop_tipo": "ATR x2.5 ventana apertura",
+      "sizing": "solo si score EW>=8.75 (umbral real alto)",
+      "argumento": "AT&T reporta BMO 22-jul, implied move ~4.3%. Communication neutral (0). Defensivo, poco drift historico. Vigilar solo si EW muestra asimetria.",
+      "sector": "communication",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-22T16:28:31.393895Z",
+      "score_macro_bonus": 0,
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+    },
+    {
+      "ticker": "GOOGL",
+      "score": 0,
+      "estado": "descartado",
+      "fecha_deteccion": "2026-07-21",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-22",
+      "earnings_timing": "after-hours",
+      "notas": "AH 22-jul ~$101B rev, EPS ~$2.10. Mega cap maximamente descontado. No ejecutable a apertura (AH). Alto riesgo sell-the-news.",
+      "motivo_descarte": "mega_cap_AH_priced_in_sell_the_news"
+    },
+    {
+      "ticker": "TSLA",
+      "score": 0,
+      "estado": "descartado",
+      "fecha_deteccion": "2026-07-21",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-22",
+      "earnings_timing": "after-hours",
+      "notas": "AH 22-jul (fecha ambigua, algunos 23-jul). Implied move ~7.6%, rango EPS $0.27-$0.74 (enorme incertidumbre margenes). Leccion NFLX: evitar guidance-risk alto priced-in.",
+      "motivo_descarte": "mega_cap_AH_priced_in_sell_the_news"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-17",
+    "fecha_actualizacion": "2026-07-21",
     "semana": "2026-W23",
-    "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 18.78,
+    "regimen": "EARNINGS_SEASON_NORMAL",
+    "vix": 17.22,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-17: Sesion risk-off. S&P -1.0%, Nasdaq -1.4%, Dow -0.7%; los semiconductores lideraron la caida (chip selloff) y el crudo subio. Netflix pesó tras resultados. VIX salto a 18.78 (+12.3%) — repunte claro de volatilidad aunque aún por debajo de 20. Semana con perdidas. Semis/AI-infra en presion; defensivos (healthcare, financials, utilities) preferidos. Semana entrante: FOMC 28-29 jul (no esta semana). Earnings clave: DPZ lun pre, GM/3M/HAL mar, GOOGL/TSLA/IBM/TXN mie, INTC/FCX/NEM + ECB jue.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-21: Dia risk-on liderado por IA/semiconductores (Micron +10.1%, semis +5%, Nvidia +1.6%) y rally cripto (Coinbase +11.8%, Circle +8.1%). VIX se desploma -7.7% a 17.22 (modo NORMAL). Petroleo en maximo de 5 semanas (~$85 WTI, +2.3%) por tensiones con Iran -> riesgo geopolitico latente y presion inflacionaria. Buenos resultados de 3M, Hasbro y GM. Novo Nordisk demanda a Eli Lilly (healthcare ruido). Manana: pico de earnings con GOOGL y TSLA reportando after-hours (~7.6% implied move en TSLA).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1801,11 +1884,12 @@
       "WebSearch post-market 2026-06-30: PRGS earnings, VIX, calendario macro 1-jul",
       "WebSearch post-market 2026-07-01: TheStreet, CNBC, Kiplinger (NFP jul-2), Schwab; yfinance VIX/indices. Gmail/EW browser no disponibles en sesion aislada.",
       "WebSearch post-market 2026-07-16: mercado, VIX, earnings manana, calendario macro",
-      "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview"
+      "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview",
+      "WebSearch post-market 2026-07-21: mercado, VIX, earnings manana"
     ],
     "sector_prioridades": {
       "defense": 1,
-      "energy": 0,
+      "energy": 1,
       "ai_infrastructure": -1,
       "memory_chips": 0,
       "technology": 0,
@@ -1822,6 +1906,7 @@
     },
     "sectores_a_vigilar_esta_semana": [
       "defense",
+      "energy",
       "industrials",
       "financials",
       "materials",
@@ -2095,6 +2180,18 @@
           "energy"
         ],
         "fuente": "Yahoo Finance / Schwab Market Update"
+      },
+      {
+        "fecha": "2026-07-21",
+        "evento": "Rally IA/semis + cripto; VIX -7.7% a 17.22; petroleo maximo 5 semanas por Iran; Novo demanda a Lilly",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "semiconductors",
+          "technology",
+          "energy",
+          "healthcare"
+        ],
+        "fuente": "TheStreet/CNBC/WebSearch"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7841,13 +7938,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-17",
+    "_ultima_actualizacion": "2026-07-21",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3880.24,
       "pnl_total_paper_pct": 3.68,
-      "equity_real_actual": 4548.01,
+      "equity_real_actual": 4548.03,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -8286,6 +8383,16 @@
         "avg_r_acumulado": -0.01,
         "operaciones_acumuladas": 22,
         "vix": 18.78
+      },
+      {
+        "fecha": "2026-07-21",
+        "equity_paper": 109380.24,
+        "equity_real": 4548.03,
+        "pnl_dia_paper": 66.82,
+        "win_rate_acumulado": 40.0,
+        "avg_r_acumulado": -0.01,
+        "operaciones_acumuladas": 20,
+        "vix": 17.22
       }
     ],
     "objetivos": {
@@ -13171,6 +13278,18 @@
       "trades_paper": [],
       "evento_clave": "Risk-off: chip selloff, VIX +12% a 18.78, indices con perdidas semanales",
       "leccion": "Sin posiciones abiertas — dia de gestion/observacion. Lunes ligero (solo DPZ pre, setup debil)."
+    },
+    {
+      "fecha": "2026-07-21",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 66.82,
+      "variacion_pct": 0.06,
+      "vix": 17.22,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "Rally IA/semis + cripto; VIX -7.7% a 17.22; petroleo maximo 5 semanas por Iran",
+      "leccion": "Dia risk-on sin posiciones abiertas -> 0 exposicion capturo 0 upside. Sistema en modo espera de setups earnings."
     }
   ],
   "alertas_criticas": [
@@ -13421,6 +13540,15 @@
       "evidencia": "WebSearch Jul 16: 'escalation in US-Iran war continued to weigh'. Nasdaq -1.3%, chips 2o dia baja.",
       "archivo_modificado": "performance_log/macro_context",
       "impacto_esperado": "Candidatos defensa/energia ganan bonus macro; evita comprar dips de chips en debilidad.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-07-21",
+      "tipo": "regla_anadida",
+      "descripcion": "Documentar candidatos AH mega-cap (GOOGL/TSLA) como descartados por sell-the-news/guidance-risk en lugar de ignorarlos, para trazabilidad.",
+      "evidencia": "Manana 2026-07-22: GOOGL y TSLA reportan AH con implied moves grandes y maxima cobertura -> perfil que la leccion NFLX marca como evitar.",
+      "archivo_modificado": "performance_log",
+      "impacto_esperado": "Evitar entradas en earnings mega-cap descontados; enfocar capital en asimetrias menos seguidas.",
       "implementada": true
     }
   ],
@@ -14276,6 +14404,16 @@
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": [],
           "nota": "Paper 0 posiciones. Real: solo BTCUSD dust ($0.49, -50%) sin stop -> inmaterial, no accion (no se colocan ordenes en cuenta real)."
+        },
+        {
+          "fecha": "2026-07-21",
+          "bot_positions": 1,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [
+            "BTCUSD(dust)"
+          ],
+          "nota": "BTCUSD real es polvo (~$0.55, 0.0000083 BTC). No accionable. Sin stop no relevante."
         }
       ]
     },
@@ -14976,6 +15114,15 @@
       "candidatos_activos": 0,
       "bugs_pendientes": 0,
       "mejora_hoy": "Dia sin posiciones ni trades. Prep semana entrante: DPZ descartado, headliners mie (GOOGL/TSLA) en vigilancia."
+    },
+    {
+      "fecha": "2026-07-21",
+      "lecciones_acumuladas": 32,
+      "mejoras_acumuladas": 24,
+      "candidatos_activos": 3,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Documentar candidatos AH mega-cap (GOOGL/TSLA) como descartados por sell-the-news/guidance-risk en lugar de ignorarlos, para trazabilidad."
     }
   ],
   "motor_alpha_diario": {
@@ -20664,6 +20811,12 @@
           "nota": "Dia flat sin posiciones. Macro+candidatos+KPIs actualizados."
         }
       },
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-07-21",
+      "score_sistema": 7.0,
+      "nota": "Run autonomo post-market. Cuentas planas, sin stops que colocar. Macro+KPIs+candidatos actualizados. Sin acciones de orden (politica: no ejecutar ordenes).",
       "tareas_con_issues": []
     }
   ]
