@@ -1860,7 +1860,7 @@
     "fecha_actualizacion": "2026-07-21",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 17.22,
+    "vix": 16.7,
     "yield_spread_10y2y": 0.43,
     "narrativa_dominante": "ACTUALIZACION 2026-07-21: Dia risk-on liderado por IA/semiconductores (Micron +10.1%, semis +5%, Nvidia +1.6%) y rally cripto (Coinbase +11.8%, Circle +8.1%). VIX se desploma -7.7% a 17.22 (modo NORMAL). Petroleo en maximo de 5 semanas (~$85 WTI, +2.3%) por tensiones con Iran -> riesgo geopolitico latente y presion inflacionaria. Buenos resultados de 3M, Hasbro y GM. Novo Nordisk demanda a Eli Lilly (healthcare ruido). Manana: pico de earnings con GOOGL y TSLA reportando after-hours (~7.6% implied move en TSLA).",
     "fuentes_consultadas": [
@@ -1925,23 +1925,28 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-07-21T13:12",
-      "nivel": "normal",
+      "timestamp": "2026-07-22T13:23",
+      "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.0,
-      "score_min_real_efectivo": 9.0
+      "nota_ew_scan": "EW scrape NO disponible: old.earningswhispers inaccesible + www.earningswhispers JS-rendered. Sin senal EW cuantificada este ciclo -> 0 ejecuciones (correcto: no operar sin asimetria whisper)."
     },
-    "macro_score": 0.2,
-    "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "macro_score": -0.7,
+    "macro_nivel": "alerta",
+    "contexto_resumen": [
+      "Oil ~$92 Brent subiendo 4o dia (ataques Iran) - presion inflacion",
+      "Fed hawkish (Chair Warsh, inflacion 4.2%) - riesgo de subida tipos otono",
+      "VIX 16.7 - calmo, sin shock intraday",
+      "Chips rebotan (NVDA +3%); mercado ondulante ante earnings GOOGL/TSLA AH",
+      "NOTA: feed multi-activo (futuros/bonos/commodities) rate-limited por Yahoo este ciclo"
+    ],
     "futuros": {
-      "ES": -1.36,
-      "NQ": -3.27
+      "ES": 0,
+      "NQ": 0
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-07-21T13:12",
+    "ts_actualizado": "2026-07-22T13:23",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -1954,14 +1959,14 @@
         "industrials": 0,
         "consumer_disc": 0,
         "utilities": 0,
-        "materials": 0,
-        "realestate": 0
-      }
+        "materials": 0
+      },
+      "ts": "13:23"
     },
-    "macro_bonus_ew": 0.06,
+    "macro_bonus_ew": -0.21,
     "bonos": {
-      "tlt_chg": 0.11,
-      "yield_10y": 4.49
+      "tlt_chg": 0,
+      "yield_10y": 0.0
     },
     "eventos_recientes": [
       {
@@ -2255,7 +2260,8 @@
     "preparado_en": "2026-07-17",
     "num_candidatos_semana": 0,
     "eventos_macro_semana": "Lun DPZ pre (setup debil). Mar GM/3M/HAL. Mie GOOGL+TSLA (headliners), IBM, TXN. Jue INTC/FCX/NEM + ECB. FOMC 28-29 jul (siguiente semana). Sin macro US mayor esta semana.",
-    "riesgo_macro_manana": false
+    "riesgo_macro_manana": false,
+    "fuente": "sentinel-vivo (websearch backdrop + VIX/Mag7 price-check; multi-asset feed throttled)"
   },
   "operaciones_crypto": [
     {
@@ -18845,6 +18851,15 @@
       "cowork_abiertas": 0,
       "vix": 17.1,
       "nota": "EW scrape no disponible en entorno (old. bloqueado, www. renderiza imagen). Sin posiciones paper. Macro normal. TSLA/GOOGL earnings hoy AH."
+    },
+    {
+      "ts": "2026-07-22T13:23:54.052220+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 16.7,
+      "nota": "EW datasource down; monitoring+macro only"
     }
   ],
   "momentum_15m": {
