@@ -136,32 +136,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-28",
-      "tipo": "WHISPER_MISS_DESPITE_CONS_INLINE",
-      "titulo": "MRVL: whisper miss -4.76% confirma whisper > consensus signal (2026-05-28)",
-      "descripcion": "MRVL inline vs cons pero falto whisper $0.84 con $0.80. AH=-4.59%. Guio Q2 muy por encima ($0.88-0.98 vs $0.89 cons, $2.7B vs $2.6B) pero mercado vendio. Narrativa AI bookings no compenso whisper miss.",
-      "accion_futura": "Whisper es metrica primaria. Cuando whisper-cons>5% y actual=cons -> flag SELL_THE_NEWS_LIKELY.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-05-28",
-      "tipo": "MEGA_BEAT_CONTINUATION",
-      "titulo": "SNOW: mega-beat cons +21.9% + AH +37% alpha continuation max (2026-05-28)",
-      "descripcion": "SNOW EPS $0.39 vs cons $0.32. RevYoY +33.5%. $6B AWS deal + Natoma acquisition. AH+37%. Patron: AI infra beat + acquisition + multi-year deal = continuation 2-5d high-prob. Whisper no disponible pero magnitud cons+AH suficiente.",
-      "accion_futura": "SaaS/AI infra: cons>15% + AH>20% + RevYoY>30% -> score continuation max (9.5), sizing 1.0x.",
-      "impacto_score": 0.5
-    },
-    {
-      "fecha": "2026-05-29",
-      "titulo": "pre-market-scan Friday W22: HPE/CRDO Monday earnings extremadamente descontados",
-      "descripcion": "HPE (12 sem alcistas, +83% vs MA200) y CRDO (cerca 52w high, beat magnitude shrinking) ambos con asimetría EW positiva pero score <4 por anti_descuento extremo. Ningún candidato nuevo qualifica para ejecución hoy.",
-      "accion_correctiva": "Cuando vs_MA200>50% Y mom5d>15%, el drift positivo ya está consumado. La lección PFE/OXY se confirma: extensión técnica trumps asimetría EW. NO entrar aunque score base sea alto.",
-      "tickers": [
-        "HPE",
-        "CRDO"
-      ]
-    },
-    {
       "fecha": "2026-05-29",
       "titulo": "stop_loss=None en log aunque Alpaca tiene bracket OCO — desincronización crítica",
       "descripcion": "Operaciones Cowork con bracket OCO en Alpaca (TP limit + SL stop_limit con status='held') quedan en el log con stop_loss=None. El estado 'held' de Alpaca es VÁLIDO (OCO leg waiting), pero el código no lo lee. Sentinel/intraday/pre-close no pueden calcular R ni saber si la posición está protegida.",
@@ -403,6 +377,15 @@
       "tarea_afectada": "pre-market-earnings-scan",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-07-22",
+      "titulo": "Dia de espera pre-earnings mega-caps — 0 exposicion, watch candidates expirados",
+      "descripcion": "GEV/PFBC/T (score 5.5-6.5) muy por debajo del min_signal_score 8.75. Ninguno accionable. IBM preliminar miss confirma cautela en tech pre-report.",
+      "accion_correctiva": "Mantener bar alta; no forzar entradas en dia plano con mega-caps reportando AH.",
+      "tarea_afectada": "post-market-review",
+      "auto_generado": true,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1788,10 +1771,10 @@
       "sizing": "solo si score EW>=8.75 (umbral real alto)",
       "argumento": "GE Vernova reporta BMO 22-jul. Previews muy alcistas (energia/grid, IA capex). Sector industrials +1. RIESGO: nombre muy seguido y ya corrido ('no-brainer buy' = crowded).",
       "sector": "industrials",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-22T16:28:31.393870Z",
       "score_macro_bonus": 1,
-      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana. | Auto-expirado 2026-07-22: watch-only, nunca alcanzo umbral entrada (min 8.75)"
     },
     {
       "ticker": "PFBC",
@@ -1808,10 +1791,10 @@
       "sizing": "solo si score EW>=8.75 (umbral real alto)",
       "argumento": "Preferred Bank (regional) reporta 22-jul BMO. Financials +2 en regimen actual. Nombre poco seguido (encaja filosofia asimetria). Falta whisper/beat-rate EW para confirmar.",
       "sector": "financials",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-22T16:28:31.393892Z",
       "score_macro_bonus": 2,
-      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana. | Auto-expirado 2026-07-22: watch-only, nunca alcanzo umbral entrada (min 8.75)"
     },
     {
       "ticker": "T",
@@ -1828,10 +1811,10 @@
       "sizing": "solo si score EW>=8.75 (umbral real alto)",
       "argumento": "AT&T reporta BMO 22-jul, implied move ~4.3%. Communication neutral (0). Defensivo, poco drift historico. Vigilar solo si EW muestra asimetria.",
       "sector": "communication",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-22T16:28:31.393895Z",
       "score_macro_bonus": 0,
-      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana."
+      "notas": "EW premium no disponible en run autonomo; scoring sobre datos publicos. Pre-market scan valida manana. | Auto-expirado 2026-07-22: watch-only, nunca alcanzo umbral entrada (min 8.75)"
     },
     {
       "ticker": "GOOGL",
@@ -1857,12 +1840,12 @@
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-21",
+    "fecha_actualizacion": "2026-07-22",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 16.7,
+    "vix": 16.84,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-21: Dia risk-on liderado por IA/semiconductores (Micron +10.1%, semis +5%, Nvidia +1.6%) y rally cripto (Coinbase +11.8%, Circle +8.1%). VIX se desploma -7.7% a 17.22 (modo NORMAL). Petroleo en maximo de 5 semanas (~$85 WTI, +2.3%) por tensiones con Iran -> riesgo geopolitico latente y presion inflacionaria. Buenos resultados de 3M, Hasbro y GM. Novo Nordisk demanda a Eli Lilly (healthcare ruido). Manana: pico de earnings con GOOGL y TSLA reportando after-hours (~7.6% implied move en TSLA).",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-22: Sesion plana a la espera de mega-caps. S&P -0.1%, Dow flat, Nasdaq ligeramente abajo. VIX 16.84 (-1.2%, modo NORMAL). Alphabet, Tesla e IBM reportan tras el cierre. Tesla: deliveries record 480K (+25% YoY) pero dudas de margen, movimiento implicito ~7.6%. IBM: preliminar por debajo (rev $17.2B vs $17.66B, EPS $2.93 vs $3.02) -> riesgo sell. Petroleo al alza por aranceles/Iran (presion inflacionaria latente). Sin cambios de regimen: earnings season normal, VIX contenido.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1885,7 +1868,8 @@
       "WebSearch post-market 2026-07-01: TheStreet, CNBC, Kiplinger (NFP jul-2), Schwab; yfinance VIX/indices. Gmail/EW browser no disponibles en sesion aislada.",
       "WebSearch post-market 2026-07-16: mercado, VIX, earnings manana, calendario macro",
       "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview",
-      "WebSearch post-market 2026-07-21: mercado, VIX, earnings manana"
+      "WebSearch post-market 2026-07-21: mercado, VIX, earnings manana",
+      "WebSearch post-market 2026-07-22: mercado + earnings T+1"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -1969,18 +1953,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-03",
-        "evento": "Iran misiles a Kuwait (1 muerto en aeropuerto) y Bahrain (interceptados). EEUU ataca Qeshm Island.",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "energy",
-          "defense",
-          "airlines",
-          "tech_global"
-        ],
-        "fuente": "TheStreet / Times of Israel / CNN / NPR"
-      },
       {
         "fecha": "2026-06-03",
         "evento": "Mercado cierra rojo: SPX -0.74%, NDX -0.89%, RUT -1.25%, oil +3%, VIX +1.90%.",
@@ -2197,6 +2169,17 @@
           "healthcare"
         ],
         "fuente": "TheStreet/CNBC/WebSearch"
+      },
+      {
+        "fecha": "2026-07-22",
+        "evento": "Alphabet/Tesla/IBM reportan AH; IBM preliminar miss; VIX 16.84",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology",
+          "ai_infrastructure",
+          "semiconductors"
+        ],
+        "fuente": "Yahoo/CNBC/Seeking Alpha"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7944,7 +7927,7 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-21",
+    "_ultima_actualizacion": "2026-07-22",
     "rendimiento_global": {
       "equity_paper_actual": 109380.24,
       "equity_paper_inicio_sistema": 105500,
@@ -13296,6 +13279,18 @@
       "trades_paper": [],
       "evento_clave": "Rally IA/semis + cripto; VIX -7.7% a 17.22; petroleo maximo 5 semanas por Iran",
       "leccion": "Dia risk-on sin posiciones abiertas -> 0 exposicion capturo 0 upside. Sistema en modo espera de setups earnings."
+    },
+    {
+      "fecha": "2026-07-22",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 109380.24,
+      "variacion_dia": 68.6,
+      "variacion_pct": 0.06,
+      "vix": 16.84,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "Sesion plana; Alphabet/Tesla/IBM AH; IBM preliminar miss; VIX 16.84",
+      "leccion": "0 posiciones en dia de espera pre-earnings mega-caps. Watch candidates (GEV/PFBC/T) expirados sin ejecucion — todos <umbral 8.75."
     }
   ],
   "alertas_criticas": [
