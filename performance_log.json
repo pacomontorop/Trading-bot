@@ -1837,6 +1837,36 @@
       "earnings_timing": "after-hours",
       "notas": "AH 22-jul (fecha ambigua, algunos 23-jul). Implied move ~7.6%, rango EPS $0.27-$0.74 (enorme incertidumbre margenes). Leccion NFLX: evitar guidance-risk alto priced-in.",
       "motivo_descarte": "mega_cap_AH_priced_in_sell_the_news"
+    },
+    {
+      "ticker": "XOM",
+      "estado": "abierta",
+      "tipo": "macro_oil_spike",
+      "side": "buy",
+      "qty_paper": 6,
+      "precio_entrada": 158.21,
+      "cid_paper": "COWORK-MACRO-OIL_SP-B-202607231116-XOM",
+      "score": 8.5,
+      "razon": "Major integrado petroleo",
+      "ts_entrada": "2026-07-23T15:16:48.128111+00:00",
+      "fuente": "sentinel_macro_oil_spike",
+      "stop_propuesto": 153.46,
+      "tp_propuesto": 166.12
+    },
+    {
+      "ticker": "CVX",
+      "estado": "abierta",
+      "tipo": "macro_oil_spike",
+      "side": "buy",
+      "qty_paper": 5,
+      "precio_entrada": 197.175,
+      "cid_paper": "COWORK-MACRO-OIL_SP-B-202607231116-CVX",
+      "score": 8.0,
+      "razon": "Major integrado petroleo",
+      "ts_entrada": "2026-07-23T15:16:49.067467+00:00",
+      "fuente": "sentinel_macro_oil_spike",
+      "stop_propuesto": 191.26,
+      "tp_propuesto": 207.03
     }
   ],
   "macro_context": {
@@ -1909,11 +1939,15 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-07-22T13:23",
-      "nivel": "alerta",
-      "shocks": [],
-      "bloquear_entradas": false,
-      "nota_ew_scan": "EW scrape NO disponible: old.earningswhispers inaccesible + www.earningswhispers JS-rendered. Sin senal EW cuantificada este ciclo -> 0 ejecuciones (correcto: no operar sin asimetria whisper)."
+      "timestamp": "2026-07-23T11:16",
+      "nivel": "shock",
+      "shocks": [
+        "oil_spike_geopolitical",
+        "earnings_sorpresa_mag7"
+      ],
+      "bloquear_entradas": true,
+      "shock_tipo": "oil_spike",
+      "shock_texto": "Escalating Iran war: Houthi attacks on 2 Saudi tankers in Red Sea; Brent topping ~$100/WTI>$88; Treasury yields at year highs. Broad selloff (Nasdaq -2.1%), GOOGL -7% (capex), TSLA -14% (EPS miss)."
     },
     "macro_score": -0.7,
     "macro_nivel": "alerta",
@@ -18855,6 +18889,16 @@
       "cowork_abiertas": 0,
       "vix": 16.7,
       "nota": "EW datasource down; monitoring+macro only"
+    },
+    {
+      "ts": "2026-07-23T11:16:47.172092+00:00",
+      "alertas": 1,
+      "acciones": 2,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 19.5,
+      "macro_nivel": "shock",
+      "shock_tipo": "oil_spike"
     }
   ],
   "momentum_15m": {
