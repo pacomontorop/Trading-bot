@@ -136,15 +136,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-05-29",
-      "titulo": "stop_loss=None en log aunque Alpaca tiene bracket OCO — desincronización crítica",
-      "descripcion": "Operaciones Cowork con bracket OCO en Alpaca (TP limit + SL stop_limit con status='held') quedan en el log con stop_loss=None. El estado 'held' de Alpaca es VÁLIDO (OCO leg waiting), pero el código no lo lee. Sentinel/intraday/pre-close no pueden calcular R ni saber si la posición está protegida.",
-      "accion_correctiva": "Modificar la lógica de query de stops en TODAS las tareas: incluir orders con status in ('new', 'accepted', 'held', 'pending_new'). En cada PASO de stops review, sincronizar plog['operaciones'][i]['stop_loss'] desde stop_price de Alpaca.",
-      "tarea_afectada": "intraday-monitor, post-market-review, sentinel, pre-close-manager",
-      "auto_generado": true,
-      "aplicada": false
-    },
-    {
       "fecha": "2026-06-03",
       "titulo": "stops emergencia OCO restablecidos para BBAR y P tras cancelación 2-jun",
       "descripcion": "Detectado al inicio post-market: BBAR (494 sh) y P (56 sh) tenían SOLO limit-sell, sin stop. Las ordenes COWORK-STOP-{BBAR,P}-2026-06-02 fueron canceladas durante hoy. Sustituidas por OCO (limit + stop_loss): BBAR stop $17.01 / limit $20.37; P stop $76.50 / limit $98.19. Posiciones ahora protegidas overnight.",
@@ -386,6 +377,15 @@
       "tarea_afectada": "post-market-review",
       "auto_generado": true,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-07-23",
+      "titulo": "Concentracion sectorial: 2/2 slots en energia (XOM+CVX)",
+      "descripcion": "Ambas posiciones paper abiertas hoy son energia (XOM, CVX). Con max_cowork_positions=2, la cartera queda 100% expuesta a un solo sector/driver (precio del petroleo). Riesgo correlacionado no diversificado.",
+      "accion_correctiva": "En market-open-execution y pre-market-scan: al evaluar nueva entrada, si las N posiciones abiertas comparten sector, penalizar nuevos candidatos del mismo sector (-1 pt) o exigir slot libre de distinto sector. Hoy sin impacto (0 slots libres).",
+      "tarea_afectada": "market-open-execution",
+      "auto_generado": true,
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1851,7 +1851,11 @@
       "ts_entrada": "2026-07-23T15:16:48.128111+00:00",
       "fuente": "sentinel_macro_oil_spike",
       "stop_propuesto": 153.46,
-      "tp_propuesto": 166.12
+      "tp_propuesto": 166.12,
+      "precio_actual": 156.9766,
+      "pnl_latente_pct": -0.76,
+      "stop_price": 153.46,
+      "ultima_revision": "2026-07-23"
     },
     {
       "ticker": "CVX",
@@ -1866,16 +1870,40 @@
       "ts_entrada": "2026-07-23T15:16:49.067467+00:00",
       "fuente": "sentinel_macro_oil_spike",
       "stop_propuesto": 191.26,
-      "tp_propuesto": 207.03
+      "tp_propuesto": 207.03,
+      "precio_actual": 194.27,
+      "pnl_latente_pct": -1.49,
+      "stop_price": 191.26,
+      "ultima_revision": "2026-07-23"
+    },
+    {
+      "ticker": "AXP",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-07-23",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-24",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_solo_sin_slot",
+      "ventana_entrada": "2026-07-24 09:40-10:30 ET",
+      "stop_tipo": "ATRx2.5 en ventana apertura (si hubiera slot)",
+      "sizing": "N/A - sin slot",
+      "argumento": "Financials (macro +2). Consenso EPS $4.40, rev $19.62B (+9.9% YoY). Beat 3/4 ult Q, sorpresa media 4%. Riesgo sell-the-news historico y sin whisper number fiable -> por debajo de umbral 8.75.",
+      "sector": "financials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-24T16:28:46.285607Z",
+      "score_macro_bonus": 2,
+      "notas": "Fuente: websearch fallback (EW sin sesion). 2/2 slots ocupados por XOM/CVX -> solo vigilancia."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-22",
+    "fecha_actualizacion": "2026-07-23",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 16.84,
+    "vix": 16.64,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-22: Sesion plana a la espera de mega-caps. S&P -0.1%, Dow flat, Nasdaq ligeramente abajo. VIX 16.84 (-1.2%, modo NORMAL). Alphabet, Tesla e IBM reportan tras el cierre. Tesla: deliveries record 480K (+25% YoY) pero dudas de margen, movimiento implicito ~7.6%. IBM: preliminar por debajo (rev $17.2B vs $17.66B, EPS $2.93 vs $3.02) -> riesgo sell. Petroleo al alza por aranceles/Iran (presion inflacionaria latente). Sin cambios de regimen: earnings season normal, VIX contenido.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-23: Sesion levemente negativa. S&P 500 7,498.96 (-0.1%), Nasdaq 25,690.90 (-0.6%), Dow ~52,218 (flat). Presion por subida del petroleo, rendimientos de bonos al alza y dudas sobre capex de IA (Big Tech blando). VIX 16.64 (-2.4%, modo NORMAL). Petroleo elevado favorece energia (XOM/CVX en cartera). Manana viernes 24-jul: calendario ligero, AXP y NEE pre-market; macro solo New Home Sales 10:00 ET.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1899,7 +1927,8 @@
       "WebSearch post-market 2026-07-16: mercado, VIX, earnings manana, calendario macro",
       "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview",
       "WebSearch post-market 2026-07-21: mercado, VIX, earnings manana",
-      "WebSearch post-market 2026-07-22: mercado + earnings T+1"
+      "WebSearch post-market 2026-07-22: mercado + earnings T+1",
+      "WebSearch post-market 2026-07-23: cierre mercado + calendario earnings 24-jul + preview AXP"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -1987,15 +2016,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-03",
-        "evento": "Mercado cierra rojo: SPX -0.74%, NDX -0.89%, RUT -1.25%, oil +3%, VIX +1.90%.",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "all"
-        ],
-        "fuente": "Motley Fool / CNBC"
-      },
       {
         "fecha": "2026-06-03",
         "evento": "AVGO reporta AH: rev $22.187B vs $22.27B est (narrow miss); EPS expected beat. CRWD/VEEV pendientes.",
@@ -2214,6 +2234,17 @@
           "semiconductors"
         ],
         "fuente": "Yahoo/CNBC/Seeking Alpha"
+      },
+      {
+        "fecha": "2026-07-23",
+        "evento": "Petroleo elevado + yields al alza presionan Big Tech; VIX baja a 16.64",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "energy",
+          "technology",
+          "ai_infrastructure"
+        ],
+        "fuente": "Yahoo Finance/CNBC"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7961,12 +7992,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-22",
+    "_ultima_actualizacion": "2026-07-23",
     "rendimiento_global": {
-      "equity_paper_actual": 109380.24,
+      "equity_paper_actual": 109357.07,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 3880.24,
-      "pnl_total_paper_pct": 3.68,
+      "pnl_total_paper_dolares": 3857.07,
+      "pnl_total_paper_pct": 3.66,
       "equity_real_actual": 4548.03,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
@@ -13325,6 +13356,18 @@
       "trades_paper": [],
       "evento_clave": "Sesion plana; Alphabet/Tesla/IBM AH; IBM preliminar miss; VIX 16.84",
       "leccion": "0 posiciones en dia de espera pre-earnings mega-caps. Watch candidates (GEV/PFBC/T) expirados sin ejecucion — todos <umbral 8.75."
+    },
+    {
+      "fecha": "2026-07-23",
+      "dia": "Thursday",
+      "equity_paper_cierre": 109357.07,
+      "variacion_dia": -567.57,
+      "variacion_pct": -0.02,
+      "vix": 16.64,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "Sesion levemente negativa; petroleo alto + yields presionan Big Tech; VIX 16.64",
+      "leccion": "Cartera 100% concentrada en energia (XOM+CVX = 2/2 slots): vigilar riesgo correlacionado por petroleo."
     }
   ],
   "alertas_criticas": [
@@ -13585,6 +13628,15 @@
       "archivo_modificado": "performance_log",
       "impacto_esperado": "Evitar entradas en earnings mega-cap descontados; enfocar capital en asimetrias menos seguidas.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-07-23",
+      "tipo": "regla_añadida",
+      "descripcion": "Regla de diversificacion sectorial: penalizar -1pt candidatos cuyo sector ya ocupa todos los slots abiertos.",
+      "evidencia": "Hoy 2026-07-23: XOM+CVX (energia) ocupan 2/2 slots -> concentracion total en energia con petroleo volatil.",
+      "archivo_modificado": "performance_log (lecciones_sistema) — documentada para market-open-execution",
+      "impacto_esperado": "Menor drawdown correlacionado; mejor risk-adjusted return al diversificar drivers.",
+      "implementada": false
     }
   ],
   "industry_intelligence": {
@@ -14449,6 +14501,16 @@
             "BTCUSD(dust)"
           ],
           "nota": "BTCUSD real es polvo (~$0.55, 0.0000083 BTC). No accionable. Sin stop no relevante."
+        },
+        {
+          "fecha": "2026-07-23",
+          "bot_positions": 0,
+          "cowork_positions": 2,
+          "posiciones_sin_stop": 0,
+          "tickers": [
+            "CVX",
+            "XOM"
+          ]
         }
       ]
     },
@@ -15158,6 +15220,14 @@
       "bugs_pendientes": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Documentar candidatos AH mega-cap (GOOGL/TSLA) como descartados por sell-the-news/guidance-risk en lugar de ignorarlos, para trazabilidad."
+    },
+    {
+      "fecha": "2026-07-23",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 25,
+      "candidatos_activos": 1,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Regla diversificacion sectorial (documentada)"
     }
   ],
   "motor_alpha_diario": {
@@ -20871,6 +20941,13 @@
       "fecha": "2026-07-21",
       "score_sistema": 7.0,
       "nota": "Run autonomo post-market. Cuentas planas, sin stops que colocar. Macro+KPIs+candidatos actualizados. Sin acciones de orden (politica: no ejecutar ordenes).",
+      "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-07-23",
+      "score_sistema": 9.0,
+      "resumen": "post-market OK. 2 posiciones protegidas (stops verificados via API). 0 earnings hoy en cartera. Manana light (AXP/NEE). Slots 2/2 llenos.",
+      "posiciones_sin_stop": 0,
       "tareas_con_issues": []
     }
   ]
