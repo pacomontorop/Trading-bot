@@ -137,15 +137,6 @@
   "lecciones_sistema": [
     {
       "fecha": "2026-06-03",
-      "titulo": "stops emergencia OCO restablecidos para BBAR y P tras cancelación 2-jun",
-      "descripcion": "Detectado al inicio post-market: BBAR (494 sh) y P (56 sh) tenían SOLO limit-sell, sin stop. Las ordenes COWORK-STOP-{BBAR,P}-2026-06-02 fueron canceladas durante hoy. Sustituidas por OCO (limit + stop_loss): BBAR stop $17.01 / limit $20.37; P stop $76.50 / limit $98.19. Posiciones ahora protegidas overnight.",
-      "accion_correctiva": "Añadir verificación en intraday-monitor: cuando se cancele una orden COWORK-STOP-*, auto-detectar y replazar con nueva OCO en la siguiente iteración.",
-      "tarea_afectada": "intraday-monitor, post-market-review",
-      "auto_generado": false,
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-06-03",
       "titulo": "Régimen cambia: AI_TECH_RALLY → GEOPOLITICAL_UNCERTAINTY_RENEWED",
       "descripcion": "Iran lanza misiles a Kuwait/Bahrain (1 muerto en Kuwait); EEUU ataca Qeshm Island. Mercado rompe racha de récords: SPX -0.74%, RUT -1.25%, oil +3%. Sectores defensivos (energy, defense, healthcare, staples) suben; tech/fin/small caps bajan.",
       "accion_correctiva": "Sector_prioridades actualizado: defense+2, energy+2, ai/tech bajado +2→+1, consumer_disc -1, financials -1. Mañana priorizar candidatos en sectores defensivos.",
@@ -386,6 +377,15 @@
       "tarea_afectada": "market-open-execution",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-07-24",
+      "titulo": "Posiciones XOM/CVX overnight SIN stop de bajada (solo TP limit)",
+      "descripcion": "Al cierre, XOM y CVX tenian solo orden limit de take-profit y ninguna proteccion de bajada. Riesgo de gap de fin de semana no cubierto.",
+      "accion_correctiva": "post-market convirtio ambas a OCO (TP + stop_limit GTC). REGLA: toda entrada Cowork debe salir como bracket/OCO con stop, no solo TP. Verificar en market-open-execution que cada fill quede con stop.",
+      "tarea_afectada": "market-open-execution",
+      "auto_generado": true,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1854,8 +1854,11 @@
       "tp_propuesto": 166.12,
       "precio_actual": 156.9766,
       "pnl_latente_pct": -0.76,
-      "stop_price": 153.46,
-      "ultima_revision": "2026-07-23"
+      "stop_price": 151.8,
+      "ultima_revision": "2026-07-23",
+      "stop_placed_emergencia": true,
+      "stop_tipo_orden": "OCO stop_limit GTC (post-market 2026-07-24)",
+      "notas": "2026-07-24: OCO stop colocado @ 151.8 (posicion estaba sin stop de bajada, solo TP)"
     },
     {
       "ticker": "CVX",
@@ -1873,8 +1876,11 @@
       "tp_propuesto": 207.03,
       "precio_actual": 194.27,
       "pnl_latente_pct": -1.49,
-      "stop_price": 191.26,
-      "ultima_revision": "2026-07-23"
+      "stop_price": 189.2,
+      "ultima_revision": "2026-07-23",
+      "stop_placed_emergencia": true,
+      "stop_tipo_orden": "OCO stop_limit GTC (post-market 2026-07-24)",
+      "notas": "2026-07-24: OCO stop colocado @ 189.2 (posicion estaba sin stop de bajada, solo TP)"
     },
     {
       "ticker": "AXP",
@@ -1895,15 +1901,57 @@
       "expira": "2026-07-24T16:28:46.285607Z",
       "score_macro_bonus": 2,
       "notas": "Fuente: websearch fallback (EW sin sesion). 2/2 slots ocupados por XOM/CVX -> solo vigilancia."
+    },
+    {
+      "ticker": "CINF",
+      "score": 6.8,
+      "sector": "financials",
+      "estado": "vigilar_cauteloso",
+      "detectado_por": "post-market-review",
+      "fecha_deteccion": "2026-07-24",
+      "earnings_fecha": "2026-07-27",
+      "earnings_timing": "pre-market",
+      "expira": "2026-07-28T20:28:39.950064Z",
+      "accion_recomendada": "watch_only_sin_slot",
+      "argumento": "Cincinnati Financial reporta 27-jul; financials priority +2. Requiere validar whisper/beat en pre-market EW.",
+      "notas": "SLOTS LLENOS (XOM+CVX ocupan 2/2). Watch-only hasta que se libere slot. Semana FOMC riesgo_macro=TRUE -> requiere score>=8.75 y validacion EW premium para entrar."
+    },
+    {
+      "ticker": "WELL",
+      "score": 6.5,
+      "sector": "healthcare",
+      "estado": "vigilar_cauteloso",
+      "detectado_por": "post-market-review",
+      "fecha_deteccion": "2026-07-24",
+      "earnings_fecha": "2026-07-27",
+      "earnings_timing": "pre-market",
+      "expira": "2026-07-28T20:28:39.950064Z",
+      "accion_recomendada": "watch_only_sin_slot",
+      "argumento": "Welltower reporta 27-jul; healthcare priority +2 (REIT salud). Validar EW.",
+      "notas": "SLOTS LLENOS (XOM+CVX ocupan 2/2). Watch-only hasta que se libere slot. Semana FOMC riesgo_macro=TRUE -> requiere score>=8.75 y validacion EW premium para entrar."
+    },
+    {
+      "ticker": "BKR",
+      "score": 6.5,
+      "sector": "energy",
+      "estado": "vigilar_cauteloso",
+      "detectado_por": "post-market-review",
+      "fecha_deteccion": "2026-07-24",
+      "earnings_fecha": "2026-07-27",
+      "earnings_timing": "pre-market",
+      "expira": "2026-07-28T20:28:39.950064Z",
+      "accion_recomendada": "watch_only_sin_slot",
+      "argumento": "Baker Hughes reporta 27-jul; energy +1, alineado con backdrop crudo. Validar EW.",
+      "notas": "SLOTS LLENOS (XOM+CVX ocupan 2/2). Watch-only hasta que se libere slot. Semana FOMC riesgo_macro=TRUE -> requiere score>=8.75 y validacion EW premium para entrar."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-23",
+    "fecha_actualizacion": "2026-07-24",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
     "vix": 18.7,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-23: Sesion levemente negativa. S&P 500 7,498.96 (-0.1%), Nasdaq 25,690.90 (-0.6%), Dow ~52,218 (flat). Presion por subida del petroleo, rendimientos de bonos al alza y dudas sobre capex de IA (Big Tech blando). VIX 16.64 (-2.4%, modo NORMAL). Petroleo elevado favorece energia (XOM/CVX en cartera). Manana viernes 24-jul: calendario ligero, AXP y NEE pre-market; macro solo New Home Sales 10:00 ET.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-24: Repunte de petroleo por escalada geopolitica (tension suministro) presiono renta variable el jueves (-1.2% S&P), con estabilizacion el viernes. VIX ~18.7 (+12%). Backdrop de crudo al alza es SOPORTE para energia (XOM/CVX en cartera). SEMANA ENTRANTE PESADA: FOMC 28-29 jul (decision miercoles 29, 14:00 ET; rango actual 3.50-3.75%, inflacion aun elevada), GDP Q2 + PCE 30 jul. riesgo_macro=TRUE toda la semana -> cautela con nuevas entradas antes del FOMC.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -1928,7 +1976,8 @@
       "WebSearch post-market 2026-07-17: VIX + week-ahead + DPZ preview",
       "WebSearch post-market 2026-07-21: mercado, VIX, earnings manana",
       "WebSearch post-market 2026-07-22: mercado + earnings T+1",
-      "WebSearch post-market 2026-07-23: cierre mercado + calendario earnings 24-jul + preview AXP"
+      "WebSearch post-market 2026-07-23: cierre mercado + calendario earnings 24-jul + preview AXP",
+      "WebSearch post-market 2026-07-24: VIX/mercado, earnings 27-jul, FOMC 28-29"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -1964,7 +2013,9 @@
     ],
     "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
     "dias_riesgo_macro": [
-      "2026-07-02 (NFP junio 8:30 ET — adelantado por festivo)"
+      "2026-07-02 (NFP junio 8:30 ET — adelantado por festivo)",
+      "2026-07-29",
+      "2026-07-30"
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
@@ -2016,18 +2067,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-03",
-        "evento": "AVGO reporta AH: rev $22.187B vs $22.27B est (narrow miss); EPS expected beat. CRWD/VEEV pendientes.",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "semiconductors",
-          "ai_infrastructure",
-          "cybersecurity",
-          "software"
-        ],
-        "fuente": "Benzinga / Investing.com"
-      },
       {
         "fecha": "2026-06-04",
         "evento": "Israel-Líbano alto el fuego + AVGO selloff → rotación clara tech→defensivos. Dow record 51,561",
@@ -2245,6 +2284,17 @@
           "ai_infrastructure"
         ],
         "fuente": "Yahoo Finance/CNBC"
+      },
+      {
+        "fecha": "2026-07-24",
+        "evento": "Repunte crudo por geopolitica presiona equities; VIX 18.7. FOMC 28-29 jul en el horizonte.",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "energy",
+          "defense",
+          "technology"
+        ],
+        "fuente": "Yahoo/CNBC/Fed"
       }
     ],
     "macro_score_pm": -0.8,
@@ -7992,13 +8042,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-23",
+    "_ultima_actualizacion": "2026-07-24",
     "rendimiento_global": {
-      "equity_paper_actual": 109357.07,
+      "equity_paper_actual": 109361.89,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 3857.07,
+      "pnl_total_paper_dolares": 3861.89,
       "pnl_total_paper_pct": 3.66,
-      "equity_real_actual": 4548.03,
+      "equity_real_actual": 4548.01,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -13368,6 +13418,18 @@
       "trades_paper": [],
       "evento_clave": "Sesion levemente negativa; petroleo alto + yields presionan Big Tech; VIX 16.64",
       "leccion": "Cartera 100% concentrada en energia (XOM+CVX = 2/2 slots): vigilar riesgo correlacionado por petroleo."
+    },
+    {
+      "fecha": "2026-07-24",
+      "dia": "Friday",
+      "equity_paper_cierre": 109361.89,
+      "variacion_dia": 69.31,
+      "variacion_pct": 0.06,
+      "vix": 18.7,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "Crudo al alza por geopolitica presiona equities; energia soportada. FOMC 28-29 jul en el horizonte.",
+      "leccion": "XOM/CVX quedaron sin stop de bajada overnight -> convertidas a OCO. Toda entrada debe salir como bracket con stop."
     }
   ],
   "alertas_criticas": [
@@ -15228,6 +15290,13 @@
       "candidatos_activos": 1,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Regla diversificacion sectorial (documentada)"
+    },
+    {
+      "fecha": "2026-07-24",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 25,
+      "candidatos_activos": 4,
+      "mejora_hoy": "OCO stops colocados en XOM/CVX; regla bracket-obligatorio reforzada; watch candidates lunes cargados"
     }
   ],
   "motor_alpha_diario": {
