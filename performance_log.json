@@ -136,15 +136,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-06-03",
-      "titulo": "Régimen cambia: AI_TECH_RALLY → GEOPOLITICAL_UNCERTAINTY_RENEWED",
-      "descripcion": "Iran lanza misiles a Kuwait/Bahrain (1 muerto en Kuwait); EEUU ataca Qeshm Island. Mercado rompe racha de récords: SPX -0.74%, RUT -1.25%, oil +3%. Sectores defensivos (energy, defense, healthcare, staples) suben; tech/fin/small caps bajan.",
-      "accion_correctiva": "Sector_prioridades actualizado: defense+2, energy+2, ai/tech bajado +2→+1, consumer_disc -1, financials -1. Mañana priorizar candidatos en sectores defensivos.",
-      "tarea_afectada": "pre-market-earnings-scan, market-open-execution",
-      "auto_generado": false,
-      "aplicada": true
-    },
-    {
       "fecha": "2026-06-04",
       "id": "L_2026-06-04_D1_VALIDADA_CIEN",
       "titulo": "REGLA D-1 validada empíricamente con CIEN BMO 6/4",
@@ -386,6 +377,15 @@
       "tarea_afectada": "market-open-execution",
       "auto_generado": true,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-07-27",
+      "titulo": "Desajuste stop_placed_emergencia vs orden real (XOM)",
+      "descripcion": "El log marcaba stop_placed_emergencia=true para XOM/CVX pero Alpaca no mostraba orden stop activa, solo TP limit. Las posiciones quedaron sin proteccion de bajada overnight (confirma leccion 07-24).",
+      "accion_correctiva": "En intraday/pre-close: tras colocar stop, releer /orders y confirmar type='stop'; si no aparece, reintentar y NO marcar el flag hasta confirmar order_id activo.",
+      "tarea_afectada": "intraday-monitor, pre-close-manager",
+      "auto_generado": true,
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1852,17 +1852,18 @@
       "fuente": "sentinel_macro_oil_spike",
       "stop_propuesto": 153.46,
       "tp_propuesto": 166.12,
-      "precio_actual": 156.9766,
-      "pnl_latente_pct": -0.76,
+      "precio_actual": 154.77,
+      "pnl_latente_pct": -2.15,
       "stop_price": 151.8,
-      "ultima_revision": "2026-07-23",
+      "ultima_revision": "2026-07-27",
       "stop_placed_emergencia": true,
       "stop_tipo_orden": "OCO stop_limit GTC (post-market 2026-07-24)",
-      "notas": "2026-07-24: OCO stop colocado @ 151.8 (posicion estaba sin stop de bajada, solo TP)"
+      "notas": "2026-07-24: OCO stop colocado @ 151.8 (posicion estaba sin stop de bajada, solo TP)",
+      "alerta_stop": "Alpaca solo muestra SELL LIMIT (TP) activo, NO hay stop de bajada. El flag stop_placed_emergencia del log NO se corresponde con una orden real. Requiere verificacion manual."
     },
     {
       "ticker": "CVX",
-      "estado": "abierta",
+      "estado": "cerrada",
       "tipo": "macro_oil_spike",
       "side": "buy",
       "qty_paper": 5,
@@ -1880,7 +1881,12 @@
       "ultima_revision": "2026-07-23",
       "stop_placed_emergencia": true,
       "stop_tipo_orden": "OCO stop_limit GTC (post-market 2026-07-24)",
-      "notas": "2026-07-24: OCO stop colocado @ 189.2 (posicion estaba sin stop de bajada, solo TP)"
+      "notas": "2026-07-24: OCO stop colocado @ 189.2 (posicion estaba sin stop de bajada, solo TP)",
+      "precio_salida": 191.064,
+      "pnl_pct": -3.1,
+      "pnl_abs": -30.56,
+      "fecha_salida": "2026-07-27",
+      "leccion": "Vendida a 191.06 (por encima del stop 189.2). Entrada 07-23 en macro_oil_spike resulto en -3.1%: energia debil, sin catalizador. Concentracion 2/2 slots en energia fue error."
     },
     {
       "ticker": "AXP",
@@ -1897,10 +1903,10 @@
       "sizing": "N/A - sin slot",
       "argumento": "Financials (macro +2). Consenso EPS $4.40, rev $19.62B (+9.9% YoY). Beat 3/4 ult Q, sorpresa media 4%. Riesgo sell-the-news historico y sin whisper number fiable -> por debajo de umbral 8.75.",
       "sector": "financials",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-24T16:28:46.285607Z",
       "score_macro_bonus": 2,
-      "notas": "Fuente: websearch fallback (EW sin sesion). 2/2 slots ocupados por XOM/CVX -> solo vigilancia."
+      "notas": "Fuente: websearch fallback (EW sin sesion). 2/2 slots ocupados por XOM/CVX -> solo vigilancia. | Auto-expirado 2026-07-27"
     },
     {
       "ticker": "CINF",
@@ -1946,12 +1952,12 @@
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-24",
+    "fecha_actualizacion": "2026-07-27",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
     "vix": 18.7,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-24: Repunte de petroleo por escalada geopolitica (tension suministro) presiono renta variable el jueves (-1.2% S&P), con estabilizacion el viernes. VIX ~18.7 (+12%). Backdrop de crudo al alza es SOPORTE para energia (XOM/CVX en cartera). SEMANA ENTRANTE PESADA: FOMC 28-29 jul (decision miercoles 29, 14:00 ET; rango actual 3.50-3.75%, inflacion aun elevada), GDP Q2 + PCE 30 jul. riesgo_macro=TRUE toda la semana -> cautela con nuevas entradas antes del FOMC.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-27: Semana FOMC (reunion Tue 28-Wed 29 jul, decision miercoles 14:00 ET, sin SEP/dot plot). CME FedWatch ~64% probabilidad de mantener tipos (bajo desde 87% hace una semana). Martes reportan pre-market mega-caps: KO, BA, UPS, PYPL, V, F, GLW, ECL, HLT, RCL. Consumer Confidence martes; GDP 1a lectura + PCE jueves 30. VIX ~18.7 (ultimo confirmado 07-24). Sesgo: CAUTELA — evitar nuevas entradas earnings overnight que crucen la decision FOMC del miercoles.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -2067,19 +2073,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-04",
-        "evento": "Israel-Líbano alto el fuego + AVGO selloff → rotación clara tech→defensivos. Dow record 51,561",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "healthcare",
-          "financials",
-          "real_estate",
-          "semiconductors",
-          "technology"
-        ],
-        "fuente": "TheStreet/CNBC/WebSearch"
-      },
       {
         "fecha": "2026-06-05",
         "evento": "NFP fuerte -> temor subida tipos + selloff AI/semis (-$1T) + secundaria Meta. SPX -2.64%, Nasdaq -4%, VIX ~21.",
@@ -2295,6 +2288,15 @@
           "technology"
         ],
         "fuente": "Yahoo/CNBC/Fed"
+      },
+      {
+        "fecha": "2026-07-27",
+        "evento": "Inicio semana FOMC (decision miercoles, sin dot plot). Mega-cap earnings martes.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "all"
+        ],
+        "fuente": "WebSearch (Kiplinger/CME)"
       }
     ],
     "macro_score_pm": -0.8,
@@ -13430,6 +13432,20 @@
       "trades_paper": [],
       "evento_clave": "Crudo al alza por geopolitica presiona equities; energia soportada. FOMC 28-29 jul en el horizonte.",
       "leccion": "XOM/CVX quedaron sin stop de bajada overnight -> convertidas a OCO. Toda entrada debe salir como bracket con stop."
+    },
+    {
+      "fecha": "2026-07-27",
+      "dia": "Monday",
+      "equity_paper_cierre": 109329.15,
+      "variacion_dia": 33.47,
+      "variacion_pct": 0.03,
+      "vix": 18.7,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [
+        "CVX sell 5 @ $191.064 (cierre, -3.1%)"
+      ],
+      "evento_clave": "Semana FOMC arranca; CVX cerrada con perdida, XOM sigue sin stop de bajada.",
+      "leccion": "Verificar que 'stop_placed_emergencia' del log = orden real en Alpaca; hubo desajuste en XOM."
     }
   ],
   "alertas_criticas": [
@@ -13473,6 +13489,14 @@
       ],
       "mensaje": "BBAR posición bot (494 shares, -0.89%) tiene TP limit $20.37 pero NO stop. Bot debe colocar stop mañana.",
       "accion_tomada": "Alerta registrada. Bot intraday debe verificar.",
+      "resuelto": false
+    },
+    {
+      "fecha": "2026-07-27",
+      "tipo": "XOM_SIN_STOP_DOWNSIDE",
+      "urgencia": "ALTA",
+      "mensaje": "XOM (6 sh, entry 158.17, now 154.77, uPL $-20.40/-2.15%) SIN stop de bajada activo en Alpaca. Solo TP limit.",
+      "accion_requerida": "Usuario debe colocar stop GTC manualmente (~151.8). Post-market NO coloca ordenes (guardrail financiero).",
       "resuelto": false
     }
   ],
