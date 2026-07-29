@@ -2099,23 +2099,19 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-07-29T12:21",
+      "timestamp": "2026-07-29T14:16",
       "nivel": "alerta",
-      "shocks": [],
+      "shocks": [
+        "oil_spike_geopolitico",
+        "fed_hawkish_dissents",
+        "semis_selloff"
+      ],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0,
-      "vix": 20.1,
-      "spy_chg": -0.87,
-      "contexto": "FOMC 14:00 ET (esperado hold 3.50-3.75%); selloff chips Asia (Kospi -9%); oil up US-Iran/Houthi Red Sea; NVDA -2.9% 24h",
-      "earnings_ah_hoy_watch": [
-        "META",
-        "MSFT",
-        "QCOM",
-        "ARM",
-        "HOOD",
-        "ORLY"
-      ]
+      "score_min_paper_efectivo": 8.75,
+      "score_min_real_efectivo": 99.0,
+      "nota": "ALERTA no SHOCK: VIX 19.4 en calma, SPY +0.2% intradia, sin triggers cuantitativos de shock. Cowork aplico juicio en vez de forzar macro-plays.",
+      "vix": 19.4,
+      "oil_wti": 84.62999725341797
     },
     "macro_score": -0.7,
     "macro_nivel": "alerta",
@@ -19175,6 +19171,16 @@
       "cowork_abiertas": 0,
       "vix": 20.1,
       "nota": "EW scrape no disponible en sandbox (old. bloqueado, www. JS-rendered). Macro ALERTA: FOMC 14:00 ET, chip selloff Asia, oil up Iran/Houthi. Sin entradas nuevas. Real trades no ejecutadas autonomamente por politica de seguridad."
+    },
+    {
+      "ts": "2026-07-29T14:16:00.664627+00:00",
+      "alertas": 3,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 19.4,
+      "nivel": "alerta",
+      "nota": "Run por Cowork/Claude: EW source bloqueado, sin trades; macro alerta oil/geopolitico + Fed"
     }
   ],
   "momentum_15m": {
@@ -19774,6 +19780,72 @@
       "ts_detected": "2026-06-24T09:15:01.667183+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preopen-scan"
+    },
+    {
+      "ticker": "MSFT",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
+    },
+    {
+      "ticker": "META",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
+    },
+    {
+      "ticker": "SBUX",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
+    },
+    {
+      "ticker": "FTNT",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
+    },
+    {
+      "ticker": "QCOM",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
+    },
+    {
+      "ticker": "ARM",
+      "score": null,
+      "tipo": "earnings_watch_ah",
+      "earnings_fecha": "2026-07-29",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta AH hoy — EW whisper no disponible (fuente bloqueada); sin entrada pre-earnings por riesgo de gap",
+      "ts_detected": "2026-07-29T14:16:00.664627+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-cal-yf"
     }
   ],
   "skip_analysis": {
