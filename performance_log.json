@@ -136,35 +136,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-06-04",
-      "id": "L_2026-06-04_D1_VALIDADA_CIEN",
-      "titulo": "REGLA D-1 validada empíricamente con CIEN BMO 6/4",
-      "descripcion": "CIEN reportó BMO 6/4 con asim_whisper +6.1%, pero la reacción real fue -19.36% intraday (gap -10.96% en apertura). El sentinel detectó la señal pero score 4.5 < umbral 8.5 evitó la entrada. Tres señales claves: (a) asimetría positiva NO garantiza reacción positiva, (b) el umbral 8.5 actúa correctamente como filtro de calidad, (c) REGLA D-1 también habría protegido — entrar el día antes con asim+6% en mañana BMO también habría sido pérdida.",
-      "accion_correctiva": "Mantener score≥8.75 (paper) y score≥9.0 (real). Reforzar REGLA D-1: no entrar AH mismo día. Considerar añadir filtro beat_rate>70% Y avg_move_dir>0% para evitar nombres como LULU/DOCU con beat consistente pero reacción negativa.",
-      "aplicada": true,
-      "fuente_validacion": "CIEN 2026-06-04 BMO post-mortem"
-    },
-    {
-      "fecha": "2026-06-04",
-      "titulo": "Beat-and-raise insuficiente si expectativas infladas (CIEN -17% pese a beat +10% + guidance raised)",
-      "descripcion": "CIEN reportó Q2 con BEAT consenso +10% (EPS $1.64 vs $1.49), revenue $1.57B +40% YoY, y RAISED FY26 guidance a $6.3B (+32% YoY). Stock cayó -17% intraday. Razón: stock subió +165% en 2026, el mercado quería ver 'materially better than expected'. Mismo patrón que AVGO ayer. Score 5.5 (vigilar_cauteloso) FUE CORRECTO — el sistema EVITÓ una pérdida -17% potencial.",
-      "accion_correctiva": "AÑADIR al BLOQUE 7 (Factores de riesgo) en pre-market-earnings-scan: Si ticker en sector AI/semi/optical Y rally YTD > +100% → -2 pts. AI hyperscale plays están entrando en fase 'sell the news' — descontar agresivo.",
-      "tarea_afectada": "pre-market-earnings-scan",
-      "aplicada": false,
-      "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
-      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - lección CIEN 2026-06-04 -17% post-beat-raise)",
-      "auto_generado": false
-    },
-    {
-      "fecha": "2026-06-04",
-      "titulo": "Geopolitical relief + AI selloff → rotación CLARA hacia defensivos (Healthcare, Financials, RE +1.87-3.14%)",
-      "descripcion": "Hoy Dow +1.73% (record 51,561) lidera SPY +0.39%. Nasdaq -0.09%, QQQ -0.48%, XLK -1.58%. Healthcare +3.14%, Financials +2.67%, Real Estate +1.87% lideraron. Tech/Semis en venta. El régimen ha cambiado: relief geopolítico + drenaje de la euforia AI.",
-      "accion_correctiva": "macro_context sector_prioridades actualizado: healthcare/financials/real_estate +2, tech/semi -1/-2, energy/defense rebajados.",
-      "tarea_afectada": "post-market-review",
-      "aplicada": true,
-      "auto_generado": false
-    },
-    {
       "fecha": "2026-06-05",
       "titulo": "Spike VIX por datos de empleo: rate-fear risk-off castiga tech/semis, premia defensivos",
       "descripcion": "NFP fuerte 2026-06-05 -> temor a subida de tipos. Nasdaq -4%, semis -$1T, VIX 15->21. Holdings defensivos (GO staples +10.5%) resistieron; nombres debiles (P) saltaron stop. Confirma sector_prioridades: semis -2, tech -1, real_estate bajado a +1 por sensibilidad a tipos.",
@@ -401,6 +372,15 @@
       "descripcion": "Paper cerro XOM (sell 6 @153.26, -3.13%, -1.04R) via stop/OCO. 0 posiciones abiertas al cierre. Rotacion fuerte out-of-semis (MU/AMD -8%). Candidatos del dia (CLS/CINF/WELL/BKR) no ejecutados y expirados.",
       "accion_correctiva": "Mañana 29-jul es dia FOMC (14:00 ET) + earnings MSFT/META/ARM: mantener riesgo_macro=TRUE, NO nuevas entradas antes de la decision; exigir score>=9.0 para cualquier entrada post-FOMC. Evitar holds mega-cap AH.",
       "tarea_afectada": "market-open-execution / pre-market-earnings-scan",
+      "auto_generado": true,
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-07-29",
+      "titulo": "[2026-07-29] Post-market sin EW premium/Gmail — candidatos scoreados solo con macro",
+      "descripcion": "Sesion aislada sin EarningsWhispers premium ni Gmail. MA/RACE/REGN/HII registrados vigilar_cauteloso (sin whisper/beat rate/reaccion). Score no alcanza umbral entrada (min_signal_score=8.75).",
+      "accion_correctiva": "pre-market-scan y market-open DEBEN re-scorear con datos EW live manana antes de ejecutar. No entrar con score parcial de post-market.",
+      "tarea_afectada": "pre-market-earnings-scan | market-open-execution",
       "auto_generado": true,
       "aplicada": false
     }
@@ -2022,15 +2002,107 @@
       "max_hold_dias": 3,
       "play_horizon": "post_earnings_1_3d",
       "score_datos": "proxy_consensus_ah"
+    },
+    {
+      "ticker": "MA",
+      "score": 7.5,
+      "score_ajustado": 7.5,
+      "score_total": 9.5,
+      "fecha_deteccion": "2026-07-29",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-30",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura_reScore_con_EW",
+      "ventana_entrada": "2026-07-30 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Mastercard pre-market. Sector financials +2 (hold hawkish favorece higher-for-longer). Payments secular growth, beater consistente. FALTA whisper EW para completar scoring.",
+      "sector": "financials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-30T16:28:16.110216Z",
+      "score_macro_bonus": 2,
+      "consenso": "$4.77 EPS / $9.06B rev",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "conviction_tier": "vigilancia",
+      "sizing_multiplier": 0.0
+    },
+    {
+      "ticker": "RACE",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_total": 8.0,
+      "fecha_deteccion": "2026-07-29",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-30",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura_reScore_con_EW",
+      "ventana_entrada": "2026-07-30 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Ferrari pre-market. Consumer disc +1. Pricing power lujo, batio Q1 2026. FALTA whisper EW.",
+      "sector": "consumer_discretionary",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-30T16:28:16.110237Z",
+      "score_macro_bonus": 1,
+      "consenso": "EUR2.48 EPS / EUR1.88B rev",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "conviction_tier": "vigilancia",
+      "sizing_multiplier": 0.0
+    },
+    {
+      "ticker": "REGN",
+      "score": 6.0,
+      "score_ajustado": 6.0,
+      "score_total": 8.0,
+      "fecha_deteccion": "2026-07-29",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-30",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura_reScore_con_EW",
+      "ventana_entrada": "2026-07-30 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Regeneron pre-market. Healthcare +2. PERO preview Seeking Alpha 'not expecting miracles short term' -> riesgo guidance (-1). FALTA whisper EW.",
+      "sector": "healthcare",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-30T16:28:16.110241Z",
+      "score_macro_bonus": 2,
+      "consenso": "~$10.21-10.26 EPS / $3.81B rev",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "conviction_tier": "vigilancia",
+      "sizing_multiplier": 0.0
+    },
+    {
+      "ticker": "HII",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_total": 7.5,
+      "fecha_deteccion": "2026-07-29",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-07-30",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura_reScore_con_EW",
+      "ventana_entrada": "2026-07-30 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (pre-market earnings)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Huntington Ingalls pre-market. Defense +1 (Fed cita Oriente Medio). Naval defense backlog. FALTA whisper EW.",
+      "sector": "defense",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-07-30T16:28:16.110244Z",
+      "score_macro_bonus": 1,
+      "consenso": "n/d",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "conviction_tier": "vigilancia",
+      "sizing_multiplier": 0.0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-28",
+    "fecha_actualizacion": "2026-07-29",
     "semana": "2026-W23",
     "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 18.67,
+    "vix": 18.2,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-28: Dia risk-on moderado — Dow +1.03% (52,747), S&P500 +0.21% (7,428.78), Nasdaq -0.22% (24,876.91). Rotacion FUERA de semiconductores (SMH -3% 4o dia seguido; MU y AMD -8%) HACIA value/industriales. Sherwin-Williams +8% y Coca-Cola +5% lideran por beats. Petroleo a la baja. VIX 18.67 (normal). MAÑANA 29-jul: DECISION FOMC 14:00 ET (sin dot plot) + earnings mega-cap MSFT/META/ARM. Riesgo de evento ALTO — postura defensiva, evitar nuevas entradas antes de las 14:00 ET.",
+    "narrativa_dominante": "ACTUALIZACION 2026-07-29: FOMC MANTUVO tipos en 3.50-3.75% (voto 9-3, primera vez desde 2016 con 3 disidentes hawkish -Hammack, Kashkari, Logan- que querian SUBIR 25pb). Warsh: hold 'especialmente prudente en tiempos inciertos'; sin forward guidance. Fed cita conflicto Oriente Medio como incertidumbre -> soporte defensa/energia. Actividad economica 'solida', productividad e inversion fuertes. VIX 18.2 (bajo). AH hoy reportan MSFT/META/ARM (mega-cap tech). Manana 30-jul: dia MASIVO de earnings (317 reportes) con MA/RACE/REGN/BMY/CI/MO/VLO/SHEL pre-market y AAPL after-hours. Sesgo: hold hawkish favorece financials (higher-for-longer) y presiona multiplos altos en tech/semis.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -2057,7 +2129,8 @@
       "WebSearch post-market 2026-07-22: mercado + earnings T+1",
       "WebSearch post-market 2026-07-23: cierre mercado + calendario earnings 24-jul + preview AXP",
       "WebSearch post-market 2026-07-24: VIX/mercado, earnings 27-jul, FOMC 28-29",
-      "WebSearch post-market 2026-07-28: 4 busquedas (macro, FOMC, earnings mañana)"
+      "WebSearch post-market 2026-07-28: 4 busquedas (macro, FOMC, earnings mañana)",
+      "WebSearch post-market 2026-07-29: FOMC result, VIX, calendario earnings 30-jul (Gmail/EW premium no disponibles esta sesion)"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -2151,18 +2224,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-15",
-        "evento": "Acuerdo de paz EEUU-Iran reabre Estrecho de Ormuz; petroleo se desploma, rally risk-on global",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "energy",
-          "defense",
-          "technology",
-          "airlines"
-        ],
-        "fuente": "TheStreet/Bloomberg/Yahoo Finance"
-      },
       {
         "fecha": "2026-06-18",
         "evento": "Fed (Warsh) mantiene tipos sin cambios; proyecta crecimiento mas lento e inflacion mas alta. Acuerdo paz EEUU-Iran firmado. S&P+1.15%, Nasdaq+1.5%.",
@@ -2374,6 +2435,19 @@
           "all"
         ],
         "fuente": "FOMC calendar/EarningsWhispers"
+      },
+      {
+        "fecha": "2026-07-29",
+        "evento": "FOMC HOLD 3.50-3.75% (9-3, 3 disidentes hawkish querian subir). Warsh sin forward guidance. Cita Oriente Medio.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "technology",
+          "semiconductors",
+          "defense",
+          "energy"
+        ],
+        "fuente": "FederalReserve/CNBC/FoxBusiness/Yahoo"
       }
     ],
     "macro_score_pm": -0.8,
@@ -2403,7 +2477,7 @@
     "qqq_chg_pm": -1.0037531768895895,
     "vix_pm": 18.61,
     "ts_pm_actualizado": "2026-06-04T14:33:51.734055+00:00",
-    "evento_destacado_hoy": "MU blowout AH reactiva tesis IA-memoria; VIX a 18.61",
+    "evento_destacado_hoy": "FOMC hold 3.50-3.75% con 3 disidentes hawkish; VIX 18.2",
     "spy_intraday_pct": 0.34,
     "riesgo_macro_mañana": false,
     "notas_regimen": "Cambio EARNINGS_SEASON_NORMAL→RISK_ON el 2026-06-29: EEUU e Iran acuerdan frenar ataques (geopolitical relief), rally tech amplio, Dow record >52k, VIX 17.69.",
@@ -2420,12 +2494,12 @@
       "memory_chips"
     ],
     "nota_w26": "FOMC restriction cleared Jun 21 (Fed held rates Jun 17, hawkish but no hike). VIX ~17-19 declining. Macro: GEOPOLITICAL_RELIEF_RALLY. Sistema habilitado para entradas W26 (Jun 22-26). Key earnings: FDX Tue AH, MU Wed AH, PAYX Wed BMO, DRI Thu BMO.",
-    "vix_updated": "2026-07-24",
+    "vix_updated": "2026-07-29",
     "ts_health_check": "2026-07-24T06:07",
     "spy_day": -1.29,
     "narrativa_sentinel": "Tech-led selloff (chip rout: MU -13.6%, NVDA -3.7%, AI-trade reassessment, higher-for-longer). Oil falling on Iran de-escalation (no oil spike). VIX 19.5 (+12.7%) elevado pero <28. No flash-crash 30m. Nivel ALERTA.",
     "spy_chg": 0.2,
-    "nota_web": "VIX~18.9; rotacion fuera de tech; Iran/Hormuz de-escalado; MU reporto beat",
+    "nota_web": "FOMC 29-jul hold hawkish; earnings manana 317 reportes; AAPL AH 30-jul.",
     "preparacion_semana": "semana del 2026-07-20",
     "top_candidatos_lunes": [],
     "candidatos_vigilancia_semana": [
@@ -2437,7 +2511,7 @@
     "preparado_en": "2026-07-17",
     "num_candidatos_semana": 0,
     "eventos_macro_semana": "Lun DPZ pre (setup debil). Mar GM/3M/HAL. Mie GOOGL+TSLA (headliners), IBM, TXN. Jue INTC/FCX/NEM + ECB. FOMC 28-29 jul (siguiente semana). Sin macro US mayor esta semana.",
-    "riesgo_macro_manana": true,
+    "riesgo_macro_manana": false,
     "fuente": "sentinel-vivo (websearch backdrop + VIX/Mag7 price-check; multi-asset feed throttled)"
   },
   "operaciones_crypto": [
@@ -8121,11 +8195,11 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-28",
+    "_ultima_actualizacion": "2026-07-29",
     "rendimiento_global": {
-      "equity_paper_actual": 109320.07,
+      "equity_paper_actual": 109320.05,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 3820.07,
+      "pnl_total_paper_dolares": 3820.05,
       "pnl_total_paper_pct": 3.62,
       "equity_real_actual": 4548.01,
       "equity_real_inicio_sistema": 4500,
@@ -8136,7 +8210,7 @@
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 52.15,
+      "pnl_dia_paper_dolares": 61.26,
       "pnl_dia_real_dolares": 0.0,
       "equity_paper_peak": 109924.64
     },
@@ -8149,13 +8223,13 @@
       "win_rate_pct": 38.1,
       "avg_r_logrado": -0.09,
       "profit_factor": 6.41,
-      "avg_pnl_por_operacion_dolares": 87.26,
+      "avg_pnl_por_operacion_dolares": 109.69,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1264.65,
       "mayor_perdida_dolares": -182.9,
       "racha_ganadora_actual": 0,
-      "racha_perdedora_actual": 0,
-      "racha_ganadora_max": 5,
+      "racha_perdedora_actual": 3,
+      "racha_ganadora_max": 4,
       "racha_perdedora_max": 5,
       "_nota": "Se actualiza al cerrar cada operación en post-market-review PASO 5B",
       "operaciones_abiertas_actuales": 0,
@@ -8576,6 +8650,16 @@
         "avg_r_acumulado": -0.01,
         "operaciones_acumuladas": 20,
         "vix": 17.22
+      },
+      {
+        "fecha": "2026-07-29",
+        "equity_paper": 109320.05,
+        "equity_real": 4548.01,
+        "pnl_dia_paper": 61.26,
+        "win_rate_acumulado": 38.1,
+        "avg_r_acumulado": -0.09,
+        "operaciones_acumuladas": 21,
+        "vix": 18.2
       }
     ],
     "objetivos": {
@@ -13537,6 +13621,18 @@
       ],
       "evento_clave": "Rotacion out-of-semis (MU/AMD -8%); vispera FOMC 29-jul.",
       "leccion": "Dia flat sin exposicion nueva; XOM oil-spike cerrada en -1R. Mañana FOMC = defensivo."
+    },
+    {
+      "fecha": "2026-07-29",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 109320.05,
+      "variacion_dia": 61.26,
+      "variacion_pct": 0.06,
+      "vix": 18.2,
+      "regimen_macro": "EARNINGS_SEASON_NORMAL",
+      "trades_paper": [],
+      "evento_clave": "FOMC hold 3.50-3.75% (9-3, 3 disidentes hawkish). Sin nuevas posiciones; cuenta paper flat.",
+      "leccion": "Dia FOMC sin exposicion nueva (0 posiciones). Hold hawkish + Middle East -> mantener financials+2, defense/energy+1. Manana 30-jul earnings masivos (MA/RACE/REGN pre, AAPL AH)."
     }
   ],
   "alertas_criticas": [
@@ -14697,6 +14793,13 @@
             "CVX",
             "XOM"
           ]
+        },
+        {
+          "fecha": "2026-07-29",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": []
         }
       ]
     },
@@ -15421,6 +15524,15 @@
       "mejoras_acumuladas": 25,
       "candidatos_activos": 4,
       "mejora_hoy": "OCO stops colocados en XOM/CVX; regla bracket-obligatorio reforzada; watch candidates lunes cargados"
+    },
+    {
+      "fecha": "2026-07-29",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 26,
+      "candidatos_activos": 4,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Watchlist manana requiere re-score EW; parametros sin cambio (sin trades hoy)"
     }
   ],
   "motor_alpha_diario": {
@@ -21281,6 +21393,22 @@
       "score_sistema": 9.0,
       "resumen": "Dia flat gestionado correctamente. XOM reconciliada. Candidatos expirados limpiados. Macro actualizado. Sin posiciones desprotegidas (0 abiertas). Real=dust BTC negligible.",
       "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-07-29",
+      "score_sistema": 8.0,
+      "tareas": {
+        "post-market-review": {
+          "ok": true,
+          "score": 8,
+          "issues": [
+            "5 mejoras pendientes requieren editar SKILL.md de otras tareas (no accesible en sesion aislada)"
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "mejoras_pendientes_no_aplicables"
+      ]
     }
   ]
 }
