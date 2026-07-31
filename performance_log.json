@@ -431,6 +431,15 @@
       "descripcion": "Mercado confirmo beat con AH fuerte. EPS=0.36 vs cons=-0.04. Whisper=NO disponible.",
       "accion_futura": "CORT: AH confirmacion = senal continuation aun sin whisper.",
       "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-07-31",
+      "titulo": "Ejecución autónoma post-market — política de acciones financieras",
+      "descripcion": "Sesión programada sin usuario. 0 posiciones en acciones (paper y real). Real solo tiene dust BTCUSD (~$0.52). No hubo stops que colocar ni órdenes que gestionar.",
+      "accion_correctiva": "En sesiones autónomas: NO colocar órdenes en cuenta real; se reporta/alerta. SKILL.md no auto-editado (self-modifying code evitado); mejoras se documentan en log.",
+      "tarea_afectada": "post-market-review",
+      "auto_generado": true,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -2066,11 +2075,11 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "Mastercard pre-market. Sector financials +2 (hold hawkish favorece higher-for-longer). Payments secular growth, beater consistente. FALTA whisper EW para completar scoring.",
       "sector": "financials",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-30T16:28:16.110216Z",
       "score_macro_bonus": 2,
       "consenso": "$4.77 EPS / $9.06B rev",
-      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75. | Auto-expirado 2026-07-31 (post-market) — no ejecutado en ventana",
       "conviction_tier": "vigilancia",
       "sizing_multiplier": 0.0
     },
@@ -2089,11 +2098,11 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "Ferrari pre-market. Consumer disc +1. Pricing power lujo, batio Q1 2026. FALTA whisper EW.",
       "sector": "consumer_discretionary",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-30T16:28:16.110237Z",
       "score_macro_bonus": 1,
       "consenso": "EUR2.48 EPS / EUR1.88B rev",
-      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75. | Auto-expirado 2026-07-31 (post-market) — no ejecutado en ventana",
       "conviction_tier": "vigilancia",
       "sizing_multiplier": 0.0
     },
@@ -2112,11 +2121,11 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "Regeneron pre-market. Healthcare +2. PERO preview Seeking Alpha 'not expecting miracles short term' -> riesgo guidance (-1). FALTA whisper EW.",
       "sector": "healthcare",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-30T16:28:16.110241Z",
       "score_macro_bonus": 2,
       "consenso": "~$10.21-10.26 EPS / $3.81B rev",
-      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75. | Auto-expirado 2026-07-31 (post-market) — no ejecutado en ventana",
       "conviction_tier": "vigilancia",
       "sizing_multiplier": 0.0
     },
@@ -2135,11 +2144,11 @@
       "sizing": "entrada escalonada 50%+50%",
       "argumento": "Huntington Ingalls pre-market. Defense +1 (Fed cita Oriente Medio). Naval defense backlog. FALTA whisper EW.",
       "sector": "defense",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-07-30T16:28:16.110244Z",
       "score_macro_bonus": 1,
       "consenso": "n/d",
-      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75.",
+      "notas": "EW premium/Gmail NO disponibles esta sesion. Scoring incompleto (faltan whisper asymmetry/beat rate/reaccion historica). pre-market-scan debe re-scorear con datos EW live antes de ejecutar. Umbral entrada actual min_signal_score=8.75. | Auto-expirado 2026-07-31 (post-market) — no ejecutado en ventana",
       "conviction_tier": "vigilancia",
       "sizing_multiplier": 0.0
     },
@@ -2149,7 +2158,7 @@
       "score_ajustado": 9.5,
       "score_override": 9.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-07-28",
       "accion_recomendada": "entrar_apertura",
@@ -2168,7 +2177,7 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-07-29",
       "expira": "2026-07-30T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat +59.2% vs whisper. Entrar apertura 2026-07-30. Stop bajo min dia earnings o ATR1.5. Target 2xATR. Max hold 3d.",
+      "notas": "Post-earnings continuation. Beat +59.2% vs whisper. Entrar apertura 2026-07-30. Stop bajo min dia earnings o ATR1.5. Target 2xATR. Max hold 3d. | Auto-expirado 2026-07-31 (post-market) — no ejecutado en ventana",
       "asimetria_pct": 35.507999999999996,
       "ts_creado": "2026-07-29T21:41:39.540290+00:00",
       "umbral_real": 7.5,
@@ -2240,15 +2249,75 @@
       "max_hold_dias": 3,
       "play_horizon": "post_earnings_1_3d",
       "delay_procesamiento": true
+    },
+    {
+      "ticker": "MAR",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_total": 7.5,
+      "fecha_deteccion": "2026-07-31",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-08-03",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura",
+      "ventana_entrada": "2026-08-03 09:40-10:30 ET",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
+      "sector": "consumer_discretionary",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-08-04T20:27:20.766820Z",
+      "score_macro_bonus": 1,
+      "argumento": "Marriott Q2 ~7:00 ET lun. Consenso EPS $3.06 (+15.5% YoY), rev ~$7.3B (+7.7%). Beat 3/4 últimos Q, sorpresa media solo +1.5%. Régimen risk-on favorece consumo/viajes.",
+      "notas": "Sin datos EW whisper en sesión autónoma. Sorpresa media baja (1.5%) limita asimetría. Vigilar reacción apertura, no entrada automática.",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "TSN",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-07-31",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-08-03",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura",
+      "ventana_entrada": "2026-08-03 09:40-10:30 ET",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
+      "sector": "consumer_staples",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-08-04T20:27:20.766834Z",
+      "score_macro_bonus": 1,
+      "argumento": "Tyson Q3 lun pre-open. Consenso EPS ~$1.00-1.03 (+11-13% YoY), rev ~$14.1B. Beat 3/4 Q. Staples de baja beta, movimiento histórico modesto.",
+      "notas": "Sin datos EW. Nombre defensivo poco explosivo. Watch, baja prioridad.",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "CAT",
+      "score": 6.0,
+      "score_ajustado": 6.0,
+      "score_total": 7.0,
+      "fecha_deteccion": "2026-07-31",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-08-04",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "vigilar_apertura",
+      "ventana_entrada": "2026-08-04 09:40-10:30 ET",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
+      "sector": "industrials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-08-04T20:27:20.766837Z",
+      "score_macro_bonus": 1,
+      "argumento": "Caterpillar Q2 mar 4-ago pre-open. Large-cap industrial (+1 prioridad sector). Barómetro de demanda global/capex.",
+      "notas": "Sin datos EW whisper. Vigilar como termómetro sectorial industrial. Reporta antes de ISM Services mié.",
+      "conviction_tier": "no_entry"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-29",
+    "fecha_actualizacion": "2026-07-31",
     "semana": "2026-W23",
-    "regimen": "EARNINGS_SEASON_NORMAL",
-    "vix": 20.66,
+    "regimen": "RISK_ON",
+    "vix": 16.21,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-07-29: FOMC MANTUVO tipos en 3.50-3.75% (voto 9-3, primera vez desde 2016 con 3 disidentes hawkish -Hammack, Kashkari, Logan- que querian SUBIR 25pb). Warsh: hold 'especialmente prudente en tiempos inciertos'; sin forward guidance. Fed cita conflicto Oriente Medio como incertidumbre -> soporte defensa/energia. Actividad economica 'solida', productividad e inversion fuertes. VIX 18.2 (bajo). AH hoy reportan MSFT/META/ARM (mega-cap tech). Manana 30-jul: dia MASIVO de earnings (317 reportes) con MA/RACE/REGN/BMY/CI/MO/VLO/SHEL pre-market y AAPL after-hours. Sesgo: hold hawkish favorece financials (higher-for-longer) y presiona multiplos altos en tech/semis.",
+    "narrativa_dominante": "ACTUALIZACIÓN 2026-07-31: Cierre semanal claramente risk-on. S&P 500 +0.91% a 7,505.66, Dow +0.77% a 52,608, NASDAQ-100 +0.92% a 28,364. VIX comprimido de 20.66→16.21 (−4.5 pts), señal de apetito de riesgo institucional hacia el fin de semana. Régimen movido EARNINGS_SEASON_NORMAL→RISK_ON por evidencia clara (rally amplio sincronizado + VIX<17). Semana entrante dominada por earnings mid-cap (MAR, TSN, CAT) y macro: ISM Manufacturing lun 3-ago, ISM Services + ADP mié 6-ago, y el gran catalizador NFP vie 8-ago. Sin eventos geopolíticos mayores hoy.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -2276,7 +2345,8 @@
       "WebSearch post-market 2026-07-23: cierre mercado + calendario earnings 24-jul + preview AXP",
       "WebSearch post-market 2026-07-24: VIX/mercado, earnings 27-jul, FOMC 28-29",
       "WebSearch post-market 2026-07-28: 4 busquedas (macro, FOMC, earnings mañana)",
-      "WebSearch post-market 2026-07-29: FOMC result, VIX, calendario earnings 30-jul (Gmail/EW premium no disponibles esta sesion)"
+      "WebSearch post-market 2026-07-29: FOMC result, VIX, calendario earnings 30-jul (Gmail/EW premium no disponibles esta sesion)",
+      "WebSearch post-market 2026-07-31: VIX+SP500 close, earnings cal Aug3-7, econ cal (Gmail/EW browser no usados en sesión autónoma)"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -2364,20 +2434,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-18",
-        "evento": "Fed (Warsh) mantiene tipos sin cambios; proyecta crecimiento mas lento e inflacion mas alta. Acuerdo paz EEUU-Iran firmado. S&P+1.15%, Nasdaq+1.5%.",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "financials",
-          "technology",
-          "energy",
-          "defense",
-          "real_estate",
-          "all"
-        ],
-        "fuente": "WebSearch (TheStreet/Yahoo Finance)"
-      },
       {
         "fecha": "2026-06-22",
         "evento": "Alphabet -5% por fuga de talento AI; rotacion tech->value. US-Iran peace talks en foco.",
@@ -2588,6 +2644,17 @@
           "energy"
         ],
         "fuente": "FederalReserve/CNBC/FoxBusiness/Yahoo"
+      },
+      {
+        "fecha": "2026-07-31",
+        "evento": "Cierre risk-on: VIX 20.66→16.21, S&P +0.91% a 7,505, rally amplio sincronizado",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology",
+          "financials",
+          "consumer_discretionary"
+        ],
+        "fuente": "WebSearch (historicaloptiondata, market data)"
       }
     ],
     "macro_score_pm": -0.8,
@@ -8335,13 +8402,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-29",
+    "_ultima_actualizacion": "2026-07-31",
     "rendimiento_global": {
       "equity_paper_actual": 109320.05,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3820.05,
       "pnl_total_paper_pct": 3.62,
-      "equity_real_actual": 4548.01,
+      "equity_real_actual": 4548.0,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -8800,6 +8867,13 @@
         "avg_r_acumulado": -0.09,
         "operaciones_acumuladas": 21,
         "vix": 18.2
+      },
+      {
+        "fecha": "2026-07-31",
+        "equity_paper": 109320.05,
+        "equity_real": 4548.0,
+        "pnl_dia_paper": 62.28,
+        "vix": 16.21
       }
     ],
     "objetivos": {
@@ -13801,6 +13875,18 @@
       "trades_paper": [],
       "evento_clave": "FOMC hold 3.50-3.75% (9-3, 3 disidentes hawkish). Sin nuevas posiciones; cuenta paper flat.",
       "leccion": "Dia FOMC sin exposicion nueva (0 posiciones). Hold hawkish + Middle East -> mantener financials+2, defense/energy+1. Manana 30-jul earnings masivos (MA/RACE/REGN pre, AAPL AH)."
+    },
+    {
+      "fecha": "2026-07-31",
+      "dia": "Friday",
+      "equity_paper_cierre": 109320.05,
+      "variacion_dia": 62.28,
+      "variacion_pct": 0.057,
+      "vix": 16.21,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "evento_clave": "Cierre risk-on: VIX 20.66→16.21, S&P +0.91%, rally amplio sincronizado",
+      "leccion": "Sin posiciones abiertas ni earnings ejecutados hoy. Semana de prep: MAR/TSN lun, CAT mar, NFP vie 8-ago es el catalizador macro clave."
     }
   ],
   "alertas_criticas": [
@@ -15701,6 +15787,13 @@
       "bugs_pendientes": 0,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Watchlist manana requiere re-score EW; parametros sin cambio (sin trades hoy)"
+    },
+    {
+      "fecha": "2026-07-31",
+      "lecciones_acumuladas": 36,
+      "mejoras_acumuladas": 26,
+      "candidatos_activos": 5,
+      "mejora_hoy": "Sesión autónoma sin posiciones: macro→RISK_ON (VIX 16.21), watchlist lunes MAR/TSN/CAT, candidatos vencidos expirados."
     }
   ],
   "motor_alpha_diario": {
