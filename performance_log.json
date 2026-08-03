@@ -456,6 +456,38 @@
       "descripcion": "EPS actual=$-0.39 vs whisper=$-0.01 vs consensus=$0.14. Revenue YoY: -18.5%.",
       "accion_futura": "Revisar perfil de COIN: \u00bfguidance negativo? \u00bfsectorial?",
       "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-07-31",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "XOM: MISS -10.9% vs whisper (2026-07-31)",
+      "descripcion": "EPS=3.52 vs whisper=3.95 vs cons=3.68. RevYoY=42.34%.",
+      "accion_futura": "Revisar perfil de XOM: guidance/sector/deuda.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-07-31",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "CRI: BEAT +271.4% vs whisper (2026-07-31) OK",
+      "descripcion": "EPS=0.26 vs whisper=0.07 vs cons=0.02.",
+      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-08-03",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "PLTR: BEAT +7.9% vs whisper (2026-08-03) OK",
+      "descripcion": "EPS=0.41 vs whisper=0.38 vs cons=0.35.",
+      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-08-03",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "PLTR: beat cons=+17.1% confirmado AH=+11.0% (2026-08-03)",
+      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.41 vs cons=0.35.",
+      "accion_futura": "PLTR: AH confirmacion = senal continuation.",
+      "impacto_score": 0.3
     }
   ],
   "operaciones": [
@@ -2355,6 +2387,38 @@
       "asimetria_pct": 2.8854,
       "ts_creado": "2026-07-31T21:43:37.490821+00:00",
       "umbral_real": 99.0,
+      "max_hold_dias": 3,
+      "play_horizon": "post_earnings_1_3d"
+    },
+    {
+      "ticker": "PLTR",
+      "score": 8.1,
+      "score_ajustado": 8.1,
+      "score_override": 8.1,
+      "source": "log_validated",
+      "estado": "pendiente_ew",
+      "tipo": "post_earnings_continuation",
+      "earnings_fecha": "2026-08-03",
+      "accion_recomendada": "entrar_apertura",
+      "ventana_entrada": "2026-08-04 09:40-10:15 ET - continuacion post-beat",
+      "stop_tipo": "low_earnings_day_or_ATR1.5",
+      "sizing": "1.0x",
+      "argumento": "PLTR batio whisper en 7.89% (2026-08-03). EPS=0.41 vs whisper=0.38. AH: +11.0%. RevYoY=92.8%. Continuacion post-beat (whisper_confirmado).",
+      "beat_pct_vs_whisper": 7.89,
+      "consensus_beat_pct": 17.14,
+      "reaccion_ah_pct": 11.0,
+      "continuation_ruta": "whisper_confirmado",
+      "eps_actual": 0.41,
+      "eps_whisper": 0.38,
+      "revenue_growth_yoy": 92.8,
+      "fuente": "ew-daily-results-continuation",
+      "detectado_por": "ew-daily-results",
+      "fecha_deteccion": "2026-08-03",
+      "expira": "2026-08-04T21:00:00Z",
+      "notas": "Post-earnings continuation. Beat +7.9% vs whisper. Entrar apertura 2026-08-04. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3d.",
+      "asimetria_pct": 4.734,
+      "ts_creado": "2026-08-03T21:42:39.059616+00:00",
+      "umbral_real": 7.5,
       "max_hold_dias": 3,
       "play_horizon": "post_earnings_1_3d"
     }
@@ -21436,6 +21500,58 @@
       "consensus_beat_pct": -378.57,
       "reaccion_ah_pct": -6.53,
       "revenue_growth_yoy": -18.51
+    },
+    {
+      "ticker": "XOM",
+      "fecha": "2026-07-31",
+      "resultado": "miss",
+      "eps_actual": 3.52,
+      "eps_whisper": 3.95,
+      "eps_consensus": 3.68,
+      "whisper_beat_pct": -10.89,
+      "consensus_beat_pct": -4.35,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": 42.34,
+      "fuente": "gmail_ew"
+    },
+    {
+      "ticker": "CRI",
+      "fecha": "2026-07-31",
+      "resultado": "beat",
+      "eps_actual": 0.26,
+      "eps_whisper": 0.07,
+      "eps_consensus": 0.02,
+      "whisper_beat_pct": 271.43,
+      "consensus_beat_pct": 1200.0,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": 5.16,
+      "fuente": "gmail_ew"
+    },
+    {
+      "ticker": "BLDP",
+      "fecha": "2026-07-31",
+      "resultado": "miss",
+      "eps_actual": -0.07,
+      "eps_whisper": null,
+      "eps_consensus": -0.04,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": -75.0,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": 15.45,
+      "fuente": "gmail_ew"
+    },
+    {
+      "ticker": "PLTR",
+      "fecha": "2026-08-03",
+      "resultado": "beat",
+      "eps_actual": 0.41,
+      "eps_whisper": 0.38,
+      "eps_consensus": 0.35,
+      "whisper_beat_pct": 7.89,
+      "consensus_beat_pct": 17.14,
+      "reaccion_ah_pct": 11.0,
+      "revenue_growth_yoy": 92.8,
+      "fuente": "websearch"
     }
   ],
   "kpis_actuales": {
