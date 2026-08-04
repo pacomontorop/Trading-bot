@@ -136,41 +136,6 @@
   },
   "lecciones_sistema": [
     {
-      "fecha": "2026-06-05",
-      "titulo": "Spike VIX por datos de empleo: rate-fear risk-off castiga tech/semis, premia defensivos",
-      "descripcion": "NFP fuerte 2026-06-05 -> temor a subida de tipos. Nasdaq -4%, semis -$1T, VIX 15->21. Holdings defensivos (GO staples +10.5%) resistieron; nombres debiles (P) saltaron stop. Confirma sector_prioridades: semis -2, tech -1, real_estate bajado a +1 por sensibilidad a tipos.",
-      "accion_correctiva": "Con VIX>20 mantener modo defensivo: sin nuevas entradas agresivas el lunes salvo score muy alto; priorizar staples/healthcare/financials sobre tech/semis/RE.",
-      "tarea_afectada": "market-open-execution|pre-market-earnings-scan",
-      "auto_generado": false,
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-06-06",
-      "titulo": "EW paywall bloquea whisper — usar emails diarios como fuente primaria",
-      "descripcion": "Weekend-ew-intel corrió en modo degradado (sin whisper) porque EW web requiere login premium. Los emails epsguidance@earningswhispers.com y wr@earningswhispers.com SÍ contienen whisper numbers en texto. Parsear emails ES la solución correcta, no scraping web.",
-      "accion_correctiva": "weekend-ew-intel debe leer emails EW (Gmail MCP) PRIMERO, extraer whisper/consensus de texto, y solo como fallback usar el web scraping headless. Ver email 2026-05-23 'Most Anticipated Releases' como ejemplo de formato.",
-      "tarea_afectada": "weekend-ew-intel",
-      "impacto": "ALTO — sin whisper no hay scoring EW real, el sistema opera en modo degradado toda la semana",
-      "implementada": false
-    },
-    {
-      "fecha": "2026-06-08",
-      "tipo": "SELL_THE_NEWS_GUIDANCE",
-      "titulo": "AVGO: sell-the-news (2026-06-08) — beat consensus pero MISS whisper + AH -14%",
-      "descripcion": "EPS $2.44 vs consensus $2.39 (+2.1%) pero vs whisper $2.45 (-0.4%). Rev $22.19B. Guidance AI Q3 ~$16B < ~$17.2B esperado; FY AI target $100B sin subir. Mercado vendio ~14% AH pese al beat de consensus: priced-to-perfection.",
-      "accion_futura": "Para mega-caps AI con expectativas extremas (AVGO/NVDA): el beat de consensus no basta. Vigilar whisper Y guidance forward. Si beat<whisper o guidance<buy-side -> alto riesgo sell-the-news. NO continuation si AH negativo.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-06-13",
-      "titulo": "Run autonomo sabado: modo lectura/reporte",
-      "descripcion": "Ejecutado sin sesion de navegador EW ni Gmail. Paper 0 posiciones, real solo dust BTC ($0.53). No se colocaron ordenes (boundary: no ejecutar ordenes de broker en runs autonomos). Candidatos Lunes no generados por falta de datos premium EW; semana FOMC aconseja cautela.",
-      "accion_correctiva": "Para candidatos solidos del lunes, correr con Cowork abierto + sesion Edge/EW activa. Evitar nuevas entradas grandes antes de decision FOMC.",
-      "tarea_afectada": "post-market-review",
-      "auto_generado": true,
-      "aplicada": true
-    },
-    {
       "fecha": "2026-06-13",
       "tipo": "SELL_THE_NEWS_AH",
       "titulo": "ADBE: SELL-THE-NEWS — beat cons +2.4% pero cayó ~-5.5% (2026-06-11)",
@@ -488,6 +453,15 @@
       "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.41 vs cons=0.35.",
       "accion_futura": "PLTR: AH confirmacion = senal continuation.",
       "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-08-04",
+      "titulo": "Cautela earnings implied-move-alto en tape de maximos",
+      "descripcion": "Con S&P/Nasdaq en record y VIX 15.86, earnings con implied move alto (UBER ±8.3%, LLY swing masivo) son coin-flips de alta varianza.",
+      "accion_correctiva": "No entrar earnings con implied move >6% sin asimetria whisper confirmada; preferir setups con reaccion historica positiva clara (DIS).",
+      "tarea_afectada": "pre-market-earnings-scan | market-open-execution",
+      "auto_generado": false,
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -2238,7 +2212,7 @@
       "score_ajustado": 7.7,
       "score_override": 7.7,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-07-29",
       "accion_recomendada": "entrar_apertura",
@@ -2257,7 +2231,7 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-07-30",
       "expira": "2026-07-31T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat vs whisper +9.2% / vs cons +12.6%. Entrar apertura 2026-07-31. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3 dias. PROCESADO CON RETRASO: email 29-jul detectado el 30-jul noche; ventana dia-despues (30-jul) ya cerrada. Entrada objetivo 31-jul (dia+2 post-earnings).",
+      "notas": "Post-earnings continuation. Beat vs whisper +9.2% / vs cons +12.6%. Entrar apertura 2026-07-31. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3 dias. PROCESADO CON RETRASO: email 29-jul detectado el 30-jul noche; ventana dia-despues (30-jul) ya cerrada. Entrada objetivo 31-jul (dia+2 post-earnings). | Auto-expirado 2026-08-04 (post-market)",
       "asimetria_pct": 5.532,
       "ts_creado": "2026-07-30T21:41:52.881958+00:00",
       "umbral_real": 7.5,
@@ -2271,7 +2245,7 @@
       "score_ajustado": 9.5,
       "score_override": 9.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-07-29",
       "accion_recomendada": "entrar_apertura",
@@ -2290,7 +2264,7 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-07-30",
       "expira": "2026-07-31T21:00:00Z",
-      "notas": "Post-earnings continuation. Beat vs whisper +0.0% / vs cons +1000.0%. Entrar apertura 2026-07-31. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3 dias. AVISO: consensus_beat_pct inflado por denominador near-zero (cons=-$0.04); conviccion real apoyada por AH +22%. PROCESADO CON RETRASO: email 29-jul detectado el 30-jul noche; ventana dia-despues (30-jul) ya cerrada. Entrada objetivo 31-jul (dia+2 post-earnings).",
+      "notas": "Post-earnings continuation. Beat vs whisper +0.0% / vs cons +1000.0%. Entrar apertura 2026-07-31. Stop bajo min dia earnings o ATRx1.5. Target 2xATR. Max hold 3 dias. AVISO: consensus_beat_pct inflado por denominador near-zero (cons=-$0.04); conviccion real apoyada por AH +22%. PROCESADO CON RETRASO: email 29-jul detectado el 30-jul noche; ventana dia-despues (30-jul) ya cerrada. Entrada objetivo 31-jul (dia+2 post-earnings). | Auto-expirado 2026-08-04 (post-market)",
       "asimetria_pct": 0.0,
       "ts_creado": "2026-07-30T21:41:52.881982+00:00",
       "umbral_real": 7.5,
@@ -2311,11 +2285,11 @@
       "ventana_entrada": "2026-08-03 09:40-10:30 ET",
       "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
       "sector": "consumer_discretionary",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-08-04T20:27:20.766820Z",
       "score_macro_bonus": 1,
       "argumento": "Marriott Q2 ~7:00 ET lun. Consenso EPS $3.06 (+15.5% YoY), rev ~$7.3B (+7.7%). Beat 3/4 últimos Q, sorpresa media solo +1.5%. Régimen risk-on favorece consumo/viajes.",
-      "notas": "Sin datos EW whisper en sesión autónoma. Sorpresa media baja (1.5%) limita asimetría. Vigilar reacción apertura, no entrada automática.",
+      "notas": "Sin datos EW whisper en sesión autónoma. Sorpresa media baja (1.5%) limita asimetría. Vigilar reacción apertura, no entrada automática. | Auto-expirado 2026-08-04 (post-market)",
       "conviction_tier": "no_entry"
     },
     {
@@ -2331,11 +2305,11 @@
       "ventana_entrada": "2026-08-03 09:40-10:30 ET",
       "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
       "sector": "consumer_staples",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-08-04T20:27:20.766834Z",
       "score_macro_bonus": 1,
       "argumento": "Tyson Q3 lun pre-open. Consenso EPS ~$1.00-1.03 (+11-13% YoY), rev ~$14.1B. Beat 3/4 Q. Staples de baja beta, movimiento histórico modesto.",
-      "notas": "Sin datos EW. Nombre defensivo poco explosivo. Watch, baja prioridad.",
+      "notas": "Sin datos EW. Nombre defensivo poco explosivo. Watch, baja prioridad. | Auto-expirado 2026-08-04 (post-market)",
       "conviction_tier": "no_entry"
     },
     {
@@ -2351,11 +2325,11 @@
       "ventana_entrada": "2026-08-04 09:40-10:30 ET",
       "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (earnings pre-market)",
       "sector": "industrials",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "expira": "2026-08-04T20:27:20.766837Z",
       "score_macro_bonus": 1,
       "argumento": "Caterpillar Q2 mar 4-ago pre-open. Large-cap industrial (+1 prioridad sector). Barómetro de demanda global/capex.",
-      "notas": "Sin datos EW whisper. Vigilar como termómetro sectorial industrial. Reporta antes de ISM Services mié.",
+      "notas": "Sin datos EW whisper. Vigilar como termómetro sectorial industrial. Reporta antes de ISM Services mié. | Auto-expirado 2026-08-04 (post-market)",
       "conviction_tier": "no_entry"
     },
     {
@@ -2364,7 +2338,7 @@
       "score_ajustado": 6.8,
       "score_override": 6.8,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-07-30",
       "accion_recomendada": "entrar_apertura",
@@ -2383,7 +2357,7 @@
       "detectado_por": "ew-daily-results",
       "fecha_deteccion": "2026-07-30",
       "expira": "2026-07-31T21:00:00Z",
-      "notas": "Post-earnings continuation. Entrar apertura 2026-07-31. Stop bajo low día earnings o ATR×1.5. Target 2×ATR. Max hold 3d.",
+      "notas": "Post-earnings continuation. Entrar apertura 2026-07-31. Stop bajo low día earnings o ATR×1.5. Target 2×ATR. Max hold 3d. | Auto-expirado 2026-08-04 (post-market)",
       "asimetria_pct": 2.8854,
       "ts_creado": "2026-07-31T21:43:37.490821+00:00",
       "umbral_real": 99.0,
@@ -2475,131 +2449,187 @@
     },
     {
       "ticker": "SHOP",
-      "score": 2.0,
-      "score_ajustado": 2.0,
+      "score": 6.0,
+      "score_ajustado": 6.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "entrar_apertura_desde_20260805",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "pre-market",
       "eps_estimate": 0.4,
       "beat_rate_hist": 0.5,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T16:30:25.087868Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 09:40-10:30 ET",
+      "score_total": 6.0,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Crecimiento ~28% YoY, GMV >$100B, foco AI. Beat 2/4 ult trimestres, surprise medio +7.4%. Growth de multiplo alto -> volatil.",
+      "sector": "technology",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings pre-market el 2026-08-05"
     },
     {
       "ticker": "UBER",
-      "score": 1.0,
-      "score_ajustado": 1.0,
-      "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_macro_bonus": 1,
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "entrar_apertura_desde_20260805",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "pre-market",
       "eps_estimate": 0.83,
       "beat_rate_hist": 0.25,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T16:30:25.087868Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 09:40-10:30 ET",
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Consenso EPS $0.83, pero guia compania $0.78-0.82 (bajo consenso). Beat rate 62% (3/4). Implied move ±8.3% -> riesgo gap alto.",
+      "sector": "consumer_discretionary",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings pre-market el 2026-08-05"
     },
     {
       "ticker": "DIS",
-      "score": 3.0,
-      "score_ajustado": 3.0,
-      "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_macro_bonus": 1,
+      "estado": "pendiente",
+      "accion_recomendada": "entrar_apertura_desde_20260805",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "pre-market",
       "eps_estimate": 1.85,
       "beat_rate_hist": 1.0,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T16:30:25.087868Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 09:40-10:30 ET",
+      "score_total": 8.0,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "UBS ve EPS $1.91 vs consenso $1.85 (+18% YoY), streaming margenes >10%, Experiences fuerte. Momentum analista alcista. Sector consumer_disc +1.",
+      "sector": "consumer_discretionary",
+      "conviction_tier": "conviction_media",
+      "alerta_earnings_overnight": "Earnings pre-market el 2026-08-05"
     },
     {
       "ticker": "LLY",
-      "score": 3.0,
-      "score_ajustado": 3.0,
-      "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_macro_bonus": 2,
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "entrar_apertura_desde_20260805",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "pre-market",
       "eps_estimate": 6.58,
       "beat_rate_hist": 1.0,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T16:30:25.087868Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 09:40-10:30 ET",
+      "score_total": 8.5,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Healthcare +2 macro. GLP-1 (Mounjaro/Zepbound) ~65% ingresos. RIESGO GUIDANCE: orforglipron arranque lento, Goldman recorta estimacion. Swing masivo ($65.9B). Coin-flip binario.",
+      "sector": "healthcare",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings pre-market el 2026-08-05"
     },
     {
       "ticker": "MELI",
-      "score": 1.0,
-      "score_ajustado": 1.0,
-      "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_macro_bonus": 1,
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "vigilar_contagio_post_earnings",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "after-hours",
       "eps_estimate": 8.94,
       "beat_rate_hist": 0.0,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T18:00:00Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 AH -> jueves 09:40-13:00 ET",
+      "score_total": 6.5,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Reporta AH -> no ejecutable pre-apertura. E-commerce/fintech LatAm. Vigilar contagio post-earnings.",
+      "sector": "consumer_discretionary",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings after-hours el 2026-08-05"
     },
     {
       "ticker": "APP",
-      "score": 3.0,
-      "score_ajustado": 3.0,
+      "score": 5.0,
+      "score_ajustado": 5.0,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "vigilar_contagio_post_earnings",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "after-hours",
       "eps_estimate": 3.75,
       "beat_rate_hist": 1.0,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T18:00:00Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 AH -> jueves 09:40-13:00 ET",
+      "score_total": 5.0,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Reporta AH. AdTech momentum. Alta volatilidad post-earnings historica.",
+      "sector": "technology",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings after-hours el 2026-08-05"
     },
     {
       "ticker": "DASH",
-      "score": 2.0,
-      "score_ajustado": 2.0,
-      "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "score": 5.0,
+      "score_ajustado": 5.0,
+      "score_macro_bonus": 1,
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "vigilar_contagio_post_earnings",
       "asimetria_pct": null,
       "earnings_fecha": "2026-08-05",
-      "earnings_timing": null,
+      "earnings_timing": "after-hours",
       "eps_estimate": 0.47,
       "beat_rate_hist": 0.5,
-      "expira": "2026-08-05T20:00:00Z",
-      "notas": "Pre-open yfinance detect. Whisper/asimetria PENDIENTE (EW no accesible desde sandbox). Pre-market scan 10:15 ET hará scoring completo.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)"
+      "expira": "2026-08-05T18:00:00Z",
+      "notas": "Fuente: WebSearch fallback (EW premium en imagen/PDF). RISK_ON, VIX 15.86, indices en maximos.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-08-05 AH -> jueves 09:40-13:00 ET",
+      "score_total": 6.0,
+      "fecha_deteccion": "2026-08-04",
+      "stop_tipo": "ATR×1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Reporta AH. Delivery. Vigilar en apertura del jueves si guidance fuerte.",
+      "sector": "consumer_discretionary",
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Earnings after-hours el 2026-08-05"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-07-31",
+    "fecha_actualizacion": "2026-08-04",
     "semana": "2026-W23",
     "regimen": "RISK_ON",
-    "vix": 16.21,
+    "vix": 15.86,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACIÓN 2026-07-31: Cierre semanal claramente risk-on. S&P 500 +0.91% a 7,505.66, Dow +0.77% a 52,608, NASDAQ-100 +0.92% a 28,364. VIX comprimido de 20.66→16.21 (−4.5 pts), señal de apetito de riesgo institucional hacia el fin de semana. Régimen movido EARNINGS_SEASON_NORMAL→RISK_ON por evidencia clara (rally amplio sincronizado + VIX<17). Semana entrante dominada por earnings mid-cap (MAR, TSN, CAT) y macro: ISM Manufacturing lun 3-ago, ISM Services + ADP mié 6-ago, y el gran catalizador NFP vie 8-ago. Sin eventos geopolíticos mayores hoy.",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-04: Cierres record. S&P 500 +0.56%, Nasdaq +1.13%, Dow +1.30%, Russell 2000 +1.73% -- rally amplio con rotacion hacia small caps y tech comeback. VIX comprimido a 15.86 (-0.8%), apetito de riesgo elevado. SpaceX (post-IPO) bate ingresos; AMD reporto AH. Palantir batio expectativas el lunes. Sin datos macro mayores hasta NFP (7-ago) y CPI (12-ago). Sesgo alcista intacto pero indices en maximos historicos -> riesgo de mean-reversion en earnings con implied move alto.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing 5/21-5/22",
       "EarningsWhispers Whisper Report W21",
@@ -2628,7 +2658,8 @@
       "WebSearch post-market 2026-07-24: VIX/mercado, earnings 27-jul, FOMC 28-29",
       "WebSearch post-market 2026-07-28: 4 busquedas (macro, FOMC, earnings mañana)",
       "WebSearch post-market 2026-07-29: FOMC result, VIX, calendario earnings 30-jul (Gmail/EW premium no disponibles esta sesion)",
-      "WebSearch post-market 2026-07-31: VIX+SP500 close, earnings cal Aug3-7, econ cal (Gmail/EW browser no usados en sesión autónoma)"
+      "WebSearch post-market 2026-07-31: VIX+SP500 close, earnings cal Aug3-7, econ cal (Gmail/EW browser no usados en sesión autónoma)",
+      "Gmail+WebSearch post-market 2026-08-04: 13 emails, market close data, earnings previews UBER/DIS/SHOP/LLY"
     ],
     "sector_prioridades": {
       "defense": 1,
@@ -2716,17 +2747,6 @@
       "yield_10y": 0.0
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-22",
-        "evento": "Alphabet -5% por fuga de talento AI; rotacion tech->value. US-Iran peace talks en foco.",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "technology",
-          "communication",
-          "industrials"
-        ],
-        "fuente": "Yahoo Finance/TheStreet/CNBC"
-      },
       {
         "fecha": "2026-06-23",
         "evento": "Sell-off global tech/semis (memory chips); dudas trade IA (BofA+Asia). Nasdaq -1.3%, S&P -0.4%, VIX ~19.5",
@@ -2937,6 +2957,17 @@
           "consumer_discretionary"
         ],
         "fuente": "WebSearch (historicaloptiondata, market data)"
+      },
+      {
+        "fecha": "2026-08-04",
+        "evento": "Cierres record S&P/Nasdaq/Dow; VIX 15.86; SpaceX bate ingresos en primer report post-IPO; AMD reporta AH",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "technology",
+          "consumer_discretionary",
+          "semiconductors"
+        ],
+        "fuente": "WebSearch+Bloomberg/TheStreet"
       }
     ],
     "macro_score_pm": -0.8,
@@ -8684,13 +8715,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-07-31",
+    "_ultima_actualizacion": "2026-08-04",
     "rendimiento_global": {
       "equity_paper_actual": 109320.05,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3820.05,
       "pnl_total_paper_pct": 3.62,
-      "equity_real_actual": 4548.0,
+      "equity_real_actual": 4548.01,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 47.98,
       "pnl_total_real_pct": 1.07,
@@ -8726,7 +8757,7 @@
       "_comentario_bot_protect": "MSFT cerrado por bot PROTECT +$8.28. Primera op Cowork cerrada.",
       "_comentario_w18": "W18 cerrada con 3/7 ganadoras. Crypto DOGE +$1264 dominando. 3 ops Tipo C (cierre pre-earnings, beats perdidos).",
       "_comentario_w19": "W19: 6 cerradas, 2 wins (PLTR+DIS), 4 losses (ANET+FTNT+ABNB+ENB). Avg R 0.54. AMD/OXY/PFE abiertas sin stop. Win rate semanal 33.3%.",
-      "_ultima_actualizacion": "2026-05-23",
+      "_ultima_actualizacion": "2026-08-04",
       "_w19_summary": "10 cerradas + 3 abiertas. Wins acum: 5/10 (50%). Losses dominados por pre-earnings closes pequeños (-$15 a -$179) y OXY UPL grande. AMD abierta +$865 UPL.",
       "_w20_comentario": "W20: AMD cerrada +10.5% (A_open), OXY reconciled -10.53% (D_open), PFE reconciled -2.73% (D_open). Net W20 ops cerradas: 1W/2L.",
       "_w21_comentario": "W21: 1 op nueva PANW (-2.73% UPL al cierre). Bot cerró PANW 5/20 pre-NVDA. Solo 1 op Cowork por filtro de calidad post-W20 pivot.",
@@ -9156,6 +9187,16 @@
         "equity_real": 4548.0,
         "pnl_dia_paper": 62.28,
         "vix": 16.21
+      },
+      {
+        "fecha": "2026-08-04",
+        "equity_paper": 109320.05,
+        "equity_real": 4548.01,
+        "pnl_dia_paper": 67.53,
+        "win_rate_acumulado": 38.1,
+        "avg_r_acumulado": -0.09,
+        "operaciones_acumuladas": 21,
+        "vix": 15.86
       }
     ],
     "objetivos": {
@@ -14169,6 +14210,18 @@
       "trades_paper": [],
       "evento_clave": "Cierre risk-on: VIX 20.66→16.21, S&P +0.91%, rally amplio sincronizado",
       "leccion": "Sin posiciones abiertas ni earnings ejecutados hoy. Semana de prep: MAR/TSN lun, CAT mar, NFP vie 8-ago es el catalizador macro clave."
+    },
+    {
+      "fecha": "2026-08-04",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 109320.05,
+      "variacion_dia": 67.53,
+      "variacion_pct": 0.06,
+      "vix": 15.86,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "evento_clave": "Cierres record en indices con VIX 15.86; SpaceX bate ingresos primer report post-IPO",
+      "leccion": "Con indices en maximos y earnings de implied move alto (UBER ±8.3%, LLY swing masivo), ser selectivo: solo entrar candidatos con asimetria whisper confirmada."
     }
   ],
   "alertas_criticas": [
@@ -14454,6 +14507,15 @@
       "evidencia": "29-jul FOMC sin dot plot + MSFT/META/ARM; VIX 18.67 pero riesgo evento alto",
       "archivo_modificado": "performance_log (lecciones_sistema)",
       "impacto_esperado": "Evitar entradas gap-risk en dia de decision Fed",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-08-04",
+      "tipo": "regla_añadida",
+      "descripcion": "Filtro de cautela earnings implied-move-alto: en dias RISK_ON con indices en maximos, exigir asimetria whisper confirmada antes de entrar earnings con implied move >6%.",
+      "evidencia": "2026-08-04: UBER implied ±8.3% + guia bajo consenso; LLY swing $65.9B con guidance risk (orforglipron lento). Ninguno alcanza ≥7.5 sin confirmacion whisper.",
+      "archivo_modificado": "performance_log",
+      "impacto_esperado": "Menos entradas en coin-flips binarios de alta varianza -> mejor profit factor.",
       "implementada": true
     }
   ],
@@ -15336,6 +15398,14 @@
           "bot_sin_stop": 0,
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": []
+        },
+        {
+          "fecha": "2026-08-04",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [],
+          "nota": "Paper account flat (0 posiciones). Real: solo BTCUSD dust $0.53 (-45%), sin stop pero notional insignificante."
         }
       ]
     },
@@ -16076,6 +16146,15 @@
       "mejoras_acumuladas": 26,
       "candidatos_activos": 5,
       "mejora_hoy": "Sesión autónoma sin posiciones: macro→RISK_ON (VIX 16.21), watchlist lunes MAR/TSN/CAT, candidatos vencidos expirados."
+    },
+    {
+      "fecha": "2026-08-04",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 27,
+      "candidatos_activos": 8,
+      "bugs_pendientes": 0,
+      "parametros_version": "2026-06-03",
+      "mejora_hoy": "Filtro de cautela earnings implied-move-alto: en dias RISK_ON con indices en maximos, exigir asimetria whisper confirmada antes de entrar earnings con implied move >6%."
     }
   ],
   "motor_alpha_diario": {
@@ -22197,6 +22276,12 @@
       "tareas_con_issues": [
         "mejoras_pendientes_no_aplicables"
       ]
+    },
+    {
+      "fecha": "2026-08-04",
+      "score_sistema": 9.0,
+      "nota": "post-market ejecutado en modo lectura+analisis. Paper flat, sin ordenes que colocar. Candidatos manana scored via WebSearch.",
+      "tareas_con_issues": []
     }
   ]
 }
