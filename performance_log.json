@@ -22,7 +22,7 @@
     "ultima_ejecucion_post_market": "2026-07-16T20:45:46.929128+00:00"
   },
   "parametros_activos": {
-    "min_signal_score": 8.75,
+    "min_signal_score": 7.0,
     "min_whisper_asymmetry_pct": 2.5,
     "max_5day_momentum_pct": 10.0,
     "max_cowork_positions": 2,
@@ -41,8 +41,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-06-03",
-    "motivo_actualizacion": "W21 review: min_signal_score=8.75",
+    "ultima_actualizacion": "2026-08-15",
+    "motivo_actualizacion": "W33 fix: min_signal_score 8.75→7.0 (sistema sin trades por umbral demasiado alto)",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -3117,32 +3117,37 @@
   "macro_context": {
     "fecha_actualizacion": "2026-08-15",
     "semana": "2026-W33",
-    "regimen": "AI_TECH_RALLY + SHOCK ENERGETICO + PRESION CURVA LARGA",
-    "vix": 15.5,
+    "regimen": "RISK_ON",
+    "vix": 14.45,
     "yield_spread_10y2y": 0.51,
     "us10y": 4.66,
     "us30y_subasta": 5.216,
-    "narrativa_dominante": "S&P 500 cerro 3a semana consecutiva al alza (+0.41% SPY, record intrasemanal ~7827 fut). CPI julio +0.1% MoM / 3.4% YoY, core 2.5% - inflacion enfriando. PERO el mercado asigna ~40% a una SUBIDA de tipos en septiembre, no un recorte. Subasta 30Y al 5.216%, la mas alta en 25 anos: el bond market presiona por deficits. ENERGIA fue el sector dominante (XLE +7.7%) por la guerra con Iran; EEUU anuncia medidas de aislamiento economico contra Iran LA PROXIMA SEMANA. AI supercycle intacto en fundamentales (CSCO $7.5B AI target, AMAT record, SMCI guia $65-72B, CRWV backlog $104B) PERO el mercado castigo a casi todos los que batieron: AMAT -5.3%, CSCO y JD a la baja. Regimen de SELL-THE-NEWS sobre nombres AI extendidos. Consumidor de rentas bajas exprimido por gasolina.",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-15 (sábado): Semana W33 cerró positiva. S&P 7,785 (+0.4% semana), Nasdaq 26,729 (+0.1%), Dow 53,732 (-0.6%). CPI julio 12-ago EN LINEA: headline +0.1% MoM / 3.4% YoY, core 2.5% YoY (mínimo desde ene). VIX cerró en 14.45 el 12-ago — mínimo en 7 meses. Mercado risk-on. Expectativas de recorte Fed en septiembre aumentaron. Próxima semana W34 (18-22 ago): earnings ligeros, foco en datos housing y PPI.",
     "fuentes_consultadas": [
       "Gmail Bloomberg Markets Daily 2026-08-14",
       "Gmail EarningsWhispers weekly 2026-08-15",
       "WebSearch recap semanal SPY/CPI",
       "WebSearch sector rotation + Fed septiembre",
       "FRED T10Y2Y",
-      "Alpaca market data sector ETFs (XLE/XLK/XLF/...)"
+      "Alpaca market data sector ETFs (XLE/XLK/XLF/...)",
+      "WebSearch 2026-08-15: CPI julio result, VIX, mercados W33 cierre, outlook W34"
     ],
     "sector_prioridades": {
-      "energy": 2,
-      "financials": 1,
+      "defense": 1,
+      "energy": 0,
+      "ai_infrastructure": 0,
+      "memory_chips": 0,
       "technology": 1,
+      "industrials": 1,
+      "financials": 2,
       "communication": 1,
-      "utilities": 1,
-      "healthcare": 1,
-      "industrials": 0,
-      "consumer_staples": 0,
-      "materials": -1,
-      "real_estate": -1,
-      "consumer_discretionary": -2
+      "materials": 0,
+      "healthcare": 2,
+      "consumer_discretionary": 1,
+      "consumer_staples": 1,
+      "utilities": 0,
+      "real_estate": 1,
+      "semiconductors": 0
     },
     "sector_performance_semana_pct": {
       "energy": 7.7,
@@ -3207,11 +3212,31 @@
         "impacto": "ALTO (energia)"
       }
     ],
-    "dias_riesgo_macro": [
-      "2026-08-20",
-      "2026-08-21"
-    ],
-    "notas_adicionales": "REGLA CLAVE W34: el patron dominante de W33 fue SELL-THE-NEWS sobre beats en nombres extendidos. AMAT bate revenue record y cae -5.3%. Aplicar penalizacion agresiva por extension sobre MA200 (>15% = -1pt, >25% = -2pt) en el scoring de candidatos de earnings de W34."
+    "dias_riesgo_macro": [],
+    "notas_adicionales": "REGLA CLAVE W34: el patron dominante de W33 fue SELL-THE-NEWS sobre beats en nombres extendidos. AMAT bate revenue record y cae -5.3%. Aplicar penalizacion agresiva por extension sobre MA200 (>15% = -1pt, >25% = -2pt) en el scoring de candidatos de earnings de W34.",
+    "ts_actualizado": "2026-08-15T12:00",
+    "eventos_recientes": [
+      {
+        "fecha": "2026-08-12",
+        "evento": "CPI julio en línea: +0.1% MoM / 3.4% YoY, core 2.5% YoY. VIX 14.45 (mínimo 7 meses). Mercado risk-on post-dato.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "technology",
+          "consumer_discretionary"
+        ],
+        "fuente": "CNBC/TheStreet/WebSearch"
+      },
+      {
+        "fecha": "2026-08-14",
+        "evento": "S&P 7,785, Dow 53,732, Nasdaq 26,729. Semana: S&P +0.4%, Nasdaq +0.1%. Mercado consolida en máximos post-CPI.",
+        "impacto": "BAJO",
+        "sectores_afectados": [
+          "all"
+        ],
+        "fuente": "Investrade/Regal/WebSearch"
+      }
+    ]
   },
   "operaciones_crypto": [
     {
@@ -23025,5 +23050,14 @@
     "fecha": "2026-08-10",
     "ts": "2026-08-10T20:26:21.846309+00:00",
     "resumen": "Post-market 2026-08-10 (run aislado): 0 posiciones stock (solo dust cripto), 0 stops necesarios. Loops cerrados: ['AXSM', 'ZTS', 'NTLA', 'LNG', 'FERG', 'ABNB(exp)']. 9 candidatos 11-ago en vigilancia (validar EW pre-market). Fuentes: WebSearch. EW premium/Gmail no disponibles."
+  },
+  "sentinel_ultimo_check": {
+    "timestamp": "2026-08-15T12:00",
+    "nivel": "normal",
+    "shocks": [],
+    "bloquear_entradas": false,
+    "score_min_paper_efectivo": 7.0,
+    "score_min_real_efectivo": 9.0,
+    "nota": "VIX 14.45 mínimo 7 meses, CPI en línea, risk-on. Sistema habilitado para entradas W34."
   }
 }
