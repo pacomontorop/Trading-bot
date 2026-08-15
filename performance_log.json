@@ -41,8 +41,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-06-03",
-    "motivo_actualizacion": "W21 review: min_signal_score=8.75",
+    "ultima_actualizacion": "2026-08-15",
+    "motivo_actualizacion": "Añadido filtro_beat_and_fade (evidencia 5/5 en semana 12-14 ago). Generaliza e implementa la mejora pendiente del 2026-06-04 (CIEN).",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -82,7 +82,24 @@
     "score_min_paper": 7.0,
     "riesgo_por_trade_equity_pct_real": 0.005,
     "atr_multiplier_stop": 2.0,
-    "atr_multiplier_tp": 3.0
+    "atr_multiplier_tp": 3.0,
+    "filtro_beat_and_fade": {
+      "activado": true,
+      "implementado": "2026-08-15",
+      "condicion_regimen": "VIX < 16 Y indices S&P/Nasdaq a menos de 1% de maximos historicos",
+      "sectores_afectados": [
+        "technology",
+        "semiconductors",
+        "ai_infrastructure",
+        "communication"
+      ],
+      "condicion_ticker": "precio > +10% sobre MA200",
+      "penalizacion_pts": -2.0,
+      "score_minimo_override": 8.5,
+      "evidencia": "Semana 2026-08-12/14: CSCO, AMAT, JD, PFG y AMCR batieron y los 5 cayeron. Confirma tambien CIEN -17% post-beat (jun-2026) y SNDK (06-ago).",
+      "razon": "Con el mercado en maximos y volatilidad minima, el beat ya esta en precio; la asimetria del whisper pierde poder predictivo sobre el movimiento.",
+      "revisar_si": "VIX > 18 o 3 beats consecutivos en estos sectores cierran en verde -> desactivar y reevaluar"
+    }
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -135,33 +152,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-06-26",
-      "titulo": "Post-earnings continuation NO siempre continua — confirmar fuerza sectorial",
-      "descripcion": "MU continuation (score 8.5, beat +12% vs whisper, +13% AH) NO fue ejecutada en apertura 26-jun y MU cayo -2.5% el dia de entrada por selloff de chips. La penalizacion de sector memory(0)/semis(-1) suprimio correctamente la entrada. El beat masivo no garantiza continuation si el sector esta en risk-off.",
-      "accion_correctiva": "Para post_earnings_continuation, exigir que el sector NO este penalizado (>=0) Y que el ticker no haya ya faded >50% del pop AH. Si chips/sector venden, descartar continuation aunque score>8.",
-      "tarea_afectada": "market-open-execution | pre-market-earnings-scan",
-      "auto_generado": true,
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-06-30",
-      "titulo": "PRGS: beat fuerte tras -22% pre-earnings; watch cauteloso (no entrada) razonable",
-      "descripcion": "PRGS batio (EPS 0.50 vs guid 0.35-0.41) pese a churn SaaS. Score 5.0 mantuvo fuera; reaccion a confirmar 1-jul.",
-      "accion_correctiva": "Revisar reaccion precio PRGS 1-jul: si rebote fuerte, el factor 'caida pre-earnings + beat' merece +0.5 en scoring de recuperacion.",
-      "tarea_afectada": "pre-market-earnings-scan",
-      "auto_generado": true,
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-07-01",
-      "titulo": "Higiene: purgar acciones_pendientes_manana cuando no hay posiciones",
-      "descripcion": "acciones_pendientes_manana debe reflejar solo posiciones abiertas actuales. Entradas huerfanas persisten si la posicion se cierra sin limpiar.",
-      "accion_correctiva": "Post-market: si paper esta flat, vaciar acciones_pendientes_manana. market-open debe validar que el symbol siga abierto antes de ejecutar parcial.",
-      "tarea_afectada": "market-open-execution",
-      "auto_generado": true,
-      "aplicada": true
-    },
     {
       "fecha": "2026-07-01",
       "tipo": "BEAT_RESULTADO",
@@ -468,6 +458,30 @@
       "tarea_afectada": "post-market-review,intraday-monitor",
       "auto_generado": true,
       "aplicada": false
+    },
+    {
+      "fecha": "2026-08-15",
+      "titulo": "BEAT-AND-FADE CONFIRMADO 5/5 en semana 12-14 ago (CSCO, AMAT, JD, PFG, AMCR)",
+      "descripcion": "Los cinco beats mas grandes de la semana cayeron en precio. CSCO: resultados record + target $7.5B AI infra, cayo. AMAT: revenue record, mayor crecimiento secuencial de su historia, guidance Q4 por encima -> cayo (y ademas fallo el whisper por 1.69%). JD: margenes y cash flow disparados -> cayo. Con indices en maximos y VIX 14.25, el mercado ya tiene descontado el beat: la asimetria del whisper deja de ser predictiva del movimiento del precio.",
+      "accion_correctiva": "Aplicar el nuevo filtro filtro_beat_and_fade de parametros_activos: cuando VIX<16 Y los indices esten a menos de 1% de maximos, penalizar -2 pts a candidatos de earnings en technology/semiconductors/ai_infrastructure que coticen >+10% sobre su MA200. Exigir score >=8.5 en esos casos.",
+      "tarea_afectada": "pre-market-earnings-scan | post-market-review | market-open-execution",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-15",
+      "titulo": "CSCO: no entrar por prudencia pre-CPI fue la decision correcta (validacion del filtro macro)",
+      "descripcion": "El 11-ago se marco CSCO como vigilar_no_entrar_pre_cpi con score 6.0. Reporto un beat record el 12-ago AH y la accion cayo igualmente. El filtro de cautela pre-evento-macro evito una perdida.",
+      "accion_correctiva": "Mantener la regla de no abrir posiciones de earnings en la vispera de un dato macro de primer nivel (CPI/NFP/FOMC). Confirmada con evidencia.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-15",
+      "titulo": "BUG OPERATIVO: la tarea post-market no se ejecuto el 12, 13 ni 14 de agosto (3 dias de memoria perdida)",
+      "descripcion": "El ultimo historial_diario_notas antes de este run era del 11-ago y _last_ew_daily_run del 10-ago. Se perdieron tres cierres de sesion, incluida la semana de earnings mas informativa del mes. Se han reconstruido a posteriori con Gmail + yfinance + WebSearch, pero los datos intradia (equity de cierre por dia, ordenes) ya no son recuperables.",
+      "accion_correctiva": "Al inicio de CADA run, comparar la fecha del ultimo historial_diario_notas con hoy. Si el hueco es >1 dia habil, ejecutar modo recuperacion: reconstruir los dias que faltan desde Gmail/WebSearch antes de analizar el dia actual. Este run ya lo hizo; convertirlo en paso fijo (PASO 0.3).",
+      "tarea_afectada": "post-market-review",
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -2950,23 +2964,209 @@
       "sizing": "vigilancia",
       "argumento": "Cisco Q4 AH: EPS cons $1.17, revenue $16.83B, estimaciones +9.3% en 90d (momentum alcista), top Dow 2026. PERO options implican move 8.2% (IV alta), tech sector prioridad=0, y CPI manana 08:30 puede dominar la sesion. Sin whisper premium disponible este run.",
       "sector": "technology",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "expira": "2026-08-13T02:28:33.611456Z",
       "score_macro_bonus": 0,
-      "notas": "CPI day. Earnings AH — solo entrar con plan de cierre pre-close (R0). Riesgo IV alta.",
+      "notas": "CPI day. Earnings AH — solo entrar con plan de cierre pre-close (R0). Riesgo IV alta. | LOOP CERRADO 2026-08-15: beat record pero sell-the-news. No entrar fue correcto.",
       "riesgo_macro": true,
-      "conviction_tier": "no_entry"
+      "conviction_tier": "no_entry",
+      "resultado_real": {
+        "earnings_fecha": "2026-08-12",
+        "timing": "after-hours",
+        "resultado": "BEAT record + target $7.5B AI infra revenue FY27 (casi 2x)",
+        "orders_cloud_vs_LY": "4.5x",
+        "reaccion_semana": "ACCION CAYO en la semana pese al beat (margen bruto erosionado por memoria mas cara)",
+        "decision_cowork": "NO ENTRAR (prudencia pre-CPI)",
+        "veredicto": "DECISION CORRECTA"
+      }
+    },
+    {
+      "ticker": "XOM",
+      "score": 6.5,
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "sector": "energy",
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "momentum_entrar_en_pullback",
+      "ventana_entrada": "2026-08-17/21 10:15-12:00 ET, solo en pullback a MA10",
+      "stop_tipo": "ATR x1.5 (ATR14=$3.96, ~2.5%)",
+      "argumento": "Energia es el UNICO sector claramente verde (XLE +7.7% en 5d). XOM: flujo de opciones 19.4x la media diaria, $29.9M de prima, 0% puts, bloques repetidos de calls 150/155 vencimiento 21-ago hacia el cierre del viernes. Precio +8.5% sobre MA50 y +14.1% sobre MA200. Sector prioridad subida a +2.",
+      "notas": "Sin catalizador de earnings -> es momentum puro, no drift post-earnings. Requiere pullback: entrar a $160 tras +8.7% en 20d es perseguir. ALERTA HISTORICA: op previa de XOM cerro -3.13% y queda alerta XOM_SIN_STOP_DOWNSIDE del 27-jul sin resolver.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 2,
+      "expira": "2026-08-22T20:48:37.162585Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "ADI",
+      "score": 5.0,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "semiconductors",
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "NO_ENTRAR_salvo_confirmacion_post_print",
+      "ventana_entrada": "2026-08-19 despues del print, solo si el precio se sostiene >+0.5% a los 15 min",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (ATR14=$12.68)",
+      "argumento": "El mejor setup fundamental de la semana: whisper $3.45 vs consenso $3.33 (asimetria +3.6%), 83.3% espera beat, short interest -10.2%, estimaciones al alza, industrial +56% YoY y data center +90%. PERO cotiza +15.5% sobre MA200 en un sector con prioridad -1 -> le aplica el nuevo filtro_beat_and_fade (-2 pts).",
+      "notas": "Reporta el mismo dia que las minutas del FOMC (14:00 ET). Alguien compro 1.081 puts $330 vencimiento 18-sep el 11-ago. Es exactamente el perfil que castigo a AMAT y CSCO esta semana.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": -1,
+      "expira": "2026-08-22T20:48:37.162603Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "KLAR",
+      "score": 5.0,
+      "earnings_fecha": "2026-08-18",
+      "earnings_timing": "pre-market",
+      "sector": "financials",
+      "estado": "vigilar_cauteloso",
+      "accion_recomendada": "vigilar_apertura_no_entrar_de_salida",
+      "ventana_entrada": "2026-08-18 09:40-10:30 ET solo con confirmacion de precio",
+      "stop_tipo": "ATR x2.5 en ventana de apertura (ATR14=$0.82, 3.9%)",
+      "argumento": "Whisper -$0.03 vs consenso -$0.07: mejora sustancial sobre una base pequeña. 80% espera beat, estimaciones revisadas al alza, 5.809 calls $25 ene-27 comprados el 10-ago. Sector financials prioridad +2.",
+      "notas": "Contraviento fuerte: es BNPL, o sea credito al consumo, justo cuando retail sales cayo -0.6% y hay cobertura masiva con puts en discrecional. Short interest +18.9%. Solo reitero guidance, no lo subio, y el H2 se ve mas flojo. Momentum ya +10.9% en 20d.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 2,
+      "expira": "2026-08-22T20:48:37.162605Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "BIDU",
+      "score": 4.0,
+      "earnings_fecha": "2026-08-18",
+      "earnings_timing": "pre-market",
+      "sector": "technology",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": null,
+      "stop_tipo": null,
+      "argumento": "Whisper $1.57 vs consenso $1.51 (+4.0%) y 80% espera beat; AI cloud +79% e infraestructura GPU +184%.",
+      "notas": "DESCARTADO: tendencia claramente bajista (-7.2% vs MA50, -17% vs MA200, -5.5% en 5d), short interest +16.4%, y el viernes alguien compro 11.510 puts $91 vencimiento 21-ago. Flujo de dos direcciones (tambien un sweep de $510K en calls $115). ADR china sin margen de seguridad.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 0,
+      "expira": "2026-08-19T20:48:37.162607Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "TGT",
+      "score": 2.0,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $2.35 vs consenso $2.26 (+4.0%), la mejor asimetria de la semana en retail.",
+      "notas": "DESCARTADO por mercado descontado: +28.5% desde el ultimo report y +34% sobre MA200. Es el comparativo mas dificil de todo el año (lapea el lanzamiento de Switch 2), la propia empresa guio a ~1% de crecimiento, short interest +8.1% y retail sales -0.6%. Asimetria positiva con el beat ya totalmente en precio = patron de perdida clasico del sistema.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": -1,
+      "expira": "2026-08-19T20:48:37.162608Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "WMT",
+      "score": 2.0,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_staples",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $0.75 vs consenso $0.73 (+2.7%), por encima del techo de su propio guidance ($0.72-0.74).",
+      "notas": "DESCARTADO: viento en contra explicito por combustible caro comprimiendo margen y al consumidor de renta baja. -7.3% desde el ultimo report. Alguien compro 20.948 puts $119 vencimiento 21-ago el 5-ago. Sector staples bajado a 0.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 0,
+      "expira": "2026-08-19T20:48:37.162610Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "LOW",
+      "score": 1.5,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "88.9% espera beat, online +15.5%, cuatro trimestres de comps positivos.",
+      "notas": "DESCARTADO: asimetria de whisper de solo +0.95% (por debajo del minimo de 2.5%). La direccion ya avviso de que el BPA de Q2 caeria ~2% interanual. Estimaciones recortadas. Mismo dia que las minutas del FOMC.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": -1,
+      "expira": "2026-08-19T20:48:37.162612Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "BILL",
+      "score": 1.0,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "after-hours",
+      "sector": "technology",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $0.73 vs consenso $0.71 (+2.8%), 90% espera beat, short interest -24.4%.",
+      "notas": "DESCARTADO: earnings after-hours (regla no_holdings_earnings_overnight) + sobre-extendido (+22.8% sobre MA50) + mismo dia que las minutas del FOMC. Crecimiento core enfriandose (APAR 12%).",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 0,
+      "expira": "2026-08-19T20:48:37.162614Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "HTHT",
+      "score": 2.0,
+      "earnings_fecha": "2026-08-17",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "UNICO nombre relevante que reporta el lunes (06:15 ET). Short interest -26.1%, RevPAR positivo por primera vez en mucho tiempo.",
+      "notas": "DESCARTADO: EW no publica whisper number -> el bloque 1 del scoring no se puede calcular (asimetria desconocida). Tendencia bajista (-9.8% vs MA200), estimaciones recortadas, guidance anual solo mantenido. Sector discrecional bajado a -1. EL LUNES 17-AGO NO HAY CANDIDATO OPERABLE.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": -1,
+      "expira": "2026-08-19T20:48:37.162615Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
+    },
+    {
+      "ticker": "RDDT",
+      "score": 3.0,
+      "earnings_fecha": null,
+      "earnings_timing": "evento_indice",
+      "sector": "communication",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Entra en el S&P 500 antes de la apertura del martes 18-ago. Salto +11% en after-hours del viernes.",
+      "notas": "DESCARTADO: el evento ya esta en precio (+26.6% en 10d, +11% AH). Las inclusiones en indice historicamente hacen fade tras la fecha efectiva. Perseguir aqui es comprar la euforia del anuncio.",
+      "fecha_deteccion": "2026-08-15",
+      "detectado_por": "post-market-review",
+      "score_macro_bonus": 0,
+      "expira": "2026-08-19T20:48:37.162617Z",
+      "conviction_tier": "no_entry",
+      "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-08-11",
+    "fecha_actualizacion": "2026-08-15",
     "semana": "2026-W23",
-    "regimen": "RISK_ON",
-    "vix": 15.54,
+    "regimen": "RISK_ON_SELECTIVO",
+    "vix": 14.25,
     "yield_spread_10y2y": 0.43,
-    "narrativa_dominante": "ACTUALIZACION 2026-08-11 (martes): Sesion cautelosa. S&P -0.06% (~7753), Nasdaq -0.32% (26605), VIX cierre 15.54 (+0.5%) — risk-on moderado. Fuerza en financials y energia; tech mas debil. TODO EL FOCO en CPI de julio manana 12-ago 08:30 ET (headline esperado +0.2% MoM / 3.4% YoY; core +0.2% / 2.5% YoY, minimo desde enero). El dato define expectativas de recorte Fed en septiembre. Earnings clave manana: CSCO (Q4, after-hours, EPS cons $1.17, estimaciones +9.3% en 90d, options implican 8.2% move).",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-15 (sabado, cierre semana 12-14 ago). SEMANA COMPLETA REVISADA (la tarea no corrio 12/13/14). MACRO: CPI julio (12-ago) +0.1% MoM / 3.4% YoY, core +0.2% / 2.5% YoY -> inflacion aun por encima del objetivo. CORRECCION IMPORTANTE DE NARRATIVA: el debate de la Fed es de SUBIDA, no de recorte. Fed funds 3.50-3.75%. Tras el CPI, la probabilidad de subida en septiembre bajo a 42% y el mercado da 64% a que la Fed mantenga. PPI julio plano (13-ago) + caida del crudo -> nuevos maximos historicos en indices. Retail sales julio (14-ago) -0.6% MoM = MISS claro -> consumidor debil, enfria aun mas las odds de subida. Cierre viernes: S&P 7785.76 (-0.17%), Nasdaq 26729 (-0.28%), Dow 53732 (-0.20%), VIX 14.25 (-2.6%), 10y 4.70%. PATRON DOMINANTE DE LA SEMANA -- BEAT AND FADE: CSCO (record + target $7.5B AI infra), AMAT (record revenue, guidance al alza), JD, PFG y AMCR TODOS batieron y TODOS cayeron en la semana. El mercado ya no paga por el beat. LIDERAZGO: energia es el unico sector claramente verde (XLE +7.7% en 5d; XOM con flujo de opciones 19.4x la media y $29.9M de prima 100% en calls). Defensa apoyada por la proclamacion de aranceles a drones (100%/25%). COBERTURA EN CONSUMO: bloques enormes de puts en LULU (300P dic, $24.6M), NKE y ONON tras el dato de retail sales. SEMANA QUE VIENE: minutas del FOMC miercoles 19-ago 14:00 ET (evento macro clave); RDDT entra en el S&P 500 antes de la apertura del martes 18; semana de earnings de retail (HD, TGT, LOW, WMT, TJX) y de China tech (BABA, BIDU, NTES).",
     "fuentes_consultadas": [
-      "FRED T10Y2Y",
       "WebSearch NVDA earnings 5/20",
       "Alpaca data SPY",
       "WebSearch 2026-06-03: TheStreet, Motley Fool, CNBC, Benzinga, Times of Israel, NPR — Iran/Kuwait/Bahrain + earnings + oil + macro",
@@ -2995,11 +3195,12 @@
       "Gmail+WebSearch post-market 2026-08-04: 13 emails, market close data, earnings previews UBER/DIS/SHOP/LLY",
       "WebSearch post-market 2026-08-07: NFP result + cierres record + VIX 15.15",
       "WebSearch post-market 2026-08-10: cierre mercado + earnings 11-ago (Gmail/EW no disponibles en run aislado)",
-      "WebSearch post-market 2026-08-11: VIX/indices/CPI-preview/earnings-Aug12"
+      "WebSearch post-market 2026-08-11: VIX/indices/CPI-preview/earnings-Aug12",
+      "Gmail post-market 2026-08-15: EW week-ahead 17-ago (full premium preview), EW summary 13-ago, InsiderFinance Evening Edge 13 y 14-ago, TipRanks. WebSearch: CPI julio, calendario macro semana 17-23 ago."
     ],
     "sector_prioridades": {
       "defense": 1,
-      "energy": 1,
+      "energy": 2,
       "ai_infrastructure": -1,
       "memory_chips": 0,
       "technology": 0,
@@ -3008,8 +3209,8 @@
       "communication": 0,
       "materials": 1,
       "healthcare": 2,
-      "consumer_discretionary": 1,
-      "consumer_staples": 1,
+      "consumer_discretionary": -1,
+      "consumer_staples": 0,
       "utilities": 1,
       "real_estate": 0,
       "semiconductors": -1
@@ -3017,22 +3218,21 @@
     "sectores_a_vigilar_esta_semana": [
       "defense",
       "energy",
-      "industrials",
       "financials",
-      "materials",
       "healthcare",
-      "consumer_discretionary",
-      "consumer_staples",
+      "industrials",
+      "materials",
       "utilities"
     ],
     "sectores_a_evitar_esta_semana": [
       "ai_infrastructure",
+      "consumer_discretionary",
       "semiconductors"
     ],
     "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
     "dias_riesgo_macro": [
-      "2026-08-12 (CPI julio)",
-      "2026-08-12"
+      "2026-08-19 (minutas FOMC 14:00 ET)",
+      "2026-08-27/29 (Jackson Hole)"
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
@@ -3081,18 +3281,6 @@
       "yield_10y": 4.617000102996826
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-06-26",
-        "evento": "Industrials +2.2% lideran; chips venden (MU -2.5% fade post-beat). Mercado plano, VIX 18.89.",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "industrials",
-          "semiconductors",
-          "memory_chips",
-          "consumer_discretionary"
-        ],
-        "fuente": "Yahoo Finance / WebSearch"
-      },
       {
         "fecha": "2026-06-29",
         "evento": "EEUU-Iran acuerdan frenar ataques; rally risk-on, Dow record >52k, Alphabet se une al Dow (+4%)",
@@ -3299,6 +3487,18 @@
           "energy"
         ],
         "fuente": "WebSearch/TradingEconomics"
+      },
+      {
+        "fecha": "2026-08-15",
+        "evento": "Semana 12-14 ago: CPI 3.4% YoY benigno -> maximos; PPI plano; retail sales -0.6% MISS. Patron beat-and-fade confirmado en 5/5 grandes beats (CSCO, AMAT, JD, PFG, AMCR).",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "consumer_discretionary",
+          "energy",
+          "semiconductors",
+          "ai_infrastructure"
+        ],
+        "fuente": "EarningsWhispers week-ahead + InsiderFinance Evening Edge + CNBC/Kiplinger CPI"
       }
     ],
     "macro_score_pm": -0.8,
@@ -3373,7 +3573,19 @@
     "riesgo_macro_manana_motivo": "CPI julio 08:30 ET 12-ago — evento binario. Cautela con entradas pre-open; esperar print.",
     "observaciones_watchlist": [
       "2026-08-11: NTAP citado para posible earnings — fecha NO confirmada, verificar. 179 earnings totales el 12-ago (dia cargado)."
-    ]
+    ],
+    "fed_status": {
+      "fecha": "2026-08-15",
+      "fed_funds_range": "3.50-3.75%",
+      "sesgo": "HIKE_DEBATE_NO_CUT",
+      "prob_subida_septiembre_pct": 42,
+      "prob_mantener_septiembre_pct": 64,
+      "cpi_julio_yoy_pct": 3.4,
+      "core_cpi_julio_yoy_pct": 2.5,
+      "ppi_julio": "plano",
+      "retail_sales_julio_mom_pct": -0.6,
+      "nota": "CORRECCION: narrativas anteriores del log hablaban de recorte en septiembre. Es INCORRECTO. El debate es de SUBIDA."
+    }
   },
   "operaciones_crypto": [
     {
@@ -9015,6 +9227,13 @@
       },
       "motivo": "Win rate consistentemente bajo — subir umbral señal",
       "evidencia": "WR últimas 3 sem: [42.9, 33.3, 33.3] (todas <45%)"
+    },
+    {
+      "fecha": "2026-08-15",
+      "parametros": {
+        "filtro_beat_and_fade": "ACTIVADO (-2 pts, override 8.5)"
+      },
+      "motivo": "CSCO/AMAT/JD/PFG/AMCR: 5 beats grandes, 5 caidas en la semana 12-14 ago, con VIX 14.25 e indices en maximos."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -9056,22 +9275,22 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-08-11",
+    "_ultima_actualizacion": "2026-08-15",
     "rendimiento_global": {
       "equity_paper_actual": 109094.71,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 3594.71,
       "pnl_total_paper_pct": 3.41,
-      "equity_real_actual": 4548.01,
+      "equity_real_actual": 4548.0,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.01,
+      "pnl_total_real_dolares": 48.0,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 26,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 61.26,
+      "pnl_dia_paper_dolares": 61.38,
       "pnl_dia_real_dolares": 0.0,
       "equity_paper_peak": 109924.64
     },
@@ -9185,9 +9404,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 0.71,
+      "max_drawdown_paper_pct": 0.75,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-06-05",
+      "max_drawdown_paper_fecha": "2026-08-15",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4537.95,
@@ -9196,7 +9415,7 @@
       "circuit_breaker_activaciones": 0,
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
-      "max_drawdown_paper_actual_pct": 0
+      "max_drawdown_paper_actual_pct": 0.75
     },
     "bot_metricas": {
       "paper": {
@@ -9548,6 +9767,16 @@
         "avg_r_acumulado": -0.09,
         "operaciones_acumuladas": 21,
         "vix": 15.54
+      },
+      {
+        "fecha": "2026-08-15",
+        "equity_paper": 109094.71,
+        "equity_real": 4548.0,
+        "pnl_dia_paper": 61.38,
+        "win_rate_acumulado": 38.1,
+        "avg_r_acumulado": -0.09,
+        "operaciones_acumuladas": 21,
+        "vix": 14.25
       }
     ],
     "objetivos": {
@@ -14626,6 +14855,57 @@
       "trades_paper": [],
       "evento_clave": "Sesion de espera pre-CPI (julio, manana 08:30 ET). Indices ligeramente a la baja, VIX 15.5.",
       "leccion": "Sin posiciones stock activas (solo dust cripto). Watchlist de 9 earnings de hoy no ejecutada por falta de confirmacion + prudencia pre-CPI. Modo espera."
+    },
+    {
+      "fecha": "2026-08-12",
+      "dia": "Wednesday",
+      "equity_paper_cierre": null,
+      "variacion_dia": null,
+      "variacion_pct": null,
+      "vix": 15.0,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "evento_clave": "CPI julio +0.1% MoM / 3.4% YoY, core 2.5%. Odds de subida Fed en sept caen a 42%. Indices a maximos.",
+      "leccion": "CSCO reporto AH con resultados record y target de $7.5B en AI infra. NO entramos (candidato en vigilar_no_entrar_pre_cpi) -> DECISION CORRECTA: la accion cayo en la semana.",
+      "_reconstruido": true
+    },
+    {
+      "fecha": "2026-08-13",
+      "dia": "Thursday",
+      "equity_paper_cierre": null,
+      "variacion_dia": null,
+      "variacion_pct": null,
+      "vix": 14.6,
+      "regimen_macro": "RISK_ON",
+      "trades_paper": [],
+      "evento_clave": "PPI julio plano + crudo a la baja -> cierres record liderados por tech. AMAT reporta AH.",
+      "leccion": "AMAT: EPS $3.50 vs consenso $3.38 (BEAT) pero vs whisper $3.56 (MISS -1.69%). Revenue record y guidance al alza, y aun asi la accion cayo en la semana. El whisper sigue siendo mejor predictor que el consenso.",
+      "_reconstruido": true
+    },
+    {
+      "fecha": "2026-08-14",
+      "dia": "Friday",
+      "equity_paper_cierre": null,
+      "variacion_dia": null,
+      "variacion_pct": null,
+      "vix": 14.25,
+      "regimen_macro": "RISK_ON_SELECTIVO",
+      "trades_paper": [],
+      "evento_clave": "Retail sales julio -0.6% MoM (MISS). S&P -0.17%, VIX 14.25. RDDT +11% AH por entrada en S&P 500. WDAY salta por talks de compra de Silver Lake.",
+      "leccion": "Consumo debil + cobertura masiva con puts en LULU/NKE/ONON = el mercado se posiciona defensivo ANTES de la semana de earnings de retail. Bajar prioridad de consumer_discretionary.",
+      "_reconstruido": true
+    },
+    {
+      "fecha": "2026-08-15",
+      "dia": "Saturday",
+      "equity_paper_cierre": 109094.71,
+      "variacion_dia": 61.38,
+      "variacion_pct": 0.056,
+      "vix": 14.25,
+      "regimen_macro": "RISK_ON_SELECTIVO",
+      "trades_paper": [],
+      "evento_clave": "Run de recuperacion en sabado: se revisa la semana completa 12-14 ago (la tarea no corrio esos dias).",
+      "leccion": "6 sesiones consecutivas sin posiciones stock. El coste de oportunidad es cero porque el patron dominante (beat-and-fade) habria castigado precisamente el tipo de trade que hacemos. Disciplina validada, pero hay que revisar si el filtro es demasiado estricto o el mercado simplemente no ofrece la señal."
     }
   ],
   "alertas_criticas": [
@@ -14678,6 +14958,13 @@
       "mensaje": "XOM (6 sh, entry 158.17, now 154.77, uPL $-20.40/-2.15%) SIN stop de bajada activo en Alpaca. Solo TP limit.",
       "accion_requerida": "Usuario debe colocar stop GTC manualmente (~151.8). Post-market NO coloca ordenes (guardrail financiero).",
       "resuelto": false
+    },
+    {
+      "fecha": "2026-08-15",
+      "tipo": "TAREAS_NO_EJECUTADAS",
+      "resuelto": false,
+      "mensaje": "post-market-review no corrio 12/13/14-ago y sentinel no registra ciclos desde el 06-ago. Verificar que las tareas programadas siguen activas y que Cowork queda abierto en el horario de ejecucion.",
+      "accion_tomada": "Semana reconstruida a posteriori desde Gmail + WebSearch + yfinance. Añadida regla de modo recuperacion de huecos."
     }
   ],
   "mejoras_sistema": [
@@ -14837,9 +15124,10 @@
       "evidencia": "CIEN beat +10%/raised guidance +32%/rev +40% → stock -17%. Mismo patrón AVGO. Sector saturado en expectativas.",
       "archivo_modificado": "Scheduled/pre-market-earnings-scan/SKILL.md",
       "impacto_esperado": "Evitar entradas long en earnings AI plays sobrecalentados. Reducir falsos positivos en sector AI.",
-      "implementada": false,
+      "implementada": true,
       "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
-      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - CIEN -17% 2026-06-04)"
+      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  AI/semi/optical con rally YTD >+100% → -2 pts (sell the news risk - CIEN -17% 2026-06-04)",
+      "nota_cierre": "2026-08-15: subsumida y generalizada en parametros_activos.filtro_beat_and_fade (-2 pts, cubre AI/semi/optical sobre-extendidos)."
     },
     {
       "fecha": "2026-06-22",
@@ -14929,6 +15217,24 @@
       "evidencia": "CPI julio manana 12-ago 08:30 ET. CSCO reporta AH mismo dia; IV implicita 8.2%. Prudente esperar dato.",
       "archivo_modificado": "performance_log",
       "impacto_esperado": "Evita entradas pre-evento binario que el CPI podria invalidar.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-08-15",
+      "tipo": "filtro_nuevo",
+      "descripcion": "filtro_beat_and_fade: -2 pts y score minimo 8.5 para earnings en tech/semis/AI con precio >+10% sobre MA200 cuando VIX<16 e indices en maximos.",
+      "evidencia": "CSCO, AMAT, JD, PFG, AMCR: 5/5 beats con caida de precio en la semana 12-14 ago 2026.",
+      "archivo_modificado": "performance_log.json (parametros_activos) — leido por todas las tareas",
+      "impacto_esperado": "Evita entradas en el patron que mas ha costado al sistema (beat sin movimiento o con fade). Deberia subir el win rate desde el 38.1% actual.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-08-15",
+      "tipo": "regla_añadida",
+      "descripcion": "Modo recuperacion de huecos: si el ultimo historial_diario_notas tiene mas de 1 dia habil de antiguedad, reconstruir los dias perdidos desde Gmail/WebSearch antes de analizar el dia actual.",
+      "evidencia": "Hueco de 3 dias (12, 13, 14 ago) detectado en este run.",
+      "archivo_modificado": "performance_log.json (lecciones_sistema) + post-market-review",
+      "impacto_esperado": "La memoria del sistema deja de tener agujeros silenciosos.",
       "implementada": true
     }
   ],
@@ -16584,6 +16890,15 @@
       "candidatos_activos": 1,
       "parametros_version": "2026-06-03",
       "mejora_hoy": "Anadida regla: en run pre-CPI marcar riesgo_macro_manana=True y mantener candidatos AH en vigilancia (no strong-buy) hasta print de CPI."
+    },
+    {
+      "fecha": "2026-08-15",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 30,
+      "candidatos_activos": 3,
+      "parametros_version": "2026-08-15",
+      "score_sistema": 5.8,
+      "mejora_hoy": "filtro_beat_and_fade activado (-2 pts / override 8.5) + modo recuperacion de huecos + correccion de la narrativa Fed (subida, no recorte)."
     }
   ],
   "motor_alpha_diario": {
@@ -22642,122 +22957,52 @@
     }
   },
   "plan_semana_proxima": {
-    "semana": "2026-W22",
-    "fecha_inicio": "2026-05-25",
-    "fecha_fin": "2026-05-29",
-    "dias_trading": 4,
+    "semana": "2026-W34",
+    "fecha_inicio": "2026-08-17",
+    "fecha_fin": "2026-08-21",
+    "dias_trading": 5,
+    "preparado_en": "2026-08-15",
+    "preparado_por": "post-market-review (run sabado)",
+    "veredicto": "SEMANA SIN CANDIDATO FUERTE (ninguno >=7.5). Modo preservacion de capital + vigilancia.",
     "dias_con_oportunidades": {
-      "2026-05-26_martes": [
-        "AGO posibles entries premium], post-Memorial gap up posible"
+      "2026-08-17_lunes": [
+        "HTHT 06:15 ET (descartado, sin whisper) — NO HAY CANDIDATO OPERABLE. Empire State Mfg."
       ],
-      "2026-05-27_miercoles": [
-        "earnings SNOW (AH), NTNX, NCNO"
+      "2026-08-18_martes": [
+        "BIDU 05:00 ET (descartado), HSAI 04:30 ET, HD 06:00 ET, KLAR 07:30 ET (vigilancia). RDDT entra en S&P 500 antes de la apertura. Housing starts, produccion industrial."
       ],
-      "2026-05-28_jueves": [
-        "earnings PATH (AH), ASAN (AH), PD (AH), KSS, AEO"
+      "2026-08-19_miercoles": [
+        "TGT 06:30, LOW 06:00, ADI 07:00 (vigilancia), BILL 16:00 AH. MINUTAS FOMC 14:00 ET = riesgo macro."
       ],
-      "2026-05-29_viernes": [
-        "PCE Core 08:30 — alto riesgo macro, no abrir posiciones AM"
+      "2026-08-20_jueves": [
+        "WMT 07:00 ET, BABA 05:30 ET (whisper POR DEBAJO del consenso -> evitar). Philly Fed, Leading Indicators."
+      ],
+      "2026-08-21_viernes": [
+        "Sin earnings mayores. Vencimiento mensual de opciones (OpEx)."
       ]
     },
     "dias_riesgo_macro": [
-      "2026-05-25 (Memorial Day cerrado)",
-      "2026-05-29 (PCE Core 08:30 ET)"
+      "2026-08-19 (minutas FOMC 14:00 ET)",
+      "2026-08-21 (OpEx mensual)"
     ],
-    "top_candidatos_W22": [
+    "top_candidatos": [
       {
-        "ticker": "SNOW",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-27 AH",
-        "sector": "technology",
-        "argumento": "Cloud data — alineado con AI rally post-NVDA"
+        "ticker": "XOM",
+        "score": 6.5,
+        "tipo": "momentum energia"
       },
       {
-        "ticker": "NTNX",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-27",
-        "sector": "technology",
-        "argumento": "Hybrid cloud — beneficiario indirecto de AI infrastructure"
+        "ticker": "ADI",
+        "score": 5.0,
+        "tipo": "earnings, penalizado por beat-and-fade"
       },
       {
-        "ticker": "PATH",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-28 AH",
-        "sector": "technology",
-        "argumento": "RPA con momentum AI — sentimiento mixto"
-      },
-      {
-        "ticker": "ASAN",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-28 AH",
-        "sector": "technology",
-        "argumento": "Productividad — históricamente decepciona, cuidado"
-      },
-      {
-        "ticker": "PD",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-28 AH",
-        "sector": "technology",
-        "argumento": "DevOps tools — pequeño cap, alta volatilidad"
-      },
-      {
-        "ticker": "NCNO",
-        "score": 6.9,
-        "macro_bonus": 2,
-        "earnings": "2026-05-27",
-        "sector": "technology",
-        "argumento": "Banking SaaS — sector banking macro 0"
-      },
-      {
-        "ticker": "KSS",
-        "score": 6.9,
-        "macro_bonus": 0,
-        "earnings": "2026-05-28",
-        "sector": "consumer cyclical",
-        "argumento": "Retail — macro -1 (consumer pressured)"
-      },
-      {
-        "ticker": "AEO",
-        "score": 6.9,
-        "macro_bonus": 0,
-        "earnings": "2026-05-28",
-        "sector": "consumer cyclical",
-        "argumento": "Apparel — evitar a menos que score se eleve a >8.5"
+        "ticker": "KLAR",
+        "score": 5.0,
+        "tipo": "earnings, contraviento consumo"
       }
     ],
-    "supply_chain_signals_activos": [],
-    "industry_intelligence_resumen": {
-      "sectores_favorecer": [
-        "technology (2 trades WR=50%)",
-        "energy (1 trade WR=100% pero muestra pequeña)",
-        "crypto (1 trade WR=100% — DOGE outlier)"
-      ],
-      "sectores_evitar": [
-        "industrials (1 trade WR=0%)",
-        "communication (2 trades WR=0%)",
-        "real_estate",
-        "consumer_staples"
-      ]
-    },
-    "sizing_tiers_activos": {
-      "conviction_maxima_ge_8.5": "1.5x",
-      "conviction_alta_ge_7.5": "1.0x",
-      "conviction_media_ge_7.0": "0.7x",
-      "no_entry_lt_7.0": "0x"
-    },
-    "modo_defensivo_si": "PCE Core 5/29 sorprende >0.4% MoM → NO abrir posiciones AM",
-    "objetivo_w22": "Generar AL MENOS 1 trade ganador con score real ≥ 8.5. Mantener filosofía 'calidad sobre cantidad' pivot W20.",
-    "notas": [
-      "Memorial Day 5/25 mercado cerrado — solo 4 días trading.",
-      "Cuenta REAL: score_min=9.0. No se esperan entradas reales esta semana salvo señal excepcional.",
-      "Reducir universo bot a <3000 símbolos para evitar OOM (BIQ-OOM-W21 nueva).",
-      "PRIORIDAD máxima: añadir stops a GO, SLB, YETI ANTES de cualquier entrada nueva."
-    ]
+    "regla_de_la_semana": "Con el filtro_beat_and_fade activo y consumer_discretionary en -1, la semana de earnings de retail y de China tech es estructuralmente hostil. No forzar entradas: si nada llega a 7.5, no se opera."
   },
   "scan_history": [
     {
@@ -22978,11 +23223,62 @@
       "score_sistema": 9.0,
       "nota": "post-market ejecutado en modo lectura+analisis. Paper flat, sin ordenes que colocar. Candidatos manana scored via WebSearch.",
       "tareas_con_issues": []
+    },
+    {
+      "fecha": "2026-08-15",
+      "score_sistema": 5.8,
+      "tareas": {
+        "post-market-review": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "No corrio el 12, 13 ni 14 de agosto — 3 sesiones de memoria perdidas (reconstruidas en este run)"
+          ]
+        },
+        "pre-market-earnings-scan": {
+          "ok": false,
+          "score": 3,
+          "issues": [
+            "Sin candidatos detectados desde el 11-ago; sin log de scan del 12-14"
+          ]
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin candidatos pendientes -> nada que ejecutar. Correcto."
+        },
+        "sentinel": {
+          "ok": false,
+          "score": 0,
+          "issues": [
+            "Ultimo sentinel_log del 06-ago — 7 sesiones sin ciclos registrados"
+          ]
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin posiciones stock -> nada que cerrar por R0."
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Sin posiciones stock que gestionar."
+        }
+      },
+      "tareas_con_issues": [
+        "post-market-review",
+        "pre-market-earnings-scan",
+        "sentinel"
+      ],
+      "nota": "Run de sabado en modo recuperacion. Los scores bajos son de disponibilidad de las tareas, no de calidad de decision."
     }
   ],
   "_last_ew_daily_run": {
-    "fecha": "2026-08-10",
-    "ts": "2026-08-10T20:26:21.846309+00:00",
-    "resumen": "Post-market 2026-08-10 (run aislado): 0 posiciones stock (solo dust cripto), 0 stops necesarios. Loops cerrados: ['AXSM', 'ZTS', 'NTLA', 'LNG', 'FERG', 'ABNB(exp)']. 9 candidatos 11-ago en vigilancia (validar EW pre-market). Fuentes: WebSearch. EW premium/Gmail no disponibles."
+    "fecha": "2026-08-15",
+    "ts": "2026-08-15T20:48:37.162692+00:00",
+    "resumen": "Post-market 2026-08-15 (sabado, modo recuperacion). Reconstruida semana 12-14 ago. 0 posiciones stock en paper y real. Loop CSCO cerrado (beat record -> cayo; no entrar fue correcto). Semana 17-21 ago SIN candidato >=7.5. Mejora: filtro_beat_and_fade."
   }
 }
