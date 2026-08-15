@@ -11919,6 +11919,153 @@
       "post_apertura_descartados": [],
       "modo_dip": false,
       "nota": "0 posiciones abiertas; sin ordenes hoy; sin candidatos post-apertura/AH vivos; SPY plano (no dip). Lecciones revisadas."
+    },
+    {
+      "timestamp": "2026-08-15T20:53:37.231645+00:00",
+      "et_local": "2026-08-15 16:53 ET",
+      "modo": "SABADO_MERCADO_CERRADO",
+      "market_clock": {
+        "is_open": false,
+        "next_open": "2026-08-17T09:30:00-04:00"
+      },
+      "posiciones_abiertas": 1,
+      "posiciones_detalle": [
+        {
+          "symbol": "LINKUSD",
+          "account": "paper",
+          "qty": 1701.3759,
+          "entry": 9.649616275,
+          "current": 9.594,
+          "mv": 16323.05,
+          "pnl_pct": -0.58,
+          "R": -0.15,
+          "stop": 9.2853,
+          "stop_limit": 9.1924,
+          "stop_source": "stop_top_level_gtc",
+          "stop_dist_atr": 1.2,
+          "atr14": 0.3037,
+          "cid": "CRYPTO-COWORK-LINKUSD-STOP-20260815",
+          "accion": "MANTENER (P&L<0, tier=mantener_stop_original)"
+        },
+        {
+          "symbol": "BTCUSD",
+          "account": "paper",
+          "qty": 4.874e-06,
+          "mv": 0.31,
+          "clasificacion": "dust",
+          "accion": "ignorar (<$5, leccion 2026-08-11)"
+        },
+        {
+          "symbol": "SOLUSD",
+          "account": "paper",
+          "qty": 2.5e-05,
+          "mv": 0.0,
+          "clasificacion": "dust",
+          "accion": "ignorar (<$5, leccion 2026-08-11)"
+        },
+        {
+          "symbol": "BTCUSD",
+          "account": "real",
+          "qty": 8.299e-06,
+          "mv": 0.52,
+          "clasificacion": "dust",
+          "accion": "ignorar (<$5)"
+        }
+      ],
+      "posiciones_sin_stop_accionables": [],
+      "posiciones_stock": 0,
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "parciales_ejecutados": [],
+      "ordenes_ejecutadas_hoy": [
+        {
+          "symbol": "LINK/USD",
+          "side": "buy",
+          "qty": 1705.64,
+          "filled_avg_price": 9.649616275,
+          "filled_at": "2026-08-15T20:47:04Z",
+          "cid": "CRYPTO-COWORK-LINKUSD-20260815"
+        }
+      ],
+      "ordenes_pendientes": [
+        {
+          "symbol": "LINK/USD",
+          "side": "sell",
+          "type": "stop_limit",
+          "qty": 1701.3759,
+          "stop": 9.2853,
+          "limit": 9.1924,
+          "tif": "gtc",
+          "status": "new"
+        }
+      ],
+      "ordenes_canceladas": [],
+      "ew_urgency": {
+        "cierres_urgentes": [],
+        "posiciones_cowork_stock": [],
+        "nota": "0 posiciones stock -> sin riesgo earnings AH"
+      },
+      "buy_the_dip": {
+        "evaluado": false,
+        "razon": "mercado equity cerrado (sabado)"
+      },
+      "post_apertura": {
+        "ejecutados": [],
+        "descartados": [],
+        "razon": "fuera de ventana 10:00-14:15 ET / mercado cerrado"
+      },
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "pasos_omitidos": [
+        "PASO 1 trailing (sin posiciones stock)",
+        "PASO 1B EW urgency (sin posiciones EW)",
+        "PASO 1.5 parciales (ninguna posicion >=1.5R)",
+        "PASO 1.8 cierre pre-earnings AH (sin posiciones stock)",
+        "PASO 2.5 buy-the-dip (mercado cerrado)",
+        "PASO 2.6 post-apertura (mercado cerrado)",
+        "PASO 3/4/5 scan+ejecucion intraday (mercado cerrado, 16:5x ET sabado)"
+      ],
+      "live_intel": {
+        "LINK": {
+          "sesgo": "positivo",
+          "fuentes": [
+            "Alpaca News",
+            "WebSearch"
+          ],
+          "notas": "LINK +8% hoy (4a sesion alcista consecutiva), rompio resistencia $9.04; vol +115%, OI futuros +15%; RSI 71.9 (sobrecomprado); Std Chartered target $200 (10-ago); catalizador Figure/auto-loan rail sobre Chainlink. Sin noticias negativas.",
+          "riesgo": "entrada @9.65 cerca del maximo del dia (h=9.742) tras +6.9% intradiario -> riesgo de pullback; stop a 1.20xATR es ajustado para cripto."
+        }
+      },
+      "anomalias_detectadas": [
+        {
+          "tipo": "ejecucion_fuera_de_horario",
+          "descripcion": "intraday-monitor (programado 12:30 ET dias habiles) se ejecuto sabado 16:5x ET con mercado equity cerrado. Sin acciones de trading posibles; solo auditoria.",
+          "severidad": "baja"
+        },
+        {
+          "tipo": "stop_ajustado_cripto",
+          "descripcion": "LINKUSD stop a 1.20xATR (3.78%) vs 1.5xATR estandar. Cripto 24/7 con ATR 3.17% diario -> probabilidad elevada de barrido por ruido. No se afloja (regla: nunca bajar stops), pero se registra para revision en post-market.",
+          "severidad": "media"
+        },
+        {
+          "tipo": "stop_limit_vs_stop_market",
+          "descripcion": "Proteccion LINKUSD es stop_limit (stop 9.2853 / limit 9.1924). En flash-crash cripto el limit puede no llenarse (leccion MEDP 23-abr-2026 aplicada a cripto).",
+          "severidad": "media"
+        }
+      ],
+      "cuentas": {
+        "paper": {
+          "equity": 108958.98,
+          "cash": 92635.62,
+          "buying_power": 370542.48
+        },
+        "real": {
+          "equity": 4548.0,
+          "buying_power": 4547.48,
+          "ordenes_abiertas": 0
+        }
+      }
     }
   ],
   "pre_close_log": [
@@ -23183,6 +23330,27 @@
       "descripcion": "PASO 0 reportó 5 posiciones SIN stop (4 LONG bracket-protected + 1 SHORT). Fix runtime confirmó 5/5 con stop activo. Bug en SKILL.md.",
       "severidad": "media",
       "remediacion": "intraday_fix_stops.py ejecutado; lección registrada con old_text/new_text para auto-aplicar."
+    },
+    {
+      "tipo": "ejecucion_fuera_de_horario",
+      "descripcion": "intraday-monitor (programado 12:30 ET dias habiles) se ejecuto sabado 16:5x ET con mercado equity cerrado. Sin acciones de trading posibles; solo auditoria.",
+      "severidad": "baja",
+      "fecha": "2026-08-15",
+      "origen": "intraday-monitor"
+    },
+    {
+      "tipo": "stop_ajustado_cripto",
+      "descripcion": "LINKUSD stop a 1.20xATR (3.78%) vs 1.5xATR estandar. Cripto 24/7 con ATR 3.17% diario -> probabilidad elevada de barrido por ruido. No se afloja (regla: nunca bajar stops), pero se registra para revision en post-market.",
+      "severidad": "media",
+      "fecha": "2026-08-15",
+      "origen": "intraday-monitor"
+    },
+    {
+      "tipo": "stop_limit_vs_stop_market",
+      "descripcion": "Proteccion LINKUSD es stop_limit (stop 9.2853 / limit 9.1924). En flash-crash cripto el limit puede no llenarse (leccion MEDP 23-abr-2026 aplicada a cripto).",
+      "severidad": "media",
+      "fecha": "2026-08-15",
+      "origen": "intraday-monitor"
     }
   ],
   "w20_pivot": {
