@@ -15,7 +15,7 @@ signals:
                                      # fresh signals (insider filings, gov contracts) caught same day
   symbol_rescan_cooldown_hours: 4    # hours before a symbol can be re-evaluated (0 = no cooldown)
                                      # 4h → ~2-3 full sweeps/day; catches afternoon filings & contracts
-  approval_threshold: 9.2     # min total score to approve
+  approval_threshold: 7.0     # min total score to approve — lowered from 9.2 (0 trades en meses)
                               # 9.8 → high-conviction only; buffer keeps LMT (10.19) safe on weak-momentum days
                               # test 2026-03-07 (threshold 10): 4/14 approved — RTX 17.4, WRB 14.9, THRY 13.9, LMT 10.2
                               # in bull market expect 3-6/day; in correction (Mar-2026) 2-4/day
@@ -66,7 +66,7 @@ quiver_gate:
   patent_momentum_min_strong: 1.0           # >= 1.0 patent momentum score = strong (scale 0-5)
   # Minimum gate: at least ONE of these must be met for a symbol to pass
   # Set all to 0 to disable the gate entirely (quiver becomes scoring-only)
-  insider_buy_min_count_lookback: 3         # al menos 3 insider buys (clusters, no señales individuales ruidosas)
+  insider_buy_min_count_lookback: 2         # al menos 2 insider buys (bajado de 3 para ampliar señales validas)
   gov_contract_min_total_amount: 500000     # al menos $500k en contratos (filtra ruido — $100k irrelevante en large caps)
   gov_contract_min_count: 0                 # 0 = disabled (amount threshold is sufficient)
   patent_momentum_min: 0                    # 0 = disabled (patent data sparse)
@@ -74,7 +74,7 @@ quiver_gate:
   sec13f_change_min_pct: 0                  # 0 = disabled
   house_purchase_min_count: 0               # 0 = disabled (congressional buys as alternative gate)
   # How many distinct signal types must be non-zero (2 = exige corroboración entre fuentes)
-  min_active_signal_types: 2
+  min_active_signal_types: 1
 
 risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
