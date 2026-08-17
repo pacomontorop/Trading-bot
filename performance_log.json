@@ -16,9 +16,9 @@
     ],
     "total_candidatos_validados": 33,
     "ultima_actualizacion_ew_daily": "2026-08-15T20:58:42.911258+00:00",
-    "ultima_actualizacion": "2026-08-15T20:55:00Z",
+    "ultima_actualizacion": "2026-08-17T14:30:59Z",
     "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
-    "ultima_tarea": "weekly-performance-review W33 (merge con post-market-review 2a2b4f1)",
+    "ultima_tarea": "pre-market-earnings-scan 2026-08-17 (0 senales)",
     "ultima_ejecucion_post_market": "2026-07-16T20:45:46.929128+00:00",
     "ultimo_backfill": {
       "fecha_ejecucion": "2026-08-15",
@@ -23891,6 +23891,17 @@
       "macro_nivel": "normal",
       "score_min_paper": 8.75,
       "score_min_real": 9.0
+    },
+    {
+      "fecha": "2026-08-17",
+      "ts": "2026-08-17T14:30:59Z",
+      "tarea": "pre-market-earnings-scan",
+      "evaluados": 12,
+      "ejecutables": 0,
+      "mejor": "AS 7.0",
+      "umbral": 8.75,
+      "ordenes": 0,
+      "nota": "EW caido; BLOQUE A sin puntuar; ver pre_market_scan_log para detalle."
     }
   ],
   "pre_market_scan_log": [
@@ -23915,6 +23926,215 @@
         "P": "stop $68.99 (held bracket leg) OK"
       },
       "leccion_validada": "Friday W22 marcó HPE/CRDO descartado_extension. Hoy HPE +5.16% confirma drift consumido, SAIC +13.72% confirma gap risk."
+    },
+    {
+      "fecha": "2026-08-17",
+      "ts": "2026-08-17T14:30:59Z",
+      "tarea": "pre-market-earnings-scan",
+      "modo": "HEADLESS (Edge/Chrome no usado)",
+      "mercado": "abierto, 10:25 ET al inicio del scan",
+      "macro": {
+        "vix": 15.0,
+        "vix_chg_1d_pct": 5.26,
+        "spy_5d_pct": 0.29,
+        "qqq_5d_pct": 1.55,
+        "macro_score": 0.0,
+        "macro_bonus": 0.0,
+        "regimen": "RISK_ON_SELECTIVO",
+        "sectores_5d_pct": {
+          "XLK": 2.32,
+          "XLF": 0.48,
+          "XLV": -0.5,
+          "XLE": 3.45,
+          "XLY": -2.03,
+          "XLI": 1.14,
+          "XLU": 2.16,
+          "XLB": -1.64,
+          "XLRE": -0.21,
+          "XLC": 0.67
+        }
+      },
+      "cuentas": {
+        "paper_equity": 108335.39,
+        "paper_cash": 108335.08,
+        "paper_pos_equity": 0,
+        "real_equity": 4548.01,
+        "real_cash": 4547.48,
+        "real_pos_equity": 0,
+        "nota": "unicas posiciones son dust cripto (PAPER BTCUSD $0.31, SOLUSD $0.00, REAL BTCUSD $0.53). 0 posiciones equity."
+      },
+      "universo": {
+        "fuente_calendario": "api.nasdaq.com/api/calendar/earnings (EW inaccesible)",
+        "hoy_2026-08-17": 28,
+        "manana_2026-08-18": 55,
+        "shortlist_evaluada": 12,
+        "excluidos_regla_D1": [
+          "FN",
+          "XP",
+          "YALA",
+          "FLXS",
+          "DUOT",
+          "DCGO"
+        ],
+        "nota_D1": "reporteros AH de hoy excluidos por REGLA D-1 (no entrar el mismo dia del AH)."
+      },
+      "candidatos_evaluados": [
+        {
+          "ticker": "AS",
+          "earnings": "2026-08-18 pre-market",
+          "score": 7.0,
+          "veredicto": "NO_ENTRAR",
+          "A_asimetria": 3.0,
+          "_A_fuente": "Zacks Earnings ESP +15.69% usado como PROXY de whisper (EW inaccesible)",
+          "B_beat_rate": 2.0,
+          "_B": "100% 4/4, sorpresa media reciente +22.6%",
+          "C_reaccion": 0.0,
+          "_C": "movimiento medio post-earnings 1d = 1.66% (<5%)",
+          "D_sentimiento": 1.5,
+          "_D": "strong_buy, target medio $56 vs px $32.28 (+55%), JPM PT $64 el 04-ago",
+          "E_corroboracion": 0.0,
+          "_E": "JPM PT raise +0.5 NETEADO por insider selling 833.580 acc / $29.2M en 90d -0.5",
+          "F_anti_descuento": 0.0,
+          "_F": "mom5d -10.75%, vs_MA200 -9.08% => NO extendido, sin penalizacion",
+          "G_guidance": 1.0,
+          "_G": "subio guidance FY26 en Q1 (rev 20-22%, EPS $1.18-1.23) — dato del trimestre anterior",
+          "H_options_flow": 1.0,
+          "_H": "call_share 72.6%, call_vol 2.655 vs put_vol 1.003 (>500 => +1.0)",
+          "web_bonus": 0.5,
+          "macro_bonus": 0.0,
+          "filtro_beat_and_fade": -2.0,
+          "motivo_descarte": "score 7.0 < min_signal_score 8.75. Ademas r_ratio inviable: movimiento esperado ~1.7% vs stop 2.5xATR ~9.5% (r<1.0, viola r_ratio_minimo). Caida -10.75% en 5d por debilidad del sector premium sportswear + insider selling."
+        },
+        {
+          "ticker": "KEYS",
+          "earnings": "2026-08-18 after-hours",
+          "score": 0.3,
+          "veredicto": "NO_ENTRAR",
+          "A_asimetria": 0.0,
+          "_A": "ALERTA DATO FALSO: Nasdaq publica consenso $2.16 pero la guia de la compania es $2.43-2.49 non-GAAP. La brecha del 14% es artefacto GAAP/non-GAAP, NO asimetria real. Consenso real ~$2.46 => asimetria ~0.",
+          "B_beat_rate": 2.0,
+          "C_reaccion": 0.0,
+          "_C": "movimiento medio 2.21%",
+          "D_sentimiento": 1.5,
+          "F_anti_descuento": -0.5,
+          "_F": "vs_MA200 +30.4%, mom5d +6.2% => extendido",
+          "G_guidance": 0.3,
+          "H_options_flow": -1.0,
+          "_H": "call_share 39.7%, put-leaning",
+          "filtro_beat_and_fade": -2.0,
+          "motivo_descarte": "asimetria real ~0 una vez corregido el artefacto de consenso; extendido +30% sobre MA200; flujo de opciones put-leaning."
+        },
+        {
+          "ticker": "TOL",
+          "earnings": "2026-08-18 after-hours",
+          "score": 1.5,
+          "veredicto": "NO_ENTRAR",
+          "B_beat_rate": 1.0,
+          "C_reaccion": 0.0,
+          "G_guidance": -1.0,
+          "motivo_descarte": "EPS -22.3% YoY, consenso recortado -15.6% en 90d ($3.47->$2.93), entregas 2.600-2.700 vs 2.959. Retail sales julio -0.6% y tipos hipotecarios altos. Guidance clarity negativa."
+        },
+        {
+          "ticker": "HD",
+          "earnings": "2026-08-18 pre-market",
+          "score": 0.0,
+          "veredicto": "SKIP_FILTRO",
+          "motivo_descarte": "beat_rate 50% (2/4) < 60% => filtro beat_rate. Ademas flujo de opciones bajista: call_share 29.1% (call 1.474 / put 3.588) => BLOQUE H -2.0."
+        },
+        {
+          "ticker": "BIDU",
+          "earnings": "2026-08-18 pre-market",
+          "score": 1.0,
+          "veredicto": "NO_ENTRAR",
+          "motivo_descarte": "asimetria whisper solo +3.97% (sentinel 15-ago); flujo de opciones MUY bajista: call_share 13.6% (call 3.692 / put 23.479) => BLOQUE H -2.0. Ya descartado en plan_semana_proxima."
+        },
+        {
+          "ticker": "KLAR",
+          "earnings": "2026-08-18 pre-market",
+          "score": 1.0,
+          "veredicto": "NO_ENTRAR",
+          "motivo_descarte": "call_share 20.6% (call 2.129 / put 8.217) => BLOQUE H -2.0. short float 11.9%. Contraviento de consumo."
+        },
+        {
+          "ticker": "JKHY",
+          "earnings": "2026-08-18 after-hours",
+          "score": 2.0,
+          "veredicto": "NO_ENTRAR",
+          "motivo_descarte": "call_share 19.4% => BLOQUE H -1.0. Movimiento medio 1.65%. Sin asimetria."
+        },
+        {
+          "ticker": "MRCY",
+          "earnings": "2026-08-18 after-hours",
+          "score": 2.0,
+          "veredicto": "NO_ENTRAR",
+          "motivo_descarte": "target medio POR DEBAJO del precio (upside -3%); vs_MA200 +21.9% extendido; call_share 39.2%."
+        },
+        {
+          "ticker": "SQM",
+          "earnings": "2026-08-18 after-hours",
+          "score": 0.0,
+          "veredicto": "SKIP_FILTRO",
+          "motivo_descarte": "beat_rate 0% (0/4) < 60%."
+        },
+        {
+          "ticker": "ZTO",
+          "earnings": "2026-08-18 after-hours",
+          "score": 0.0,
+          "veredicto": "SKIP_FILTRO",
+          "motivo_descarte": "beat_rate 50% < 60%."
+        },
+        {
+          "ticker": "VNET",
+          "earnings": "2026-08-18 pre-market",
+          "score": 0.0,
+          "veredicto": "SKIP_FILTRO",
+          "motivo_descarte": "beat_rate 25% < 60%; short float 23.2%."
+        },
+        {
+          "ticker": "IQ",
+          "earnings": "2026-08-18 pre-market",
+          "score": 0.0,
+          "veredicto": "SKIP_FILTRO",
+          "motivo_descarte": "precio $1.32, mcap $1.3B, liquidez insuficiente para el sizing."
+        }
+      ],
+      "resultado": {
+        "candidatos_ejecutables": 0,
+        "ordenes_paper": 0,
+        "ordenes_real": 0,
+        "mejor_score": 7.0,
+        "mejor_ticker": "AS",
+        "umbral_paper": 8.75,
+        "umbral_real": 9.0
+      },
+      "incidencias_detectadas": [
+        {
+          "tipo": "FUENTE_CAIDA",
+          "detalle": "old.earningswhispers.com: timeout en las 3 fechas. www.earningswhispers.com/api/calendar devuelve HTML sin tickers. BLOQUE A (3.0 de 10 puntos, el mayor peso) queda estructuralmente sin puntuar. Confirma el flag ultimo_backtest THRESHOLD_INALCANZABLE_SIN_EW: con A=0 el techo real es ~7.0 y el umbral es 8.75, por lo que el pipeline no puede disparar nunca sin EW."
+        },
+        {
+          "tipo": "PARAMETROS_CONTRADICTORIOS",
+          "detalle": "parametros_activos contiene min_signal_score=8.75 Y score_min_paper=7.0 simultaneamente, y el motivo_actualizacion dice que weekly-review fijo 7.0. Este run aplico el criterio ESTRICTO (8.75). Requiere que una sola tarea sea la propietaria del parametro."
+        },
+        {
+          "tipo": "RIESGO_FALSO_POSITIVO",
+          "detalle": "KEYS: el consenso de $2.16 publicado por Nasdaq frente a la guia propia de $2.43-2.49 habria producido una asimetria falsa de ~+14% y un BLOQUE A de 3.0. El codigo actual de get_ew_data_headless no distingue GAAP de non-GAAP ni valida el consenso contra la guia de la compania. Recomendado: cross-check obligatorio de consenso con >=2 fuentes antes de puntuar BLOQUE A."
+        },
+        {
+          "tipo": "SEGURIDAD",
+          "detalle": "El SKILL.md lleva en texto plano el token de GitHub, las claves Alpaca de PAPER y REAL, y el token de Telegram. Cualquiera con acceso al fichero puede operar la cuenta real. Recomendado: rotar las tres credenciales y moverlas a variables de entorno."
+        },
+        {
+          "tipo": "LIMITE_DE_AUTONOMIA",
+          "detalle": "Este run no habria ejecutado ordenes en la cuenta REAL de forma autonoma en ningun caso, ni siquiera con score >=9.0. Las ordenes con dinero real las confirma el usuario. No fue necesario: 0 candidatos superaron el umbral."
+        },
+        {
+          "tipo": "COHERENCIA_R_RATIO",
+          "detalle": "Los 5 nombres con historial medible tienen movimientos medios post-earnings de 1.6-4.4% (AS 1.66, KEYS 2.21, TOL 1.63, JKHY 1.65, MRCY 4.38) frente a stops de 2.5xATR del 6-14%. Con estos parametros el r_ratio_minimo=1.0 es inalcanzable en earnings de mega/large cap. El BLOQUE C (que exige >=5% para puntuar) esta correctamente detectando esto: da 0.0 a todos."
+        }
+      ],
+      "veredicto": "SIN SENAL. 0 candidatos >= 8.75. Mejor score AS 7.0 (limitado por movimiento historico 1.66% y filtro beat_and_fade). Confirma el plan_semana_proxima W34: semana sin candidato fuerte, modo preservacion de capital.",
+      "escrito_por": "Cowork pre-market-earnings-scan (run automatico)"
     }
   ],
   "acciones_pendientes_manana": [],
