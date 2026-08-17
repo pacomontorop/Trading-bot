@@ -3400,47 +3400,57 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-17T10:24",
-      "nivel": "normal",
+      "timestamp": "2026-08-17T11:18",
+      "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.0,
-      "score_min_real_efectivo": 9.0
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 9.0,
+      "shock_tipo": "ninguno",
+      "juicio": "Web: Iran/Hormuz sin resolucion (Araqchi descarta reanudar conversaciones), Brent $89.3 / WTI $82.3 pero PLANOS hoy (-0.2%) tras +5% la semana pasada. Probabilidad subida Fed septiembre 65-82% (CME); minutas FOMC 19-ago. JUICIO: regimen de riesgo elevado YA DESCONTADO (el log del 15-ago ya recoge liderazgo energia y XLE +7.7%/5d); NO es shock nuevo: SPY -0.10%, VIX 14.96 absoluto bajo, oil a la baja hoy. No se dispara MACRO_PLAYBOOK oil_spike (XOM/CVX ya se operaron y cerraron en ese ciclo). Nivel=alerta por oro +2.19% y riesgo Fed, sin bloquear entradas."
     },
-    "macro_score": -0.8,
-    "macro_nivel": "normal",
+    "macro_score": 0.2,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Yield 10Y alto (4.70%) - presion valuaciones growth",
-      "Oro disparado (+2.0%) - senal de miedo/geopolitica"
+      "Futuros ligeramente alcistas (+0.18%)",
+      "Yield 10Y alto (4.70%) — presion valuaciones growth",
+      "Oro disparado (+2.19%) — senal de miedo/refugio",
+      "Sector tech lider (+0.83%) → favorece EW tech",
+      "CNN Fear&Greed 65 = GREED (dato 14-ago)",
+      "PCR CBOE 0.91 (dato 31-jul, obsoleto) — no aplicado al score"
     ],
     "futuros": {
-      "ES": -0.09,
-      "NQ": 0.25
+      "ES": -0.106,
+      "NQ": 0.465,
+      "YM": -0.446,
+      "RTY": -0.319
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-17T10:24",
+    "ts_actualizado": "2026-08-17T11:18",
     "sectores_hoy": {
-      "lider": "XLE",
-      "cambio_lider": 0.5,
-      "tech_chg": 0.32,
+      "lider": "XLK",
+      "cambio_lider": 0.826,
+      "rezagado": "XLRE",
+      "tech_chg": 0.826,
       "all": {
-        "XLK": 0.32,
-        "XLF": -0.08,
-        "XLE": 0.5,
-        "XLV": 0.11,
-        "XLI": 0.07,
-        "XLY": -0.8,
-        "XLU": -0.59,
-        "XLB": -0.48,
-        "XLRE": -0.84
+        "XLK": 0.826,
+        "XLF": -0.361,
+        "XLE": 0.307,
+        "XLV": 0.063,
+        "XLI": 0.003,
+        "XLY": -0.846,
+        "XLU": -0.97,
+        "XLB": -0.742,
+        "XLRE": -1.049
       },
-      "ts": "10:24"
+      "ts": "11:18"
     },
-    "macro_bonus_ew": -0.24,
+    "macro_bonus_ew": 0.06,
     "bonos": {
-      "tlt_chg": -0.34,
-      "yield_10y": 4.7
+      "tlt_chg": -0.384,
+      "yield_10y": 4.7,
+      "yield_30y": 5.28
     },
     "eventos_recientes": [
       {
@@ -3772,7 +3782,20 @@
     "oil": 82.7,
     "gold": 4440.4,
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
-    "nota_geopolitica_2026-08-17": "US-Iran/Hormuz sigue abierto: Araqchi descarta reanudar conversaciones. Brent ~89, WTI $82. Oro +2.0% hoy. Regimen preexistente, NO shock nuevo."
+    "nota_geopolitica_2026-08-17": "US-Iran/Hormuz sigue abierto: Araqchi descarta reanudar conversaciones. Brent ~89, WTI $82. Oro +2.0% hoy. Regimen preexistente, NO shock nuevo.",
+    "commodities": {
+      "oro_chg": 2.189,
+      "oil_chg": -0.158,
+      "oil_px": 82.27,
+      "dxy_chg": -0.053
+    },
+    "internacional": {
+      "N225": 0.593,
+      "GDAXI": -0.187,
+      "FTSE": -0.178,
+      "HSI": 1.339,
+      "SSE": 1.413
+    }
   },
   "operaciones_crypto": [
     {
@@ -21287,6 +21310,18 @@
       "vix": 15.0,
       "macro_score": -0.8,
       "nota": "EW headless inaccesible desde sandbox; sin ejecuciones"
+    },
+    {
+      "ts": "2026-08-17T11:18:07.905240+00:00",
+      "modo": "intraday",
+      "alertas": 3,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.0,
+      "macro_score": 0.2,
+      "macro_nivel": "alerta",
+      "nota": "Sentinel 11:2x ET 17-ago. old.earningswhispers.com sigue inaccesible (DNS sandbox); API www.earningswhispers.com/api/getstocksdata/{T} FUNCIONA solo con warm-up de sesion + header X-Requested-With:XMLHttpRequest + Referer (sin ellos devuelve 204 vacio). Whispers refrescados: ADI w=3.45 c=3.33 asim=+3.6% 2026-08-19 score=3.5; KLAR w=-0.03 c=-0.07 asim=+57.1% 2026-08-18 score=4.0; BIDU w=1.57 c=1.51 asim=+4.0% 2026-08-18 score=4.5; EL w=0.37 c=0.32 asim=+15.6% 2026-08-19 score=5.0; TGT w=2.35 c=2.26 asim=+4.0% 2026-08-19 score=3.5; CRM w=3.45 c=3.27 asim=+5.5% 2026-08-26 score=4.0; CRWD w=0.31 c=0.29 asim=+6.9% 2026-08-26 score=3.0; PANW w=1.02 c=0.98 asim=+4.1% 2026-09-01 score=3.5; BILL w=0.73 c=0.71 asim=+2.8% 2026-08-19 score=3.0. 0 oportunidades >= umbral. Paper 0 posiciones equity (solo BTCUSD/SOLUSD del bot, sin stop, crypto=no intervenir); real solo BTCUSD qty<0.001. Macro: Web: Iran/Hormuz sin resolucion (Araqchi descarta reanudar conversaciones), Brent $89.3 / WTI $82.3 pero PLANOS hoy (-0.2%) tras +5% la semana pasada. Probabilidad subida Fed septiembre 65-82% (CME); minutas FOMC 19-ago. JUICIO: regimen de riesgo elevado YA DESCONTADO (el log del 15-ago ya recoge liderazgo energia y XLE +7.7%/5d); NO es shock nuevo: SPY -0.10%, VIX 14.96 absoluto bajo, oil a la ba"
     }
   ],
   "momentum_15m": {
@@ -21862,44 +21897,64 @@
       "ts": "14:21"
     },
     "BIDU": {
-      "precio": 102.52,
-      "mom_15m": 0.451,
-      "mom_30m": 0.382,
-      "vol_ratio": 0.25,
-      "vwap_dev": -0.35,
-      "rsi": 37.6,
-      "senal": "debil_alcista",
-      "ts": "10:24"
+      "precio": 102.57,
+      "mom_15m": 0.132,
+      "mom_30m": -0.083,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.172,
+      "rsi": 66.0,
+      "señal": "LATERAL",
+      "ts": "11:18"
     },
     "EL": {
-      "precio": 85.19,
-      "mom_15m": -0.035,
-      "mom_30m": 0.165,
-      "vol_ratio": 0.92,
-      "vwap_dev": -0.604,
-      "rsi": 33.2,
-      "senal": "LATERAL",
-      "ts": "10:24"
+      "precio": 84.64,
+      "mom_15m": -0.733,
+      "mom_30m": -0.814,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.634,
+      "rsi": 44.0,
+      "señal": "debil_bajista",
+      "ts": "11:18"
     },
     "TGT": {
-      "precio": 153.35,
-      "mom_15m": -0.654,
-      "mom_30m": -0.28,
-      "vol_ratio": 0.54,
-      "vwap_dev": -0.642,
-      "rsi": 30.5,
-      "senal": "debil_bajista",
-      "ts": "10:24"
+      "precio": 152.68,
+      "mom_15m": -0.307,
+      "mom_30m": -0.365,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.519,
+      "rsi": 28.6,
+      "señal": "debil_bajista",
+      "ts": "11:18"
     },
     "ADI": {
-      "precio": 394.04,
-      "mom_15m": -0.495,
-      "mom_30m": -0.025,
-      "vol_ratio": 0.41,
-      "vwap_dev": 0.771,
-      "rsi": 75.6,
-      "senal": "debil_bajista",
-      "ts": "10:24"
+      "precio": 393.9,
+      "mom_15m": -0.581,
+      "mom_30m": -0.451,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.36,
+      "rsi": 41.0,
+      "señal": "debil_bajista",
+      "ts": "11:18"
+    },
+    "KLAR": {
+      "precio": 19.61,
+      "mom_15m": -0.178,
+      "mom_30m": -0.28,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.059,
+      "rsi": 45.8,
+      "señal": "debil_bajista",
+      "ts": "11:18"
+    },
+    "XOM": {
+      "precio": 160.34,
+      "mom_15m": 0.097,
+      "mom_30m": -0.159,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.112,
+      "rsi": 40.3,
+      "señal": "LATERAL",
+      "ts": "11:18"
     }
   },
   "sentinel_signals": [
