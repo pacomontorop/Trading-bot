@@ -3541,46 +3541,59 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-18T09:21",
+      "timestamp": "2026-08-18T10:16",
       "nivel": "alerta",
-      "shocks": [
-        "oil_spike_geopolitico_iran_hormuz",
-        "yields_30y_max_2007"
-      ],
+      "shocks": [],
+      "shock_tipo_websearch": "oil_spike_contexto_persistente",
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "Pre-apertura: solo scan, sin ejecución. Umbrales elevados por macro negativo."
+      "vix": 15.800000190734863,
+      "vix_delta_30m": -0.13,
+      "spy_delta_30m": -0.056,
+      "nota": "Iran/Hormuz activo pero es contexto persistente (guerra desde feb-2026), no shock intradia nuevo. VIX 15.8 = sin panico. Playbook oil_spike NO ejecutado; rotacion energia ya en curso (XLE +2.4%, XLK -2.4%)."
     },
-    "macro_score": -1.7,
+    "macro_score": -1.3,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas (ES -0.48%, NQ -1.34%)",
-      "TLT -0.67% — yields al alza",
-      "Yield 10Y 4.74% alto (30Y ~5.32%, máx desde 2007) — presión valuaciones",
-      "Oro +0.61% — cautela",
-      "Tensión EEUU-Irán / Estrecho de Ormuz — Brent $91, WTI $84; SPR en mínimos desde 1982",
-      "XLE +1.39% lidera (energía) — rotación defensiva/commodities",
-      "Nikkei -1.82%, DAX -0.77% — riesgo global"
+      "Futuros bajistas (-0.99%)",
+      "TLT -0.65% - yields subiendo",
+      "Yield 10Y alto (4.72%) presiona growth",
+      "Oro subiendo - cautela",
+      "Tech debil (-2.4%)",
+      "Fear&Greed=59 (Greed)"
     ],
     "futuros": {
-      "ES": -0.48,
-      "NQ": -1.34,
-      "YM": -0.1,
-      "RTY": -0.34
+      "ES": -0.537,
+      "NQ": -1.451,
+      "YM": -0.14,
+      "RTY": -0.617
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-18T09:21",
+    "ts_actualizado": "2026-08-18T10:16",
     "sectores_hoy": {
       "lider": "energy",
-      "cambio_lider": 1.39,
-      "tech_chg": -0.4
+      "cambio_lider": 2.358,
+      "tech_chg": -2.379,
+      "all": {
+        "tech": -2.379,
+        "financials": -0.387,
+        "energy": 2.358,
+        "healthcare": 1.541,
+        "industrials": -0.997,
+        "consumer_disc": -1.024,
+        "utilities": 0.361,
+        "materials": -0.752,
+        "realestate": -0.53
+      },
+      "ts": "10:16"
     },
-    "macro_bonus_ew": -0.51,
+    "macro_bonus_ew": -0.39,
     "bonos": {
-      "tlt_chg": -0.67,
-      "yield_10y": 4.74
+      "tlt_chg": -0.652,
+      "yield_10y": 4.7220001220703125,
+      "yield_30y": 5.307000160217285
     },
     "eventos_recientes": [
       {
@@ -3855,7 +3868,7 @@
     "ts_health_check": "2026-08-17T06:08Z",
     "spy_day": -1.29,
     "narrativa_sentinel": "Tech-led selloff (chip rout: MU -13.6%, NVDA -3.7%, AI-trade reassessment, higher-for-longer). Oil falling on Iran de-escalation (no oil spike). VIX 19.5 (+12.7%) elevado pero <28. No flash-crash 30m. Nivel ALERTA.",
-    "spy_chg": 0.2,
+    "spy_chg": -1.025,
     "nota_web": "FOMC 29-jul hold hawkish; earnings manana 317 reportes; AAPL AH 30-jul.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -3923,15 +3936,20 @@
       "gold_chg": 1.84
     },
     "internacional": {
-      "N225": 0.593,
-      "GDAXI": -0.187,
-      "FTSE": -0.178,
-      "HSI": 1.339,
-      "SSE": 1.413
+      "Nikkei": -1.824,
+      "DAX": -0.867,
+      "FTSE": 0.159,
+      "HSI": 1.411,
+      "Shanghai": 1.607
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike",
-    "vix_chg": 10.67
+    "vix_chg": 10.67,
+    "oil_wti": 84.16000366210938,
+    "oil_brent": 90.93000030517578,
+    "oro": 4459.39990234375,
+    "fear_greed": 59,
+    "qqq_chg": -1.796
   },
   "operaciones_crypto": [
     {
@@ -21743,6 +21761,27 @@
       "macro_score": -1.7,
       "shock_tipo": "oil_spike",
       "nota": "Mercado cerrado (09:10 ET). Scan EW vía API www.earningswhispers.com/api/getstocksdata (old. inaccesible desde sandbox). Sin ejecución."
+    },
+    {
+      "ts": "2026-08-18T10:16:38.488103+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.8,
+      "macro_nivel": "alerta",
+      "macro_score": -1.3,
+      "degradacion": "EarningsWhispers old.* bloqueado por red del sandbox; www.* es JS-rendered. Scan EW sin whisper/consensus este ciclo.",
+      "earnings_detectados": {
+        "hoy": [
+          "HD"
+        ],
+        "manana": [
+          "TGT",
+          "LOW",
+          "BILL"
+        ]
+      }
     }
   ],
   "momentum_15m": {
@@ -21755,13 +21794,14 @@
       "ts": "12:13"
     },
     "HD": {
-      "precio": 338.04,
-      "mom_15m": 0.23,
-      "vol_ratio": 0.9,
-      "vwap_dev": 0.27,
-      "rsi": 71.5,
-      "señal": "debil_alcista",
-      "ts": "15:15"
+      "precio": 340.14,
+      "mom_15m": -0.141,
+      "mom_30m": 0.282,
+      "vol_ratio": 0.1,
+      "vwap_dev": 0.538,
+      "rsi": 53.2,
+      "señal": "LATERAL",
+      "ts": "10:16"
     },
     "NVDA": {
       "precio": 225.61,
@@ -21774,13 +21814,14 @@
       "ts": "14:19"
     },
     "SLB": {
-      "precio": 53.65,
-      "mom_15m": 0.07,
-      "vol_ratio": 1.2,
-      "vwap_dev": 0.12,
-      "rsi": 65.5,
+      "precio": 53.97,
+      "mom_15m": -0.12,
+      "mom_30m": 0.0,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.081,
+      "rsi": 59.4,
       "señal": "LATERAL",
-      "ts": "15:15"
+      "ts": "10:16"
     },
     "WMT": {
       "precio": 114.11,
@@ -21881,13 +21922,14 @@
       "ts": "15:45"
     },
     "CVX": {
-      "precio": 203.19,
-      "mom_15m": -0.21,
-      "vol_ratio": 0.6,
-      "vwap_dev": 0.01,
-      "rsi": 51.1,
-      "señal": "debil_bajista",
-      "ts": "15:15"
+      "precio": 204.84,
+      "mom_15m": 0.198,
+      "mom_30m": 0.179,
+      "vol_ratio": 0.27,
+      "vwap_dev": 0.48,
+      "rsi": 66.0,
+      "señal": "debil_alcista",
+      "ts": "10:16"
     },
     "DECK": {
       "precio": 102.39,
@@ -22333,13 +22375,14 @@
       "ts": "15:15"
     },
     "TGT": {
-      "precio": 151.48,
-      "mom_15m": -0.28,
-      "vol_ratio": 0.9,
-      "vwap_dev": -0.32,
-      "rsi": 37.3,
-      "señal": "debil_bajista",
-      "ts": "15:15"
+      "precio": 153.09,
+      "mom_15m": 0.187,
+      "mom_30m": 0.029,
+      "vol_ratio": 0.31,
+      "vwap_dev": 0.921,
+      "rsi": 67.9,
+      "señal": "debil_alcista",
+      "ts": "10:16"
     },
     "ADI": {
       "precio": 391.04,
@@ -22361,13 +22404,14 @@
       "ts": "14:19"
     },
     "XOM": {
-      "precio": 161.89,
-      "mom_15m": -0.23,
-      "vol_ratio": 0.7,
-      "vwap_dev": -0.14,
-      "rsi": 39.4,
-      "señal": "debil_bajista",
-      "ts": "15:15"
+      "precio": 164.32,
+      "mom_15m": 0.158,
+      "mom_30m": 0.314,
+      "vol_ratio": 0.15,
+      "vwap_dev": 0.985,
+      "rsi": 76.0,
+      "señal": "debil_alcista",
+      "ts": "10:16"
     },
     "KEYS": {
       "precio": 362.11,
@@ -22390,14 +22434,14 @@
       "ts": "14:19"
     },
     "BILL": {
-      "precio": 48.25,
-      "mom_15m": 0.041,
-      "mom_30m": 0.125,
-      "vol_ratio": 0.25,
-      "vwap_dev": -0.042,
-      "rsi": 37.8,
+      "precio": 49.79,
+      "mom_15m": -0.043,
+      "mom_30m": 0.282,
+      "vol_ratio": 0.0,
+      "vwap_dev": 2.121,
+      "rsi": 84.6,
       "señal": "LATERAL",
-      "ts": "14:19"
+      "ts": "10:16"
     },
     "M": {
       "precio": 23.27,
@@ -22450,13 +22494,14 @@
       "ts": "13:15"
     },
     "LOW": {
-      "precio": 215.86,
-      "mom_15m": 0.4,
-      "vol_ratio": 0.5,
-      "vwap_dev": 0.33,
-      "rsi": 69.9,
+      "precio": 218.21,
+      "mom_15m": 0.375,
+      "mom_30m": 0.315,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.984,
+      "rsi": 63.8,
       "señal": "debil_alcista",
-      "ts": "15:15"
+      "ts": "10:16"
     },
     "META": {
       "precio": 566.28,
@@ -22469,14 +22514,14 @@
       "ts": "14:19"
     },
     "XLE": {
-      "precio": 62.59,
-      "mom_15m": 0.056,
-      "mom_30m": 0.224,
-      "vol_ratio": 0.44,
-      "vwap_dev": 0.208,
-      "rsi": 81.3,
+      "precio": 63.36,
+      "mom_15m": 0.094,
+      "mom_30m": 0.277,
+      "vol_ratio": 0.11,
+      "vwap_dev": 0.472,
+      "rsi": 71.7,
       "señal": "LATERAL",
-      "ts": "14:19"
+      "ts": "10:16"
     },
     "DAL": {
       "precio": 88.26,
@@ -22506,13 +22551,14 @@
       "ts": "15:15"
     },
     "LMT": {
-      "precio": 595.06,
-      "mom_15m": -0.22,
-      "vol_ratio": 1.0,
-      "vwap_dev": -0.32,
-      "rsi": 27.8,
-      "señal": "debil_bajista",
-      "ts": "15:15"
+      "precio": 606.98,
+      "mom_15m": 0.099,
+      "mom_30m": 0.515,
+      "vol_ratio": 0.0,
+      "vwap_dev": 1.185,
+      "rsi": 86.9,
+      "señal": "LATERAL",
+      "ts": "10:16"
     },
     "RTX": {
       "precio": 222.49,
@@ -25770,6 +25816,13 @@
       ],
       "fixes": [],
       "nota": "Ejecucion autonoma. Sin restricciones expiradas que limpiar (0 activas). VIX coincide con log (14.25) -> sin actualizacion. Alpaca paper y real OK (200)."
+    },
+    {
+      "ts": "2026-08-18T10:16:38.488103+00:00",
+      "tarea": "sentinel",
+      "estado": "parcial",
+      "issue": "EW headless no disponible (old.earningswhispers.com sin ruta de red). Sin asimetria whisper -> ningun candidato alcanza score>=7.5.",
+      "accion_sugerida": "Anadir fuente EW alternativa o alojar mirror; evaluar API /api/todaysresults."
     }
   ]
 }
