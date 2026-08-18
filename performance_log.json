@@ -3544,57 +3544,51 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-18T12:23",
+      "timestamp": "2026-08-18T14:16",
       "nivel": "alerta",
       "shocks": [],
-      "shock_tipo_websearch": "oil_spike_contexto_persistente",
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "vix": 15.69,
-      "spy_dia": -0.553,
-      "nota": "Coherente con ciclos 17-ago y 10:16 de hoy: Iran/Hormuz es regimen persistente, no shock intradia. Ningun umbral cuantitativo activado (SPY -0.55% dia, VIX 15.69 bajo, sin caida 30m). Playbook oil_spike NO ejecutado."
+      "nota": "Narrativa oil/Iran/Hormuz + yields 30Y 5.32% (max desde 2007) y SOX -5.4%. Gates cuantitativos NO confirman shock (VIX 15.7 +0.1%/30m, SPY -0.15% intradia). Clasificado ALERTA, no shock: entradas no bloqueadas, umbrales elevados."
     },
     "macro_score": -1.6,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas (-1.04%)",
-      "Yield 10Y alto (4.72%) presiona growth",
-      "Tech debil (-2.56%) - cautela candidatos tech",
-      "30Y 5.30% maximos de dos decadas - regimen inflacionario",
-      "Iran/Hormuz: ataques a petroleros, transito colapsado, Brent ~$91 - contexto persistente"
+      "Futuros bajistas -1.22%",
+      "Yield 10Y alto 4.71%",
+      "Tech débil -2.8% - cautela candidatos tech"
     ],
     "futuros": {
-      "ES": -0.57,
-      "NQ": -1.515,
-      "YM": -0.219,
-      "RTY": -0.976
+      "ES": -0.6822204344328238,
+      "NQ": -1.7485712387028178,
+      "YM": -0.2838786792170925,
+      "RTY": -1.2300548916147502
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-18T12:23",
+    "ts_actualizado": "2026-08-18T14:16",
     "sectores_hoy": {
       "lider": "healthcare",
-      "cambio_lider": 1.712,
-      "tech_chg": -2.559,
+      "cambio_lider": 1.6761466630385369,
+      "tech_chg": -2.805806741895893,
       "all": {
-        "tech": -2.559,
-        "financials": 0.347,
-        "energy": 1.422,
-        "healthcare": 1.712,
-        "industrials": -1.229,
-        "consumer_disc": 0.463,
-        "utilities": 0.521,
-        "materials": -0.651,
-        "realestate": 0.257
+        "tech": -2.805806741895893,
+        "financials": 0.5904764277156629,
+        "energy": 1.4940836229406549,
+        "healthcare": 1.6761466630385369,
+        "industrials": -1.449126288586341,
+        "consumer_disc": 0.17130359592478586,
+        "utilities": 0.011319755728133141,
+        "materials": -0.5742784114064702,
+        "realestate": 0.1561447512048248
       },
-      "ts": "12:23"
+      "ts": "14:16"
     },
     "macro_bonus_ew": -0.48,
     "bonos": {
-      "tlt_chg": 0.295,
-      "yield_10y": 4.716000080108643,
-      "yield_30y": 5.296000003814697
+      "tlt_chg": 0.4425330265569522,
+      "yield_10y": 4.708000183105469
     },
     "eventos_recientes": [
       {
@@ -3931,10 +3925,10 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "oil_wti": 84.3,
-      "oil_chg": 2.31,
-      "gold": 4461.1,
-      "gold_chg": 1.84
+      "dxy": 0.08896661277897773,
+      "oro": -0.13128265072912823,
+      "oil": 84.08000183105469,
+      "oil_chg": -0.4970392531897189
     },
     "internacional": {
       "Nikkei": 0.737,
@@ -21803,6 +21797,15 @@
         "BIDU marcado resultado_conocido/miss tras confirmar por noticias Alpaca el fallo de Q2 (EPS $1.06 vs $1.35)",
         "polvo crypto sin stop (paper BTC/SOL, real BTC $0.54) no intervenido: es del bot y la exposicion es irrelevante"
       ]
+    },
+    {
+      "ts": "2026-08-18T14:16:21.877995+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.7,
+      "nota": "EW headless NO accesible desde sandbox (ConnectTimeout old.earningswhispers.com) -> scan EW omitido; inteligencia via WebSearch. Earnings 8/19 BMO confirmados: TGT, TJX, ADI, EL. Hoy AH: TOL, KEYS, ZTO. Sin scores >= umbral -> 0 ejecuciones."
     }
   ],
   "momentum_15m": {
@@ -22043,14 +22046,14 @@
       "ts": "15:41"
     },
     "TOL": {
-      "precio": 146.15,
-      "mom_15m": 0.048,
-      "mom_30m": 0.027,
-      "vol_ratio": 0.54,
-      "vwap_dev": -0.017,
-      "rsi": 39.3,
-      "señal": "LATERAL",
-      "ts": "14:19"
+      "precio": 142.41,
+      "mom_15m": 0.275,
+      "mom_30m": 0.148,
+      "vol_ratio": 1.27,
+      "vwap_dev": -0.02,
+      "rsi": 42.3,
+      "señal": "debil_alcista",
+      "ts": "14:15"
     },
     "ECX": {
       "precio": 1.01,
@@ -22388,34 +22391,34 @@
       "ts": "12:23"
     },
     "EL": {
-      "precio": 84.61,
-      "mom_15m": -0.628,
-      "mom_30m": -0.593,
-      "vol_ratio": 1.02,
-      "vwap_dev": -0.631,
-      "rsi": 35.8,
-      "señal": "debil_bajista",
-      "ts": "12:23"
+      "precio": 84.6,
+      "mom_15m": 0.451,
+      "mom_30m": 0.547,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.423,
+      "rsi": 62.5,
+      "señal": "debil_alcista",
+      "ts": "14:15"
     },
     "TGT": {
-      "precio": 152.5,
-      "mom_15m": 0.0,
-      "mom_30m": -0.149,
-      "vol_ratio": 0.12,
-      "vwap_dev": -0.546,
-      "rsi": 20.9,
-      "señal": "LATERAL",
-      "ts": "12:23"
+      "precio": 152.17,
+      "mom_15m": 0.191,
+      "mom_30m": 0.059,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.139,
+      "rsi": 32.7,
+      "señal": "debil_alcista",
+      "ts": "14:15"
     },
     "ADI": {
-      "precio": 371.84,
-      "mom_15m": -0.156,
-      "mom_30m": -0.327,
-      "vol_ratio": 0.13,
-      "vwap_dev": -0.233,
-      "rsi": 38.3,
-      "señal": "debil_bajista",
-      "ts": "12:23"
+      "precio": 371.32,
+      "mom_15m": -0.007,
+      "mom_30m": -0.051,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.155,
+      "rsi": 38.7,
+      "señal": "LATERAL",
+      "ts": "14:15"
     },
     "KLAR": {
       "precio": 19.55,
@@ -22428,34 +22431,34 @@
       "ts": "14:19"
     },
     "XOM": {
-      "precio": 164.32,
-      "mom_15m": 0.158,
-      "mom_30m": 0.314,
-      "vol_ratio": 0.15,
-      "vwap_dev": 0.985,
-      "rsi": 76.0,
-      "señal": "debil_alcista",
-      "ts": "10:16"
+      "precio": 165.1,
+      "mom_15m": -0.045,
+      "mom_30m": 0.149,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.186,
+      "rsi": 69.9,
+      "señal": "LATERAL",
+      "ts": "14:15"
     },
     "KEYS": {
-      "precio": 362.11,
-      "mom_15m": -0.068,
-      "mom_30m": -0.194,
-      "vol_ratio": 0.09,
-      "vwap_dev": -0.153,
-      "rsi": 39.0,
-      "señal": "LATERAL",
-      "ts": "14:19"
+      "precio": 337.21,
+      "mom_15m": -0.291,
+      "mom_30m": -0.453,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.228,
+      "rsi": 46.6,
+      "señal": "debil_bajista",
+      "ts": "14:15"
     },
     "TJX": {
-      "precio": 151.23,
-      "mom_15m": -0.362,
-      "mom_30m": -0.611,
-      "vol_ratio": 0.34,
-      "vwap_dev": -0.899,
-      "rsi": 19.9,
-      "señal": "debil_bajista",
-      "ts": "12:23"
+      "precio": 151.85,
+      "mom_15m": -0.016,
+      "mom_30m": -0.033,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.029,
+      "rsi": 52.3,
+      "señal": "LATERAL",
+      "ts": "14:15"
     },
     "BILL": {
       "precio": 49.79,
@@ -22592,6 +22595,16 @@
       "rsi": 25.0,
       "señal": "LATERAL",
       "ts": "15:15"
+    },
+    "ZTO": {
+      "precio": 23.17,
+      "mom_15m": 0.0,
+      "mom_30m": 0.019,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.103,
+      "rsi": 71.3,
+      "señal": "LATERAL",
+      "ts": "14:15"
     }
   },
   "sentinel_signals": [
@@ -25134,6 +25147,13 @@
       "severidad": "media",
       "fecha": "2026-08-15",
       "origen": "intraday-monitor"
+    },
+    {
+      "fecha": "2026-08-18",
+      "ts": "14:16",
+      "tipo": "ew_source_unreachable",
+      "detalle": "old.earningswhispers.com y www.earningswhispers.com inalcanzables desde sandbox (connect timeout 20s). Afecta PASO 3 del sentinel y cualquier scan EW headless en este entorno.",
+      "impacto": "Sin whisper/asimetria -> imposible scoring EW; sentinel operó solo con macro + WebSearch."
     }
   ],
   "w20_pivot": {
