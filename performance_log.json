@@ -404,6 +404,70 @@
       "accion_correctiva": "Bajar semiconductors a -2 y mantener technology en 0 (no penalizar software por la caida del hardware). Revisar a +0 si el SOX recupera su MA50.",
       "tarea_afectada": "multiple",
       "aplicada": true
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "BEAT_AND_FADE_CONFIRMADO",
+      "titulo": "FN: beat-and-fade extremo — batio whisper +5.9% y cayo -20.0%",
+      "descripcion": "FN reporto EPS=4.1 vs whisper=3.87 (+5.94%) y cons=3.81 (+7.61%), rev YoY +44.64%, guidance por encima de consenso. La accion cayo -20.0% al dia siguiente. Causa: margenes en compresion, free cash flow negativo y un outlook de beneficio blando pesaron mas que el beat, en un mercado ya predispuesto a vender nombres de infraestructura AI (venta sectorial de semis del 18-ago).",
+      "accion_futura": "VALIDA el filtro_beat_and_fade. Un beat de whisper >=5% NO es condicion suficiente para continuation. Exigir ademas: (a) reaccion AH/post positiva confirmada, (b) calidad de beat — margen bruto y FCF no deteriorados, (c) contexto sectorial no en venta. Anadir chequeo de margen/FCF al scoring de continuation.",
+      "impacto_score": -0.5
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "HD: beat marginal +4.24% vs whisper (2026-08-18) — por debajo del umbral de continuation",
+      "descripcion": "Home Depot EPS=$4.92 vs whisper=$4.72 vs cons=$4.71. Rev +5.71% YoY. Reafirma guia FY2027 ($14.69-15.28 vs cons $14.99): sin sorpresa alcista.",
+      "accion_futura": "Beat de 4.24% con guidance meramente reafirmada no justifica continuation. Umbral de 5% vs whisper se mantiene adecuado.",
+      "impacto_score": 0.1
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "BEAT_SIN_WHISPER_AH_INSUFICIENTE",
+      "titulo": "KEYS: beat de consenso +23.8% y guidance +23%, pero AH solo +4.0% -> no supera umbral de continuation",
+      "descripcion": "Keysight EPS=$3.07 vs cons=$2.48 (+23.8%), rev +36.5% YoY, guia Q4 $3.34-3.40 vs cons $2.72. EarningsWhispers no publico whisper para KEYS (el email solo lo recogio en la seccion de guidance). Reaccion: -7.2% en la sesion regular ANTES del reporte, +4.0% en after-hours despues. Ruta 2 exige AH>=5% (fallo por 1 punto); ruta 3 exige beat_rate historico >=85% y KEYS no tiene beat_rate en el log.",
+      "accion_futura": "Dos acciones: (1) rellenar beat_rate historico de los tickers EW recurrentes para que la ruta 3 sea operativa; (2) el AH de +4% tras un -7.2% intradia es una reaccion neta debil para un beat de +24% — coherente con el regimen beat-and-fade que confirmo FN el mismo dia. Mantener el umbral AH>=5%, NO relajarlo: en este regimen el falso positivo es caro.",
+      "impacto_score": 0.0
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "BIDU: MISS -21.5% vs consenso (2026-08-18)",
+      "descripcion": "Baidu EPS ajustado=$1.06 vs cons=$1.35 (-21.5%), -44% YoY. Rev $4.617B vs est $4.650B. Sin whisper disponible; el calculo de miss usa consenso. AI cloud +50% YoY y GPU cloud +283%, pero la publicidad core sigue deteriorandose.",
+      "accion_futura": "BIDU: la historia AI no compensa el deterioro del negocio publicitario. Mantener fuera del universo de earnings plays hasta que la publicidad se estabilice.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "BEAT_MARGINAL",
+      "titulo": "TOL: beat de consenso solo +1.37% — ruido, no señal",
+      "descripcion": "Toll Brothers EPS=$2.97 vs cons=$2.93, rev $2.66B vs est $2.62B. El consenso ya se habia recortado un 15.6% en 90 dias (de $3.47 a $2.93): batir un liston rebajado no es una sorpresa positiva real. La accion cerro en rojo la sesion.",
+      "accion_futura": "Anadir al scoring la revision del consenso a 90 dias: un beat contra un consenso recortado >10% debe penalizarse (beat \"de liston bajo\").",
+      "impacto_score": -0.1
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "REGIMEN_MERCADO",
+      "titulo": "REGIMEN BEAT-AND-FADE CONFIRMADO — 18-ago: 3 de 4 beats sin recompensa",
+      "descripcion": "Sesion del 18-ago: FN batio whisper +5.9% -> -20%. KEYS batio consenso +23.8% con guia +23% -> apenas +4% AH tras -7.2% intradia. TOL batio -> cerro en rojo. HD batio +4.2% -> sin sorpresa. El unico movimiento limpio fue el castigo a BIDU por el miss. Coincide con la venta sectorial de semis/AI-infra registrada el mismo dia.",
+      "accion_futura": "Mientras persista este regimen, subir el liston de las continuation plays: exigir AH>=5% Y calidad de beat (margen/FCF) Y sector no en distribucion. Preferir el lado corto/evitar antes que forzar entradas long post-beat.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "VALIDACION_DESCARTES",
+      "titulo": "Los descartes del 17-ago (HD, KEYS, TOL, BIDU, KLAR) fueron correctos ex-post",
+      "descripcion": "Los cinco tickers habian sido marcados descartado el 17-ago. Resultado real: ninguno genero un movimiento post-beat aprovechable; BIDU y KLAR fueron claramente negativos. Cero posiciones equity abiertas -> cero perdida.",
+      "accion_futura": "El filtro sigue ganando dinero por omision. Seguir midiendo su coste de oportunidad semanalmente (ver leccion 18-ago sobre cohorte descartada -4.1%).",
+      "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "FALLO_OPERATIVO",
+      "titulo": "El run de ew-daily-results del 17-ago no se ejecuto — FN se proceso con 1 dia de retraso",
+      "descripcion": "resultados_diarios saltaba del 14-ago al 18-ago y _last_ew_daily_run marcaba 2026-08-15. El email de FN del 17-ago se ha recuperado en este run mediante backfill (query newer_than:2d). Nota de infraestructura: la ruta canonica /sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json NO es accesible desde esta sesion (permission denied); se ha leido y escrito contra GitHub, que es el source-of-truth documentado para lecturas.",
+      "accion_futura": "Mantener el backfill de 2 dias en el PASO 1 (ya presente) y hacer que PASO 4 escriba SIEMPRE en GitHub, no en filesystem local, ya que las rutas de sesion cambian entre ejecuciones.",
+      "impacto_score": 0.0
     }
   ],
   "operaciones": [
@@ -25259,6 +25323,81 @@
       "fuente_datos": "gmail_newsletter",
       "backfill": true,
       "ts_registro": "2026-08-15T20:58:04.875660+00:00"
+    },
+    {
+      "ticker": "HD",
+      "fecha": "2026-08-18",
+      "resultado": "beat",
+      "eps_actual": 4.92,
+      "eps_consensus": 4.71,
+      "eps_whisper": 4.72,
+      "revenue_growth_yoy": 5.71,
+      "reaccion_ah_pct": 0.0,
+      "guidance_proximo": "FY2027 EPS $14.69-15.28 vs cons $14.99 / rev $168.8-172.1B vs cons $171.65B (in-line)",
+      "fuente_datos": "gmail_ew",
+      "nota": null,
+      "whisper_beat_pct": 4.24,
+      "consensus_beat_pct": 4.46
+    },
+    {
+      "ticker": "KEYS",
+      "fecha": "2026-08-18",
+      "resultado": "beat",
+      "eps_actual": 3.07,
+      "eps_consensus": 2.48,
+      "eps_whisper": null,
+      "revenue_growth_yoy": 36.5,
+      "reaccion_ah_pct": 4.0,
+      "guidance_proximo": "Q4 EPS $3.34-3.40 vs cons $2.72 / rev $1.93-1.95B vs cons ~$1.84B (MUY por encima)",
+      "fuente_datos": "gmail_ew+websearch",
+      "nota": "AMC. Cayo -7.2% en sesion regular ANTES del reporte; +4% en after-hours tras publicar.",
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 23.79
+    },
+    {
+      "ticker": "BIDU",
+      "fecha": "2026-08-18",
+      "resultado": "miss",
+      "eps_actual": 1.06,
+      "eps_consensus": 1.35,
+      "eps_whisper": null,
+      "revenue_growth_yoy": 1.09,
+      "reaccion_ah_pct": 0.0,
+      "guidance_proximo": null,
+      "fuente_datos": "websearch",
+      "nota": "BMO. AI cloud +50% YoY, GPU cloud +283%, pero publicidad debil. EPS -44% YoY.",
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": -21.48
+    },
+    {
+      "ticker": "TOL",
+      "fecha": "2026-08-18",
+      "resultado": "beat",
+      "eps_actual": 2.97,
+      "eps_consensus": 2.93,
+      "eps_whisper": null,
+      "revenue_growth_yoy": null,
+      "reaccion_ah_pct": 0.0,
+      "guidance_proximo": null,
+      "fuente_datos": "websearch",
+      "nota": "AMC. Rev $2.66B vs est $2.62B. Accion -$2.94 en la sesion regular del martes.",
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 1.37
+    },
+    {
+      "ticker": "FN",
+      "fecha": "2026-08-17",
+      "resultado": "beat",
+      "eps_actual": 4.1,
+      "eps_consensus": 3.81,
+      "eps_whisper": 3.87,
+      "revenue_growth_yoy": 44.64,
+      "reaccion_ah_pct": -20.0,
+      "guidance_proximo": "Q1 EPS $4.10-4.25 vs cons $4.00 / rev $1.375-1.425B vs cons $1.34B (por encima)",
+      "fuente_datos": "gmail_ew+websearch",
+      "nota": "BACKFILL: run de 2026-08-17 no se ejecuto. Batio whisper +5.94% y AUN ASI -20% el 18-ago (margenes, FCF negativo, outlook de beneficio blando + venta sectorial AI-infra).",
+      "whisper_beat_pct": 5.94,
+      "consensus_beat_pct": 7.61
     }
   ],
   "kpis_actuales": {
@@ -26140,9 +26279,15 @@
     }
   ],
   "_last_ew_daily_run": {
-    "fecha": "2026-08-15",
-    "ts": "2026-08-15T20:48:37.162692+00:00",
-    "resumen": "Post-market 2026-08-15 (sabado, modo recuperacion). Reconstruida semana 12-14 ago. 0 posiciones stock en paper y real. Loop CSCO cerrado (beat record -> cayo; no entrar fue correcto). Semana 17-21 ago SIN candidato >=7.5. Mejora: filtro_beat_and_fade."
+    "fecha": "2026-08-18",
+    "ts": "2026-08-18T21:42:23.330889+00:00",
+    "resumen": "EW Daily 2026-08-18 + backfill 17-ago. 5 empresas procesadas (HD, KEYS, BIDU, TOL beat/miss + FN backfill). 0 continuation plays: FN bloqueado por filtro sell-the-news (-20% pese a beat whisper +5.9%), KEYS bloqueado por AH +4.0% < umbral 5%. 0 candidatos en estado abierto que actualizar. Regimen beat-and-fade confirmado. 7 lecciones nuevas.",
+    "continuation_generados": [],
+    "fuentes": [
+      "gmail_ew",
+      "websearch"
+    ],
+    "nota_infra": "Ruta canonica de filesystem inaccesible; lectura y escritura via GitHub."
   },
   "guidance_eventos": [
     {
@@ -26165,6 +26310,20 @@
       "tipo": "guidance_positiva",
       "detalle": "2026 rev $3.75-4.25M vs cons $3.13M.",
       "severidad": "baja"
+    },
+    {
+      "fecha": "2026-08-18",
+      "ticker": "KLAR",
+      "tipo": "guidance_negativa",
+      "detalle": "Klarna recorta 2026 rev a $4.08-4.16B (previo >$4.34B) vs cons $4.44B. Q3 guidance por debajo.",
+      "fuente": "gmail_ew"
+    },
+    {
+      "fecha": "2026-08-18",
+      "ticker": "KEYS",
+      "tipo": "guidance_positiva",
+      "detalle": "Q4 EPS $3.34-3.40 vs cons $2.72 (+23%). Rev $1.93-1.95B vs cons $1.84B. AI datacenter test demand.",
+      "fuente": "gmail_ew"
     }
   ],
   "health_check_log": [
