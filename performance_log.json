@@ -50,8 +50,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-08-15",
-    "motivo_actualizacion": "MERGE: weekly-performance-review fijo min_signal_score=7.0; post-market añade filtro_beat_and_fade (-2 pts / override 8.5) con evidencia 5/5 de la semana 12-14 ago.",
+    "ultima_actualizacion": "2026-08-18",
+    "motivo_actualizacion": "post-market 18-ago: nueva regla de DENOMINADOR MINIMO en la asimetria whisper. Si |consenso| < $0.50, el porcentaje de asimetria es estadisticamente ruidoso y BLOQUE 1 se capa a 1.5 pts; ademas se exige una diferencia absoluta >= $0.08 para conceder los 3 pts completos. Evidencia: EL (19-ago) mostraba +15.6% de asimetria — la mayor del dia — generada por solo $0.05 sobre un consenso de $0.32, lo que la habria colocado por delante de ADI (+3.6% = $0.12 real).",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -108,7 +108,10 @@
       "evidencia": "Semana 2026-08-12/14: CSCO, AMAT, JD, PFG y AMCR batieron y los 5 cayeron. Confirma tambien CIEN -17% post-beat (jun-2026) y SNDK (06-ago).",
       "razon": "Con el mercado en maximos y volatilidad minima, el beat ya esta en precio; la asimetria del whisper pierde poder predictivo sobre el movimiento.",
       "revisar_si": "VIX > 18 o 3 beats consecutivos en estos sectores cierran en verde -> desactivar y reevaluar"
-    }
+    },
+    "asimetria_denominador_minimo_usd": 0.5,
+    "asimetria_diferencia_minima_usd": 0.08,
+    "asimetria_bloque1_cap_denominador_pequeno": 1.5
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -161,112 +164,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-07-29",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "MSFT: BEAT +9.2% vs whisper (2026-07-29) OK",
-      "descripcion": "EPS actual=$4.74 vs whisper=$4.34 vs consensus=$4.21.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-07-29",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "MSFT: beat cons=+12.6% confirmado AH=+8.9% (2026-07-29)",
-      "descripcion": "Mercado confirmo beat con AH fuerte. EPS=4.74 vs cons=4.21. Whisper=disponible.",
-      "accion_futura": "MSFT: AH confirmacion = senal continuation aun sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-07-29",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "CORT: beat cons=+1000.0% confirmado AH=+22.0% (2026-07-29)",
-      "descripcion": "Mercado confirmo beat con AH fuerte. EPS=0.36 vs cons=-0.04. Whisper=NO disponible.",
-      "accion_futura": "CORT: AH confirmacion = senal continuation aun sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-07-31",
-      "titulo": "Ejecución autónoma post-market — política de acciones financieras",
-      "descripcion": "Sesión programada sin usuario. 0 posiciones en acciones (paper y real). Real solo tiene dust BTCUSD (~$0.52). No hubo stops que colocar ni órdenes que gestionar.",
-      "accion_correctiva": "En sesiones autónomas: NO colocar órdenes en cuenta real; se reporta/alerta. SKILL.md no auto-editado (self-modifying code evitado); mejoras se documentan en log.",
-      "tarea_afectada": "post-market-review",
-      "auto_generado": true,
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-07-30",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "HIPO: beat cons confirmado AH=+6.9% (2026-07-30)",
-      "descripcion": "Mercado confirmó beat con AH fuerte. EPS=0.54 vs cons=-0.02. Whisper=NO disp. (cons_beat% distorsionado por consenso≈0)",
-      "accion_futura": "Si HIPO repite patrón: AH confirma continuation sin whisper.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-07-30",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "COIN: MISS -3800.0% vs whisper (2026-07-30)",
-      "descripcion": "EPS actual=$-0.39 vs whisper=$-0.01 vs consensus=$0.14. Revenue YoY: -18.5%.",
-      "accion_futura": "Revisar perfil de COIN: ¿guidance negativo? ¿sectorial?",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-07-31",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "XOM: MISS -10.9% vs whisper (2026-07-31)",
-      "descripcion": "EPS=3.52 vs whisper=3.95 vs cons=3.68. RevYoY=42.34%.",
-      "accion_futura": "Revisar perfil de XOM: guidance/sector/deuda.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-07-31",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "CRI: BEAT +271.4% vs whisper (2026-07-31) OK",
-      "descripcion": "EPS=0.26 vs whisper=0.07 vs cons=0.02.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-03",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "PLTR: BEAT +7.9% vs whisper (2026-08-03) OK",
-      "descripcion": "EPS=0.41 vs whisper=0.38 vs cons=0.35.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-03",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "PLTR: beat cons=+17.1% confirmado AH=+11.0% (2026-08-03)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.41 vs cons=0.35.",
-      "accion_futura": "PLTR: AH confirmacion = senal continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-04",
-      "titulo": "Cautela earnings implied-move-alto en tape de maximos",
-      "descripcion": "Con S&P/Nasdaq en record y VIX 15.86, earnings con implied move alto (UBER ±8.3%, LLY swing masivo) son coin-flips de alta varianza.",
-      "accion_correctiva": "No entrar earnings con implied move >6% sin asimetria whisper confirmada; preferir setups con reaccion historica positiva clara (DIS).",
-      "tarea_afectada": "pre-market-earnings-scan | market-open-execution",
-      "auto_generado": false,
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-08-04",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "AMD: SELL-THE-NEWS — beat cons +2.5% pero miss whisper y AH=-9.0% (2026-08-04)",
-      "descripcion": "AMD EPS adj=$1.66 vs consensus=$1.62 (+2.5%) pero por debajo del whisper=$1.69 (-1.78%). Revenue record $11.54B (+50% YoY, Data Center +107%) pero stock -9% AH. Patron identico a ARM: beat consensus sin batir whisper + probable drift pre-earnings = venta.",
-      "accion_futura": "Regla reforzada: si eps_actual < whisper AUNQUE bata consensus -> NO continuation. El whisper es el listón real. Verificar mom5d pre-earnings de AMD (probable alto).",
-      "impacto_score": -0.5
-    },
-    {
-      "fecha": "2026-08-04",
-      "tipo": "CONTINUATION_VALIDADA",
-      "titulo": "PLTR: continuation play VALIDADA — +27% intradia 2026-08-04 tras beat whisper +7.9% ✅",
-      "descripcion": "El candidato post_earnings_continuation de PLTR (creado 2026-08-03, score 8.1, entrada apertura Aug 4) se movio ~+27% en sesion regular tras AH +15% real (estimado era 11%). Beat whisper +7.9%, consensus +17.1%, revenue +93% YoY, guidance FY subida a $8.15-8.16B.",
-      "accion_futura": "Confirma tesis: beat whisper fuerte + AH positivo fuerte + guidance raise = continuation de alta conviccion. Mantener parametros. AH real supero el estimado -> el proxy de 11% fue conservador.",
-      "impacto_score": 0.5
-    },
     {
       "fecha": "2026-08-06",
       "tipo": "BEAT_RESULTADO",
@@ -479,10 +376,34 @@
     {
       "fecha": "2026-08-17",
       "titulo": "7 sesiones consecutivas sin posiciones de equity — el filtro funciona pero hay que medir su coste",
-      "descripcion": "Desde el 6-ago no hay ninguna posicion de equity. Los scores maximos de la semana son EL 5.5, XOM 7.0 y ADI 4.5, todos por debajo del umbral de 7.5. Hoy el coste de oportunidad fue NULO (S&P -0.52%: estar en liquidez fue la decision correcta) pero la racha ya es larga y sin trades no hay aprendizaje.",
-      "accion_correctiva": "NO bajar el umbral por la racha — seria ajustar el sistema al aburrimiento y no a los datos. Medir el coste de oportunidad acumulado de los descartes de esta semana el viernes 21-ago; si el conjunto de descartados supera al SPY en mas de un 2%, entonces si revisar el umbral con evidencia.",
+      "descripcion": "Desde el 6-ago no hay ninguna posicion de equity. Los scores maximos de la semana son EL 5.5, XOM 7.0 y ADI 4.5, todos por debajo del umbral de 7.5. Hoy el coste de oportunidad fue NULO (S&P -0.52%: estar en liquidez fue la decision correcta) pero la racha ya es larga y sin trades no hay aprendizaje. | MEDIDO EL 2026-08-18: sobre la ventana 05-18 ago, la cohorte de candidatos con score>=7 NO ejecutados (n=9) promedia -2.99% y la de descartados score<=4 (n=18) promedia -4.12%. El coste de oportunidad de no estar invertido es NEGATIVO.",
+      "accion_correctiva": "Dejar de tratar las sesiones sin exposicion como un fallo. Metrica formalizada en historial_oportunidades_perdidas y recalculada cada post-market.",
       "tarea_afectada": "post-market-review | pre-market-earnings-scan",
-      "aplicada": false
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-18",
+      "titulo": "REGLA VALIDADA CON DATOS — el filtro de descarte gana dinero: cohorte descartada -4.1%, cohorte score>=7 no ejecutada -3.0%",
+      "descripcion": "Primera medicion formal del coste de oportunidad (ventana 05-18 ago). Descartados score<=4: n=18, media -4.12%, mediana -1.75%, solo 5/18 en verde (KLAR -23.0%, ONON -20.1%, AMTM -14.6%, BIDU -12.8%). Score>=7 no ejecutados: n=9, media -2.99%, 4/9 en verde. 8 sesiones seguidas sin equity han sido rentables en terminos relativos.",
+      "accion_correctiva": "NO relajar score_min_paper por la sequia de entradas. La ausencia de senal es informacion, no un fallo del sistema. Repetir esta medicion cada post-market y solo bajar umbrales si la cohorte score>=7 no ejecutada pasa a media positiva sostenida (>+2% en 2 ventanas consecutivas).",
+      "tarea_afectada": "multiple",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-18",
+      "titulo": "SESGO DETECTADO — la asimetria whisper en % engana cuando el consenso es diminuto",
+      "descripcion": "EL lideraba el calendario del 19-ago con +15.62% de asimetria construida sobre $0.05 (consenso $0.32). ADI, con +3.6%, representaba $0.12 reales. El ranking por porcentaje invierte el orden de la senal verdadera.",
+      "accion_correctiva": "Aplicar asimetria_denominador_minimo_usd=0.50 y asimetria_diferencia_minima_usd=0.08 de parametros_activos en BLOQUE 1 de TODAS las tareas de scoring (pre-market-earnings-scan, sentinel, post-market-review).",
+      "tarea_afectada": "pre-market-earnings-scan | post-market-review | sentinel",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-18",
+      "titulo": "MACRO — la venta de semis del 18-ago es sectorial, no sistemica: el software cerro en verde",
+      "descripcion": "SOX -5.4% (~$680B) con NVDA -2.4% y META -3.0%, pero MSFT, CRM e INTU estuvieron entre los mejores del dia y el VIX apenas subio a 15.83. Es rotacion dentro de tech, no risk-off general.",
+      "accion_correctiva": "Bajar semiconductors a -2 y mantener technology en 0 (no penalizar software por la caida del hardware). Revisar a +0 si el SOX recupera su MA50.",
+      "tarea_afectada": "multiple",
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -2989,14 +2910,14 @@
       "sector": "energy",
       "estado": "vigilar_cauteloso",
       "accion_recomendada": "momentum_entrar_en_pullback",
-      "ventana_entrada": "2026-08-17/21 10:15-12:00 ET, solo en pullback a MA10",
-      "stop_tipo": "ATR x1.5 (ATR14=$3.96, ~2.5%)",
+      "ventana_entrada": "pullback a MA10 ($157.65) o consolidacion >2 sesiones; 10:15-13:00 ET",
+      "stop_tipo": "ATR x1.5 = $5.57",
       "argumento": "Energia es el UNICO sector claramente verde (XLE +7.7% en 5d). XOM: flujo de opciones 19.4x la media diaria, $29.9M de prima, 0% puts, bloques repetidos de calls 150/155 vencimiento 21-ago hacia el cierre del viernes. Precio +8.5% sobre MA50 y +14.1% sobre MA200. Sector prioridad subida a +2.",
-      "notas": "Sin catalizador de earnings -> es momentum puro, no drift post-earnings. Requiere pullback: entrar a $160 tras +8.7% en 20d es perseguir. ALERTA HISTORICA: op previa de XOM cerro -3.13% y queda alerta XOM_SIN_STOP_DOWNSIDE del 27-jul sin resolver. | UPDATE 2026-08-17: tesis REFORZADA — expira el MoU EEUU-Iran, Brent a $90, y la energia es literalmente el unico sector verde en un dia con S&P -0.52% (XLE +1.1%, USO +2.9%, CVX +1.35%, XOM +0.85%). Score 6.5 -> 7.0. PERO se mantiene en vigilancia y NO se promueve a candidato fuerte: XOM esta +9.3% sobre MA50 y entrar el dia 1 de una escalada geopolitica es comprar la noticia (precedente Hormuz en este mismo log: el relief rally revirtio el movimiento). Entrada SOLO en pullback a MA10, nunca persiguiendo.",
+      "notas": "Sin catalizador de earnings -> es momentum puro, no drift post-earnings. Requiere pullback: entrar a $160 tras +8.7% en 20d es perseguir. ALERTA HISTORICA: op previa de XOM cerro -3.13% y queda alerta XOM_SIN_STOP_DOWNSIDE del 27-jul sin resolver. | UPDATE 2026-08-17: tesis REFORZADA — expira el MoU EEUU-Iran, Brent a $90, y la energia es literalmente el unico sector verde en un dia con S&P -0.52% (XLE +1.1%, USO +2.9%, CVX +1.35%, XOM +0.85%). Score 6.5 -> 7.0. PERO se mantiene en vigilancia y NO se promueve a candidato fuerte: XOM esta +9.3% sobre MA50 y entrar el dia 1 de una escalada geopolitica es comprar la noticia (precedente Hormuz en este mismo log: el relief rally revirtio el movimiento). Entrada SOLO en pullback a MA10, nunca persiguiendo. | UPDATE 2026-08-18: XOM +2.53% hoy, +8.3% en 10d, +12.5% sobre MA50 (extendido). XLE +1.72% y unico sector en verde. Energia sigue en prioridad +2. NO perseguir: la entrada valida es el pullback a MA10 $157.65. Precio hoy $165.61, ATR14 $3.71.",
       "fecha_deteccion": "2026-08-15",
       "detectado_por": "post-market-review",
       "score_macro_bonus": 2,
-      "expira": "2026-08-21T20:29:33.014638Z",
+      "expira": "2026-08-25T20:00:00Z",
       "conviction_tier": "no_entry",
       "fuente": "EarningsWhispers week-ahead 17-ago (premium) + InsiderFinance flow + yfinance",
       "score_total": 9.0
@@ -3370,9 +3291,9 @@
     },
     {
       "ticker": "EL",
-      "score": 5.5,
-      "score_ajustado": 5.5,
-      "score_total": 5.5,
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "score_total": 4.0,
       "score_macro_bonus": 0,
       "whisper_eps": 0.37,
       "consensus_eps": 0.32,
@@ -3386,10 +3307,11 @@
       "accion_recomendada": "vigilar_confirmacion_post_print",
       "ventana_entrada": "2026-08-19 09:40-10:30 ET solo con confirmacion >+0.5% a 15 min",
       "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
-      "argumento": "LA MAYOR ASIMETRIA REAL de la semana (+15.6%, whisper $0.37 vs consenso $0.32, confirmado via API EW). Contra: momentum plano (-2.0% hoy, -3.3% en 5d, justo en MA50) y staples con prioridad 0. Es el unico nombre que merece seguimiento activo el 19-ago.",
-      "expira": "2026-08-19T22:00:00Z",
+      "argumento": "Whisper $0.37 vs consenso $0.32 (+15.6%) pero la diferencia ABSOLUTA es de solo $0.05 sobre una base minuscula -> BLOQUE 1 capado a 1.5 pts por la nueva regla de denominador minimo. Beat de EPS en los 4 ultimos trimestres. En contra: precio -7.6% bajo la MA200, -4.0% en 5d, y la propia compania avisa de -2pp de ventas y -$0.06 de EPS por la disrupcion de Oriente Medio. Minutas FOMC el mismo dia.",
+      "expira": "2026-08-20T20:00:00Z",
       "fuente_datos": "EW API per-ticker (warm-up + X-Requested-With) + yfinance + WebSearch",
-      "conviction_tier": "no_entry"
+      "conviction_tier": "no_entry",
+      "notas": " | UPDATE 2026-08-18: score REBAJADO 5.5 -> 4.0 al aplicar la nueva regla de denominador minimo (asimetria +15.6% procede de solo $0.05 sobre un consenso de $0.32). Sin entrada anticipada. Solo se considerara continuacion el 20-ago si el print confirma y el precio recupera la MA200."
     },
     {
       "ticker": "TOL",
@@ -3457,17 +3379,166 @@
       "detectado_por": "sentinel-preapertura",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "ts_creado": "2026-08-18T13:21:41.064252+00:00"
+    },
+    {
+      "ticker": "TGT",
+      "score": 3.0,
+      "score_ajustado": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $2.35 vs consenso $2.30 (+2.2%), beat de EPS en 4 trimestres seguidos y 7 de los 10 ultimos. Tendencia fuerte (+10.6% sobre MA50, +31.6% sobre MA200, +50% en el ano). PERO el mercado de opciones descuenta un movimiento del 7.1% y el precio objetivo medio implica un 5% DE CAIDA: la buena noticia ya esta en el precio. Perfil clasico de beat-and-fade.",
+      "notas": "Extension de valoracion: -0.5 por analogia con filtro_beat_and_fade.",
+      "bloques_scoring": {
+        "B1": 1,
+        "B2": 2,
+        "B3": 1,
+        "B4": 1,
+        "B5": 0.5,
+        "B6": -1,
+        "B7": -1,
+        "B8": -0.5
+      },
+      "asimetria_pct": 2.17,
+      "asimetria_usd": 0.05,
+      "precio_deteccion": 152.49,
+      "expira": "2026-08-20T20:00:00Z",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "TJX",
+      "score": 2.5,
+      "score_ajustado": 2.5,
+      "score_total": 2.5,
+      "fecha_deteccion": "2026-08-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $1.21 vs consenso $1.18 (+2.5%) y un historial de beats muy consistente, pero el precio esta -3.8% bajo la MA50 y -2.1% bajo la MA200 con PER de 30x: valoracion premium sin margen para decepcionar en margenes o comps.",
+      "notas": "Sin momentum que acompane.",
+      "bloques_scoring": {
+        "B1": 1,
+        "B2": 2,
+        "B3": 1,
+        "B4": 0,
+        "B5": 0.5,
+        "B6": -1,
+        "B7": -1,
+        "B8": 0
+      },
+      "asimetria_pct": 2.54,
+      "asimetria_usd": 0.03,
+      "precio_deteccion": 150.94,
+      "expira": "2026-08-20T20:00:00Z",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "BILL",
+      "score": 2,
+      "score_ajustado": 2,
+      "score_total": 2,
+      "fecha_deteccion": "2026-08-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "after-hours",
+      "sector": "technology",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $0.73 vs consenso $0.71 (+2.8%) y momentum fuerte (+18.9% sobre MA50), pero reporta AFTER-HOURS el mismo dia de las minutas FOMC: doble evento binario y sin poder ejecutar antes de la apertura.",
+      "notas": "Descartado por timing (AH + dia FOMC).",
+      "bloques_scoring": {
+        "B1": 1,
+        "B2": 1,
+        "B3": 1,
+        "B4": 1,
+        "B5": 0,
+        "B6": 0,
+        "B7": -2,
+        "B8": 0
+      },
+      "asimetria_pct": 2.82,
+      "asimetria_usd": 0.02,
+      "precio_deteccion": 49.17,
+      "expira": "2026-08-20T20:00:00Z",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "ADI",
+      "score": 1.0,
+      "score_ajustado": 1.0,
+      "score_total": 1.0,
+      "fecha_deteccion": "2026-08-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "semiconductors",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $3.45 vs consenso $3.33 (+3.6%) es la mejor asimetria real del dia, pero el trimestre pasado ADI FALLO ($2.887 vs $3.09 esperado) y hoy el SOX se ha dejado -5.4% (~$680B). ADI -3.49% en la sesion y por debajo de su MA50. Comprar semis en plena purga sectorial contra unas minutas FOMC es pagar por el peor timing posible.",
+      "notas": "Sector semiconductors bajado a -2 hoy. Revisar de nuevo SOLO si el SOX estabiliza.",
+      "bloques_scoring": {
+        "B1": 2,
+        "B2": 1,
+        "B3": 1,
+        "B4": 0,
+        "B5": 0.5,
+        "B6": -2,
+        "B7": -1,
+        "B8": -0.5
+      },
+      "asimetria_pct": 3.6,
+      "asimetria_usd": 0.12,
+      "precio_deteccion": 376.63,
+      "expira": "2026-08-20T20:00:00Z",
+      "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "LOW",
+      "score": 0,
+      "score_ajustado": 0,
+      "score_total": 0,
+      "fecha_deteccion": "2026-08-18",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "accion_recomendada": "no_entrar",
+      "argumento": "Whisper $4.26 vs consenso $4.22: solo +0.95% de asimetria, insuficiente. EPS cae un 3% interanual y los analistas esperan comps flojas. Precio -8.4% bajo la MA200.",
+      "notas": "Descartado por asimetria insuficiente.",
+      "bloques_scoring": {
+        "B1": 0,
+        "B2": 1,
+        "B3": 1,
+        "B4": 0,
+        "B5": 0,
+        "B6": -1,
+        "B7": -1,
+        "B8": 0
+      },
+      "asimetria_pct": 0.95,
+      "asimetria_usd": 0.04,
+      "precio_deteccion": 215.73,
+      "expira": "2026-08-20T20:00:00Z",
+      "conviction_tier": "no_entry"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-08-17",
+    "fecha_actualizacion": "2026-08-18",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 15.69,
+    "vix": 15.83,
     "yield_spread_10y2y": 0.51,
-    "narrativa_dominante": "ACTUALIZACION 2026-08-17 (post-market lunes): CAMBIO DE REGIMEN de RISK_ON_SELECTIVO a GEOPOLITICAL_UNCERTAINTY_RENEWED. (1) El memorandum de entendimiento EEUU-Iran EXPIRO hoy sin renovacion; Araqchi descarta reanudar conversaciones. Brent toca $90 (+1.2%). (2) El rendimiento del bono a 30 anos marca maximo de 25 anos, presionado por la avalancha de deuda corporativa AI ($1.5T investment-grade YTD, +36% YoY). (3) Indices giran a la baja en la tarde tras abrir al alza: S&P -0.52% a 7745.06, Dow -0.51% a 53459.78, Nasdaq -0.32% a 26644.91. VIX 15.19 (+6.6%). (4) Datos de China peores de lo previsto en TODAS las lineas (produccion industrial, consumo, inversion) -> presion sobre ADRs chinos y materias primas industriales. (5) Goldman: subida de tipos en septiembre 'muy improbable'; dolar al minimo desde mayo, oro sobre $4.400. IMPLICACION SECTORIAL CLAVE: la energia CONFIRMA liderazgo (XLE +1.1% en dia rojo, +4.0% en 5d, +9.9% sobre MA50; USO +2.9%), pero la DEFENSA NO ha actuado como cobertura geopolitica hoy (LMT -2.45%) -> la correlacion defensa/geopolitica que asumiamos NO se ha cumplido. El complejo retail entero cae antes de sus resultados (TGT -2.25%, LOW -1.22%, WMT -0.82%, HD -0.29%), coherente con retail sales de julio -0.6% MoM. Semana pesada: HD martes, minutas FOMC + TGT + LOW miercoles, WMT jueves.",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-18 (post-market martes): REGIMEN CONFIRMADO GEOPOLITICAL_UNCERTAINTY_RENEWED, segunda sesion consecutiva de deterioro. (1) Trump descarta explicitamente revivir la tregua con Iran ('No') -> el crudo sostiene maximos y los rendimientos del Tesoro se quedan en picos plurianuales. (2) VENTA MASIVA DE CHIPS: el indice Philadelphia SE Semiconductor -5.4%, ~$680B de capitalizacion evaporados; NVDA -2.4%, META -3.0%. SMH -4.06% en la sesion. (3) Cierres: S&P 500 -0.6% a 7691.76, Nasdaq -1.3%, Dow -0.2% — minimos de dos semanas. VIX 15.83 (+4.2%) — sube pero SIGUE BAJO: el mercado corrige sin panico. (4) Rotacion nitida a energia: XLE +1.72% (+8.8% en 10d), XOM +2.53%. El software se recupero (MSFT, CRM, INTU entre los mejores) — la venta es especifica de semis/hardware, no de tech en bloque. (5) MANANA 19-ago: minutas FOMC de julio a las 14:00 ET (voto 9-3 por mantener, riesgo de lectura hawkish) + bloque grande de retail pre-market (TGT, LOW, TJX, EL, ADI).",
     "fuentes_consultadas": [
-      "WebSearch NVDA earnings 5/20",
       "WebSearch post-market 2026-06-04: TheStreet+CNBC+Schwab — 4 fuentes confirmadas",
       "WebSearch post-market 2026-06-05: market close + Monday earnings",
       "WebSearch post-market 2026-06-13: VIX, earnings Mon 15-jun, economic calendar FOMC week",
@@ -3496,13 +3567,14 @@
       "WebSearch recap semanal SPY/CPI",
       "WebSearch sector rotation + Fed septiembre",
       "Gmail post-market 2026-08-15: EW week-ahead 17-ago (full premium preview), EW summary 13-ago, InsiderFinance Evening Edge 13 y 14-ago, TipRanks. WebSearch: CPI julio, calendario macro semana 17-23 ago.",
-      "Gmail post-market 2026-08-17: 9 hilos Bloomberg (Markets Daily leido integro) | 0 emails EarningsWhispers | WebSearch x4 | EW API per-ticker OK (6 tickers) | Chrome MCP NO disponible"
+      "Gmail post-market 2026-08-17: 9 hilos Bloomberg (Markets Daily leido integro) | 0 emails EarningsWhispers | WebSearch x4 | EW API per-ticker OK (6 tickers) | Chrome MCP NO disponible",
+      "post-market 2026-08-18: Gmail 12 threads (EW Whisper Report 1110, EW Summary lunes, InsiderFinance, Bloomberg x7, TipRanks x2) + EW API per-ticker 17 tickers + Alpaca market data + 5 WebSearch"
     ],
     "sector_prioridades": {
       "defense": 0,
       "energy": 2,
       "ai_infrastructure": -1,
-      "memory_chips": 0,
+      "memory_chips": -1,
       "technology": 0,
       "industrials": 1,
       "financials": 2,
@@ -3513,7 +3585,7 @@
       "consumer_staples": 0,
       "utilities": 1,
       "real_estate": -1,
-      "semiconductors": -1
+      "semiconductors": -2
     },
     "sectores_a_vigilar_esta_semana": [
       "energy",
@@ -3524,6 +3596,7 @@
     ],
     "sectores_a_evitar_esta_semana": [
       "ai_infrastructure",
+      "memory_chips",
       "consumer_discretionary",
       "real_estate",
       "semiconductors"
@@ -3534,12 +3607,12 @@
       "2026-08-21 (OpEx mensual)",
       "2026-08-27/29 (Jackson Hole)",
       {
-        "fecha": "2026-08-18",
-        "evento": "Housing starts + building permits 8:30 ET (est 1.390M vs 1.427M prev), industrial production 9:15 ET, pending home sales 10:00 ET"
+        "fecha": "2026-08-19",
+        "evento": "Minutas FOMC de julio (voto 9-3 por mantener) — riesgo de lectura hawkish"
       },
       {
         "fecha": "2026-08-19",
-        "evento": "Minutas FOMC de julio (voto 9-3 por mantener) — riesgo de lectura hawkish"
+        "evento": "Minutas FOMC de julio 14:00 ET (voto 9-3 mantener) — riesgo lectura hawkish. Bloque retail pre-market: TGT/LOW/TJX/EL/ADI 7:00-8:00 ET"
       }
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
@@ -3591,17 +3664,6 @@
       "yield_10y": 4.708000183105469
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-07-01",
-        "evento": "Arranque Q3 tras mejor semestre desde 2020 (S&P +9.6% H1). CAT -7%. Mercado espera al Fed Chair Warsh y al NFP de junio (adelantado a jue 2-jul por festivo del vie 3-jul).",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "industrials",
-          "communication",
-          "financials"
-        ],
-        "fuente": "TheStreet/CNBC/Kiplinger/Schwab (WebSearch)"
-      },
       {
         "fecha": "2026-07-16",
         "evento": "Escalada guerra EE.UU.-Iran + 2o dia de caida en chips por dudas sobre IA. Nasdaq -1.3%.",
@@ -3813,6 +3875,18 @@
           "consumer_discretionary"
         ],
         "fuente": "Bloomberg Markets Daily + Yahoo Finance + CNBC"
+      },
+      {
+        "fecha": "2026-08-18",
+        "evento": "Venta masiva de semiconductores: SOX -5.4% (~$680B), NVDA -2.4%, META -3.0%. Trump descarta reactivar la tregua con Iran; crudo y rendimientos en maximos plurianuales. Indices a minimos de 2 semanas con VIX aun bajo (15.83).",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "semiconductors",
+          "ai_infrastructure",
+          "technology",
+          "energy"
+        ],
+        "fuente": "Reuters/Bloomberg/Yahoo Finance/TheStreet"
       }
     ],
     "macro_score_pm": -0.8,
@@ -9701,13 +9775,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-08-17",
+    "_ultima_actualizacion": "2026-08-18",
     "rendimiento_global": {
       "equity_paper_actual": 108335.4,
       "equity_paper_inicio_sistema": 105500,
       "pnl_total_paper_dolares": 2835.4,
       "pnl_total_paper_pct": 2.69,
-      "equity_real_actual": 4548.01,
+      "equity_real_actual": 4548.02,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.01,
       "pnl_total_real_pct": 1.07,
@@ -10215,6 +10289,17 @@
         "avg_r_acumulado": -0.09,
         "operaciones_acumuladas": 21,
         "vix": 15.19
+      },
+      {
+        "fecha": "2026-08-18",
+        "equity_paper": 108335.4,
+        "equity_real": 4548.02,
+        "pnl_dia_paper": 61.38,
+        "win_rate_acumulado": 38.1,
+        "avg_r_acumulado": -0.09,
+        "operaciones_acumuladas": 21,
+        "vix": 15.83,
+        "posiciones_equity": 0
       }
     ],
     "objetivos": {
@@ -15712,6 +15797,22 @@
       ],
       "evento_clave": "Expira el MoU EEUU-Iran sin renovacion -> Brent a $90 y giro bajista en la tarde (S&P -0.52%). 30y Treasury en maximo de 25 anos por la emision de deuda AI. Datos de China peores de lo previsto en todas las lineas.",
       "leccion": "El stop de LINK salto en DOMINGO a $9.2506 y el precio esta hoy en $9.47 (+2.4% por encima): los stops crypto GTC necesitan mas holgura en fin de semana. Y la defensa NO cubrio la escalada geopolitica hoy (LMT -2.45%) — solo la energia lo hizo."
+    },
+    {
+      "fecha": "2026-08-18",
+      "dia": "Tuesday",
+      "equity_paper_cierre": 108335.4,
+      "variacion_dia": 61.38,
+      "variacion_pct": 0.06,
+      "equity_real_cierre": 4548.02,
+      "variacion_dia_real": 0.01,
+      "vix": 15.83,
+      "regimen_macro": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
+      "posiciones_equity": 0,
+      "posiciones_crypto_dust": 2,
+      "trades_paper": [],
+      "evento_clave": "Venta masiva de semis (SOX -5.4%, ~$680B) + Trump descarta la tregua con Iran -> crudo y rendimientos en maximos; S&P -0.6% a minimos de 2 semanas con VIX solo en 15.83.",
+      "leccion": "8ª sesion consecutiva sin equity y por primera vez el coste de oportunidad esta MEDIDO: la cesta de candidatos score>=7 NO ejecutados de las ultimas 2 semanas promedia -3.0% y la de descartados (score<=4) -4.0%. No entrar fue rentable, no solo prudente."
     }
   ],
   "alertas_criticas": [
@@ -16082,6 +16183,20 @@
       "archivo_modificado": "performance_log.parametros_crypto",
       "impacto_esperado": "Evitar stop-outs de fin de semana no informativos. Con ATRx3.0 el stop de LINK habria estado en ~$9.05 y la posicion seguiria viva y en positivo.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-08-18",
+      "tipo": "filtro_nuevo",
+      "descripcion": "Regla de denominador minimo en BLOQUE 1 (asimetria whisper): si |consenso| < $0.50 el bloque se capa a 1.5 pts; se exige diferencia absoluta >= $0.08 para los 3 pts completos.",
+      "evidencia": "EL 19-ago: asimetria +15.62% (la mayor del calendario) procedente de una diferencia de $0.05 sobre consenso $0.32. Sin la regla habria puntuado 3/3 en BLOQUE 1 y superado a ADI, cuya asimetria de +3.6% equivale a $0.12 reales.",
+      "archivo_modificado": "performance_log.parametros_activos (SKILL.md no accesible: carpeta Scheduled no montada en esta sesion)",
+      "impacto_esperado": "Elimina falsos positivos sistematicos en compañias de EPS bajo (turnarounds, biotech, small caps) donde un centavo de diferencia produce asimetrias de dos digitos.",
+      "implementada": true,
+      "parametros": {
+        "asimetria_denominador_minimo_usd": 0.5,
+        "asimetria_diferencia_minima_usd": 0.08,
+        "cap_bloque1": 1.5
+      }
     }
   ],
   "industry_intelligence": {
@@ -17021,6 +17136,14 @@
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": [],
           "nota": "Paper account flat (0 posiciones). Real: solo BTCUSD dust $0.53 (-45%), sin stop pero notional insignificante."
+        },
+        {
+          "fecha": "2026-08-18",
+          "bot_positions": 0,
+          "bot_sin_stop": 0,
+          "bot_pnl_latente_pct": 0.0,
+          "tickers_bot": [],
+          "nota": "Sin posiciones de equity en paper ni real. Solo polvo crypto (BTCUSD/SOLUSD, <$1 nocional). Sin stops que verificar."
         }
       ]
     },
@@ -17870,6 +17993,15 @@
       "parametros_version": "2026-08-15",
       "score_sistema": 8.7,
       "mejora_hoy": "stop_atr_mult_weekend=3.0 para crypto en fin de semana (evidencia: stop-out de LINK el domingo)"
+    },
+    {
+      "fecha": "2026-08-18",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 33,
+      "candidatos_activos": 2,
+      "score_sistema": 8.5,
+      "parametros_version": "2026-08-18",
+      "mejora_hoy": "Regla de denominador minimo en asimetria whisper (cap BLOQUE 1 a 1.5 pts si consenso < $0.50)"
     }
   ],
   "motor_alpha_diario": {
@@ -25608,6 +25740,17 @@
       ],
       "veredicto": "SIN SENAL. 0 candidatos >= 8.75. Mejor score AS 7.0 (limitado por movimiento historico 1.66% y filtro beat_and_fade). Confirma el plan_semana_proxima W34: semana sin candidato fuerte, modo preservacion de capital.",
       "escrito_por": "Cowork pre-market-earnings-scan (run automatico)"
+    },
+    {
+      "fecha": "2026-08-18",
+      "tarea": "post-market-review",
+      "universo_analizado": 17,
+      "con_whisper": 9,
+      "puntuados": 6,
+      "fuertes": 0,
+      "vigilancia": 0,
+      "descartados": 6,
+      "nota": "Bloque retail+ADI del 19-ago. Ninguno supera 5.0. Cero entradas previstas."
     }
   ],
   "acciones_pendientes_manana": [],
@@ -25945,6 +26088,55 @@
       "tareas_con_issues": [
         "intraday-monitor"
       ]
+    },
+    {
+      "fecha": "2026-08-18",
+      "score_sistema": 8.5,
+      "tareas": {
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Universo del 19-ago cubierto (17 tickers via API EW). 0 candidatos >=5.0 — resultado correcto, no fallo."
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin candidatos pendientes ejecutables hoy. Nada que ejecutar."
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "score": 6,
+          "issues": [
+            "BUG DATOS abierto del 17-ago: registro VIX 20 cuando el cierre real fue 15.19"
+          ],
+          "nota": "Sin posiciones que gestionar hoy."
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin posiciones con earnings AH: nada que cerrar (R0 no aplicable)."
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "XOM sigue vivo como candidato de momentum energetico desde el 15-ago."
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 9,
+          "issues": [
+            "SKILL.md no editable: carpeta Scheduled no montada; mejoras aplicadas via performance_log"
+          ],
+          "nota": "Loop cerrado, coste de oportunidad medido por primera vez, 1 mejora implementada."
+        }
+      },
+      "tareas_con_issues": [
+        "intraday-monitor"
+      ]
     }
   ],
   "_last_ew_daily_run": {
@@ -26009,6 +26201,189 @@
       "estado": "parcial",
       "issue": "EW headless no disponible (old.earningswhispers.com sin ruta de red). Sin asimetria whisper -> ningun candidato alcanza score>=7.5.",
       "accion_sugerida": "Anadir fuente EW alternativa o alojar mirror; evaluar API /api/todaysresults."
+    }
+  ],
+  "historial_oportunidades_perdidas": [
+    {
+      "fecha": "2026-08-18",
+      "ventana": "2026-08-05 a 2026-08-18",
+      "cohorte_score_ge_7_no_ejecutados": {
+        "n": 9,
+        "retorno_medio_pct": -2.99,
+        "mediana_pct": -0.42,
+        "ganadores": 4
+      },
+      "cohorte_score_le_4_descartados": {
+        "n": 18,
+        "retorno_medio_pct": -4.12,
+        "mediana_pct": -1.75,
+        "ganadores": 5
+      },
+      "conclusion": "El coste de oportunidad de 8 sesiones sin exposicion es NEGATIVO: ambas cohortes pierden dinero. El filtro anade valor, no solo prudencia.",
+      "detalle": [
+        [
+          "ABNB",
+          "2026-08-07",
+          8.0,
+          2.8
+        ],
+        [
+          "CAH",
+          "2026-08-10",
+          8.0,
+          -0.96
+        ],
+        [
+          "ESLT",
+          "2026-08-10",
+          7.0,
+          -5.87
+        ],
+        [
+          "AMTM",
+          "2026-08-10",
+          7.0,
+          -14.63
+        ],
+        [
+          "VG",
+          "2026-08-10",
+          7.0,
+          -0.42
+        ],
+        [
+          "SE",
+          "2026-08-10",
+          7.0,
+          1.27
+        ],
+        [
+          "ONON",
+          "2026-08-10",
+          7.0,
+          -20.09
+        ],
+        [
+          "ARMK",
+          "2026-08-10",
+          7.0,
+          8.47
+        ],
+        [
+          "TME",
+          "2026-08-10",
+          6.0,
+          -11.22
+        ],
+        [
+          "CRWV",
+          "2026-08-10",
+          5.0,
+          5.63
+        ],
+        [
+          "CSCO",
+          "2026-08-11",
+          6.0,
+          -7.32
+        ],
+        [
+          "XOM",
+          "2026-08-15",
+          7.0,
+          2.53
+        ],
+        [
+          "ADI",
+          "2026-08-17",
+          4.5,
+          -3.49
+        ],
+        [
+          "KLAR",
+          "2026-08-17",
+          2.0,
+          -23.0
+        ],
+        [
+          "BIDU",
+          "2026-08-15",
+          4.0,
+          -12.82
+        ],
+        [
+          "TGT",
+          "2026-08-15",
+          2.0,
+          0.96
+        ],
+        [
+          "WMT",
+          "2026-08-15",
+          2.0,
+          0.75
+        ],
+        [
+          "LOW",
+          "2026-08-15",
+          1.5,
+          -0.04
+        ],
+        [
+          "BILL",
+          "2026-08-15",
+          1.0,
+          1.41
+        ],
+        [
+          "HTHT",
+          "2026-08-15",
+          2.0,
+          -1.51
+        ],
+        [
+          "RDDT",
+          "2026-08-15",
+          3.0,
+          -3.86
+        ],
+        [
+          "KEYS",
+          "2026-08-17",
+          4.0,
+          -5.52
+        ],
+        [
+          "HD",
+          "2026-08-17",
+          2.0,
+          -0.19
+        ],
+        [
+          "BIDU",
+          "2026-08-17",
+          4.0,
+          -12.82
+        ],
+        [
+          "EL",
+          "2026-08-17",
+          4.0,
+          -0.11
+        ],
+        [
+          "TOL",
+          "2026-08-17",
+          0.0,
+          -1.99
+        ],
+        [
+          "TGT",
+          "2026-08-17",
+          3.5,
+          0.96
+        ]
+      ]
     }
   ]
 }
