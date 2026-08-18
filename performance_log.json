@@ -15093,6 +15093,64 @@
       "candidatos_ew_pendientes": 0,
       "notas": "Libro plano: sin posiciones equity en paper ni real. Unicas posiciones = dust cripto (<$1 market value) -> R0-R4 no aplicables, sin stops que ajustar. Ultima operacion cerrada: LINK/USD stop_limit filled 2026-08-16 @9.2506 (entrada 9.6496 el 15-ago). R0 verificada: ninguna posicion con earnings AH hoy. LOG_PATH filesystem no disponible en esta sesion -> persistencia via GitHub API.",
       "anomalias": []
+    },
+    {
+      "timestamp": "2026-08-18T18:41:07.602134+00:00",
+      "tarea": "pre-close-manager",
+      "hora_et": "2026-08-18 14:41 ET",
+      "minutos_hasta_cierre": 78,
+      "evaluaciones": [
+        {
+          "symbol": "BTCUSD",
+          "cuenta": "paper",
+          "qty": 4.874e-06,
+          "market_value": 0.3156,
+          "entry": 64959.1,
+          "price_now": 64752.6,
+          "pnl_pct": -0.32,
+          "pnl_abs": -0.001,
+          "source": "bot_autonomo",
+          "decision": "mantener",
+          "razon": "dust_crypto_mv_$0.32_<_$5.0_no_accionable (leccion 2026-08-11)"
+        },
+        {
+          "symbol": "SOLUSD",
+          "cuenta": "paper",
+          "qty": 2.5e-05,
+          "market_value": 0.0019,
+          "entry": 77.22,
+          "price_now": 77.157360406,
+          "pnl_pct": -0.1,
+          "pnl_abs": -0.0,
+          "source": "bot_autonomo",
+          "decision": "mantener",
+          "razon": "dust_crypto_mv_$0.00_<_$5.0_no_accionable (leccion 2026-08-11)"
+        },
+        {
+          "symbol": "BTCUSD",
+          "cuenta": "real",
+          "qty": 8.299e-06,
+          "market_value": 0.5374,
+          "entry": 117828.22,
+          "price_now": 64752.6,
+          "pnl_pct": -45.05,
+          "pnl_abs": -0.4405,
+          "source": "bot_autonomo",
+          "decision": "mantener",
+          "razon": "dust_crypto_mv_$0.54_<_$5.0_no_accionable (leccion 2026-08-11)"
+        }
+      ],
+      "posiciones_cerrar": 0,
+      "posiciones_mantener": 3,
+      "cierres_ejecutados": [],
+      "cierres_fallidos": [],
+      "stops_overnight": [],
+      "posiciones_equity_overnight": 0,
+      "pnl_dia_abs": 0.0,
+      "anomalias": [
+        "BTCUSD(real): avg_entry $117,828.22 vs mercado $64,752.60 (-45.0%) — entry_price incoherente en resto fraccional"
+      ],
+      "nota": "Libro plano en equities: 0 posiciones stock en paper y real, 0 ordenes abiertas en ambas cuentas. Unicas posiciones = 3 restos fraccionales de cripto (mv total $0.85) no accionables. R0 sin aplicacion: no hay exposicion a earnings overnight. Consistente con ew_pipeline 2026-08-15: semana 17-21 ago sin candidato >=7.5."
     }
   ],
   "historial_diario_notas": [
@@ -25154,6 +25212,13 @@
       "tipo": "ew_source_unreachable",
       "detalle": "old.earningswhispers.com y www.earningswhispers.com inalcanzables desde sandbox (connect timeout 20s). Afecta PASO 3 del sentinel y cualquier scan EW headless en este entorno.",
       "impacto": "Sin whisper/asimetria -> imposible scoring EW; sentinel operó solo con macro + WebSearch."
+    },
+    {
+      "fecha": "2026-08-18",
+      "tarea": "pre-close-manager",
+      "items": [
+        "BTCUSD(real): avg_entry $117,828.22 vs mercado $64,752.60 (-45.0%) — entry_price incoherente en resto fraccional"
+      ]
     }
   ],
   "w20_pivot": {
