@@ -3195,7 +3195,7 @@
       "score": 4.0,
       "score_ajustado": 4.5,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 3.97,
       "whisper": 1.57,
@@ -3204,22 +3204,23 @@
       "earnings_fecha": "2026-08-18",
       "earnings_timing": "pre-market",
       "expira": "2026-08-18T20:00:00Z",
-      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. ADR chino — asimetria whisper menos fiable; verificar en pre-market.",
+      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. ADR chino — asimetria whisper menos fiable; verificar en pre-market. | 2026-08-18 12:2x ET: BIDU reporto Q2 BMO EPS ajustado $1.06 vs $1.35 est (MISS), ventas $4.617B vs $4.650B est. Descartado.",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "ts_creado": "2026-08-15T21:05:22.229044+00:00",
       "ts_refresco_sentinel": "2026-08-17T12:27",
       "momentum_15m": "LATERAL",
-      "ts_refresh": "2026-08-17T13:15"
+      "ts_refresh": "2026-08-17T13:15",
+      "resultado": "miss"
     },
     {
       "ticker": "EL",
       "score": 6.0,
-      "score_ajustado": 6.0,
+      "score_ajustado": 5.52,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "accion_recomendada": "no_entrar",
       "asimetria_pct": 15.62,
       "whisper": 0.37,
       "consensus": 0.32,
@@ -3227,7 +3228,7 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Sentinel 18-ago 09:2x ET: whisper $0.37 vs consenso $0.32 → asimetría +15.6% (la mayor del universo). beat_rate 3/4. No sobre-extendido (MA200 -5.6%). Earnings 19-ago BMO → entrada hoy implica gap overnight: si se ejecuta, cerrar antes de 15:45 ET o asumir riesgo de gap. Score 6.0 < umbral efectivo 7.5 (macro alerta). Revisar en pre-market scan 10:15 ET.",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=0.37 c=0.32 asim=+15.62% beat_rate=0.75. Score 6.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
@@ -3242,33 +3243,34 @@
     {
       "ticker": "TGT",
       "score": 4.0,
-      "score_ajustado": 3.5,
+      "score_ajustado": 3.52,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": 3.98,
+      "accion_recomendada": "no_entrar",
+      "asimetria_pct": 2.17,
       "whisper": 2.35,
-      "consensus": 2.26,
+      "consensus": 2.3,
       "beat_rate_4q": 1.0,
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. Preview semana (fuera ventana Mon/Tue estricta). | Sentinel 15:15 ET 17-ago: asimetría verificada +3.98% vía EW API. Momentum intradía débil bajista (m15 -0.28%, RSI 37). Consumo discrecional presionado (retail sales julio -0.6%). Score insuficiente para entrada (umbral efectivo 7.5 en régimen alerta).",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=2.35 c=2.3 asim=+2.17% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "ts_creado": "2026-08-15T21:05:22.229069+00:00",
       "ts_refresco_sentinel": "2026-08-17T12:27",
       "momentum_15m": "debil_alcista",
-      "ts_refresh": "2026-08-17T13:15"
+      "ts_refresh": "2026-08-17T13:15",
+      "beat_rate": 1.0
     },
     {
       "ticker": "ADI",
-      "score": 4.0,
-      "score_ajustado": 3.5,
+      "score": 4.5,
+      "score_ajustado": 4.02,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "accion_recomendada": "no_entrar",
       "asimetria_pct": 3.6,
       "whisper": 3.45,
       "consensus": 3.33,
@@ -3276,14 +3278,15 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Score=4.0 — pendiente scoring completo en pre-market scan 10:15 ET. Preview semana (fuera ventana Mon/Tue estricta).",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=3.45 c=3.33 asim=+3.60% beat_rate=1.0. Score 4.5 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "ts_creado": "2026-08-15T21:05:22.229074+00:00",
       "ts_refresco_sentinel": "2026-08-17T12:27",
       "momentum_15m": "LATERAL",
-      "ts_refresh": "2026-08-17T13:15"
+      "ts_refresh": "2026-08-17T13:15",
+      "beat_rate": 1.0
     },
     {
       "ticker": "KEYS",
@@ -3437,10 +3440,10 @@
     {
       "ticker": "TJX",
       "score": 4.0,
-      "score_ajustado": 4.0,
+      "score_ajustado": 3.52,
       "score_macro_bonus": -0.51,
       "estado": "sentinel_preview",
-      "accion_recomendada": "revisar_premarket",
+      "accion_recomendada": "no_entrar",
       "asimetria_pct": 2.54,
       "whisper": 1.21,
       "consensus": 1.18,
@@ -3450,7 +3453,7 @@
       "expira": "2026-08-19T20:00:00Z",
       "atr": 3.32,
       "ma200_dev": -1.3,
-      "notas": "Sentinel pre-apertura 09:21 ET. Score=4.0 < umbral paper 7.5 (macro alerta: oil spike Irán/Ormuz, yields 30Y máx desde 2007). Requiere scoring completo en pre-market scan 10:15 ET. Earnings BMO mañana → si se entra hoy, CERRAR antes de 15:45 ET (no overnight). ",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=1.21 c=1.18 asim=+2.54% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
       "detectado_por": "sentinel-preapertura",
       "ventana_entrada": "10:15 ET (pre-market scan)",
       "ts_creado": "2026-08-18T13:21:41.064252+00:00"
@@ -3460,7 +3463,7 @@
     "fecha_actualizacion": "2026-08-17",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 15.77,
+    "vix": 15.69,
     "yield_spread_10y2y": 0.51,
     "narrativa_dominante": "ACTUALIZACION 2026-08-17 (post-market lunes): CAMBIO DE REGIMEN de RISK_ON_SELECTIVO a GEOPOLITICAL_UNCERTAINTY_RENEWED. (1) El memorandum de entendimiento EEUU-Iran EXPIRO hoy sin renovacion; Araqchi descarta reanudar conversaciones. Brent toca $90 (+1.2%). (2) El rendimiento del bono a 30 anos marca maximo de 25 anos, presionado por la avalancha de deuda corporativa AI ($1.5T investment-grade YTD, +36% YoY). (3) Indices giran a la baja en la tarde tras abrir al alza: S&P -0.52% a 7745.06, Dow -0.51% a 53459.78, Nasdaq -0.32% a 26644.91. VIX 15.19 (+6.6%). (4) Datos de China peores de lo previsto en TODAS las lineas (produccion industrial, consumo, inversion) -> presion sobre ADRs chinos y materias primas industriales. (5) Goldman: subida de tipos en septiembre 'muy improbable'; dolar al minimo desde mayo, oro sobre $4.400. IMPLICACION SECTORIAL CLAVE: la energia CONFIRMA liderazgo (XLE +1.1% en dia rojo, +4.0% en 5d, +9.9% sobre MA50; USO +2.9%), pero la DEFENSA NO ha actuado como cobertura geopolitica hoy (LMT -2.45%) -> la correlacion defensa/geopolitica que asumiamos NO se ha cumplido. El complejo retail entero cae antes de sus resultados (TGT -2.25%, LOW -1.22%, WMT -0.82%, HD -0.29%), coherente con retail sales de julio -0.6% MoM. Semana pesada: HD martes, minutas FOMC + TGT + LOW miercoles, WMT jueves.",
     "fuentes_consultadas": [
@@ -3541,59 +3544,57 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-18T10:16",
+      "timestamp": "2026-08-18T12:23",
       "nivel": "alerta",
       "shocks": [],
       "shock_tipo_websearch": "oil_spike_contexto_persistente",
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "vix": 15.800000190734863,
-      "vix_delta_30m": -0.13,
-      "spy_delta_30m": -0.056,
-      "nota": "Iran/Hormuz activo pero es contexto persistente (guerra desde feb-2026), no shock intradia nuevo. VIX 15.8 = sin panico. Playbook oil_spike NO ejecutado; rotacion energia ya en curso (XLE +2.4%, XLK -2.4%)."
+      "vix": 15.69,
+      "spy_dia": -0.553,
+      "nota": "Coherente con ciclos 17-ago y 10:16 de hoy: Iran/Hormuz es regimen persistente, no shock intradia. Ningun umbral cuantitativo activado (SPY -0.55% dia, VIX 15.69 bajo, sin caida 30m). Playbook oil_spike NO ejecutado."
     },
-    "macro_score": -1.3,
+    "macro_score": -1.6,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas (-0.99%)",
-      "TLT -0.65% - yields subiendo",
+      "Futuros bajistas (-1.04%)",
       "Yield 10Y alto (4.72%) presiona growth",
-      "Oro subiendo - cautela",
-      "Tech debil (-2.4%)",
-      "Fear&Greed=59 (Greed)"
+      "Tech debil (-2.56%) - cautela candidatos tech",
+      "30Y 5.30% maximos de dos decadas - regimen inflacionario",
+      "Iran/Hormuz: ataques a petroleros, transito colapsado, Brent ~$91 - contexto persistente"
     ],
     "futuros": {
-      "ES": -0.537,
-      "NQ": -1.451,
-      "YM": -0.14,
-      "RTY": -0.617
+      "ES": -0.57,
+      "NQ": -1.515,
+      "YM": -0.219,
+      "RTY": -0.976
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-18T10:16",
+    "ts_actualizado": "2026-08-18T12:23",
     "sectores_hoy": {
-      "lider": "energy",
-      "cambio_lider": 2.358,
-      "tech_chg": -2.379,
+      "lider": "healthcare",
+      "cambio_lider": 1.712,
+      "tech_chg": -2.559,
       "all": {
-        "tech": -2.379,
-        "financials": -0.387,
-        "energy": 2.358,
-        "healthcare": 1.541,
-        "industrials": -0.997,
-        "consumer_disc": -1.024,
-        "utilities": 0.361,
-        "materials": -0.752,
-        "realestate": -0.53
+        "tech": -2.559,
+        "financials": 0.347,
+        "energy": 1.422,
+        "healthcare": 1.712,
+        "industrials": -1.229,
+        "consumer_disc": 0.463,
+        "utilities": 0.521,
+        "materials": -0.651,
+        "realestate": 0.257
       },
-      "ts": "10:16"
+      "ts": "12:23"
     },
-    "macro_bonus_ew": -0.39,
+    "macro_bonus_ew": -0.48,
     "bonos": {
-      "tlt_chg": -0.652,
-      "yield_10y": 4.7220001220703125,
-      "yield_30y": 5.307000160217285
+      "tlt_chg": 0.295,
+      "yield_10y": 4.716000080108643,
+      "yield_30y": 5.296000003814697
     },
     "eventos_recientes": [
       {
@@ -3867,8 +3868,8 @@
     "vix_updated": "2026-07-30",
     "ts_health_check": "2026-08-17T06:08Z",
     "spy_day": -1.29,
-    "narrativa_sentinel": "Tech-led selloff (chip rout: MU -13.6%, NVDA -3.7%, AI-trade reassessment, higher-for-longer). Oil falling on Iran de-escalation (no oil spike). VIX 19.5 (+12.7%) elevado pero <28. No flash-crash 30m. Nivel ALERTA.",
-    "spy_chg": -1.025,
+    "narrativa_sentinel": "18-ago 12:2x ET: selloff liderado por semis (WDC -7%, SNDK -8%, MRVL/STX -8%, NVDA -2.3%, XLK -2.56%) con 30Y en maximos de ~2 decadas y Brent ~$91 por Iran/Hormuz. Rotacion defensiva: XLV +1.71%, XLE +1.42% lideran; XLK/XLI a la cola. VIX 15.69 = sin panico.",
+    "spy_chg": -0.553,
     "nota_web": "FOMC 29-jul hold hawkish; earnings manana 317 reportes; AAPL AH 30-jul.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -3936,18 +3937,18 @@
       "gold_chg": 1.84
     },
     "internacional": {
-      "Nikkei": -1.824,
-      "DAX": -0.867,
-      "FTSE": 0.159,
-      "HSI": 1.411,
-      "Shanghai": 1.607
+      "Nikkei": 0.737,
+      "DAX": -0.798,
+      "FTSE": 0.072,
+      "HSI": 1.339,
+      "Shanghai": 1.413
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
-    "shock_tipo": "oil_spike",
-    "vix_chg": 10.67,
-    "oil_wti": 84.16000366210938,
+    "shock_tipo": "oil_spike_contexto_persistente",
+    "vix_chg": 3.292,
+    "oil_wti": 84.42,
     "oil_brent": 90.93000030517578,
-    "oro": 4459.39990234375,
+    "oro": 0.127,
     "fear_greed": 59,
     "qqq_chg": -1.796
   },
@@ -21782,6 +21783,26 @@
           "BILL"
         ]
       }
+    },
+    {
+      "ts": "2026-08-18T12:23:22.245254+00:00",
+      "modo": "intraday",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_detectados": 7,
+      "cowork_abiertas": 0,
+      "vix": 15.69,
+      "spy_chg": -0.553,
+      "macro_score": -1.6,
+      "macro_nivel": "alerta",
+      "nota": "Sentinel intraday 12:10-12:35 ET 18-ago (mercado abierto, cierre 16:00). EW: old.earningswhispers.com sigue bloqueado por red del sandbox (ConnectTimeout, confirmado de nuevo); metodo valido = API www.earningswhispers.com/api/getstocksdata/{T} con warm-up + X-Requested-With + Referer -> 95/96 tickers OK. Earnings HOY: BIDU (BMO, asim +3.97%) REPORTO Y FALLO (EPS aj. $1.06 vs $1.35 est; ventas $4.617B vs $4.650B) -> candidato marcado resultado_conocido/miss; KEYS y TOL/LZB 'during' sin interes. Earnings MANANA BMO: EL asim +15.62% (w=0.37 c=0.32, beat_rate 0.75) score 6.0; ADI +3.60% score 4.5; TJX +2.54% score 4.0; TGT +2.17% score 4.0 (consenso calle $2.35 EPS / $26.15B ventas); LOW +0.95% (bajo filtro); BILL +2.82% 'during' score 4.0. NINGUNO alcanza el umbral 7.5 -> 0 ejecuciones. Ademas todos son BMO manana, con lo que un hold overnight lo cerraria la propia regla de riesgo a las 15:00 ET. Pipeline fresco 20-27 ago: AAP +22.2%, KSS +10.7%, OKTA +9.38%, CRWD +6.90%, DG +6.00%, BURL +5.99%, DE +5.85%, HRL +5.56%, CRM +5.50%, NVDA +5.47% (26-ago), DLTR +5.41%, ANF +5.26%, BBY +5.22%, SNPS +4.90%, URBN +4.65%, NTES +3.83%, ROST +3.63%, INTU +3.62%, ZM +3.38%, WMT +2.74%, BABA -4.64% (negativa). Posiciones: paper solo polvo crypto del bot (BTCUSD/SOLUSD, qty~0) y real solo BTCUSD $0.54 qty 0.0000083 -> sin stop pero exposicion irrelevante; crypto = no intervenir. Ninguna posicion real >$50 sin stop. Cowork 0/2. Momentum de los 5 vigilados plano-bajista con volumen bajo (vol x0.1-x1.0): TGT LATERAL RSI 20.9, TJX RSI 19.9, BIDU RSI 20.4 (sobrevendidos), EL -0.63% RSI 35.8, ADI RSI 38.3. MACRO: VIX 15.69 (+3.29%), SPY -0.55%, NQ fut -1.51%, ES -0.57%, 10Y 4.72%, 30Y 5.30% (maximos ~2 decadas), TLT +0.29%, WTI $84.42, oro +0.13%, sectores: XLV +1.71% y XLE +1.42% lideran vs XLK -2.56% y XLI -1.23% -> rotacion defensiva/energia clara. macro_score -1.60. WEB: selloff de semis (WDC -7%, SNDK -8%, MRVL/STX -8%); yields soberanos en maximos de decadas por inflacion persistente; Iran descarta prorrogar el MOU, ataques a petroleros en Hormuz (solo 5 buques el sabado y 0 el domingo vs 31 el fin de semana anterior), Brent cerro $90.87 y WTI $84.50; Trump pide aceptar gasolina mas cara. Minutas FOMC manana 19-ago. JUICIO: el match por keywords daria _shock_tipo='oil_spike' -> shock, pero se mantiene la linea de los ciclos previos: es regimen conocido y ya descontado, no shock intradia nuevo (VIX 15.69 absoluto bajo, SPY -0.55% en el dia y plano en 30m, WTI -0.1% hoy). macro_nivel='alerta', NO se abren macro plays del playbook oil_spike, NO se bloquean entradas, umbrales elevados a paper>=7.5 real>=9.0. Fuera de ventana AH (12:2x ET) -> PASO 4C omitido. Sin Telegram (politica: sin trades/cierres/shock/EOD/real-sin-stop).",
+      "decisiones_juicio": [
+        "macro clasificado 'alerta' y no 'shock' pese a keywords Iran/Hormuz/tanker: ningun umbral cuantitativo activado -> se evitan 2 macro plays apalancados injustificados",
+        "0 entradas pese a EL con asimetria +15.62%: score 6.0 < umbral 7.5, y earnings BMO manana implica hold overnight que la regla de riesgo cerraria igualmente",
+        "BIDU marcado resultado_conocido/miss tras confirmar por noticias Alpaca el fallo de Q2 (EPS $1.06 vs $1.35)",
+        "polvo crypto sin stop (paper BTC/SOL, real BTC $0.54) no intervenido: es del bot y la exposicion es irrelevante"
+      ]
     }
   ],
   "momentum_15m": {
@@ -22357,41 +22378,44 @@
       "ts": "14:21"
     },
     "BIDU": {
-      "precio": 103.46,
-      "mom_15m": -0.03,
-      "vol_ratio": 0.5,
-      "vwap_dev": 0.35,
-      "rsi": 81.1,
-      "señal": "LATERAL",
-      "ts": "15:15"
+      "precio": 90.89,
+      "mom_15m": -0.591,
+      "mom_30m": -0.536,
+      "vol_ratio": 0.23,
+      "vwap_dev": -1.443,
+      "rsi": 20.4,
+      "señal": "debil_bajista",
+      "ts": "12:23"
     },
     "EL": {
-      "precio": 84.64,
-      "mom_15m": 0.38,
-      "vol_ratio": 1.8,
-      "vwap_dev": 0.36,
-      "rsi": 61.1,
-      "señal": "ALCISTA",
-      "ts": "15:15"
+      "precio": 84.61,
+      "mom_15m": -0.628,
+      "mom_30m": -0.593,
+      "vol_ratio": 1.02,
+      "vwap_dev": -0.631,
+      "rsi": 35.8,
+      "señal": "debil_bajista",
+      "ts": "12:23"
     },
     "TGT": {
-      "precio": 153.09,
-      "mom_15m": 0.187,
-      "mom_30m": 0.029,
-      "vol_ratio": 0.31,
-      "vwap_dev": 0.921,
-      "rsi": 67.9,
-      "señal": "debil_alcista",
-      "ts": "10:16"
+      "precio": 152.5,
+      "mom_15m": 0.0,
+      "mom_30m": -0.149,
+      "vol_ratio": 0.12,
+      "vwap_dev": -0.546,
+      "rsi": 20.9,
+      "señal": "LATERAL",
+      "ts": "12:23"
     },
     "ADI": {
-      "precio": 391.04,
-      "mom_15m": -0.41,
-      "vol_ratio": 1.2,
-      "vwap_dev": -0.39,
-      "rsi": 27.0,
-      "señal": "BAJISTA",
-      "ts": "15:15"
+      "precio": 371.84,
+      "mom_15m": -0.156,
+      "mom_30m": -0.327,
+      "vol_ratio": 0.13,
+      "vwap_dev": -0.233,
+      "rsi": 38.3,
+      "señal": "debil_bajista",
+      "ts": "12:23"
     },
     "KLAR": {
       "precio": 19.55,
@@ -22424,14 +22448,14 @@
       "ts": "14:19"
     },
     "TJX": {
-      "precio": 151.19,
-      "mom_15m": 0.086,
-      "mom_30m": 0.385,
-      "vol_ratio": 0.44,
-      "vwap_dev": 0.129,
-      "rsi": 45.4,
-      "señal": "LATERAL",
-      "ts": "14:19"
+      "precio": 151.23,
+      "mom_15m": -0.362,
+      "mom_30m": -0.611,
+      "vol_ratio": 0.34,
+      "vwap_dev": -0.899,
+      "rsi": 19.9,
+      "señal": "debil_bajista",
+      "ts": "12:23"
     },
     "BILL": {
       "precio": 49.79,
@@ -23323,6 +23347,83 @@
       "ts_detected": "2026-08-18T09:21:40.432202+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preapertura"
+    },
+    {
+      "ticker": "BILL",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.82,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "during",
+      "razon": "w=0.73 c=0.71 asim=+2.82% beat_rate=1.0",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "TGT",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.17,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "w=2.35 c=2.3 asim=+2.17% beat_rate=1.0",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "TJX",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.54,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "w=1.21 c=1.18 asim=+2.54% beat_rate=1.0",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "ADI",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.6,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "w=3.45 c=3.33 asim=+3.60% beat_rate=1.0",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "EL",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 15.62,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "w=0.37 c=0.32 asim=+15.62% beat_rate=0.75",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "BIDU",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.97,
+      "earnings_fecha": "2026-08-18",
+      "earnings_timing": "pre-market",
+      "razon": "w=1.57 c=1.51 asim=+3.97% beat_rate=0.75",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "KEYS",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.82,
+      "earnings_fecha": "2026-08-18",
+      "earnings_timing": "during",
+      "razon": "w=2.55 c=2.48 asim=+2.82% beat_rate=1.0",
+      "ts_detected": "2026-08-18T12:23:22.245254+00:00",
+      "ejecutado": false
     }
   ],
   "skip_analysis": {
