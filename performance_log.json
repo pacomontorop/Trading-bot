@@ -3204,7 +3204,7 @@
       "score": 6.0,
       "score_ajustado": 5.52,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "no_entrar",
       "asimetria_pct": 15.62,
       "whisper": 0.37,
@@ -3213,7 +3213,7 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=0.37 c=0.32 asim=+15.62% beat_rate=0.75. Score 6.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=0.37 c=0.32 asim=+15.62% beat_rate=0.75. Score 6.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo. | CIERRE 2026-08-19 sentinel 11:2x ET: BEAT, reaccion +16.25%. No se ejecuto (score < umbral).",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
@@ -3223,14 +3223,16 @@
       "ts_refresh": "2026-08-17T13:15",
       "beat_rate": 0.75,
       "ma200_dev": -5.6,
-      "atr": 2.45
+      "atr": 2.45,
+      "resultado": "beat",
+      "reaccion_dia_pct": 16.25
     },
     {
       "ticker": "TGT",
       "score": 4.0,
       "score_ajustado": 3.52,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "no_entrar",
       "asimetria_pct": 2.17,
       "whisper": 2.35,
@@ -3239,7 +3241,7 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=2.35 c=2.3 asim=+2.17% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=2.35 c=2.3 asim=+2.17% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo. | CIERRE 2026-08-19 sentinel 11:2x ET: BEAT, reaccion +5.46%. No se ejecuto (score < umbral).",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
@@ -3247,14 +3249,16 @@
       "ts_refresco_sentinel": "2026-08-17T12:27",
       "momentum_15m": "debil_alcista",
       "ts_refresh": "2026-08-17T13:15",
-      "beat_rate": 1.0
+      "beat_rate": 1.0,
+      "resultado": "beat",
+      "reaccion_dia_pct": 5.46
     },
     {
       "ticker": "ADI",
       "score": 4.5,
       "score_ajustado": 4.02,
       "score_macro_bonus": 0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "no_entrar",
       "asimetria_pct": 3.6,
       "whisper": 3.45,
@@ -3263,7 +3267,7 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "expira": "2026-08-19T20:00:00Z",
-      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=3.45 c=3.33 asim=+3.60% beat_rate=1.0. Score 4.5 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=3.45 c=3.33 asim=+3.60% beat_rate=1.0. Score 4.5 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo. | CIERRE 2026-08-19 sentinel 11:2x ET: BEAT, reaccion +0.87%. No se ejecuto (score < umbral).",
       "detectado_por": "sentinel-weekend",
       "fuente": "ew-api-getstocksdata",
       "ventana_entrada": "10:15 ET (pre-market scan)",
@@ -3271,7 +3275,9 @@
       "ts_refresco_sentinel": "2026-08-17T12:27",
       "momentum_15m": "LATERAL",
       "ts_refresh": "2026-08-17T13:15",
-      "beat_rate": 1.0
+      "beat_rate": 1.0,
+      "resultado": "beat",
+      "reaccion_dia_pct": 0.87
     },
     {
       "ticker": "KEYS",
@@ -3365,7 +3371,7 @@
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "pre-market",
       "sector": "consumer_staples",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "fecha_deteccion": "2026-08-17",
       "detectado_por": "post-market-review",
       "accion_recomendada": "vigilar_confirmacion_post_print",
@@ -3375,7 +3381,9 @@
       "expira": "2026-08-20T20:00:00Z",
       "fuente_datos": "EW API per-ticker (warm-up + X-Requested-With) + yfinance + WebSearch",
       "conviction_tier": "no_entry",
-      "notas": " | UPDATE 2026-08-18: score REBAJADO 5.5 -> 4.0 al aplicar la nueva regla de denominador minimo (asimetria +15.6% procede de solo $0.05 sobre un consenso de $0.32). Sin entrada anticipada. Solo se considerara continuacion el 20-ago si el print confirma y el precio recupera la MA200."
+      "notas": " | UPDATE 2026-08-18: score REBAJADO 5.5 -> 4.0 al aplicar la nueva regla de denominador minimo (asimetria +15.6% procede de solo $0.05 sobre un consenso de $0.32). Sin entrada anticipada. Solo se considerara continuacion el 20-ago si el print confirma y el precio recupera la MA200. | CIERRE 2026-08-19 sentinel 11:2x ET: BEAT, reaccion +16.25%. No se ejecuto (score < umbral).",
+      "resultado": "beat",
+      "reaccion_dia_pct": 16.25
     },
     {
       "ticker": "TOL",
@@ -3428,7 +3436,7 @@
       "score": 4.0,
       "score_ajustado": 3.52,
       "score_macro_bonus": -0.51,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "no_entrar",
       "asimetria_pct": 2.54,
       "whisper": 1.21,
@@ -3439,10 +3447,12 @@
       "expira": "2026-08-19T20:00:00Z",
       "atr": 3.32,
       "ma200_dev": -1.3,
-      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=1.21 c=1.18 asim=+2.54% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo.",
+      "notas": "Sentinel 12:2x ET 18-ago: EW fresco w=1.21 c=1.18 asim=+2.54% beat_rate=1.0. Score 4.0 < umbral 7.5. Ademas earnings BMO manana => hold overnight prohibido por regla de riesgo. | CIERRE 2026-08-19 sentinel 11:2x ET: BEAT, reaccion -1.58%. No se ejecuto (score < umbral).",
       "detectado_por": "sentinel-preapertura",
       "ventana_entrada": "10:15 ET (pre-market scan)",
-      "ts_creado": "2026-08-18T13:21:41.064252+00:00"
+      "ts_creado": "2026-08-18T13:21:41.064252+00:00",
+      "resultado": "beat",
+      "reaccion_dia_pct": -1.58
     },
     {
       "ticker": "TGT",
@@ -3593,6 +3603,57 @@
       "precio_deteccion": 215.73,
       "expira": "2026-08-20T20:00:00Z",
       "conviction_tier": "no_entry"
+    },
+    {
+      "ticker": "ADI",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "estado": "pendiente",
+      "tipo": "post_earnings_continuation",
+      "accion_recomendada": "revisar_apertura",
+      "ventana_entrada": "2026-08-20 09:40-10:00 ET",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "asimetria_pct": 3.6,
+      "precio_ref": 379.9,
+      "atr": 12.66,
+      "stop_tipo": "bajo low de hoy $370.0 o ATR1.5 ($360.91)",
+      "sizing": "0.75x",
+      "max_hold_dias": 3,
+      "play_horizon": "post_earnings_1_3d",
+      "argumento": "ADI batio consenso +3.6% (clavo el whisper) y sobre todo GUIO Q4 muy por encima: EPS $3.71-4.01 vs cons $3.54 (+9% midpoint) y ventas $4.20-4.40B vs $4.07B. Reaccion del dia solo +0.87% y mom5d -1.24% -> nada extendida. Setup PEAD clasico: sorpresa en la guia forward con reaccion contenida.",
+      "riesgo": "Semis bajo presion sectorial (selloff 18-ago WDC -7%, SNDK -8%, MRVL/STX -8%; XLK -0.58% hoy). Si el sector sigue debil la deriva no se materializa.",
+      "detectado_por": "sentinel",
+      "fecha_deteccion": "2026-08-19",
+      "expira": "2026-08-20T20:00:00Z",
+      "ts_creado": "2026-08-19T15:17:47.876125+00:00",
+      "umbral_real": 9.0,
+      "notas": "NO ejecutado hoy 11:2x ET pese a score 7.0 = umbral paper: momentum 15m debil_bajista (-0.43%) con vol x0.21 (sin confirmacion) y precio ya +0.78% sobre VWAP. Reevaluar en el siguiente ciclo o en la apertura de manana."
+    },
+    {
+      "ticker": "TGT",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "estado": "sentinel_preview",
+      "tipo": "post_earnings_continuation",
+      "accion_recomendada": "revisar_premarket",
+      "ventana_entrada": "2026-08-20 10:15 ET (pre-market scan)",
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "asimetria_pct": 2.17,
+      "precio_ref": 160.81,
+      "atr": 4.5,
+      "sizing": "0.5x",
+      "max_hold_dias": 3,
+      "play_horizon": "post_earnings_1_3d",
+      "argumento": "Beat $2.46 vs whisper $2.35 (+4.68%) con subida masiva de guia FY ($8.50 -> $9.90-10.90).",
+      "riesgo": "CALIDAD DEL BEAT DUDOSA: buena parte procede de reembolsos arancelarios IEEPA (la propia empresa lo reconocio en la call). Ademas ya +5.46% en el dia y cerca del maximo (161.65 vs low 146.21) -> entrar ahora es perseguir el hueco.",
+      "detectado_por": "sentinel",
+      "fecha_deteccion": "2026-08-19",
+      "expira": "2026-08-20T20:00:00Z",
+      "ts_creado": "2026-08-19T15:17:47.876125+00:00",
+      "umbral_real": 9.0,
+      "notas": "Score 6.5 < umbral 7.0. Requiere scoring completo en pre-market con la reaccion de cierre de hoy."
     }
   ],
   "macro_context": {
@@ -3681,54 +3742,56 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-19T10:22",
+      "timestamp": "2026-08-19T11:17",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
+      "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0,
-      "narrativa_web": "Tensiones EEUU-Iran/Hormuz, yields 30Y ~5.2% max ~2 decadas, selloff chips, KOSPI -5%, minutas FOMC 14:00 ET"
+      "narrativa_web": "Rebote tras el selloff de ayer. Yields retroceden desde maximos de 2 decadas, dolar en minimo de 2 meses, apuestas de subida de tipos en septiembre al 33%. Minutas FOMC hoy 14:00 ET. Rotacion continua de tech a value/small caps. Nikkei -2.54% sin contagio a EEUU."
     },
-    "macro_score": -1.3,
+    "macro_score": 0.0,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "TLT subiendo (+1.59%) - flight to safety",
-      "Yield 10Y alto (4.64%) - presion growth",
-      "Dolar debil (-0.84%)",
-      "Oro disparado (+3.7%) - miedo",
-      "Tech debil (-1.5%)"
+      "SPY +0.56% / QQQ +0.12% / IWM +1.04% — mercado al alza con amplitud (small caps lideran)",
+      "VIX 15.13 (-4.48%) — sin estres; -0.72% en los ultimos 30 min",
+      "Yields BAJANDO: 10Y 4.65% (-1.21%), 30Y 5.19% (-1.82%) desde los maximos de ~2 decadas de ayer; TLT +1.52%",
+      "Dolar debil (UUP -0.78%) — la probabilidad de subida de tipos en septiembre cayo a ~33% desde 51% hace un mes tras datos macro flojos",
+      "Petroleo estable: WTI $85.18 (+0.28%), Brent $92.09 (+1.18%) — Trump dice que \"no hay conversaciones\" con Iran",
+      "Nikkei -2.54% (rout asiatico) pero Europa plana y EEUU al alza — sin contagio",
+      "Sectores: XLV +3.21%, XLB +2.36%, XLY +1.97% lideran; XLK -0.58% rezagado — continua la rotacion de growth a value/defensivo"
     ],
     "futuros": {
-      "ES": 0.27547316567280267,
-      "NQ": -0.4647468397214899,
-      "YM": 0.4812463719266708,
-      "RTY": 0.6641586804402082
+      "ES": 0.6,
+      "NQ": 0.03,
+      "YM": 0.65,
+      "RTY": 0.93
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-19T10:22",
+    "ts_actualizado": "2026-08-19T11:17",
     "sectores_hoy": {
-      "lider": "healthcare",
-      "cambio_lider": 1.6761466630385369,
-      "tech_chg": -2.805806741895893,
+      "lider": "XLV",
+      "cambio_lider": 3.21,
+      "tech_chg": -0.58,
       "all": {
-        "tech": -2.805806741895893,
-        "financials": 0.5904764277156629,
-        "energy": 1.4940836229406549,
-        "healthcare": 1.6761466630385369,
-        "industrials": -1.449126288586341,
-        "consumer_disc": 0.17130359592478586,
-        "utilities": 0.011319755728133141,
-        "materials": -0.5742784114064702,
-        "realestate": 0.1561447512048248
+        "XLK": -0.58,
+        "XLF": 0.33,
+        "XLE": 0.71,
+        "XLV": 3.21,
+        "XLI": -0.17,
+        "XLY": 1.97,
+        "XLU": 0.16,
+        "XLB": 2.36,
+        "XLRE": 0.5
       },
-      "ts": "14:16"
+      "ts": "11:17"
     },
-    "macro_bonus_ew": -0.39,
+    "macro_bonus_ew": 0.0,
     "bonos": {
-      "tlt_chg": 1.5919610140386085,
-      "yield_10y": 4.644999980926514,
-      "yield_30y": 5.190999984741211
+      "tlt_chg": 1.52,
+      "yield_10y": 4.65,
+      "yield_30y": 5.19
     },
     "eventos_recientes": [
       {
@@ -22096,6 +22159,29 @@
       "vix": 15.3,
       "macro_score": -1.3,
       "ew_scan_status": "FALLO_FUENTE: old.earningswhispers.com inalcanzable desde sandbox; www.* es SPA JS y oculta whisper (0/15 tickers)"
+    },
+    {
+      "ts": "2026-08-19T15:17:47.876125+00:00",
+      "modo": "intraday",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_detectados": 7,
+      "cowork_abiertas": 0,
+      "vix": 15.13,
+      "spy_chg": 0.56,
+      "macro_score": 0.0,
+      "macro_nivel": "normal",
+      "ew_scan_status": "OK — www.earningswhispers.com/api/getstocksdata/{T} con warm-up + X-Requested-With + Referer: 83/83 tickers. El metodo headless de old.earningswhispers.com sigue inservible (host inalcanzable desde el sandbox); ESTE es el metodo valido.",
+      "nota": "Sentinel intraday 11:10-11:35 ET 19-ago (mercado abierto, cierre 16:00 ET). EARNINGS DE HOY BMO — los 4 candidatos vigilados batieron: TGT $2.46 vs whisper $2.35 (+4.68%) con guia FY subida de $8.50 a $9.90-10.90 -> +5.46%; EL ventas organicas +5% y guia FY27 in-line -> +16.25% (el mayor movimiento del dia); ADI $3.45 clavando el whisper, consenso +3.6%, y guia Q4 EPS $3.71-4.01 vs cons $3.54 -> solo +0.87%; TJX $1.22 vs whisper $1.21 (+0.83%) pero guia Q3/FY POR DEBAJO del consenso -> -1.58%. LOW mixto: comps +0.2% pero rebaja de guia -> +3.30%. PIPELINE: hoy AH solo BILL (asim +2.82%, diff absoluta $0.02 -> BLOQUE 1 capado, score 4.0) y COTY (sin whisper). MANANA BMO: AAP +22.22% score 6.0, DE +5.85% score 5.0, NTES +3.83% score 2.5, WMT +2.74% score 3.0, BABA -4.64% (negativa); ROST AMC +3.63% score 4.5. NINGUNO alcanza el umbral paper de 7.0 -> 0 ejecuciones EW. Ademas todos son BMO manana: un hold overnight lo cerraria la propia regla de riesgo a las 15:00 ET de hoy. CONTINUATION generados para manana: ADI score 7.0 (guia forward muy por encima + reaccion contenida +0.87% + mom5d -1.24% = PEAD limpio) y TGT score 6.5 (calidad del beat dudosa por reembolsos arancelarios IEEPA + ya +5.46%). POSICIONES: paper solo polvo crypto del bot (BTCUSD $0.32, SOLUSD $0.00) y real BTCUSD $0.55 -> sin stop pero exposicion irrelevante; crypto = no intervenir. Ninguna posicion real >$50 sin stop. Cowork 0/2. Equity paper $108,335 / real $4,548. MACRO NORMAL (score 0.0): SPY +0.56%, QQQ +0.12%, IWM +1.04% (amplitud), VIX 15.13 -4.48%. Yields RETROCEDEN desde los maximos de 2 decadas de ayer (10Y 4.65%, 30Y 5.19%), TLT +1.52%, dolar en minimo de 2 meses, apuestas de subida en septiembre al 33% desde 51%. WTI $85.18 estable pese a que Trump dice que \"no hay conversaciones\" con Iran. Nikkei -2.54% sin contagio. Sectores: XLV +3.21% / XLB +2.36% / XLY +1.97% vs XLK -0.58%. Minutas FOMC hoy 14:00 ET. Fuera de ventana AH (11:3x ET) -> PASO 4C omitido. Sin Telegram (politica: sin trades/cierres/shock/EOD/real-sin-stop).",
+      "decisiones_juicio": [
+        "ADI NO ejecutada pese a score 7.0 = umbral: momentum 15m debil_bajista (-0.43%) con vol x0.21 (sin confirmacion) y precio ya +0.78% sobre VWAP. El filtro de momentum del PASO 5 manda esperar; queda como candidato para el siguiente ciclo/apertura de manana.",
+        "TGT rebajada a 6.5 y no ejecutada: la propia empresa reconocio en la call que la \"mayoria significativa\" del beat viene de reembolsos arancelarios IEEPA -> calidad del beat cuestionable, ademas de estar ya +5.46% cerca del maximo del dia.",
+        "EL descartada como continuation pese al +16.25%: mom5d 12.01% supera el cap de max_5day_momentum_pct=10.0. Perseguir un hueco de +16% no es el sistema.",
+        "macro clasificado NORMAL y no alerta: los yields retroceden desde maximos, VIX cae a 15.13, SPY sube con amplitud (IWM +1.04%). El regimen de ayer (yields en maximos, selloff de semis) se ha aliviado hoy.",
+        "Lectura de GC=F +4.04% descartada como artefacto de datos: la busqueda web confirma oro spot ~$4,339 (+0.10%), no un +4%. No se computa en el macro_score.",
+        "polvo crypto sin stop (paper BTC/SOL, real BTC $0.55) no intervenido: es del bot y la exposicion es irrelevante."
+      ]
     }
   ],
   "momentum_15m": {
@@ -22138,14 +22224,18 @@
       "ts": "10:16"
     },
     "WMT": {
-      "precio": 114.11,
-      "mom_15m": -0.035,
-      "mom_30m": 0.022,
-      "vol_ratio": 0.62,
-      "vwap_dev": -0.273,
-      "rsi": 27.4,
-      "señal": "LATERAL",
-      "ts": "14:19"
+      "precio": 116.47,
+      "mom_15m": -0.151,
+      "mom_30m": -0.134,
+      "vol_ratio": 0.36,
+      "vwap_dev": -0.031,
+      "rsi": 49.8,
+      "señal": "debil_bajista",
+      "chg_day": 1.11,
+      "hi": 116.87,
+      "lo": 114.6,
+      "atr": 2.23,
+      "ts": "11:17"
     },
     "YETI": {
       "precio": 44.95,
@@ -22176,14 +22266,18 @@
       "ts": "12:13"
     },
     "AAP": {
-      "precio": 56.31,
-      "mom_15m": 0.464,
-      "mom_30m": 0.446,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.547,
-      "rsi": 78.3,
-      "señal": "debil_alcista",
-      "ts": "13:15"
+      "precio": 57.42,
+      "mom_15m": -1.518,
+      "mom_30m": -1.043,
+      "vol_ratio": 0.32,
+      "vwap_dev": -1.475,
+      "rsi": 35.8,
+      "señal": "debil_bajista",
+      "chg_day": 0.82,
+      "hi": 58.93,
+      "lo": 57.4,
+      "atr": 2.59,
+      "ts": "11:17"
     },
     "AGYS": {
       "precio": 79.59,
@@ -22396,14 +22490,18 @@
       "ts": "14:49"
     },
     "DE": {
-      "precio": 530.08,
-      "mom_15m": -0.064,
-      "mom_30m": -0.187,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.068,
-      "rsi": 42.5,
-      "señal": "LATERAL",
-      "ts": "14:49"
+      "precio": 592.37,
+      "mom_15m": -0.266,
+      "mom_30m": -0.137,
+      "vol_ratio": 0.24,
+      "vwap_dev": -0.028,
+      "rsi": 47.0,
+      "señal": "debil_bajista",
+      "chg_day": 0.62,
+      "hi": 596.06,
+      "lo": 586.59,
+      "atr": 14.41,
+      "ts": "11:17"
     },
     "NET": {
       "precio": 214.87,
@@ -22416,14 +22514,18 @@
       "ts": "14:49"
     },
     "ROST": {
-      "precio": 232.97,
-      "mom_15m": 0.153,
-      "mom_30m": 0.297,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.235,
-      "rsi": 62.4,
+      "precio": 236.1,
+      "mom_15m": 0.376,
+      "mom_30m": 0.148,
+      "vol_ratio": 0.19,
+      "vwap_dev": -0.498,
+      "rsi": 42.2,
       "señal": "debil_alcista",
-      "ts": "14:49"
+      "chg_day": -0.12,
+      "hi": 239.67,
+      "lo": 232.56,
+      "atr": 5.01,
+      "ts": "11:17"
     },
     "TTWO": {
       "precio": 229.34,
@@ -22681,34 +22783,46 @@
       "ts": "12:23"
     },
     "EL": {
-      "precio": 98.33,
-      "mom_15m": 0.27,
-      "mom_30m": -0.982,
-      "vol_ratio": 0.11,
-      "vwap_dev": 2.412,
-      "rsi": 85.2,
-      "senal": "debil_alcista",
-      "ts": "10:22"
+      "precio": 97.96,
+      "mom_15m": 0.046,
+      "mom_30m": 0.087,
+      "vol_ratio": 0.09,
+      "vwap_dev": -0.539,
+      "rsi": 34.7,
+      "señal": "LATERAL",
+      "chg_day": 16.25,
+      "hi": 99.82,
+      "lo": 93.97,
+      "atr": 3.32,
+      "ts": "11:17"
     },
     "TGT": {
-      "precio": 159.15,
-      "mom_15m": 0.06,
-      "mom_30m": -0.853,
-      "vol_ratio": 0.06,
-      "vwap_dev": 1.457,
-      "rsi": 70.4,
-      "senal": "LATERAL",
-      "ts": "10:22"
+      "precio": 160.81,
+      "mom_15m": 0.431,
+      "mom_30m": 0.417,
+      "vol_ratio": 0.25,
+      "vwap_dev": 0.487,
+      "rsi": 45.8,
+      "señal": "debil_alcista",
+      "chg_day": 5.46,
+      "hi": 161.65,
+      "lo": 146.21,
+      "atr": 4.5,
+      "ts": "11:17"
     },
     "ADI": {
-      "precio": 373.1,
-      "mom_15m": -0.376,
-      "mom_30m": 0.094,
-      "vol_ratio": 0.29,
-      "vwap_dev": -0.423,
-      "rsi": 47.0,
-      "senal": "debil_bajista",
-      "ts": "10:22"
+      "precio": 379.9,
+      "mom_15m": -0.427,
+      "mom_30m": -0.179,
+      "vol_ratio": 0.21,
+      "vwap_dev": 0.776,
+      "rsi": 62.7,
+      "señal": "debil_bajista",
+      "chg_day": 0.87,
+      "hi": 383.4,
+      "lo": 370.0,
+      "atr": 12.66,
+      "ts": "11:17"
     },
     "KLAR": {
       "precio": 19.55,
@@ -22741,24 +22855,32 @@
       "ts": "14:15"
     },
     "TJX": {
-      "precio": 148.52,
-      "mom_15m": -0.228,
-      "mom_30m": -1.082,
-      "vol_ratio": 0.08,
-      "vwap_dev": -1.094,
-      "rsi": 25.7,
-      "senal": "debil_bajista",
-      "ts": "10:22"
+      "precio": 148.47,
+      "mom_15m": 0.253,
+      "mom_30m": 0.307,
+      "vol_ratio": 0.21,
+      "vwap_dev": -0.377,
+      "rsi": 44.1,
+      "señal": "debil_alcista",
+      "chg_day": -1.58,
+      "hi": 150.53,
+      "lo": 141.94,
+      "atr": 3.43,
+      "ts": "11:17"
     },
     "BILL": {
-      "precio": 49.79,
-      "mom_15m": -0.043,
-      "mom_30m": 0.282,
-      "vol_ratio": 0.0,
-      "vwap_dev": 2.121,
-      "rsi": 84.6,
-      "señal": "LATERAL",
-      "ts": "10:16"
+      "precio": 49.66,
+      "mom_15m": -0.341,
+      "mom_30m": 0.404,
+      "vol_ratio": 2.18,
+      "vwap_dev": 0.209,
+      "rsi": 58.5,
+      "señal": "BAJISTA",
+      "chg_day": 1.0,
+      "hi": 49.96,
+      "lo": 48.91,
+      "atr": 2.08,
+      "ts": "11:17"
     },
     "M": {
       "precio": 23.27,
@@ -22811,14 +22933,18 @@
       "ts": "13:15"
     },
     "LOW": {
-      "precio": 218.21,
-      "mom_15m": 0.375,
-      "mom_30m": 0.315,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.984,
-      "rsi": 63.8,
-      "señal": "debil_alcista",
-      "ts": "10:16"
+      "precio": 222.76,
+      "mom_15m": -0.808,
+      "mom_30m": -0.631,
+      "vol_ratio": 0.12,
+      "vwap_dev": 0.064,
+      "rsi": 51.1,
+      "señal": "debil_bajista",
+      "chg_day": 3.3,
+      "hi": 225.79,
+      "lo": 212.5,
+      "atr": 5.7,
+      "ts": "11:17"
     },
     "META": {
       "precio": 566.28,
@@ -22895,6 +23021,48 @@
       "rsi": 71.3,
       "señal": "LATERAL",
       "ts": "14:15"
+    },
+    "NTES": {
+      "precio": 126.09,
+      "mom_15m": 0.127,
+      "mom_30m": 0.25,
+      "vol_ratio": 0.34,
+      "vwap_dev": 0.361,
+      "rsi": 62.2,
+      "señal": "LATERAL",
+      "chg_day": 1.07,
+      "hi": 126.2,
+      "lo": 124.09,
+      "atr": 2.93,
+      "ts": "11:17"
+    },
+    "BABA": {
+      "precio": 127.93,
+      "mom_15m": 0.11,
+      "mom_30m": -0.459,
+      "vol_ratio": 0.26,
+      "vwap_dev": -0.128,
+      "rsi": 44.7,
+      "señal": "LATERAL",
+      "chg_day": -0.17,
+      "hi": 128.76,
+      "lo": 127.54,
+      "atr": 3.82,
+      "ts": "11:17"
+    },
+    "COTY": {
+      "precio": 3.02,
+      "mom_15m": 1.513,
+      "mom_30m": 1.513,
+      "vol_ratio": 0.35,
+      "vwap_dev": 1.16,
+      "rsi": 52.4,
+      "señal": "debil_alcista",
+      "chg_day": 10.22,
+      "hi": 3.03,
+      "lo": 2.79,
+      "atr": 0.15,
+      "ts": "11:17"
     }
   },
   "sentinel_signals": [
@@ -23727,6 +23895,30 @@
       "razon": "w=2.55 c=2.48 asim=+2.82% beat_rate=1.0",
       "ts_detected": "2026-08-18T12:23:22.245254+00:00",
       "ejecutado": false
+    },
+    {
+      "ticker": "ADI",
+      "score": 7.0,
+      "tipo": "post_earnings_continuation",
+      "asimetria": 3.6,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "ADI batio consenso +3.6% (clavo el whisper) y sobre todo GUIO Q4 muy por encima: EPS $3.71-4.01 vs cons $3.54 (+9% midpoint) y ventas $4.20-4.40B vs $4.07B. Reaccion del dia solo +",
+      "ts_detected": "2026-08-19T15:17:47.876125+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday"
+    },
+    {
+      "ticker": "TGT",
+      "score": 6.5,
+      "tipo": "post_earnings_continuation",
+      "asimetria": 2.17,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "Beat $2.46 vs whisper $2.35 (+4.68%) con subida masiva de guia FY ($8.50 -> $9.90-10.90).",
+      "ts_detected": "2026-08-19T15:17:47.876125+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday"
     }
   ],
   "skip_analysis": {
@@ -25434,6 +25626,81 @@
       "nota": "BACKFILL: run de 2026-08-17 no se ejecuto. Batio whisper +5.94% y AUN ASI -20% el 18-ago (margenes, FCF negativo, outlook de beneficio blando + venta sectorial AI-infra).",
       "whisper_beat_pct": 5.94,
       "consensus_beat_pct": 7.61
+    },
+    {
+      "ticker": "TGT",
+      "fecha": "2026-08-19",
+      "resultado": "beat",
+      "eps_actual": 2.46,
+      "eps_consensus": 2.3,
+      "eps_whisper": 2.35,
+      "revenue_growth_yoy": null,
+      "reaccion_ah_pct": 5.46,
+      "whisper_beat_pct": 4.68,
+      "consensus_beat_pct": 6.96,
+      "guidance_proximo": "FY2026 adj EPS SUBIDA $8.50 -> $9.90-10.90 vs cons $8.50; ventas Q2 $26.539B vs $26.141B est",
+      "fuente_datos": "alpaca_news+ew_api",
+      "nota": "BMO. Beat grande + guidance al alza, PERO Benzinga: \"beat looks great until you strip out tariff refunds\" — la compania admitio en la call haber recibido la \"mayoria significativa\" de los reembolsos IEEPA solicitados en Q2. Calidad del beat cuestionable."
+    },
+    {
+      "ticker": "TJX",
+      "fecha": "2026-08-19",
+      "resultado": "beat",
+      "eps_actual": 1.22,
+      "eps_consensus": 1.18,
+      "eps_whisper": 1.21,
+      "revenue_growth_yoy": null,
+      "reaccion_ah_pct": -1.58,
+      "whisper_beat_pct": 0.83,
+      "consensus_beat_pct": 3.39,
+      "guidance_proximo": "Q3 adj EPS $1.30-1.32 vs cons $1.34 (POR DEBAJO); FY27 adj $5.15-5.20 vs cons $5.22 (por debajo); comps FY +3-4%",
+      "fuente_datos": "alpaca_news+ew_api",
+      "nota": "BMO. Beat minimo del whisper (+0.83%) y guidance por DEBAJO del consenso pese a comps Q2 +4%. Accion -1.58%. Confirma: batir el whisper por margen minimo con guia floja = reaccion negativa."
+    },
+    {
+      "ticker": "ADI",
+      "fecha": "2026-08-19",
+      "resultado": "beat",
+      "eps_actual": 3.45,
+      "eps_consensus": 3.33,
+      "eps_whisper": 3.45,
+      "revenue_growth_yoy": 40.0,
+      "reaccion_ah_pct": 0.87,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 3.6,
+      "guidance_proximo": "Q4 adj EPS $3.71-4.01 vs cons $3.54 (+9% midpoint); ventas $4.20-4.40B vs cons $4.07B (+5.7%)",
+      "fuente_datos": "alpaca_news+ew_api",
+      "nota": "BMO. Clavo el whisper exacto ($3.45) y batio consenso +3.6%, pero lo relevante es la GUIA Q4 muy por encima y \"momentum hasta 2027 tras un +40% de ingresos\". Reaccion muy contenida (+0.87%) por la debilidad sectorial de semis -> setup PEAD limpio."
+    },
+    {
+      "ticker": "EL",
+      "fecha": "2026-08-19",
+      "resultado": "beat",
+      "eps_actual": null,
+      "eps_consensus": 0.32,
+      "eps_whisper": 0.37,
+      "revenue_growth_yoy": 5.0,
+      "reaccion_ah_pct": 16.25,
+      "whisper_beat_pct": null,
+      "consensus_beat_pct": null,
+      "guidance_proximo": "FY2027 adj EPS $3.10-3.35 vs cons $3.18 (in-line); ventas $15.500-15.801B vs cons $15.557B (in-line); ventas organicas +3-5%",
+      "fuente_datos": "alpaca_news+ew_api",
+      "nota": "BMO. Ventas organicas Q4 +5%. Accion +16.25% — el mayor movimiento del dia. CEO: \"el crecimiento ha vuelto y 2027 puede ser aun mejor\". VALIDA la asimetria +15.62% del whisper que el 18-ago se rebajo a score 4.0 por la regla de denominador minimo (consenso $0.32 < $0.50). LECCION: la regla de denominador protege de falsos positivos pero aqui costo el mayor movimiento del dia."
+    },
+    {
+      "ticker": "LOW",
+      "fecha": "2026-08-19",
+      "resultado": "mixed",
+      "eps_actual": null,
+      "eps_consensus": 4.22,
+      "eps_whisper": 4.26,
+      "revenue_growth_yoy": null,
+      "reaccion_ah_pct": 3.3,
+      "whisper_beat_pct": null,
+      "consensus_beat_pct": null,
+      "guidance_proximo": "REBAJA comps FY2026 a plano (desde plano/+2%); H2 por debajo de expectativas",
+      "fuente_datos": "alpaca_news",
+      "nota": "BMO. Comps +0.2% \"mejor de lo temido\" (Pro y Home Services), online +15.7% YoY, pero rebajo la guia de comps y el CEO alerto de \"presion en el gasto discrecional DIY\". Accion +3.30% pese a la rebaja."
     }
   ],
   "kpis_actuales": {
@@ -26781,5 +27048,5 @@
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
     }
   ],
-  "ultima_actualizacion": "2026-08-19T14:29:34Z"
+  "ultima_actualizacion": "2026-08-19T15:17:47.876125+00:00"
 }
