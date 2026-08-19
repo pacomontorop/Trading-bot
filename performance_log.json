@@ -3669,11 +3669,11 @@
     },
     {
       "ticker": "BILL",
-      "score": 3.0,
-      "score_ajustado": 3.0,
-      "estado": "sentinel_preview",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "estado": "descartado",
       "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": null,
+      "asimetria_pct": 2.82,
       "earnings_fecha": "2026-08-19",
       "earnings_timing": "after-hours",
       "consensus_eps": 0.70893,
@@ -3684,7 +3684,10 @@
       "detectado_por": "sentinel-yahoo-fallback",
       "fuente": "yahoo_calendarEvents",
       "notas": "Score 3.0 SIN componente whisper (EarningsWhispers inaccesible). beat_rate=1.0 surprise_avg=22.06%. NO ejecutable con umbral 7.0 hasta recuperar EW.",
-      "ts_creado": "2026-08-19T17:20:44.121532+00:00"
+      "ts_creado": "2026-08-19T17:20:44.121532+00:00",
+      "whisper": 0.73,
+      "consensus": 0.71,
+      "motivo_descarte": "EW ya accesible: whisper $0.73 vs cons $0.71 = asim +2.82% pero diferencia absoluta de solo $0.02 (< $0.08) -> BLOQUE 1 = 1.0. Score total 4.0 << umbral paper 7.5 (elevado por macro -1.0). Ademas reporta AH HOY: la regla no_holdings_earnings_overnight prohibe el hold. Sin operacion."
     },
     {
       "ticker": "WMT",
@@ -3692,7 +3695,7 @@
       "score_ajustado": 3.0,
       "estado": "sentinel_preview",
       "accion_recomendada": "revisar_premarket",
-      "asimetria_pct": null,
+      "asimetria_pct": 2.74,
       "earnings_fecha": "2026-08-20",
       "earnings_timing": "pre-market",
       "consensus_eps": 0.74126,
@@ -3702,15 +3705,17 @@
       "expira": "2026-08-20T20:00:00Z",
       "detectado_por": "sentinel-yahoo-fallback",
       "fuente": "yahoo_calendarEvents",
-      "notas": "Score 3.0 SIN componente whisper (EarningsWhispers inaccesible). beat_rate=0.75 surprise_avg=-0.72%. NO ejecutable con umbral 7.0 hasta recuperar EW.",
-      "ts_creado": "2026-08-19T17:20:44.121543+00:00"
+      "notas": "Actualizado sentinel 15:2x ET con EW real: whisper 0.75 vs cons 0.73 (asim +2.74%, dif $0.02). beat_rate 0.5. Score 3.0 < umbral 7.5. Momentum 15m BAJISTA (-0.37%, vol x1.23, RSI 20.7). Reporta BMO manana -> reevaluar en pre-market scan.",
+      "ts_creado": "2026-08-19T17:20:44.121543+00:00",
+      "whisper": 0.75,
+      "consensus": 0.73
     }
   ],
   "macro_context": {
     "fecha_actualizacion": "2026-08-18",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 15.83,
+    "vix": 15.03,
     "yield_spread_10y2y": 0.51,
     "narrativa_dominante": "ACTUALIZACION 2026-08-18 (post-market martes): REGIMEN CONFIRMADO GEOPOLITICAL_UNCERTAINTY_RENEWED, segunda sesion consecutiva de deterioro. (1) Trump descarta explicitamente revivir la tregua con Iran ('No') -> el crudo sostiene maximos y los rendimientos del Tesoro se quedan en picos plurianuales. (2) VENTA MASIVA DE CHIPS: el indice Philadelphia SE Semiconductor -5.4%, ~$680B de capitalizacion evaporados; NVDA -2.4%, META -3.0%. SMH -4.06% en la sesion. (3) Cierres: S&P 500 -0.6% a 7691.76, Nasdaq -1.3%, Dow -0.2% — minimos de dos semanas. VIX 15.83 (+4.2%) — sube pero SIGUE BAJO: el mercado corrige sin panico. (4) Rotacion nitida a energia: XLE +1.72% (+8.8% en 10d), XOM +2.53%. El software se recupero (MSFT, CRM, INTU entre los mejores) — la venta es especifica de semis/hardware, no de tech en bloque. (5) MANANA 19-ago: minutas FOMC de julio a las 14:00 ET (voto 9-3 por mantener, riesgo de lectura hawkish) + bloque grande de retail pre-market (TGT, LOW, TJX, EL, ADI).",
     "fuentes_consultadas": [
@@ -3792,57 +3797,55 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-19T13:20",
+      "timestamp": "2026-08-19T15:17",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.0,
-      "score_min_real_efectivo": 9.0,
-      "nota": "EarningsWhispers INACCESIBLE desde el entorno de ejecucion (connect timeout). Sin whisper -> asimetria=0 -> ningun candidato alcanza score 7.0. Cero ejecuciones por diseno, no por falta de oportunidades."
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 9.0
     },
-    "macro_score": -0.7,
+    "macro_score": -1.0,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros planos (ES +0.31%, NQ -0.10%)",
-      "TLT +1.23% / 10Y 4.66% (-0.93%) - bid en bonos, yields cediendo desde maximos",
-      "Oro +4.3% a ~$4.555 - senal de cobertura/miedo pese a VIX bajo",
-      "Dolar debil (UUP -0.82%)",
-      "Rotacion: healthcare +3.0%, consumer disc +1.8%, materials +1.8% | tech -0.83% (XLK)",
-      "Oil $85.6 (+0.8%) - crisis Hormuz en curso, sin escalada intradia hoy",
-      "VIX 15.3 (-3.7%) - sin estres; SPY +0.32%, QQQ -0.08%",
-      "EVENTO: FOMC minutes 14:00 ET (3 disidencias por subida en julio)"
+      "TLT +1.55% (yields retroceden: 10Y 4.653% -1.13%, 30Y 5.194% -1.72%) -> -0.5",
+      "Yield 10Y 4.65% aun >4.5% -> -0.3 presion sobre valuaciones growth",
+      "Dolar debil (UUP -0.87%) -> +0.3 tailwind multinacionales",
+      "ORO +4.32% (spot ~$4,492, +3.66% dia, +12% mes) -> -0.5 senal debasement/miedo",
+      "Futuros planos (ES +0.28%, NQ -0.15%) -> 0",
+      "Internacional mixto (Nikkei -2.54%, DAX -0.14%, FTSE +0.14%, HSI +0.07%) avg -0.58% -> 0",
+      "Sectores: XLV +3.67% lidera, XLY +1.73%, XLB +1.13% vs XLK -0.88%, XLI -0.86%, XLF -0.51% -> rotacion defensiva/valor, tech rezagado"
     ],
     "futuros": {
-      "ES": 0.31,
-      "NQ": -0.1,
+      "ES": 0.28,
+      "NQ": -0.15,
       "YM": 0.19,
-      "RTY": 0.61
+      "RTY": 0.39
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-19T13:20",
+    "ts_actualizado": "2026-08-19T15:17",
     "sectores_hoy": {
       "lider": "healthcare",
-      "cambio_lider": 3.01,
-      "tech_chg": -0.83,
+      "cambio_lider": 3.67,
+      "tech_chg": -0.88,
       "all": {
-        "tech": -0.83,
-        "financials": -0.01,
-        "energy": 0.23,
-        "healthcare": 3.01,
-        "industrials": -0.61,
-        "consumer_disc": 1.78,
-        "utilities": -0.27,
-        "materials": 1.8,
-        "realestate": 0.2
+        "tech": -0.88,
+        "financials": -0.51,
+        "energy": -0.02,
+        "healthcare": 3.67,
+        "industrials": -0.86,
+        "consumer_disc": 1.73,
+        "utilities": -0.1,
+        "materials": 1.13,
+        "realestate": 0.48
       },
-      "ts": "13:20"
+      "ts": "15:17"
     },
-    "macro_bonus_ew": -0.21,
+    "macro_bonus_ew": -0.3,
     "bonos": {
-      "tlt_chg": 1.23,
-      "yield_10y": 4.66,
-      "yield_30y": 5.2
+      "tlt_chg": 1.55,
+      "yield_10y": 4.653,
+      "yield_30y": 5.194
     },
     "eventos_recientes": [
       {
@@ -4118,7 +4121,7 @@
     "ts_health_check": "2026-08-19T06:07",
     "spy_day": -1.29,
     "narrativa_sentinel": "18-ago 12:2x ET: selloff liderado por semis (WDC -7%, SNDK -8%, MRVL/STX -8%, NVDA -2.3%, XLK -2.56%) con 30Y en maximos de ~2 decadas y Brent ~$91 por Iran/Hormuz. Rotacion defensiva: XLV +1.71%, XLE +1.42% lideran; XLK/XLI a la cola. VIX 15.69 = sin panico.",
-    "spy_chg": -0.553,
+    "spy_chg": 0.3,
     "nota_web": "FOMC 29-jul hold hawkish; earnings manana 317 reportes; AAPL AH 30-jul.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -4196,14 +4199,14 @@
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike_contexto_persistente",
-    "vix_chg": 3.292,
-    "oil_wti": 84.42,
+    "vix_chg": -5.11,
+    "oil_wti": 84.29,
     "oil_brent": 90.93000030517578,
     "oro": 0.127,
     "fear_greed": 59,
-    "qqq_chg": -1.796,
-    "oro_chg": 3.6623889680199264,
-    "dxy_chg": -0.8351055724947036,
+    "qqq_chg": -0.09,
+    "oro_chg": 4.32,
+    "dxy_chg": -0.87,
     "intl": {
       "Nikkei": -3.163773644688871,
       "DAX": -0.215358072975066,
@@ -4212,16 +4215,18 @@
       "Shanghai": -2.4028643651282393
     },
     "sectores": {
-      "tech": -1.4761288150261838,
-      "financials": 0.5186708787502038,
-      "energy": 0.628143096673941,
-      "healthcare": 3.6587561834596807,
-      "industrials": -0.522964904703434,
-      "consumer_disc": 1.645755333003137,
-      "utilities": 0.48841469866448334,
-      "materials": 2.0954092791592283,
-      "realestate": 0.8514390417289236
-    }
+      "tech": -0.88,
+      "financials": -0.51,
+      "energy": -0.02,
+      "healthcare": 3.67,
+      "industrials": -0.86,
+      "consumer_disc": 1.73,
+      "utilities": -0.1,
+      "materials": 1.13,
+      "realestate": 0.48
+    },
+    "nota_oro_2026-08-19": "CORRECCION al ciclo de las 11:2x ET: el +4% de GC=F NO era artefacto de datos. La busqueda web confirma oro spot $4,492/oz (+3.66% en el dia, +12.1% en el mes, +34.3% interanual). Es un movimiento real de debasement/dolar-debil (DXY -0.87%, TLT +1.55%), no de miedo a la renta variable (VIX 15.03 -5.11%, SPY +0.30%). Se computa -0.5 en el macro_score.",
+    "nota_fomc_2026-08-19": "Minutas FOMC de la reunion 28-29 jul publicadas hoy 14:00 ET. Tipos en 3.50-3.75% con 3 disidentes a favor de SUBIR. Reaccion: yields retroceden desde los maximos de 2 decadas de ayer (30Y toco 5.2%, maximo desde 2007), TLT +1.55%, dolar en minimos. Probabilidad de 'hold' en septiembre ~65%. Sin shock: SPY +0.30% con amplitud (IWM +0.40%), VIX 15.03."
   },
   "operaciones_crypto": [
     {
@@ -22477,6 +22482,30 @@
       "vix": 15.3,
       "macro_score": -0.7,
       "nota": "EW inaccesible - 0 ejecuciones; scan por Yahoo fallback"
+    },
+    {
+      "ts": "2026-08-19T19:17:16.276429+00:00",
+      "modo": "intraday",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_detectados": 12,
+      "cowork_abiertas": 0,
+      "vix": 15.03,
+      "spy_chg": 0.3,
+      "macro_score": -1.0,
+      "macro_nivel": "normal",
+      "ew_scan_status": "OK 85/85 via www.earningswhispers.com/api/getstocksdata/{T} (warm-up + X-Requested-With + Referer). Metodo confirmado por segunda vez; old.earningswhispers.com sigue inalcanzable.",
+      "nota": "Sentinel intraday 15:10-15:25 ET 19-ago (35-50 min al cierre). PIPELINE EW COMPLETO (12 tickers con whisper para hoy/manana): HOY BMO ya reportados (ADI 4.5, TGT 4.0, TJX 4.0, LOW 3.0, EL 0.0 por cap mom5d 12.97%>10). HOY AH: BILL 4.0 (dif absoluta $0.02), COTY sin whisper. MANANA BMO: AAP 6.0 (asim +22.22%, la mayor, dif $0.18 legitima, beat_rate 1.0), DE 5.0, WMT 3.0, NTES 2.5, BABA 1.0 (asimetria NEGATIVA -4.64%); AMC: ROST 4.5. MAXIMO DEL DIA = AAP 6.0 < umbral paper 7.5 -> 0 EJECUCIONES. DOBLE BLOQUEO ADICIONAL POR LA HORA: a las 15:2x ET cualquier entrada en un nombre que reporta BMO manana seria un hold overnight que la propia regla de pre-close liquidaria hoy mismo a las 15:00-15:45 ET; y BILL reporta AH hoy (no_holdings_earnings_overnight). POSICIONES: paper solo polvo crypto del bot (BTCUSD +5.3%, SOLUSD +6.6%, qty~0); real vacio salvo BTCUSD residual. Ninguna posicion real >$50 sin stop. Cowork 0/2. Equity paper $108,335 / real $4,548. MACRO score -1.0 nivel NORMAL -> umbral paper elevado 7.0->7.5, real se mantiene 9.0. Minutas FOMC (14:00 ET) sin shock: yields RETROCEDEN desde los maximos de 2 decadas de ayer (10Y 4.653% -1.13%, 30Y 5.194% -1.72%), TLT +1.55%, DXY -0.87%. SPY +0.30% con amplitud (IWM +0.40%), QQQ -0.09%, VIX 15.03 -5.11%. Rotacion defensiva/valor: XLV +3.67%, XLY +1.73%, XLB +1.13% vs XLK -0.88%, XLI -0.86%. ORO +4.32% ($4,554 futuro / $4,492 spot) CONFIRMADO REAL por busqueda web -> se corrige la conclusion del ciclo de las 11:2x ET que lo descarto como artefacto. Fuera de ventana AH (15:2x ET) -> PASO 4C omitido, se ejecutara en el ciclo de 16:xx. Sin Telegram (politica: sin trades/cierres/shock/EOD/real-sin-stop).",
+      "decisiones_juicio": [
+        "AAP (score 6.0, asim +22.22%) NO ejecutada pese a ser la mejor senal del pipeline: reporta BMO manana. Entrar a 40 min del cierre implica hold overnight sobre earnings, prohibido; y aunque se permitiese, 6.0 < 7.5. Queda para el pre-market scan de manana, que es su ventana natural.",
+        "BILL descartada definitivamente: la asimetria +2.82% procede de $0.02 sobre un consenso de $0.71. Aunque el consenso supera el denominador minimo de $0.50, la diferencia absoluta ($0.02) esta muy por debajo del minimo de $0.08 -> senal de ruido. Reporta AH hoy: sin hold posible.",
+        "EL anulada a score 0.0: mom5d +12.97% supera max_5day_momentum_pct=10.0. Coherente con la decision del ciclo anterior de no perseguir el hueco de +16%.",
+        "ORO: se revierte la lectura del ciclo de las 11:2x ET. La verificacion web (spot $4,492, +3.66% dia, +12.1% mes) confirma que GC=F +4.32% es real, no un fallo de yfinance. Se computa -0.5 en el macro_score. Matiz importante: es debasement/dolar-debil (DXY -0.87%, TLT +1.55%), NO miedo a la renta variable (VIX cae a 15.03 y SPY sube con amplitud) -> por eso el nivel se mantiene NORMAL y no se activa alerta.",
+        "macro_score -1.0 (vs 0.0 del ciclo anterior) por la incorporacion del oro y del nivel del 10Y: el efecto practico es elevar el umbral paper a 7.5, lo que no cambia el resultado (max del dia 6.0) pero deja constancia del regimen.",
+        "No se resucita ADI (continuation descartada a las 11:2x): su momentum sigue sin confirmar (m15 +0.05%, LATERAL, RSI 48.8, VWAP +0.08%) y el score 7.0 queda ahora por debajo del umbral efectivo 7.5.",
+        "Polvo crypto del bot sin stop no intervenido: qty ~0 y valor irrelevante; ademas es del bot."
+      ]
     }
   ],
   "momentum_15m": {
@@ -22519,14 +22548,14 @@
       "ts": "10:16"
     },
     "WMT": {
-      "precio": 115.66,
-      "mom_15m": 0.199,
-      "mom_30m": 0.173,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.163,
-      "rsi": 62.6,
-      "señal": "debil_alcista",
-      "ts": "13:20"
+      "precio": 114.62,
+      "mom_15m": -0.374,
+      "mom_30m": -1.156,
+      "vol_ratio": 1.23,
+      "vwap_dev": -0.68,
+      "rsi": 20.7,
+      "signal": "BAJISTA",
+      "ts": "15:17"
     },
     "YETI": {
       "precio": 44.95,
@@ -22557,18 +22586,14 @@
       "ts": "12:13"
     },
     "AAP": {
-      "precio": 57.42,
-      "mom_15m": -1.518,
-      "mom_30m": -1.043,
-      "vol_ratio": 0.32,
-      "vwap_dev": -1.475,
-      "rsi": 35.8,
-      "señal": "debil_bajista",
-      "chg_day": 0.82,
-      "hi": 58.93,
-      "lo": 57.4,
-      "atr": 2.59,
-      "ts": "11:17"
+      "precio": 56.39,
+      "mom_15m": 0.374,
+      "mom_30m": -0.371,
+      "vol_ratio": 0.81,
+      "vwap_dev": -0.116,
+      "rsi": 44.5,
+      "signal": "debil_alcista",
+      "ts": "15:17"
     },
     "AGYS": {
       "precio": 79.59,
@@ -22781,18 +22806,14 @@
       "ts": "14:49"
     },
     "DE": {
-      "precio": 592.37,
-      "mom_15m": -0.266,
-      "mom_30m": -0.137,
-      "vol_ratio": 0.24,
-      "vwap_dev": -0.028,
-      "rsi": 47.0,
-      "señal": "debil_bajista",
-      "chg_day": 0.62,
-      "hi": 596.06,
-      "lo": 586.59,
-      "atr": 14.41,
-      "ts": "11:17"
+      "precio": 584.49,
+      "mom_15m": -0.118,
+      "mom_30m": -0.06,
+      "vol_ratio": 0.88,
+      "vwap_dev": -0.201,
+      "rsi": 39.7,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "NET": {
       "precio": 214.87,
@@ -22805,14 +22826,14 @@
       "ts": "14:49"
     },
     "ROST": {
-      "precio": 236.39,
-      "mom_15m": 0.07,
-      "mom_30m": 0.267,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.381,
-      "rsi": 72.9,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "precio": 235.12,
+      "mom_15m": -0.208,
+      "mom_30m": -0.812,
+      "vol_ratio": 1.43,
+      "vwap_dev": -0.578,
+      "rsi": 23.5,
+      "signal": "debil_bajista",
+      "ts": "15:17"
     },
     "TTWO": {
       "precio": 229.34,
@@ -22953,24 +22974,24 @@
       "ts": "15:16"
     },
     "SPY": {
-      "precio": 769.49,
-      "mom_15m": 0.0,
-      "mom_30m": -0.051,
+      "precio": 769.71,
+      "mom_15m": 0.013,
+      "mom_30m": -0.015,
       "vol_ratio": 0.0,
-      "vwap_dev": -0.132,
-      "rsi": 24.1,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "vwap_dev": 0.013,
+      "rsi": 43.7,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "QQQ": {
-      "precio": 716.28,
-      "mom_15m": -0.042,
-      "mom_30m": -0.143,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.282,
-      "rsi": 17.7,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "precio": 716.72,
+      "mom_15m": 0.045,
+      "mom_30m": -0.039,
+      "vol_ratio": 0.1,
+      "vwap_dev": -0.003,
+      "rsi": 50.7,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "HPE": {
       "precio": 43.24,
@@ -23070,42 +23091,34 @@
       "ts": "12:23"
     },
     "EL": {
-      "precio": 97.96,
-      "mom_15m": 0.046,
-      "mom_30m": 0.087,
-      "vol_ratio": 0.09,
-      "vwap_dev": -0.539,
-      "rsi": 34.7,
-      "señal": "LATERAL",
-      "chg_day": 16.25,
-      "hi": 99.82,
-      "lo": 93.97,
-      "atr": 3.32,
-      "ts": "11:17"
+      "precio": 99.01,
+      "mom_15m": -0.282,
+      "mom_30m": 0.289,
+      "vol_ratio": 0.37,
+      "vwap_dev": -0.077,
+      "rsi": 58.4,
+      "signal": "debil_bajista",
+      "ts": "15:17"
     },
     "TGT": {
-      "precio": 161.51,
-      "mom_15m": 0.186,
-      "mom_30m": 0.435,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.447,
-      "rsi": 77.8,
-      "señal": "debil_alcista",
-      "ts": "13:20"
+      "precio": 160.43,
+      "mom_15m": -0.118,
+      "mom_30m": -0.675,
+      "vol_ratio": 0.17,
+      "vwap_dev": -0.482,
+      "rsi": 35.4,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "ADI": {
-      "precio": 379.9,
-      "mom_15m": -0.427,
-      "mom_30m": -0.179,
-      "vol_ratio": 0.21,
-      "vwap_dev": 0.776,
-      "rsi": 62.7,
-      "señal": "debil_bajista",
-      "chg_day": 0.87,
-      "hi": 383.4,
-      "lo": 370.0,
-      "atr": 12.66,
-      "ts": "11:17"
+      "precio": 377.39,
+      "mom_15m": 0.054,
+      "mom_30m": -0.189,
+      "vol_ratio": 1.54,
+      "vwap_dev": 0.08,
+      "rsi": 48.8,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "KLAR": {
       "precio": 19.55,
@@ -23138,24 +23151,24 @@
       "ts": "14:15"
     },
     "TJX": {
-      "precio": 145.94,
-      "mom_15m": -0.301,
-      "mom_30m": -0.28,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.538,
-      "rsi": 39.3,
-      "señal": "debil_bajista",
-      "ts": "13:20"
+      "precio": 145.96,
+      "mom_15m": -0.05,
+      "mom_30m": -0.105,
+      "vol_ratio": 0.78,
+      "vwap_dev": -0.014,
+      "rsi": 54.8,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "BILL": {
-      "precio": 49.15,
-      "mom_15m": -0.647,
-      "mom_30m": 0.061,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.814,
-      "rsi": 32.8,
-      "señal": "debil_bajista",
-      "ts": "13:20"
+      "precio": 47.76,
+      "mom_15m": 0.241,
+      "mom_30m": -0.271,
+      "vol_ratio": 0.83,
+      "vwap_dev": -0.705,
+      "rsi": 27.3,
+      "signal": "debil_alcista",
+      "ts": "15:17"
     },
     "M": {
       "precio": 23.27,
@@ -23208,14 +23221,14 @@
       "ts": "13:15"
     },
     "LOW": {
-      "precio": 220.8,
-      "mom_15m": -0.1,
-      "mom_30m": 0.044,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.106,
-      "rsi": 56.5,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "precio": 221.07,
+      "mom_15m": -0.282,
+      "mom_30m": -0.399,
+      "vol_ratio": 1.13,
+      "vwap_dev": -0.275,
+      "rsi": 45.0,
+      "signal": "debil_bajista",
+      "ts": "15:17"
     },
     "META": {
       "precio": 566.28,
@@ -23294,18 +23307,14 @@
       "ts": "14:15"
     },
     "NTES": {
-      "precio": 126.09,
-      "mom_15m": 0.127,
-      "mom_30m": 0.25,
-      "vol_ratio": 0.34,
-      "vwap_dev": 0.361,
-      "rsi": 62.2,
-      "señal": "LATERAL",
-      "chg_day": 1.07,
-      "hi": 126.2,
-      "lo": 124.09,
-      "atr": 2.93,
-      "ts": "11:17"
+      "precio": 126.56,
+      "mom_15m": 0.079,
+      "mom_30m": -0.008,
+      "vol_ratio": 1.07,
+      "vwap_dev": 0.218,
+      "rsi": 71.9,
+      "signal": "LATERAL",
+      "ts": "15:17"
     },
     "BABA": {
       "precio": 127.93,
@@ -24272,6 +24281,150 @@
       "ts_detected": "2026-08-19T13:20:44.121449+00:00",
       "ejecutado": false,
       "fuente": "sentinel-yahoo-fallback"
+    },
+    {
+      "ticker": "AAP",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 22.22,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=0.99 cons=0.81 dif=$0.18 b1=3.0 b2=2.0 beat_rate=1.0 mom5d=5.48",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "DE",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 5.85,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=5.07 cons=4.79 dif=$0.28 b1=2.0 b2=2.0 beat_rate=1.0 mom5d=-5.64",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "ADI",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.6,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=3.45 cons=3.33 dif=$0.12 b1=1.5 b2=2.0 beat_rate=1.0 mom5d=-1.79",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "ROST",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.63,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "razon": "whisper=2.0 cons=1.93 dif=$0.07 b1=1.5 b2=2.0 beat_rate=1.0 mom5d=-5.31",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "BILL",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.82,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "after-hours",
+      "razon": "whisper=0.73 cons=0.71 dif=$0.02 b1=1.0 b2=2.0 beat_rate=1.0 mom5d=-1.93",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "TGT",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.17,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=2.35 cons=2.3 dif=$0.05 b1=1.0 b2=2.0 beat_rate=1.0 mom5d=4.24",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "TJX",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.54,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=1.21 cons=1.18 dif=$0.03 b1=1.0 b2=2.0 beat_rate=1.0 mom5d=-4.19",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "WMT",
+      "score": 3.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.74,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=0.75 cons=0.73 dif=$0.02 b1=1.0 b2=1.0 beat_rate=0.5 mom5d=-1.16",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "LOW",
+      "score": 3.0,
+      "tipo": "earnings_ew",
+      "asimetria": 0.95,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=4.26 cons=4.22 dif=$0.04 b1=0.0 b2=2.0 beat_rate=1.0 mom5d=2.24",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "NTES",
+      "score": 2.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.83,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=2.44 cons=2.35 dif=$0.09 b1=1.5 b2=0.0 beat_rate=0.25 mom5d=1.94",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "BABA",
+      "score": 1.0,
+      "tipo": "earnings_ew",
+      "asimetria": -4.64,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=1.85 cons=1.94 dif=$0.09 b1=0.0 b2=0.0 beat_rate=0.0 mom5d=2.57",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "EL",
+      "score": 0.0,
+      "tipo": "earnings_ew",
+      "asimetria": 15.62,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "whisper=0.37 cons=0.32 dif=$0.05 b1=1.5 b2=2.0 beat_rate=1.0 mom5d=12.97 | cap denom |cons|=$0.32<$0.5; mom5d 13.0%>cap10.0",
+      "ts_detected": "2026-08-19T15:17:16.276315+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-1520ET"
     }
   ],
   "skip_analysis": {
@@ -27415,5 +27568,5 @@
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
     }
   ],
-  "ultima_actualizacion": "2026-08-19T18:41:58.741528+00:00"
+  "ultima_actualizacion": "2026-08-19T15:17 ET"
 }
