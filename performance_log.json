@@ -50,8 +50,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-08-18",
-    "motivo_actualizacion": "post-market 18-ago: nueva regla de DENOMINADOR MINIMO en la asimetria whisper. Si |consenso| < $0.50, el porcentaje de asimetria es estadisticamente ruidoso y BLOQUE 1 se capa a 1.5 pts; ademas se exige una diferencia absoluta >= $0.08 para conceder los 3 pts completos. Evidencia: EL (19-ago) mostraba +15.6% de asimetria — la mayor del dia — generada por solo $0.05 sobre un consenso de $0.32, lo que la habria colocado por delante de ADI (+3.6% = $0.12 real).",
+    "ultima_actualizacion": "2026-08-19",
+    "motivo_actualizacion": "post-market 19-ago: correccion de la regla de denominador minimo introducida ayer. EL (+16.41%) falsifico el capado de BLOQUE 1 en su primer test en vivo. dif_minima 0.08->0.07, cap 1.5->2.0 y se anade clausula de confirmacion secundaria. Ademas se prohibe extender filtro_beat_and_fade 'por analogia' a sectores no listados (TGT fue penalizada asi y subio +4.36%).",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -107,11 +107,23 @@
       "score_minimo_override": 8.5,
       "evidencia": "Semana 2026-08-12/14: CSCO, AMAT, JD, PFG y AMCR batieron y los 5 cayeron. Confirma tambien CIEN -17% post-beat (jun-2026) y SNDK (06-ago).",
       "razon": "Con el mercado en maximos y volatilidad minima, el beat ya esta en precio; la asimetria del whisper pierde poder predictivo sobre el movimiento.",
-      "revisar_si": "VIX > 18 o 3 beats consecutivos en estos sectores cierran en verde -> desactivar y reevaluar"
+      "revisar_si": "VIX > 18 o 3 beats consecutivos en estos sectores cierran en verde -> desactivar y reevaluar",
+      "prohibicion_extension_analogica": {
+        "implementado": "2026-08-19",
+        "regla": "El filtro SOLO se aplica a los sectores listados en 'sectores_afectados'. PROHIBIDO aplicarlo 'por analogia' a retail, staples, industrials u otros sectores. Si un candidato de otro sector parece extendido, usar el criterio estandar de extension (precio vs MA200) sin la penalizacion de -2.0 del filtro.",
+        "evidencia": "TGT 19-ago: -0.5 pts 'por analogia con filtro_beat_and_fade' -> score 3.0 -> descartada. Cerro +4.36% tras beat. LOW, descartada el mismo dia, +2.26%.",
+        "matiz": "El fade retail existe pero se activa por GUIDANCE, no por el beat: TJX bate y cae -4.21% con guia Q3 por debajo; TGT y LOW baten con guia aceptable y suben."
+      }
     },
     "asimetria_denominador_minimo_usd": 0.5,
-    "asimetria_diferencia_minima_usd": 0.08,
-    "asimetria_bloque1_cap_denominador_pequeno": 1.5
+    "asimetria_diferencia_minima_usd": 0.07,
+    "asimetria_bloque1_cap_denominador_pequeno": 2.0,
+    "asimetria_denominador_regla_v2": {
+      "implementado": "2026-08-19",
+      "regla": "Cuando |consenso| < $0.50 NO se capa BLOQUE 1 de forma automatica: se capa a 2.0 pts SOLO si ademas falta confirmacion secundaria. Se considera confirmacion secundaria cualquiera de: (a) asimetria de REVENUE whisper > 1%, (b) guidance previo elevado o beat-and-raise esperado, (c) beat rate >= 70% en los ultimos 4T. Con confirmacion, BLOQUE 1 puntua completo.",
+      "evidencia": "EL 19-ago: consenso $0.32, whisper $0.37 (+15.6% = $0.05). La regla del 18-ago la capo a 1.5 pts por denominador pequeno y la coloco por detras de ADI. Resultado real: EL reporto $0.39 (+21.9% sobre consenso, por encima incluso del whisper), subio revenue +6% y elevo guidance de margen -> ACCION +16.41%. ADI, la alternativa que la regla priorizo, cerro -0.91%. Primera prueba en vivo de la regla y la invirtio.",
+      "cautela": "Ajuste conservador (dif minima -12.5%, cap +33%). NO se elimina la regla: 1 solo caso. Revisar tras 2 casos mas."
+    }
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -164,22 +176,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-08-06",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "SNDK: BEAT +8.6% vs whisper (2026-08-06) OK",
-      "descripcion": "EPS actual=$39.25 vs whisper=$36.15 vs consensus=$33.28.",
-      "accion_futura": "Confirma pipeline EW.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-06",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "SNDK: SELL-THE-NEWS beat cons=+17.9% pero AH=-8.0% (2026-08-06)",
-      "descripcion": "El mercado vendio en el beat. Guidance/AI-bubble fears. EPS=39.25 vs cons=33.28, whisper=36.15.",
-      "accion_futura": "Verificar pre-drift SNDK. Filtrar si mom5d>15%.",
-      "impacto_score": -0.4
-    },
     {
       "fecha": "2026-08-06",
       "tipo": "SELL_THE_NEWS",
@@ -475,6 +471,30 @@
       "leccion": "EarningsWhispers (old./www.) da connect-timeout desde el sandbox de tareas programadas: el dominio no esta en el allowlist de red. Sin whisper no hay asimetria y ningun candidato puede superar score 7.0, por lo que el sentinel queda ciego para ejecutar. Fallback implementado: Yahoo quoteSummary (calendarEvents+earningsHistory con crumb) da fecha/timing de earnings, consenso EPS y beat_rate historico, pero NO el whisper. Accion pendiente: o bien obtener el whisper por otra via (WebSearch/WebFetch a EW), o definir un scoring alternativo sin whisper con su propio umbral.",
       "impacto": "critico",
       "estado": "abierto"
+    },
+    {
+      "fecha": "2026-08-19",
+      "titulo": "EL +16.41% — la regla del denominador minimo (18-ago) falla en su primer test en vivo",
+      "descripcion": "EL: consenso $0.32, whisper $0.37, reporto $0.39 (+21.9%), revenue +6% a $3.63B y subio guidance de margen FY27. Accion +16.41%. La regla implementada ayer capaba BLOQUE 1 a 1.5 pts por |consenso|<$0.50 y dif<$0.08, priorizando ADI (+3.6% asimetria, $0.12 absolutos) que cerro -0.91%.",
+      "accion_correctiva": "Un denominador pequeno NO es ruido por si mismo: implica apalancamiento operativo alto, donde un beat modesto en dolares mueve mucho la accion. Aplicado v2: cap 2.0 pts y solo si falta confirmacion secundaria (revenue whisper, guidance, beat rate).",
+      "tarea_afectada": "pre-market-earnings-scan | post-market-review",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-19",
+      "titulo": "BEAT-AND-FADE se activa por GUIDANCE, no por el beat",
+      "descripcion": "19-ago: TJX bate EPS $1.22 vs $1.19 y sube la guia anual, PERO la guia de Q3 ($<1.35) decepciona -> -4.21%. TGT bate -> +4.36%. LOW -> +2.26%. EL beat-and-raise -> +16.41%. 3 de 4 beats recompensados.",
+      "accion_correctiva": "Sustituir el criterio 'beat en sector extendido = fade' por 'guidance del trimestre en curso por debajo de consenso = fade'. Priorizar en el scoring el riesgo de guidance sobre la extension tecnica.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-19",
+      "titulo": "VALIDADO: el filtro de momentum 15m evito una entrada perdedora en ADI",
+      "descripcion": "ADI llego a score 7.0 (=umbral paper) pero no se ejecuto por momentum 15m debil_bajista (-0.43%, vol x0.21) y precio +0.78% sobre VWAP. ADI cerro -0.91% (-1.46% desde apertura).",
+      "accion_correctiva": "Mantener el filtro de confirmacion de momentum intradia sin cambios. Regla validada ex-post.",
+      "tarea_afectada": "market-open-execution",
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -3709,17 +3729,357 @@
       "ts_creado": "2026-08-19T17:20:44.121543+00:00",
       "whisper": 0.75,
       "consensus": 0.73
+    },
+    {
+      "ticker": "FUTU",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "score_total": 4.0,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "+8.93% sobre MA50 (extendido) pero -20% vs MA200. Beta alta a volumen cripto/HK. Consenso $1.15. Financials con prioridad +2 en el regimen actual, pero la extension de corto plazo y la ausencia de whisper limitan la conviccion.",
+      "sector": "financials",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 2,
+      "notas": "Extendido vs MA50; ATR 3.2%. Sector financials +2 ya incluido en b6. | precio $109.61 ATR 3.18% vsMA200 -19.98% vsMA50 8.93% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.5,
+        "b2_beat_rate": 1.0,
+        "b3_reaccion": 1.0,
+        "b4_momentum": 0.5,
+        "b5_calidad": 0.0,
+        "b6_macro": 2,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "DE",
+      "score": 3.5,
+      "score_ajustado": 3.5,
+      "score_total": 3.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Beat rate 94% (17/18T) y Polymarket 73% de probabilidad de beat, pero 18 revisiones a la baja de EPS frente a 5 al alza y demanda agricola debil en Norteamerica y Brasil. Consenso $4.67-4.72. Precio -6.3% en 5d y bajo MA50: el mercado ya descuenta guia floja. Riesgo de guidance domina la ventaja del historial.",
+      "sector": "industrials",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 1,
+      "notas": "Consenso amplio ($4.67), sin problema de denominador. Riesgo guidance -1.5 (leccion NFLX + 18 revisiones a la baja). | precio $580.64 ATR 2.29% vsMA200 2.41% vsMA50 -3.66% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.5,
+        "b2_beat_rate": 2.0,
+        "b3_reaccion": 1.0,
+        "b4_momentum": 0.0,
+        "b5_calidad": 0.5,
+        "b6_macro": 1,
+        "b7_riesgo": -1.5
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "WMT",
+      "score": 2.5,
+      "score_ajustado": 2.5,
+      "score_total": 2.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Consenso $0.73 dentro de su propia guia $0.72-0.74: banda de sorpresa minima por construccion. Cotiza -4.8% bajo MA200 y plana vs MA50. Nombre mas seguido del retail: sin asimetria explotable. La reaccion dependera del guidance FY27, no del EPS.",
+      "sector": "consumer_staples",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 1,
+      "notas": "Sin datos de whisper (EW web inaccesible). Penalizacion -1.0 por regimen de guidance en retail (TJX -4.21% hoy pese a beat). | precio $114.4 ATR 1.96% vsMA200 -4.82% vsMA50 0.16% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 1.5,
+        "b3_reaccion": 1.0,
+        "b4_momentum": 0.0,
+        "b5_calidad": 0.0,
+        "b6_macro": 1,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "NTES",
+      "score": 2.5,
+      "score_ajustado": 2.5,
+      "score_total": 2.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "ADR chino en MA50 (+0.29%) y +2.2% sobre MA200, +1.96% hoy. Consenso $1.65. Sin datos de whisper ni beat rate verificados. Riesgo regulatorio/FX chino no cuantificado.",
+      "sector": "communication",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 0,
+      "notas": "Sin whisper. Requiere scoring completo en pre-market. | precio $127.18 ATR 2.14% vsMA200 2.17% vsMA50 0.29% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.5,
+        "b2_beat_rate": 1.0,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 1.0,
+        "b5_calidad": 0.0,
+        "b6_macro": 0,
+        "b7_riesgo": -0.5
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "DQ",
+      "score": 2.0,
+      "score_ajustado": 2.0,
+      "score_total": 2.0,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Consenso NEGATIVO (-$0.22): la asimetria porcentual del whisper no es interpretable. ATR 5.0% y -32.6% vs MA200.",
+      "sector": "energy",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 2,
+      "notas": "Consenso negativo -> BLOQUE 1 no aplicable. | precio $14.06 ATR 4.98% vsMA200 -32.6% vsMA50 6.22% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 0.0,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 0.5,
+        "b5_calidad": 0.0,
+        "b6_macro": 2,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "OSIS",
+      "score": 1.5,
+      "score_ajustado": 1.5,
+      "score_total": 1.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-13:00 ET",
+      "stop_tipo": "ATR x1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Consenso $2.85, reporta AH (-1). -12.9% vs MA200 y -4.75% en 5d. Sin catalizador identificado.",
+      "sector": "industrials",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 1,
+      "notas": "AH + tendencia bajista. | precio $220.6 ATR 2.64% vsMA200 -12.93% vsMA50 -0.06% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 1.0,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 0.0,
+        "b5_calidad": 0.0,
+        "b6_macro": 1,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta after-hours el 2026-08-20"
+    },
+    {
+      "ticker": "AAP",
+      "score": 1.0,
+      "score_ajustado": 1.0,
+      "score_total": 1.0,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Consenso $0.55 (denominador pequeno: aplica regla v2, requiere confirmacion secundaria que no existe). ATR 4.2% muy alto. -5.61% en 10d. Historial de resultados erratico.",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 0,
+      "notas": "Denominador $0.55 justo sobre el minimo; sin confirmacion secundaria. | precio $56.24 ATR 4.16% vsMA200 6.11% vsMA50 -1.77% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 0.5,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 0.5,
+        "b5_calidad": 0.0,
+        "b6_macro": 0,
+        "b7_riesgo": -0.5
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "ATHM",
+      "score": 1.0,
+      "score_ajustado": 1.0,
+      "score_total": 1.0,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Small cap china, consenso $0.52, +8.75% sobre MA50 y +10.9% sobre MA200: extendido. Liquidez y cobertura bajas.",
+      "sector": "communication",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 0,
+      "notas": "Extendido + microcap. | precio $22.45 ATR 2.63% vsMA200 10.89% vsMA50 8.75% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 0.5,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 0.5,
+        "b5_calidad": 0.0,
+        "b6_macro": 0,
+        "b7_riesgo": -0.5
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
+    },
+    {
+      "ticker": "ROST",
+      "score": 0.5,
+      "score_ajustado": 0.5,
+      "score_total": 0.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-13:00 ET",
+      "stop_tipo": "ATR x1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Consenso $1.50. Reporta AH (-1 pt: no ejecutable antes de apertura). -5.45% en 5d y -7.28% en 10d. Mismo bloque retail que TJX, que hoy cayo -4.21% pese a batir por guia de Q3 floja.",
+      "sector": "consumer_discretionary",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 0,
+      "notas": "AH -1.0 y riesgo guidance retail -1.0. | precio $234.7 ATR 1.99% vsMA200 10.01% vsMA50 0.16% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 1.5,
+        "b3_reaccion": 1.0,
+        "b4_momentum": 0.0,
+        "b5_calidad": 0.0,
+        "b6_macro": 0,
+        "b7_riesgo": -2.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta after-hours el 2026-08-20"
+    },
+    {
+      "ticker": "FLO",
+      "score": 0.5,
+      "score_ajustado": 0.5,
+      "score_total": 0.5,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-13:00 ET",
+      "stop_tipo": "ATR x1.5 normal",
+      "sizing": "posicion normal",
+      "argumento": "Consenso $0.34 (denominador pequeno sin confirmacion). Precio $7.46, -17.1% vs MA200. Reporta AH. Movimiento historico minimo.",
+      "sector": "consumer_staples",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 1,
+      "notas": "AH + denominador pequeno sin confirmacion. | precio $7.46 ATR 3.21% vsMA200 -17.08% vsMA50 -4.18% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 0.5,
+        "b3_reaccion": 0.0,
+        "b4_momentum": 0.0,
+        "b5_calidad": 0.0,
+        "b6_macro": 1,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta after-hours el 2026-08-20"
+    },
+    {
+      "ticker": "BABA",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_total": 0.0,
+      "fecha_deteccion": "2026-08-19",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "accion_recomendada": "no_entrar",
+      "ventana_entrada": "2026-08-20 09:40-10:30 ET",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (leccion JNJ)",
+      "sizing": "entrada escalonada 50%+50%",
+      "argumento": "Beat rate 50% (9/18T) y Polymarket asigna solo 20% de probabilidad de batir el consenso de $1.59. Cotiza +13.06% sobre MA50: extendido tras el rally del mes. Combinacion de peor historial del grupo con la mayor extension tecnica.",
+      "sector": "technology",
+      "estado": "descartado",
+      "expira": "2026-08-20T18:29:44.887779Z",
+      "score_macro_bonus": 0,
+      "notas": "Descarte claro: peor beat rate + mayor extension. | precio $128.94 ATR 2.96% vsMA200 -4.87% vsMA50 13.06% | fuente: WebSearch+Alpaca bars (EW web inaccesible)",
+      "bloques": {
+        "b1_asimetria": 0.0,
+        "b2_beat_rate": 0.0,
+        "b3_reaccion": 0.5,
+        "b4_momentum": 0.5,
+        "b5_calidad": 0.0,
+        "b6_macro": 0,
+        "b7_riesgo": -1.0
+      },
+      "conviction_tier": "no_entry",
+      "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-08-18",
+    "fecha_actualizacion": "2026-08-19",
     "semana": "2026-W23",
-    "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED",
-    "vix": 15.03,
+    "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED + BEAT_AND_FADE_SELECTIVO",
+    "vix": 16.42,
     "yield_spread_10y2y": 0.51,
-    "narrativa_dominante": "ACTUALIZACION 2026-08-18 (post-market martes): REGIMEN CONFIRMADO GEOPOLITICAL_UNCERTAINTY_RENEWED, segunda sesion consecutiva de deterioro. (1) Trump descarta explicitamente revivir la tregua con Iran ('No') -> el crudo sostiene maximos y los rendimientos del Tesoro se quedan en picos plurianuales. (2) VENTA MASIVA DE CHIPS: el indice Philadelphia SE Semiconductor -5.4%, ~$680B de capitalizacion evaporados; NVDA -2.4%, META -3.0%. SMH -4.06% en la sesion. (3) Cierres: S&P 500 -0.6% a 7691.76, Nasdaq -1.3%, Dow -0.2% — minimos de dos semanas. VIX 15.83 (+4.2%) — sube pero SIGUE BAJO: el mercado corrige sin panico. (4) Rotacion nitida a energia: XLE +1.72% (+8.8% en 10d), XOM +2.53%. El software se recupero (MSFT, CRM, INTU entre los mejores) — la venta es especifica de semis/hardware, no de tech en bloque. (5) MANANA 19-ago: minutas FOMC de julio a las 14:00 ET (voto 9-3 por mantener, riesgo de lectura hawkish) + bloque grande de retail pre-market (TGT, LOW, TJX, EL, ADI).",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-19: Actas del FOMC de julio muestran 3 disidentes VOTANDO POR SUBIR tipos y aviso de que si la inflacion no cede caben tipos mas altos -> sesgo hawkish. El Tesoro anuncia que MAS QUE DUPLICA el tamano de sus recompras de deuda, hundiendo los rendimientos y dando soporte a la renta variable: S&P +0.21% a 7.708, Nasdaq +0.16% a 26.331, Dow +0.22% a 53.463. VIX sube otro 3.75% hasta ~16.4 (cuarta sesion al alza desde minimos de 2026). Trump retrasa 3 dias los aranceles a Canada para negociar. BEAT-AND-FADE YA NO ES UNIVERSAL: hoy TJX bate y cae -4.21% (guidance Q3 flojo) pero TGT bate y sube +4.36%, LOW +2.26% y EL +16.41% tras beat-and-raise. El castigo se concentra donde el guidance decepciona, no en el beat en si.",
     "fuentes_consultadas": [
-      "WebSearch post-market 2026-06-04: TheStreet+CNBC+Schwab — 4 fuentes confirmadas",
       "WebSearch post-market 2026-06-05: market close + Monday earnings",
       "WebSearch post-market 2026-06-13: VIX, earnings Mon 15-jun, economic calendar FOMC week",
       "WebSearch post-market 2026-06-15: mercado EEUU + earnings 16-jun + calendario FOMC. Gmail/EW navegador no usados (sesion autonoma).",
@@ -3748,7 +4108,8 @@
       "WebSearch sector rotation + Fed septiembre",
       "Gmail post-market 2026-08-15: EW week-ahead 17-ago (full premium preview), EW summary 13-ago, InsiderFinance Evening Edge 13 y 14-ago, TipRanks. WebSearch: CPI julio, calendario macro semana 17-23 ago.",
       "Gmail post-market 2026-08-17: 9 hilos Bloomberg (Markets Daily leido integro) | 0 emails EarningsWhispers | WebSearch x4 | EW API per-ticker OK (6 tickers) | Chrome MCP NO disponible",
-      "post-market 2026-08-18: Gmail 12 threads (EW Whisper Report 1110, EW Summary lunes, InsiderFinance, Bloomberg x7, TipRanks x2) + EW API per-ticker 17 tickers + Alpaca market data + 5 WebSearch"
+      "post-market 2026-08-18: Gmail 12 threads (EW Whisper Report 1110, EW Summary lunes, InsiderFinance, Bloomberg x7, TipRanks x2) + EW API per-ticker 17 tickers + Alpaca market data + 5 WebSearch",
+      "Gmail post-market 2026-08-19: 24 hilos (Bloomberg/EW/InsiderFinance/TipRanks) + 5 WebSearch. EW web NO accesible (Chrome MCP desconectado)."
     ],
     "sector_prioridades": {
       "defense": 0,
@@ -3761,8 +4122,8 @@
       "communication": 0,
       "materials": 0,
       "healthcare": 2,
-      "consumer_discretionary": -1,
-      "consumer_staples": 0,
+      "consumer_discretionary": 0,
+      "consumer_staples": 1,
       "utilities": 1,
       "real_estate": -1,
       "semiconductors": -2
@@ -3772,12 +4133,12 @@
       "industrials",
       "financials",
       "healthcare",
+      "consumer_staples",
       "utilities"
     ],
     "sectores_a_evitar_esta_semana": [
       "ai_infrastructure",
       "memory_chips",
-      "consumer_discretionary",
       "real_estate",
       "semiconductors"
     ],
@@ -3848,19 +4209,6 @@
       "yield_30y": 5.194
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-07-16",
-        "evento": "Escalada guerra EE.UU.-Iran + 2o dia de caida en chips por dudas sobre IA. Nasdaq -1.3%.",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "defense",
-          "energy",
-          "semiconductors",
-          "ai_infrastructure",
-          "technology"
-        ],
-        "fuente": "Yahoo Finance / Bloomberg"
-      },
       {
         "fecha": "2026-07-17",
         "evento": "Chip selloff generalizado; VIX +12% a 18.78; indices con perdidas semanales; crudo al alza",
@@ -4071,6 +4419,18 @@
           "energy"
         ],
         "fuente": "Reuters/Bloomberg/Yahoo Finance/TheStreet"
+      },
+      {
+        "fecha": "2026-08-19",
+        "evento": "Actas FOMC julio hawkish (3 disidentes pro-subida) + Tesoro duplica recompras de deuda -> yields abajo, indices verdes",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "consumer_staples",
+          "consumer_discretionary",
+          "technology"
+        ],
+        "fuente": "CNBC/Bloomberg/Schwab"
       }
     ],
     "macro_score_pm": -0.8,
@@ -9942,6 +10302,28 @@
         "min_signal_score": "7.0 (fijado por weekly-review)"
       },
       "motivo": "CSCO/AMAT/JD/PFG/AMCR: 5 beats, 5 caidas, con VIX 14.25 e indices en maximos. OJO: bajar min_signal_score a 7.0 y activar un filtro restrictivo el mismo dia son movimientos en direcciones opuestas — revisar coherencia."
+    },
+    {
+      "fecha": "2026-08-19",
+      "parametros": {
+        "asimetria_diferencia_minima_usd": [
+          0.08,
+          0.07
+        ],
+        "asimetria_bloque1_cap_denominador_pequeno": [
+          1.5,
+          2.0
+        ],
+        "macro_context.sector_prioridades.consumer_staples": [
+          0,
+          1
+        ],
+        "macro_context.sector_prioridades.consumer_discretionary": [
+          -1,
+          0
+        ]
+      },
+      "motivo": "EL +16.41% tras beat-and-raise con consenso $0.32 — la regla del denominador minimo la capo indebidamente. TGT +4.36% penalizada por extension analogica del filtro beat-and-fade."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -9983,23 +10365,23 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-08-18",
+    "_ultima_actualizacion": "2026-08-19",
     "rendimiento_global": {
-      "equity_paper_actual": 108335.4,
+      "equity_paper_actual": 108335.42,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2835.4,
+      "pnl_total_paper_dolares": 2835.42,
       "pnl_total_paper_pct": 2.69,
-      "equity_real_actual": 4548.02,
+      "equity_real_actual": 4548.05,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.01,
+      "pnl_total_real_dolares": 48.05,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 27,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": -697.93,
-      "pnl_dia_real_dolares": 0.01,
+      "pnl_dia_paper_dolares": 60.33,
+      "pnl_dia_real_dolares": 0.04,
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
@@ -10118,13 +10500,13 @@
       "max_drawdown_paper_fecha": "2026-08-17",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
-      "equity_real_peak": 4537.95,
+      "equity_real_peak": 4548.05,
       "dias_en_drawdown_paper": 0,
       "dias_en_drawdown_real": 0,
       "circuit_breaker_activaciones": 0,
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
-      "max_drawdown_paper_actual_pct": 0.75,
+      "max_drawdown_paper_actual_pct": 1.45,
       "drawdown_actual_pct": 1.45
     },
     "bot_metricas": {
@@ -10508,6 +10890,16 @@
         "operaciones_acumuladas": 21,
         "vix": 15.83,
         "posiciones_equity": 0
+      },
+      {
+        "fecha": "2026-08-19",
+        "equity_paper": 108335.42,
+        "equity_real": 4548.05,
+        "pnl_dia_paper": 60.33,
+        "win_rate_acumulado": 38.1,
+        "avg_r_acumulado": -0.09,
+        "operaciones_acumuladas": 21,
+        "vix": 16.42
       }
     ],
     "objetivos": {
@@ -16256,6 +16648,34 @@
       "trades_paper": [],
       "evento_clave": "Venta masiva de semis (SOX -5.4%, ~$680B) + Trump descarta la tregua con Iran -> crudo y rendimientos en maximos; S&P -0.6% a minimos de 2 semanas con VIX solo en 15.83.",
       "leccion": "8ª sesion consecutiva sin equity y por primera vez el coste de oportunidad esta MEDIDO: la cesta de candidatos score>=7 NO ejecutados de las ultimas 2 semanas promedia -3.0% y la de descartados (score<=4) -4.0%. No entrar fue rentable, no solo prudente."
+    },
+    {
+      "fecha": "2026-08-19",
+      "dia": "Wednesday",
+      "equity_paper_cierre": 108335.42,
+      "variacion_dia": 60.33,
+      "variacion_pct": 0.06,
+      "equity_real_cierre": 4548.05,
+      "variacion_dia_real": 0.04,
+      "vix": 16.42,
+      "regimen_macro": "GEOPOLITICAL_UNCERTAINTY_RENEWED + BEAT_AND_FADE_SELECTIVO",
+      "posiciones_equity": 0,
+      "posiciones_crypto_dust": 3,
+      "trades_paper": [],
+      "evento_clave": "Actas FOMC de julio hawkish (3 disidentes a favor de subir) pero el Tesoro mas que duplica sus recompras de deuda: yields abajo y los tres indices en verde (S&P 7.708 +0.21%). VIX +3.75% a ~16.4.",
+      "leccion": "EL +16.41% tras beat-and-raise ($0.39 vs consenso $0.32) falsifica en su primer test la regla de denominador minimo creada ayer, que la habia capado por debajo de ADI (-0.91%). El beat-and-fade se activa por GUIDANCE, no por el beat: TJX bate y cae -4.21% con guia Q3 floja mientras TGT (+4.36%), LOW (+2.26%) y EL suben.",
+      "cohorte_descartados_hoy": {
+        "n": 6,
+        "media_pct": 2.49,
+        "detalle": {
+          "ADI": -0.91,
+          "TGT": 4.36,
+          "LOW": 2.26,
+          "TJX": -4.21,
+          "BILL": -2.96,
+          "EL": 16.41
+        }
+      }
     }
   ],
   "alertas_criticas": [
@@ -16299,7 +16719,9 @@
       ],
       "mensaje": "BBAR posición bot (494 shares, -0.89%) tiene TP limit $20.37 pero NO stop. Bot debe colocar stop mañana.",
       "accion_tomada": "Alerta registrada. Bot intraday debe verificar.",
-      "resuelto": false
+      "resuelto": true,
+      "resuelto_en": "2026-08-19",
+      "resolucion": "Auto-resuelta: la posicion ya no existe en la cuenta (0 posiciones equity a 19-ago)."
     },
     {
       "fecha": "2026-07-27",
@@ -16307,7 +16729,9 @@
       "urgencia": "ALTA",
       "mensaje": "XOM (6 sh, entry 158.17, now 154.77, uPL $-20.40/-2.15%) SIN stop de bajada activo en Alpaca. Solo TP limit.",
       "accion_requerida": "Usuario debe colocar stop GTC manualmente (~151.8). Post-market NO coloca ordenes (guardrail financiero).",
-      "resuelto": false
+      "resuelto": true,
+      "resuelto_en": "2026-08-19",
+      "resolucion": "Auto-resuelta: la posicion ya no existe en la cuenta (0 posiciones equity a 19-ago)."
     },
     {
       "fecha": "2026-08-15",
@@ -16640,6 +17064,24 @@
         "asimetria_diferencia_minima_usd": 0.08,
         "cap_bloque1": 1.5
       }
+    },
+    {
+      "fecha": "2026-08-19",
+      "tipo": "parametro_ajustado",
+      "descripcion": "Regla denominador minimo v2: dif_minima $0.08->$0.07, cap BLOQUE1 1.5->2.0 pts y clausula de confirmacion secundaria",
+      "evidencia": "EL +16.41% (reporto $0.39 vs consenso $0.32) frente a ADI -0.91% que la regla priorizo",
+      "archivo_modificado": "performance_log (parametros_activos)",
+      "impacto_esperado": "Recuperar senal en nombres de EPS bajo con apalancamiento operativo, sin reabrir el ruido puro",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-08-19",
+      "tipo": "regla_anadida",
+      "descripcion": "Prohibida la extension 'por analogia' del filtro_beat_and_fade a sectores no listados",
+      "evidencia": "TGT penalizada -0.5 por analogia (score 3.0, descartada) y cerro +4.36%; LOW +2.26%",
+      "archivo_modificado": "performance_log (parametros_activos.filtro_beat_and_fade)",
+      "impacto_esperado": "Evitar falsos descartes en retail/staples cuando el guidance acompana",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -18445,6 +18887,15 @@
       "score_sistema": 8.5,
       "parametros_version": "2026-08-18",
       "mejora_hoy": "Regla de denominador minimo en asimetria whisper (cap BLOQUE 1 a 1.5 pts si consenso < $0.50)"
+    },
+    {
+      "fecha": "2026-08-19",
+      "lecciones_acumuladas": 40,
+      "mejoras_acumuladas": 35,
+      "candidatos_activos": 1,
+      "score_sistema": 9.2,
+      "parametros_version": "2026-08-19",
+      "mejora_hoy": "Regla denominador minimo v2 + prohibicion de extension analogica del filtro beat-and-fade"
     }
   ],
   "motor_alpha_diario": {
@@ -26879,6 +27330,17 @@
         "earningswhispers.com/calendar devuelve shell SPA de 107.977 bytes con 0 tickers para cualquier fecha; old.earningswhispers.com timeout. El pipeline EW headless esta efectivamente roto -> BLOQUE A siempre 0.",
         "Credenciales en claro dentro de SKILL.md (GitHub PAT, Telegram token, claves Alpaca paper y REAL). Recomendado rotarlas y moverlas a variables de entorno."
       ]
+    },
+    {
+      "fecha": "2026-08-19",
+      "tarea": "post-market-review",
+      "universo_analizado": 11,
+      "con_whisper": 0,
+      "puntuados": 11,
+      "fuertes": 0,
+      "vigilancia": 0,
+      "descartados": 11,
+      "nota": "Bloque 20-ago (WMT/BABA/DE + ADR chinos + ROST/FLO/OSIS AH). EW web inaccesible (Chrome MCP desconectado) y sin email de preview -> scoring sin whisper numbers, con consenso de WebSearch y tecnico de Alpaca. Maximo 2.5 (DE). Cero entradas previstas."
     }
   ],
   "acciones_pendientes_manana": [],
@@ -27288,6 +27750,51 @@
       "tareas_con_issues": [
         "market-open-execution (informativo)"
       ]
+    },
+    {
+      "fecha": "2026-08-19",
+      "score_sistema": 9.2,
+      "tareas": {
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "ADI (score 7.0) correctamente NO ejecutada por momentum 15m debil: cerro -0.91%"
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Scan 19-ago a las 10:25 ET registrado; 0 candidatos >=7.5, coherente con el resultado del dia"
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "ciclos_hoy": 4
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin posiciones abiertas: nada que cerrar por R0"
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Sin posiciones que gestionar"
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 9,
+          "issues": [
+            "EW web inaccesible"
+          ],
+          "nota": "Ejecutado completo con fallback WebSearch+Gmail+Alpaca"
+        }
+      },
+      "tareas_con_issues": []
     }
   ],
   "_last_ew_daily_run": {
@@ -27555,6 +28062,25 @@
           0.96
         ]
       ]
+    },
+    {
+      "fecha": "2026-08-19",
+      "ventana": "2026-08-19",
+      "cohorte_descartados_hoy": {
+        "n": 6,
+        "retorno_medio_pct": 2.49,
+        "mediana_pct": 2.26,
+        "ganadores": 3,
+        "detalle": {
+          "ADI": -0.91,
+          "TGT": 4.36,
+          "LOW": 2.26,
+          "TJX": -4.21,
+          "BILL": -2.96,
+          "EL": 16.41
+        }
+      },
+      "conclusion": "REVERSION vs la conclusion del 18-ago: hoy la cohorte de descartados GANA de media +2.49%. Los aciertos (ADI -0.9%, TJX -4.2%, BILL -3.0%) quedan compensados por EL +16.4%, TGT +4.4% y LOW +2.3%. El coste de oportunidad de la abstencion ya NO es cero: es concentrado y esta en los beat-and-RAISE."
     }
   ],
   "incidencias_sistema": [
@@ -27568,5 +28094,5 @@
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
     }
   ],
-  "ultima_actualizacion": "2026-08-19T15:17 ET"
+  "ultima_actualizacion": "2026-08-19T20:30:34.817774+00:00"
 }
