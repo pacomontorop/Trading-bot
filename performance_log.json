@@ -3608,7 +3608,7 @@
       "ticker": "ADI",
       "score": 7.0,
       "score_ajustado": 7.0,
-      "estado": "pendiente",
+      "estado": "descartado",
       "tipo": "post_earnings_continuation",
       "accion_recomendada": "revisar_apertura",
       "ventana_entrada": "2026-08-20 09:40-10:00 ET",
@@ -3628,7 +3628,10 @@
       "expira": "2026-08-20T20:00:00Z",
       "ts_creado": "2026-08-19T15:17:47.876125+00:00",
       "umbral_real": 9.0,
-      "notas": "NO ejecutado hoy 11:2x ET pese a score 7.0 = umbral paper: momentum 15m debil_bajista (-0.43%) con vol x0.21 (sin confirmacion) y precio ya +0.78% sobre VWAP. Reevaluar en el siguiente ciclo o en la apertura de manana."
+      "notas": "NO ejecutado hoy 11:2x ET pese a score 7.0 = umbral paper: momentum 15m debil_bajista (-0.43%) con vol x0.21 (sin confirmacion) y precio ya +0.78% sobre VWAP. Reevaluar en el siguiente ciclo o en la apertura de manana.",
+      "fecha_resolucion": "2026-08-19 12:36 ET",
+      "motivo_descarte": "earnings pre-market ya publicados; sin confirmacion de fuerza intradia (rvol 0.81x, drift_5d -1.28%) y score 7.0 < min_signal_score 8.75",
+      "fuente_resolucion": "intraday-monitor"
     },
     {
       "ticker": "TGT",
@@ -12761,6 +12764,169 @@
         "historial_diario_notas: las 4 ultimas entradas (12-15 ago) tienen campo nota vacio.",
         "macro_context.yield_10y=0.0 y oil_price=0.0 (valores no poblados) pese a que contexto_resumen cita 10Y 4.71%."
       ]
+    },
+    {
+      "timestamp": "2026-08-19T16:36:08.343166+00:00",
+      "hora_et": "2026-08-19 12:36",
+      "equity": 108335.42,
+      "buying_power": 433340.32,
+      "posiciones_abiertas": 2,
+      "posiciones_equity": 0,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 4.874e-06,
+          "entry": 64959.1,
+          "current": 68729.5,
+          "pnl_pct": 5.8,
+          "market_value": 0.335,
+          "stop": 0.0,
+          "stop_source": "sin_stop_dust_crypto"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 2.5e-05,
+          "entry": 77.22,
+          "current": 82.11,
+          "pnl_pct": 6.32,
+          "market_value": 0.0021,
+          "stop": 0.0,
+          "stop_source": "sin_stop_dust_crypto"
+        }
+      ],
+      "posiciones_sin_stop": [
+        "BTCUSD",
+        "SOLUSD"
+      ],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "candidatos_intraday_aprobados": [],
+      "candidatos_descartados": [
+        {
+          "ticker": "ROST",
+          "score": 0.5,
+          "detalles": {
+            "beat_rate": 1.0,
+            "surprise_avg_pct": 0.08,
+            "rvol": 0.53,
+            "drift_5d": -4.99,
+            "asimetria_whisper": null,
+            "fuentes": 0
+          },
+          "vetos": [
+            "fuentes_whisper=0 < minimo 1",
+            "score 0.5 < min_signal_score 8.75"
+          ],
+          "nota": "sin whisper (EarningsWhispers inaccesible); drift 5d -4.99% y rvol 0.53x"
+        },
+        {
+          "ticker": "WMT",
+          "score": 0.75,
+          "detalles": {
+            "beat_rate": 0.75,
+            "surprise_avg_pct": -0.03,
+            "rvol": 0.56,
+            "drift_5d": -0.7,
+            "asimetria_whisper": 0.3,
+            "fuentes": 1
+          },
+          "vetos": [
+            "score 0.75 < min_signal_score 8.75"
+          ],
+          "nota": "whisper alineado con consenso ($0.742 vs guia 0.72-0.74); asimetria ~0.3% < 2.5%"
+        },
+        {
+          "ticker": "DE",
+          "score": -0.5,
+          "detalles": {
+            "beat_rate": 1.0,
+            "surprise_avg_pct": 0.08,
+            "rvol": 0.44,
+            "drift_5d": -4.79,
+            "asimetria_whisper": -2.5,
+            "fuentes": 1
+          },
+          "vetos": [
+            "score -0.5 < min_signal_score 8.75"
+          ],
+          "nota": "18 revisiones a la baja vs 5 al alza en 60d; rango estimados 4.67-4.85 disperso"
+        },
+        {
+          "ticker": "BILL",
+          "score": 0.5,
+          "detalles": {
+            "beat_rate": 1.0,
+            "surprise_avg_pct": 0.2,
+            "rvol": 0.41,
+            "drift_5d": 2.24,
+            "asimetria_whisper": null,
+            "fuentes": 0
+          },
+          "vetos": [
+            "fuentes_whisper=0 < minimo 1",
+            "score 0.5 < min_signal_score 8.75"
+          ],
+          "nota": "earnings AH HOY, sin whisper; entrar pre-AH = apuesta binaria"
+        }
+      ],
+      "continuacion_descartada": [
+        {
+          "ticker": "ADI",
+          "drift_5d": -1.28,
+          "rvol": 0.81,
+          "vetos": [
+            "rvol 0.81x < 1.5x",
+            "mejora pendiente 26-jun: filtro continuation no implementado -> no operar"
+          ]
+        },
+        {
+          "ticker": "TGT",
+          "drift_5d": 4.21,
+          "rvol": 1.29,
+          "vetos": [
+            "rvol 1.29x < 1.5x",
+            "mejora pendiente 26-jun: filtro continuation no implementado -> no operar"
+          ]
+        },
+        {
+          "ticker": "LOW",
+          "drift_5d": 2.3,
+          "rvol": 1.01,
+          "vetos": [
+            "rvol 1.01x < 1.5x",
+            "mejora pendiente 26-jun: filtro continuation no implementado -> no operar"
+          ]
+        },
+        {
+          "ticker": "TJX",
+          "drift_5d": -3.46,
+          "rvol": 1.15,
+          "vetos": [
+            "rvol 1.15x < 1.5x",
+            "mejora pendiente 26-jun: filtro continuation no implementado -> no operar"
+          ]
+        },
+        {
+          "ticker": "EL",
+          "drift_5d": 12.08,
+          "rvol": 3.18,
+          "vetos": [
+            "momentum_5d 12.08% > 10.0% (cap activo)",
+            "mejora pendiente 26-jun: filtro continuation no implementado -> no operar"
+          ]
+        }
+      ],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "spy_intradia_pct": 0.04,
+      "vix": 15.08,
+      "modo_dip": false,
+      "notas": "Sin exposicion equity. 4 candidatos con earnings 20-ago/AH-hoy (ROST,WMT,DE,BILL) descartados por asimetria whisper insuficiente o ausente. 5 continuaciones post-earnings descartadas (rvol<1.5x; EL vetado por momentum 12.08%>10%). Ejecutado en sesion Cowork alternativa: LOG_PATH canonico inaccesible, log escrito en outputs de sesion + push a GitHub (source-of-truth)."
     }
   ],
   "pre_close_log": [
@@ -25793,6 +25959,20 @@
       "items": [
         "BTCUSD(real): avg_entry $117,828.22 vs mercado $64,752.60 (-45.0%) — entry_price incoherente en resto fraccional"
       ]
+    },
+    {
+      "fecha": "2026-08-19",
+      "tarea": "intraday-monitor",
+      "tipo": "dust_crypto_sin_stop",
+      "descripcion": "BTCUSD (0.000004874, $0.34) y SOLUSD (0.000025, $0.002) quedan como polvo residual sin stop. Ambos por debajo del minimo de orden de Alpaca: no se puede colocar stop ni liquidar. Riesgo economico nulo (<$0.35 total) pero ensucian el audit de stops en cada ciclo.",
+      "accion_sugerida": "Excluir posiciones con market_value < $1 del audit de stops y del conteo de posiciones."
+    },
+    {
+      "fecha": "2026-08-19",
+      "tarea": "intraday-monitor",
+      "tipo": "log_path_inaccesible",
+      "descripcion": "LOG_PATH canonico /sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json devuelve Permission denied desde esta sesion. Lectura resuelta via GitHub; escritura redirigida a outputs de sesion + push a GitHub.",
+      "accion_sugerida": "Migrar los writes del pipeline a GitHub como destino primario, no solo los reads."
     }
   ],
   "w20_pivot": {
@@ -27048,5 +27228,5 @@
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
     }
   ],
-  "ultima_actualizacion": "2026-08-19T15:17:47.876125+00:00"
+  "ultima_actualizacion": "2026-08-19T16:36:08.343166+00:00"
 }
