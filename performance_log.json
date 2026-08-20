@@ -422,6 +422,46 @@
       "accion_correctiva": "Ninguna: regla validada. Documentar como 'filtro que evito perdida' en el track record.",
       "tarea_afectada": "post-market-review",
       "aplicada": true
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "SELL_THE_NEWS_AH",
+      "titulo": "WMT: SELL-THE-NEWS — batio whisper +8.0% pero -9.23% en sesion (2026-08-20)",
+      "descripcion": "EPS $0.81 vs whisper $0.75 vs consenso $0.73 (beat whisper +8.0%, beat consenso +11.0%), revenue +5.94% YoY. Aun asi la accion cayo -9.23% (~$76B de capitalizacion). Causas: comps EEUU +2.6% vs +3.5-3.7% esperado, guia Q3 $0.62-$0.64 POR DEBAJO del consenso $0.68 y guia FY $2.80-$2.87 por debajo del consenso $2.88. Sexta validacion consecutiva del filtro beat_and_fade en retail.",
+      "accion_futura": "REGLA REFORZADA: un beat de whisper NO valida continuation por si solo. Si la guia forward del trimestre siguiente esta por debajo del consenso, vetar continuation aunque whisper_beat>=5%. Anadir gate guidance_vs_consenso ANTES del gate de whisper en PASO 3B.",
+      "impacto_score": -0.5
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "DE: beat consenso +14.6% confirmado con +6.9% en sesion (2026-08-20) ✅",
+      "descripcion": "EPS $5.10 vs consenso $4.45; revenue $12.608B vs est $10.916B. Sin numero whisper de EW. Guia FY elevada a $4.75B-$5.00B y CEO declara suelo del ciclo agricola. beat_rate historico 94%. El scoring predijo 3.5/descartado (penalizado por 18 revisiones de EPS a la baja) — FALLO documentado en post-market-review.",
+      "accion_futura": "El beat_rate historico >=90% debe pesar MAS que las revisiones de EPS a la baja del sell-side. Las revisiones a la baja bajan el liston y AUMENTAN la probabilidad de beat. Invertir el signo de esa penalizacion en el scoring.",
+      "impacto_score": 0.4
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "CALIDAD_DEL_BEAT",
+      "titulo": "ROST: beat consenso +38.5% pero ~40% del margen viene de reembolsos arancelarios one-off (2026-08-20)",
+      "descripcion": "EPS $2.66 vs consenso $1.92. Operating profit $1.1B incluye ~$253M de reembolsos IEEPA: 405bps de los 610bps de expansion de margen son no recurrentes. Reaccion AH solo +3.6% pese al beat del 38% — el mercado descuenta el one-off. La accion ya venia -2.47% en sesion antes de reportar.",
+      "accion_futura": "Anadir gate calidad_del_beat: si >30% de la sorpresa procede de partidas no recurrentes (reembolsos, one-offs fiscales, venta de activos), aplicar factor 0.5 al beat efectivo. Una reaccion AH tibia (<5%) ante un beat >30% es la senal delatora.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "DENOMINADOR_MINIMO",
+      "titulo": "AAP: beat consenso +87% pero -24.47% — denominador minimo (2026-08-20)",
+      "descripcion": "EPS $1.03 vs consenso $0.55: el beat% del 87% es un artefacto de un consenso muy bajo. Ventas $2.0B MISS y comps -0.5%. Rango intradia del 16%. La regla de denominador minimo v2 evito la catastrofe (ACIERTO_MAYOR en post-market-review).",
+      "accion_futura": "Mantener la regla v2. Con consenso absoluto <$1.00, exigir confirmacion secundaria (revenue beat + comps positivos) antes de considerar cualquier beat%.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "DQ: MISS consenso -328.6% (2026-08-20)",
+      "descripcion": "Perdida de $1.20/accion vs consenso de perdida $0.28. Revenue -16.67% YoY. Polisilicio China en sobrecapacidad.",
+      "accion_futura": "Mantener veto sectorial a polisilicio/solar China.",
+      "impacto_score": -0.2
     }
   ],
   "operaciones": [
@@ -3723,7 +3763,18 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20",
       "resultado_real_pct": 6.9,
-      "veredicto_prediccion": "FALLO"
+      "veredicto_prediccion": "FALLO",
+      "resultado_real": "beat",
+      "eps_actual": 5.1,
+      "eps_whisper": null,
+      "eps_consensus": 4.45,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 14.61,
+      "reaccion_dia_pct": 6.9,
+      "ts_resultado": "2026-08-20T21:41:52.728435+00:00",
+      "revenue_growth_yoy_real": null,
+      "guidance_proximo": "FY26 net income elevado a $4.75B-$5.00B; cash flow equipos $5.0B-$5.5B; CEO declara suelo de ciclo agricola",
+      "beat_rate": 0.94
     },
     {
       "ticker": "WMT",
@@ -3756,7 +3807,17 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20",
       "resultado_real_pct": -9.23,
-      "veredicto_prediccion": "ACIERTO"
+      "veredicto_prediccion": "ACIERTO",
+      "resultado_real": "beat",
+      "eps_actual": 0.81,
+      "eps_whisper": 0.75,
+      "eps_consensus": 0.73,
+      "whisper_beat_pct": 8.0,
+      "consensus_beat_pct": 10.96,
+      "reaccion_dia_pct": -9.23,
+      "ts_resultado": "2026-08-20T21:41:52.728382+00:00",
+      "revenue_growth_yoy_real": 5.94,
+      "guidance_proximo": "Q3 EPS $0.62-$0.64 vs consenso $0.68 (POR DEBAJO); FY27 $2.80-$2.87 vs consenso $2.88"
     },
     {
       "ticker": "NTES",
@@ -3789,7 +3850,17 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20",
       "resultado_real_pct": -5.77,
-      "veredicto_prediccion": "ACIERTO"
+      "veredicto_prediccion": "ACIERTO",
+      "resultado_real": "miss",
+      "eps_actual": null,
+      "eps_whisper": null,
+      "eps_consensus": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 0.0,
+      "reaccion_dia_pct": -5.77,
+      "ts_resultado": "2026-08-20T21:41:52.728489+00:00",
+      "revenue_growth_yoy_real": null,
+      "guidance_proximo": null
     },
     {
       "ticker": "DQ",
@@ -3884,7 +3955,17 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20",
       "resultado_real_pct": -24.47,
-      "veredicto_prediccion": "ACIERTO_MAYOR"
+      "veredicto_prediccion": "ACIERTO_MAYOR",
+      "resultado_real": "beat",
+      "eps_actual": 1.03,
+      "eps_whisper": null,
+      "eps_consensus": 0.55,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 87.27,
+      "reaccion_dia_pct": -24.47,
+      "ts_resultado": "2026-08-20T21:41:52.728462+00:00",
+      "revenue_growth_yoy_real": null,
+      "guidance_proximo": "Guidance elevada pero se mantiene in-line con estimaciones"
     },
     {
       "ticker": "ATHM",
@@ -3948,7 +4029,17 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta after-hours el 2026-08-20",
       "resultado_real_pct": -2.47,
-      "veredicto_prediccion": "ACIERTO"
+      "veredicto_prediccion": "ACIERTO",
+      "resultado_real": "beat",
+      "eps_actual": 2.66,
+      "eps_whisper": null,
+      "eps_consensus": 1.92,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 38.54,
+      "reaccion_dia_pct": 3.6,
+      "ts_resultado": "2026-08-20T21:41:52.728449+00:00",
+      "revenue_growth_yoy_real": 13.0,
+      "guidance_proximo": "FY GAAP EPS ~$8.69 midpoint (+10.9% vs consenso); comps Q3 +6-7%, Q4 +4-5%"
     },
     {
       "ticker": "FLO",
@@ -4012,7 +4103,17 @@
       "conviction_tier": "no_entry",
       "alerta_earnings_overnight": "Reporta pre-market el 2026-08-20",
       "resultado_real_pct": 1.25,
-      "veredicto_prediccion": "NEUTRO"
+      "veredicto_prediccion": "NEUTRO",
+      "resultado_real": "miss",
+      "eps_actual": null,
+      "eps_whisper": null,
+      "eps_consensus": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 0.0,
+      "reaccion_dia_pct": 1.25,
+      "ts_resultado": "2026-08-20T21:41:52.728476+00:00",
+      "revenue_growth_yoy_real": 9.0,
+      "guidance_proximo": null
     },
     {
       "ticker": "EL",
@@ -4098,6 +4199,38 @@
       "score_macro_bonus": -1,
       "conviction_tier": "no_entry",
       "razon_descarte": "score < 5.0 (umbral de vigilancia)"
+    },
+    {
+      "ticker": "DE",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_override": 7.0,
+      "source": "log_validated",
+      "estado": "pendiente_ew",
+      "tipo": "post_earnings_continuation",
+      "earnings_fecha": "2026-08-20",
+      "accion_recomendada": "entrar_apertura",
+      "ventana_entrada": "2026-08-21 09:40-10:15 ET — continuacion post-beat",
+      "stop_tipo": "low_earnings_day_or_ATR1.5",
+      "sizing": "0.75x",
+      "argumento": "DE batio consenso en +14.6% (2026-08-20). EPS actual=5.1 vs consenso=4.45. Whisper EW no disponible. Reaccion en sesion: +6.90%. beat_rate historico=0.94. Guia: FY26 net income elevado a $4.75B-$5.00B; cash flow equipos $5.0B-$5.5B; CEO declara suelo de ciclo agricola. Continuacion post-beat (consensus_proxy_ah_confirmado).",
+      "beat_pct_vs_whisper": 0,
+      "consensus_beat_pct": 14.61,
+      "reaccion_ah_pct": 6.9,
+      "continuation_ruta": "consensus_proxy_ah_confirmado",
+      "eps_actual": 5.1,
+      "eps_whisper": null,
+      "revenue_growth_yoy": null,
+      "fuente": "ew-daily-results-continuation",
+      "detectado_por": "ew-daily-results",
+      "fecha_deteccion": "2026-08-20",
+      "expira": "2026-08-21T21:00:00Z",
+      "notas": "CAVEAT PEAD DIA-2: DE reporto BMO el 2026-08-20 y el movimiento (+6.90%) YA ESTA HECHO. La entrada de 2026-08-21 es dia-2 del drift, no la captura del gap. Entrar solo si abre con fuerza relativa. Stop bajo el minimo del dia de earnings o ATR x1.5. Target 2xATR. Max hold 3 dias.",
+      "asimetria_pct": 6.14,
+      "ts_creado": "2026-08-20T21:41:52.728521+00:00",
+      "umbral_real": 99.0,
+      "max_hold_dias": 3,
+      "play_horizon": "post_earnings_1_3d"
     }
   ],
   "macro_context": {
@@ -27224,6 +27357,134 @@
           "detalle": "-2.47% antes de reportar AH. Doble filtro beat_and_fade + momentum 15m bajista."
         }
       }
+    },
+    {
+      "ticker": "WMT",
+      "fecha": "2026-08-20",
+      "resultado": "beat",
+      "eps_actual": 0.81,
+      "eps_whisper": 0.75,
+      "eps_consensus": 0.73,
+      "whisper_beat_pct": 8.0,
+      "consensus_beat_pct": 10.96,
+      "reaccion_ah_pct": -9.23,
+      "revenue_growth_yoy": 5.94,
+      "guidance_proximo": "Q3 EPS $0.62-$0.64 vs consenso $0.68 (POR DEBAJO); FY27 $2.80-$2.87 vs consenso $2.88",
+      "timing": "BMO",
+      "fuente_datos": "gmail_ew",
+      "nota": null
+    },
+    {
+      "ticker": "SLGL",
+      "fecha": "2026-08-20",
+      "resultado": "beat",
+      "eps_actual": -1.13,
+      "eps_whisper": null,
+      "eps_consensus": -2.31,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 51.08,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": -96.58,
+      "guidance_proximo": null,
+      "timing": "BMO",
+      "fuente_datos": "gmail_ew",
+      "nota": null
+    },
+    {
+      "ticker": "DQ",
+      "fecha": "2026-08-20",
+      "resultado": "miss",
+      "eps_actual": -1.2,
+      "eps_whisper": null,
+      "eps_consensus": -0.28,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": -328.57,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": -16.67,
+      "guidance_proximo": null,
+      "timing": "BMO",
+      "fuente_datos": "gmail_ew",
+      "nota": null
+    },
+    {
+      "ticker": "DE",
+      "fecha": "2026-08-20",
+      "resultado": "beat",
+      "eps_actual": 5.1,
+      "eps_whisper": null,
+      "eps_consensus": 4.45,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 14.61,
+      "reaccion_ah_pct": 6.9,
+      "revenue_growth_yoy": null,
+      "guidance_proximo": "FY26 net income elevado a $4.75B-$5.00B; cash flow equipos $5.0B-$5.5B; CEO declara suelo de ciclo agricola",
+      "timing": "BMO",
+      "fuente_datos": "gmail_newsletter+websearch",
+      "nota": "Revenue $12.608B vs est $10.916B (+15.5% sobre estimado). Margen C&F 7.7%->12.1%."
+    },
+    {
+      "ticker": "ROST",
+      "fecha": "2026-08-20",
+      "resultado": "beat",
+      "eps_actual": 2.66,
+      "eps_whisper": null,
+      "eps_consensus": 1.92,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 38.54,
+      "reaccion_ah_pct": 3.6,
+      "revenue_growth_yoy": 13.0,
+      "guidance_proximo": "FY GAAP EPS ~$8.69 midpoint (+10.9% vs consenso); comps Q3 +6-7%, Q4 +4-5%",
+      "timing": "AMC",
+      "fuente_datos": "gmail_newsletter+websearch",
+      "nota": "CALIDAD DEL BEAT BAJA: ~$253M del operating profit ($1.1B) son reembolsos arancelarios IEEPA one-off (405bps de los 610bps de expansion de margen)."
+    },
+    {
+      "ticker": "AAP",
+      "fecha": "2026-08-20",
+      "resultado": "beat",
+      "eps_actual": 1.03,
+      "eps_whisper": null,
+      "eps_consensus": 0.55,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 87.27,
+      "reaccion_ah_pct": -24.47,
+      "revenue_growth_yoy": null,
+      "guidance_proximo": "Guidance elevada pero se mantiene in-line con estimaciones",
+      "timing": "BMO",
+      "fuente_datos": "gmail_ew_guidance+websearch",
+      "nota": "Ventas netas $2.0B MISS, comps -0.5%. Denominador minimo: consenso $0.55 infla el beat%."
+    },
+    {
+      "ticker": "BABA",
+      "fecha": "2026-08-20",
+      "resultado": "miss",
+      "eps_actual": null,
+      "eps_whisper": null,
+      "eps_consensus": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 0.0,
+      "reaccion_ah_pct": 1.25,
+      "revenue_growth_yoy": 9.0,
+      "guidance_proximo": null,
+      "timing": "BMO",
+      "fuente_datos": "gmail_newsletter+websearch",
+      "nota": "Beneficio -75% YoY por capex IA. AI Cloud +45%. Abrio -3%, cerro +1.25%."
+    },
+    {
+      "ticker": "NTES",
+      "fecha": "2026-08-20",
+      "resultado": "miss",
+      "eps_actual": null,
+      "eps_whisper": null,
+      "eps_consensus": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 0.0,
+      "reaccion_ah_pct": -5.77,
+      "revenue_growth_yoy": null,
+      "guidance_proximo": null,
+      "timing": "BMO",
+      "fuente_datos": "websearch",
+      "nota": null
     }
   ],
   "kpis_actuales": {
@@ -28418,17 +28679,26 @@
     }
   ],
   "_last_ew_daily_run": {
-    "fecha": "2026-08-19",
-    "ts": "2026-08-19T21:42:04.662617+00:00",
-    "resumen": "EW Daily 2026-08-19 (corrida nocturna). Email EW del 19-ago AUN NO RECIBIDO a las 21:38Z (el del 18-ago llego 21:16Z). Fuentes usadas: Evening Edge 19-ago + WebSearch. 2 empresas nuevas/enriquecidas: EL (EPS actual $0.39 confirmado, beat whisper +5.41%) y WOLF (AMC, miss -53.7% vs consenso, -9%). Los BMO (TGT/TJX/ADI/LOW) ya fueron procesados por la corrida previa de hoy. 1 continuation play: EL para 20-ago con caveat de PEAD dia-2.",
+    "fecha": "2026-08-20",
+    "ts": "2026-08-20T21:41:52.728529+00:00",
+    "resumen": "EW Daily 2026-08-20. Email EW del 20-ago recibido 21:20Z (WMT top news, SLGL positive surprise, DQ negative surprise). 8 empresas consolidadas. WMT batio whisper +8% pero -9.23% = sell-the-news (6a validacion beat_and_fade retail). DE beat consenso +14.6% con +6.9% en sesion y beat_rate 94% → unico continuation. ROST beat +38.5% vetado por calidad (reembolsos arancelarios one-off). AAP -24.47% pese a beat +87% (denominador minimo).",
     "continuation_generados": [
-      "EL(score=7.5)"
+      "DE(score=7.0)"
     ],
     "fuentes": [
+      "gmail_ew",
       "gmail_newsletter",
-      "websearch"
+      "websearch",
+      "post_market_review_interno"
     ],
-    "nota_infra": "Ruta canonica de filesystem inaccesible; lectura y escritura via GitHub. Email EW 19-ago no disponible en el momento de la corrida."
+    "lecciones_nuevas": [
+      "WMT: SELL-THE-NEWS — batio whisper +8.0% pero -9.23% en sesion (2026-08-20)",
+      "DE: beat consenso +14.6% confirmado con +6.9% en sesion (2026-08-20) ✅",
+      "ROST: beat consenso +38.5% pero ~40% del margen viene de reembolsos arancelarios one-off (2026-08-20)",
+      "AAP: beat consenso +87% pero -24.47% — denominador minimo (2026-08-20)",
+      "DQ: MISS consenso -328.6% (2026-08-20)"
+    ],
+    "nota_infra": "Ruta canonica de filesystem inaccesible en esta sesion; lectura y escritura via GitHub API."
   },
   "guidance_eventos": [
     {
@@ -28743,5 +29013,5 @@
       "resolucion": "DECISION: opcion (b) conservadora. El sentinel NO se convierte en ejecutor autonomo. Se formaliza su rol como MONITOR + ESCALADOR con escala propia de 6 puntos y umbral score_min_sentinel=4.5 para ESCALAR (no para ejecutar): cuando un candidato del scan intradia supere 4.5/6, el sentinel lo escribe en candidatos_validados con estado 'vigilar_cauteloso' y alerta por Telegram, y la ejecucion sigue dependiendo de market-open-execution / pre-market-scan con el umbral completo de 8.75/10. Asi desaparece la incoherencia (un umbral de 8.75 sobre una escala de 6) sin aumentar el riesgo ni abrir posiciones con informacion incompleta."
     }
   ],
-  "ultima_actualizacion": "2026-08-20T20:30"
+  "ultima_actualizacion": "2026-08-20T21:41:52.728532+00:00"
 }
