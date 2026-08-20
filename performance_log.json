@@ -3759,7 +3759,7 @@
       "ticker": "WMT",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "sentinel_preview",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 2.74,
       "earnings_fecha": "2026-08-20",
@@ -3771,7 +3771,7 @@
       "expira": "2026-08-20T20:00:00Z",
       "detectado_por": "sentinel-yahoo-fallback",
       "fuente": "yahoo_calendarEvents",
-      "notas": "Actualizado sentinel 15:2x ET con EW real: whisper 0.75 vs cons 0.73 (asim +2.74%, dif $0.02). beat_rate 0.5. Score 3.0 < umbral 7.5. Momentum 15m BAJISTA (-0.37%, vol x1.23, RSI 20.7). Reporta BMO manana -> reevaluar en pre-market scan.",
+      "notas": "Actualizado sentinel 15:2x ET con EW real: whisper 0.75 vs cons 0.73 (asim +2.74%, dif $0.02). beat_rate 0.5. Score 3.0 < umbral 7.5. Momentum 15m BAJISTA (-0.37%, vol x1.23, RSI 20.7). Reporta BMO manana -> reevaluar en pre-market scan. | 2026-08-20 sentinel 13:2x ET: WMT reporto BMO y cae -9% (ventas US mas debiles desde 2020, farmacia). Whisper 0.75 vs cons 0.73 (asim +2.74%) no evito el castigo por guidance/mix. Cerrado sin operar.",
       "ts_creado": "2026-08-19T17:20:44.121543+00:00",
       "whisper": 0.75,
       "consensus": 0.73
@@ -4236,53 +4236,53 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-20T12:15",
-      "nivel": "alerta",
+      "timestamp": "2026-08-20T13:16",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0
+      "score_min_paper_efectivo": 8.75,
+      "score_min_real_efectivo": 9.0,
+      "nota_websearch": "Iran/Hormuz y oil ~$86 siguen siendo regimen de fondo (desde 08-ago), NO shock nuevo: VIX 15.6 y bajando -1.2% en 30min, SPY plano intradia. Bessent duplica recompras del Tesoro pero 10Y +5pb a 4.70% y 30Y 5.25% (max en decadas). WMT -9% tras Q2 (crecimiento US mas debil desde 2020, drag de farmacia). Clasificacion: _shock_tipo=ninguno, macro_nivel=normal. No se disparan macro plays."
     },
-    "macro_score": -1.7,
-    "macro_nivel": "alerta",
+    "macro_score": -1.0,
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Indices a la baja: SPY -0.41%, QQQ -0.62%, IWM -1.26%, DIA -0.83% (amplitud negativa, small caps peor) -> -1.0",
-      "Bonos: TLT -0.84%, 10Y ~4.64% (max 20 meses 4.75% esta semana), 30Y <5.2% tras 5.34% (max 19 anios). Yields al alza SON la causa de la caida equity -> juicio -0.3 (no se aplica el +0.3 mecanico de 'TLT baja = risk-on')",
-      "Petroleo: USO +2.53%, XLE +1.24%. Brent ~$90 (+24% vs pre-guerra). Hormuz sigue cerrado: 10 buques/dia vs ~130 pre-guerra. Iran exige reparaciones y levantamiento de sanciones -> -0.4",
-      "Internacional neutro: EFA -0.21%, EEM +0.50%, FXI -0.21%, EWJ -0.27% -> 0.0",
-      "Sectores: lidera XLE +1.24%, XLB +0.59%, XLRE +0.47%; rezagados XLY -1.49% (shock consumo WMT/AAP), XLI -0.70%, XLP -0.68%. XLK -0.11% resiliente pero liderazgo value/energia, no growth -> -0.2",
-      "CNN Fear&Greed 56 (Greed, lectura 19-ago) -> +0.2"
+      "Futuros ligeramente bajistas",
+      "TLT bajando - risk-on, yields subiendo",
+      "Yield 10Y alto (4.70%) - presion valuaciones growth",
+      "Oro +1.8% senal de miedo"
     ],
     "futuros": {
-      "SPY_proxy": -0.37836924157121815,
-      "QQQ_proxy": -0.4420205857296432,
-      "IWM": -1.088757788678253
+      "ES": -0.4075559580799586,
+      "NQ": -0.5446798417633056,
+      "YM": -0.7976835419390995,
+      "RTY": -1.2237228976912693
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-20T12:15",
+    "ts_actualizado": "2026-08-20T13:16",
     "sectores_hoy": {
       "lider": "energy",
-      "cambio_lider": 1.24,
-      "tech_chg": -0.11,
+      "tech_chg": -0.05,
       "all": {
-        "XLY": -1.49,
-        "XLF": -0.2,
-        "XLP": -0.68,
-        "XLE": 1.24,
-        "XLRE": 0.47,
-        "XLI": -0.7,
-        "XLB": 0.59,
-        "XLK": -0.11,
-        "XLV": -0.51,
-        "XLU": 0.02
+        "tech": -0.05,
+        "financials": -0.25,
+        "energy": 0.72,
+        "healthcare": -0.99,
+        "industrials": -0.94,
+        "consumer_disc": -1.46,
+        "utilities": -0.28,
+        "materials": 0.2,
+        "realestate": 0.38,
+        "staples": -0.7
       },
-      "ts": "12:15"
+      "ts": "13:16"
     },
-    "macro_bonus_ew": -0.51,
+    "macro_bonus_ew": -0.3,
     "bonos": {
-      "tlt_chg": -0.7166947723440122,
-      "ief_chg": -0.3908759905761351
+      "tlt_chg": -0.8130516136556059,
+      "yield_10y": 4.699999809265137,
+      "yield_30y": 5.248000144958496
     },
     "eventos_recientes": [
       {
@@ -4622,9 +4622,10 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "oil": 85.59,
-      "oil_chg": 0.77,
-      "oro_chg": 4.32
+      "dxy": 0.17216763679428868,
+      "oro": 1.7507929648952814,
+      "oil_pct": 0.26796658817714986,
+      "oil_px": 86.05999755859375
     },
     "internacional": {
       "Nikkei": 0.737,
@@ -23074,6 +23075,22 @@
         "Bonos puntuados con juicio (-0.3) en vez de la regla mecanica (TLT baja = risk-on = +0.3): hoy el alza de yields es la causa de la debilidad equity, no una senal de apetito por riesgo.",
         "Polvo crypto sin stop no intervenido en ninguna cuenta: qty~0, valor <$1, y es del bot."
       ]
+    },
+    {
+      "ts": "2026-08-20T13:16:36.289709+00:00",
+      "modo": "intraday",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_detectados": 4,
+      "cowork_abiertas": 0,
+      "vix": 15.6,
+      "spy_chg": -0.41,
+      "macro_score": -1.0,
+      "macro_nivel": "normal",
+      "ew_scan_status": "OK 119/119 via www.earningswhispers.com/api/getstocksdata/{T} (warm-up + X-Requested-With + Referer). Devuelve JSON con whisper/consensusEst/nextEPSDate/releaseTime(1=BMO,3=AMC). old.earningswhispers.com sigue caido; este metodo es el fiable.",
+      "nota": "Sentinel intraday 13:10-13:25 ET 20-ago. Paper equity $108,335 / real $4,548; 0 posiciones equity en ambas cuentas (solo polvo cripto BTCUSD $0.35 y SOLUSD $0.00 sin stop, irrelevante). 0/2 slots Cowork usados. EW scan 119 tickers: solo 4 con earnings hoy/manana (WMT, ROST, BABA, NTES) y ninguno supera 8.75 (max ROST 4.5). Macro normal: VIX 15.6 (-1.2% en 30min), SPY plano, oro +1.75%, WTI $86 (+0.27%), 10Y 4.70% / 30Y 5.25%, energy unico sector verde, consumer_disc -1.46% arrastrado por WMT -9%. macro_score -1.0. No shock: Iran/Hormuz es regimen de fondo, no evento nuevo. Telegram silenciado por politica (sin trades/cierres/shock/EOD). INCIDENCIA ABIERTA: techo de score_oportunidad 6.0 < umbral 8.75.",
+      "nota_libreria": "Entorno: /sessions al 100% de disco; pip requiere --target=/tmp/pylibs + PYTHONPATH=/tmp/pylibs para yfinance/requests/bs4."
     }
   ],
   "momentum_15m": {
@@ -23116,15 +23133,14 @@
       "ts": "10:16"
     },
     "WMT": {
-      "last": 103.855,
-      "day": -9.217657342657343,
-      "m15": 0.737935721914754,
-      "m30": 0.6011829729467707,
-      "vr": 0.6803311231637549,
-      "vd": 0.29366752716983247,
-      "rsi": 58.6,
-      "sig": "debil_alc",
-      "ts": "12:15"
+      "precio": 104.29,
+      "mom_15m": 0.014,
+      "mom_30m": 0.149,
+      "vol_ratio": 0.45,
+      "vwap_dev": 0.599,
+      "rsi": 79.1,
+      "señal": "LATERAL",
+      "ts": "13:16"
     },
     "YETI": {
       "precio": 44.95,
@@ -23398,15 +23414,14 @@
       "ts": "14:49"
     },
     "ROST": {
-      "last": 228.76,
-      "day": -2.5308904985087337,
-      "m15": 0.21248630887185702,
-      "m30": 0.24762238681685858,
-      "vr": 0.7110057769219374,
-      "vd": -0.24626283017104428,
-      "rsi": 30.8,
-      "sig": "debil_alc",
-      "ts": "12:15"
+      "precio": 230.53,
+      "mom_15m": 0.124,
+      "mom_30m": 0.176,
+      "vol_ratio": 0.61,
+      "vwap_dev": 0.432,
+      "rsi": 85.8,
+      "señal": "LATERAL",
+      "ts": "13:16"
     },
     "TTWO": {
       "precio": 229.34,
@@ -23665,15 +23680,14 @@
       "ts": "12:23"
     },
     "EL": {
-      "last": 97.54,
-      "day": -0.5099959200326397,
-      "m15": -0.23012017386858452,
-      "m30": 0.0718096019696278,
-      "vr": 0.3001973127877478,
-      "vd": 0.020572386764251722,
-      "rsi": 57.1,
-      "sig": "debil_baj",
-      "ts": "12:15"
+      "precio": 97.83,
+      "mom_15m": 0.21,
+      "mom_30m": 0.4,
+      "vol_ratio": 0.45,
+      "vwap_dev": 0.213,
+      "rsi": 51.9,
+      "señal": "debil_alcista",
+      "ts": "13:16"
     },
     "TGT": {
       "last": 159.435,
@@ -23887,26 +23901,24 @@
       "ts": "14:15"
     },
     "NTES": {
-      "last": 121.505,
-      "day": -4.462179587985541,
-      "m15": 0.2764710736981049,
-      "m30": 1.1488033298647204,
-      "vr": 0.2442250941284217,
-      "vd": 0.8956740205365625,
-      "rsi": 71.4,
-      "sig": "debil_alc",
-      "ts": "12:15"
+      "precio": 120.45,
+      "mom_15m": -0.058,
+      "mom_30m": -0.306,
+      "vol_ratio": 0.25,
+      "vwap_dev": -0.317,
+      "rsi": 39.1,
+      "señal": "LATERAL",
+      "ts": "13:16"
     },
     "BABA": {
-      "last": 128.08,
-      "day": -0.6708286478731093,
-      "m15": 0.3763525168574596,
-      "m30": 1.3377661679727793,
-      "vr": 0.40208988191317646,
-      "vd": 0.9895778593211344,
-      "rsi": 54.7,
-      "sig": "debil_alc",
-      "ts": "12:15"
+      "precio": 128.84,
+      "mom_15m": -0.041,
+      "mom_30m": 0.187,
+      "vol_ratio": 0.36,
+      "vwap_dev": 0.641,
+      "rsi": 64.6,
+      "señal": "LATERAL",
+      "ts": "13:16"
     },
     "COTY": {
       "precio": 3.02,
@@ -25231,6 +25243,28 @@
       "ts_detected": "2026-08-20T12:15:41.689506+00:00",
       "ejecutado": false,
       "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "ROST",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.63,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "razon": "whisper 2.00 vs cons 1.93; beat_rate 4/4; RSI 85.8 sobrecomprado; reporta AH hoy",
+      "ts_detected": "2026-08-20T13:16:36.289709+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "NTES",
+      "score": 2.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.83,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "ya reporto BMO; beat_rate 1/4; perdidas de inversion lastran beneficio",
+      "ts_detected": "2026-08-20T13:16:36.289709+00:00",
+      "ejecutado": false
     }
   ],
   "skip_analysis": {
@@ -28464,7 +28498,16 @@
       "detalle": "old.earningswhispers.com: ConnectTimeout desde el entorno de ejecucion. www.earningswhispers.com responde 200 pero es SPA client-side: ids consest/epsdate-*/getWhisper vienen vacios en el HTML crudo y el whisper requiere login. Parser headless actual devuelve 0 datos.",
       "impacto": "Scan EW del sentinel inoperativo -> 0 candidatos nuevos por asimetria whisper-consenso.",
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
+    },
+    {
+      "fecha": "2026-08-20",
+      "detectado_por": "sentinel",
+      "severidad": "alta",
+      "estado": "abierta",
+      "titulo": "score_oportunidad() del sentinel tiene techo 6.0 pero el umbral de ejecucion es 8.75",
+      "detalle": "La funcion score_oportunidad() del PASO 3 suma como maximo 3.0 (asimetria >10%) + 2.0 (beat_rate >=75%) + 1.0 (timing hoy/manana) = 6.0. SCORE_MIN_P se lee de parametros_activos.min_signal_score = 8.75 y SCORE_MIN_R de score_threshold_real_account = 9.0. Por construccion NINGUN candidato del scan intradia puede alcanzar el umbral, por lo que el PASO 5 nunca ejecuta con senales propias del sentinel. Coincide con sentinel_log 19-ago: 12 candidatos detectados, 0 oportunidades. Hoy 20-ago: 4 candidatos (max score 4.5 ROST), 0 ejecuciones. El sentinel funciona de facto como monitor, no como ejecutor. Opciones: (a) reescalar score_oportunidad a base 10 anadiendo bloques (momentum, macro_bonus, sector, sorpresa historica), o (b) definir un score_min_sentinel propio (~4.5-5.0) separado de min_signal_score, que es el umbral del pipeline EW completo del pre-market. Requiere decision explicita: NO se ha cambiado nada automaticamente.",
+      "impacto": "El sentinel no abre posiciones por si mismo; toda la ejecucion depende de market-open-execution y pre-market scan."
     }
   ],
-  "ultima_actualizacion": "2026-08-20T12:15 ET"
+  "ultima_actualizacion": "2026-08-20T13:16"
 }
