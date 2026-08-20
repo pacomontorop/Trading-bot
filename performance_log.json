@@ -4147,7 +4147,17 @@
       "ts_creado": "2026-08-19T21:42:04.662605+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "sentinel_validacion": {
+        "ts": "2026-08-20T14:21",
+        "resultado": "gate_fallido_no_entrar",
+        "regla": "apertura > cierre 2026-08-19 ($98.01)",
+        "apertura_2026_08_20": 97.425,
+        "cierre_previo": 98.01,
+        "ultimo": 97.25,
+        "low_dia": 94.48,
+        "motivo": "Apertura -0.60% bajo el cierre post-beat: PEAD dia-2 invalidado, regimen beat-and-fade confirmado."
+      }
     }
   ],
   "macro_context": {
@@ -4236,53 +4246,52 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-20T13:16",
+      "timestamp": "2026-08-20T14:21",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 8.75,
+      "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota_websearch": "Iran/Hormuz y oil ~$86 siguen siendo regimen de fondo (desde 08-ago), NO shock nuevo: VIX 15.6 y bajando -1.2% en 30min, SPY plano intradia. Bessent duplica recompras del Tesoro pero 10Y +5pb a 4.70% y 30Y 5.25% (max en decadas). WMT -9% tras Q2 (crecimiento US mas debil desde 2020, drag de farmacia). Clasificacion: _shock_tipo=ninguno, macro_nivel=normal. No se disparan macro plays."
+      "shock_tipo": "ninguno",
+      "nota_websearch": "Fed minutes mas hawkish de lo esperado + rally de bonos del Tesoro se desvanece; 10Y 4.70%, 30Y 5.24% (maximos en decadas). Brent ~$89 / WTI $86.4 por cierre de Hormuz (regimen de fondo desde ~feb-2026, NO shock nuevo). Oro +1.85% (miedo). Nikkei -3.2%. Proximo catalizador: Jackson Hole (Warsh) la semana que viene. VIX 15.9 plano y SPY -0.16% en 30min => sin shock agudo: _shock_tipo=ninguno, macro_nivel=normal, sin macro plays.",
+      "incidencia_tecnica": "EarningsWhispers inaccesible desde el sandbox (ConnectTimeout old/www) - PASO 3 degradado a WebSearch+Alpaca News"
     },
-    "macro_score": -1.0,
+    "macro_score": -1.5,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros ligeramente bajistas",
-      "TLT bajando - risk-on, yields subiendo",
-      "Yield 10Y alto (4.70%) - presion valuaciones growth",
-      "Oro +1.8% senal de miedo"
+      "Futuros bajistas (-0.83%)",
+      "TLT bajando - yields subiendo",
+      "Yield 10Y alto (4.70%) presion growth",
+      "Oro disparado (+1.8%) senal de miedo"
     ],
     "futuros": {
-      "ES": -0.4075559580799586,
-      "NQ": -0.5446798417633056,
-      "YM": -0.7976835419390995,
-      "RTY": -1.2237228976912693
+      "ES": -0.71,
+      "NQ": -0.96
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-20T13:16",
+    "ts_actualizado": "2026-08-20T14:21",
     "sectores_hoy": {
-      "lider": "energy",
-      "tech_chg": -0.05,
+      "lider": "realestate",
+      "cambio_lider": 0.57,
+      "tech_chg": -0.38,
       "all": {
-        "tech": -0.05,
-        "financials": -0.25,
-        "energy": 0.72,
-        "healthcare": -0.99,
-        "industrials": -0.94,
-        "consumer_disc": -1.46,
-        "utilities": -0.28,
-        "materials": 0.2,
-        "realestate": 0.38,
-        "staples": -0.7
+        "tech": -0.38,
+        "financials": -0.34,
+        "energy": 0.42,
+        "healthcare": -1.15,
+        "industrials": -1.14,
+        "consumer_disc": -1.74,
+        "utilities": -0.08,
+        "materials": -0.05,
+        "realestate": 0.57
       },
-      "ts": "13:16"
+      "ts": "14:21"
     },
-    "macro_bonus_ew": -0.3,
+    "macro_bonus_ew": -0.45,
     "bonos": {
-      "tlt_chg": -0.8130516136556059,
-      "yield_10y": 4.699999809265137,
-      "yield_30y": 5.248000144958496
+      "tlt_chg": -0.83,
+      "yield_10y": 4.696000099182129
     },
     "eventos_recientes": [
       {
@@ -4615,8 +4624,8 @@
     "nota_weekly_review": "weekly-review W33 confirma de forma INDEPENDIENTE el filtro_beat_and_fade: AMAT bate revenue record y cae -5.3%; CSCO y JD tambien caen tras buenos numeros. Convergencia de dos analisis separados sobre el mismo patron. CORRECCION: la weekly databa las minutas FOMC el 20-ago y Jackson Hole el 21-22; las fechas correctas son las de este registro (minutas 19-ago, Jackson Hole 27-29). La fuente de la weekly (FXStreet) era un articulo de 2025.",
     "vix_verificado": "14.25 confirmado vs Yahoo 2026-08-17",
     "oil": {
-      "price": 84.7699966430664,
-      "chg": -0.20014809683707985
+      "price": 86.42,
+      "chg": 0.69
     },
     "gold": 4440.4,
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
@@ -4628,11 +4637,11 @@
       "oil_px": 86.05999755859375
     },
     "internacional": {
-      "Nikkei": 0.737,
-      "DAX": -0.798,
-      "FTSE": 0.072,
-      "HSI": 1.339,
-      "Shanghai": 1.413
+      "Nikkei": -3.16,
+      "DAX": -0.42,
+      "FTSE": 0.04,
+      "HSI": 0.09,
+      "Shanghai": null
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike_contexto_persistente",
@@ -23091,6 +23100,20 @@
       "ew_scan_status": "OK 119/119 via www.earningswhispers.com/api/getstocksdata/{T} (warm-up + X-Requested-With + Referer). Devuelve JSON con whisper/consensusEst/nextEPSDate/releaseTime(1=BMO,3=AMC). old.earningswhispers.com sigue caido; este metodo es el fiable.",
       "nota": "Sentinel intraday 13:10-13:25 ET 20-ago. Paper equity $108,335 / real $4,548; 0 posiciones equity en ambas cuentas (solo polvo cripto BTCUSD $0.35 y SOLUSD $0.00 sin stop, irrelevante). 0/2 slots Cowork usados. EW scan 119 tickers: solo 4 con earnings hoy/manana (WMT, ROST, BABA, NTES) y ninguno supera 8.75 (max ROST 4.5). Macro normal: VIX 15.6 (-1.2% en 30min), SPY plano, oro +1.75%, WTI $86 (+0.27%), 10Y 4.70% / 30Y 5.25%, energy unico sector verde, consumer_disc -1.46% arrastrado por WMT -9%. macro_score -1.0. No shock: Iran/Hormuz es regimen de fondo, no evento nuevo. Telegram silenciado por politica (sin trades/cierres/shock/EOD). INCIDENCIA ABIERTA: techo de score_oportunidad 6.0 < umbral 8.75.",
       "nota_libreria": "Entorno: /sessions al 100% de disco; pip requiere --target=/tmp/pylibs + PYTHONPATH=/tmp/pylibs para yfinance/requests/bs4."
+    },
+    {
+      "ts": "2026-08-20T14:21:15.072043+00:00",
+      "modo": "intradia",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.9,
+      "spy_chg": -0.69,
+      "macro_score": -1.5,
+      "macro_nivel": "normal",
+      "ew_scan": "no_disponible_connect_timeout",
+      "ejecuciones": 0
     }
   ],
   "momentum_15m": {
@@ -23562,25 +23585,24 @@
       "ts": "15:16"
     },
     "SPY": {
-      "last": 765.56,
-      "day": -0.4589839940709262,
-      "m15": -0.007834841540322721,
-      "m30": 0.04834200005226222,
-      "vr": 0.2341874026967834,
-      "vd": -0.09954866622268314,
-      "rsi": 37.4,
-      "sig": "LATERAL",
-      "ts": "12:15"
+      "precio": 763.57,
+      "mom_15m": -0.069,
+      "mom_30m": -0.15,
+      "vol_ratio": 1.25,
+      "vwap_dev": -0.17,
+      "rsi": 13.9,
+      "señal": "LATERAL",
+      "ts": "14:21"
     },
     "QQQ": {
-      "precio": 712.56,
-      "mom_15m": 0.054,
-      "mom_30m": -0.258,
-      "vol_ratio": 1.7,
-      "vwap_dev": -0.072,
-      "rsi": 63.0,
-      "senal": "LATERAL",
-      "ts": "10:16"
+      "precio": 709.13,
+      "mom_15m": -0.113,
+      "mom_30m": -0.271,
+      "vol_ratio": 0.73,
+      "vwap_dev": -0.251,
+      "rsi": 14.2,
+      "señal": "LATERAL",
+      "ts": "14:21"
     },
     "HPE": {
       "precio": 43.24,
@@ -23680,14 +23702,14 @@
       "ts": "12:23"
     },
     "EL": {
-      "precio": 97.83,
-      "mom_15m": 0.21,
-      "mom_30m": 0.4,
-      "vol_ratio": 0.45,
-      "vwap_dev": 0.213,
-      "rsi": 51.9,
-      "señal": "debil_alcista",
-      "ts": "13:16"
+      "precio": 97.25,
+      "mom_15m": 0.072,
+      "mom_30m": -0.2,
+      "vol_ratio": 0.96,
+      "vwap_dev": -0.286,
+      "rsi": 40.6,
+      "señal": "LATERAL",
+      "ts": "14:21"
     },
     "TGT": {
       "last": 159.435,
@@ -25265,6 +25287,30 @@
       "razon": "ya reporto BMO; beat_rate 1/4; perdidas de inversion lastran beneficio",
       "ts_detected": "2026-08-20T13:16:36.289709+00:00",
       "ejecutado": false
+    },
+    {
+      "ticker": "ROST",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "razon": "Reporta hoy AH (confirmado por WebSearch). Sin whisper/consensus: EW inaccesible -> score no computable. Read-through negativo del retail (WMT -9%, XLY -1.7%).",
+      "ts_detected": "2026-08-20T14:21:15.072043+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-websearch"
+    },
+    {
+      "ticker": "EL",
+      "score": 7.5,
+      "tipo": "post_earnings_continuation",
+      "asimetria": 3.25,
+      "earnings_fecha": "2026-08-19",
+      "earnings_timing": "pre-market",
+      "razon": "Gate de validacion fallido: apertura $97.43 < cierre previo $98.01. No ejecutado.",
+      "ts_detected": "2026-08-20T14:21:15.072043+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-validacion"
     }
   ],
   "skip_analysis": {
