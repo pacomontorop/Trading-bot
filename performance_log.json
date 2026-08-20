@@ -527,6 +527,20 @@
       "descripcion": "EL tenia asimetria whisper/consenso +15.62% pero consenso $0.32 < $0.50 -> score rebajado a 4.0. Resultado real: beat +5.4% vs whisper, +21.9% vs consenso, accion +16.25%, el mayor movimiento del dia.",
       "accion_futura": "Propuesta concreta: sustituir el corte duro por consenso<$0.50 por un ajuste graduado (multiplicador 0.7 en vez de descarte) cuando el ticker sea >$20B market cap y tenga >=3 beats consecutivos. Validar en backtest antes de activar.",
       "impacto_score": 0.25
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "BEAT_AND_FADE_CONFIRMACION",
+      "titulo": "WMT: beat de EPS y -8.8% — el filtro beat_and_fade se valida por 6a vez",
+      "descripcion": "WMT bate EPS $0.81 vs $0.74 y revenue $187.9B vs $186.75B, pero comps US +2.6% vs +3.8% esperado (el crecimiento mas lento en 6 anios, lastrado por pricing en farmacia) y guia Q3 plana en EPS -> -8.83%. La asimetria whisper/consenso era solo +2.74%, por debajo del umbral min_whisper_asymmetry_pct=2.5 por poco. AAP: asimetria +22.2% (whisper 0.99 vs cons 0.81) y aun asi -21.5%. La asimetria alta NO protege contra guia mala.",
+      "accion_futura": "CONFIRMADO: el EPS beat no es la variable predictiva; lo son comps/guia. Mantener filtro_beat_and_fade -2 pts. Anadir regla: en retail, si un peer grande (WMT/TGT/TJX) cae >5% el mismo dia, penalizar -2 pts adicionales a todo candidato retail de esa sesion."
+    },
+    {
+      "fecha": "2026-08-20",
+      "tipo": "FILTRO_MOMENTUM_VALIDADO",
+      "titulo": "ROST: doble filtro (beat_and_fade + momentum 15m) evita entrada en dia de carniceria retail",
+      "descripcion": "ROST earnings hoy AH, asimetria whisper +3.63% (2.00 vs 1.93). Score base ~4.5 -> 2.5 tras -2.0 de beat_and_fade sectorial. Momentum 15m BAJISTA (-0.76%, vol x1.51, -1.19% bajo VWAP, RSI 29.2). Ambos filtros coinciden en NO entrar.",
+      "accion_futura": "Revisar en post-market la reaccion AH de ROST para validar el descarte."
     }
   ],
   "operaciones": [
@@ -4222,55 +4236,58 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-19T15:17",
-      "nivel": "normal",
-      "shocks": [],
+      "timestamp": "2026-08-20T10:16",
+      "nivel": "alerta",
+      "shocks": [
+        "oil_geopolitico_en_curso_iran_hormuz",
+        "consumer_weakness_wmt"
+      ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": -1.0,
-    "macro_nivel": "normal",
+    "macro_score": -0.7,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "TLT +1.55% (yields retroceden: 10Y 4.653% -1.13%, 30Y 5.194% -1.72%) -> -0.5",
-      "Yield 10Y 4.65% aun >4.5% -> -0.3 presion sobre valuaciones growth",
-      "Dolar debil (UUP -0.87%) -> +0.3 tailwind multinacionales",
-      "ORO +4.32% (spot ~$4,492, +3.66% dia, +12% mes) -> -0.5 senal debasement/miedo",
-      "Futuros planos (ES +0.28%, NQ -0.15%) -> 0",
-      "Internacional mixto (Nikkei -2.54%, DAX -0.14%, FTSE +0.14%, HSI +0.07%) avg -0.58% -> 0",
-      "Sectores: XLV +3.67% lidera, XLY +1.73%, XLB +1.13% vs XLK -0.88%, XLI -0.86%, XLF -0.51% -> rotacion defensiva/valor, tech rezagado"
+      "Consumer shock: WMT -8.8% pese a beat EPS (comps US +2.6% vs 3.8% esp., peor en 6 anios; guia Q3 floja). AAP -21.5%.",
+      "XLY -1.75%, XLP -1.07%: debilidad de consumo generalizada. Retail discount contagiado (TJX -2.8%, BJ -2.0%, ROST -2.0%).",
+      "Energia lider: XLE +1.53%, USO +2.75%. Brent ~$93 por escalada Iran/UAE y ataques a buques en Hormuz (8 este mes).",
+      "TLT -0.72% (yields al alza), GLD -0.61% (sin bid de refugio), UUP +0.07% plano. Riesgo NO es huida a refugio: es rotacion.",
+      "Vol contenida: VIXY +1.15%, SPY -0.38%. No hay shock: no se cumplen umbrales (SPY -2%/30min, VIX +15%/30min)."
     ],
     "futuros": {
-      "ES": 0.28,
-      "NQ": -0.15,
-      "YM": 0.19,
-      "RTY": 0.39
+      "SPY_proxy": -0.37836924157121815,
+      "QQQ_proxy": -0.4420205857296432,
+      "IWM": -1.088757788678253
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-19T15:17",
+    "ts_actualizado": "2026-08-20T10:16",
     "sectores_hoy": {
-      "lider": "healthcare",
-      "cambio_lider": 3.67,
-      "tech_chg": -0.88,
+      "lider": "energy",
+      "cambio_lider": 1.5338629749075885,
+      "tech_chg": 0.11979960792857074,
+      "rezagado": "consumer_disc",
+      "cambio_rezagado": -1.7539421536385853,
       "all": {
-        "tech": -0.88,
-        "financials": -0.51,
-        "energy": -0.02,
-        "healthcare": 3.67,
-        "industrials": -0.86,
-        "consumer_disc": 1.73,
-        "utilities": -0.1,
-        "materials": 1.13,
-        "realestate": 0.48
+        "XLK": 0.11979960792857074,
+        "XLF": -0.37397808314490066,
+        "XLE": 1.5338629749075885,
+        "XLV": -0.9789413773477513,
+        "XLI": -0.4122238100472683,
+        "XLY": -1.7539421536385853,
+        "XLU": 0.22714366837024744,
+        "XLB": -0.11424219345011856,
+        "XLRE": 0.29996667036995445,
+        "XLP": -1.0691169671752163,
+        "XLC": -0.27393569247351074
       },
-      "ts": "15:17"
+      "ts": "10:16"
     },
-    "macro_bonus_ew": -0.3,
+    "macro_bonus_ew": -0.21,
     "bonos": {
-      "tlt_chg": 1.55,
-      "yield_10y": 4.653,
-      "yield_30y": 5.194
+      "tlt_chg": -0.7166947723440122,
+      "ief_chg": -0.3908759905761351
     },
     "eventos_recientes": [
       {
@@ -23022,6 +23039,20 @@
         "No se resucita ADI (continuation descartada a las 11:2x): su momentum sigue sin confirmar (m15 +0.05%, LATERAL, RSI 48.8, VWAP +0.08%) y el score 7.0 queda ahora por debajo del umbral efectivo 7.5.",
         "Polvo crypto del bot sin stop no intervenido: qty ~0 y valor irrelevante; ademas es del bot."
       ]
+    },
+    {
+      "ts": "2026-08-20T10:16:34.724494+00:00",
+      "modo": "intradia",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 1,
+      "cowork_abiertas": 0,
+      "vix": null,
+      "vixy_chg": 1.1469142545057394,
+      "spy_chg": -0.37836924157121815,
+      "macro_nivel": "alerta",
+      "macro_score": -0.7,
+      "nota": "Sentinel 10:20 ET 20-ago. Paper $108,335 / Real $4,548, 0 posiciones equity en ambas (solo polvo crypto qty~0). Sin stops pendientes. yfinance no instalable (disco sandbox 100%): macro y momentum migrados a Alpaca Data API (snapshots + bars 5Min, feed=iex) — funciona bien y es mas rapido. EW via API JSON www.earningswhispers.com/api/getstocksdata/{T}, universo 267 tickers, 8 con earnings 20-21 ago. Unico candidato pre-earnings: ROST (AH hoy) descartado por score 2.5. DE valida el pipeline EW (+5.85% asim -> +4.31%). WMT -8.8% y AAP -21.5% = shock de consumo, no de mercado. macro_nivel=alerta por oil geopolitico (Iran/Hormuz, Brent $93) + debilidad consumo. Sin ejecuciones. Telegram silenciado por politica."
     }
   ],
   "momentum_15m": {
@@ -23054,24 +23085,24 @@
       "ts": "14:19"
     },
     "SLB": {
-      "precio": 53.97,
-      "mom_15m": -0.12,
-      "mom_30m": 0.0,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.081,
-      "rsi": 59.4,
-      "señal": "LATERAL",
+      "precio": 54.07,
+      "mom_15m": 0.148,
+      "mom_30m": -0.185,
+      "vol_ratio": 0.64,
+      "vwap_dev": 0.801,
+      "rsi": 78.4,
+      "senal": "LATERAL",
       "ts": "10:16"
     },
     "WMT": {
-      "precio": 114.62,
-      "mom_15m": -0.374,
-      "mom_30m": -1.156,
-      "vol_ratio": 1.23,
-      "vwap_dev": -0.68,
-      "rsi": 20.7,
-      "signal": "BAJISTA",
-      "ts": "15:17"
+      "precio": 104.32,
+      "mom_15m": 0.453,
+      "mom_30m": -0.086,
+      "vol_ratio": 0.54,
+      "vwap_dev": -3.218,
+      "rsi": 9.0,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "YETI": {
       "precio": 44.95,
@@ -23102,14 +23133,14 @@
       "ts": "12:13"
     },
     "AAP": {
-      "precio": 56.39,
-      "mom_15m": 0.374,
-      "mom_30m": -0.371,
-      "vol_ratio": 0.81,
-      "vwap_dev": -0.116,
-      "rsi": 44.5,
-      "signal": "debil_alcista",
-      "ts": "15:17"
+      "precio": 43.95,
+      "mom_15m": -0.678,
+      "mom_30m": -1.612,
+      "vol_ratio": 3.54,
+      "vwap_dev": -8.092,
+      "rsi": 9.8,
+      "senal": "BAJISTA",
+      "ts": "10:16"
     },
     "AGYS": {
       "precio": 79.59,
@@ -23162,13 +23193,13 @@
       "ts": "15:45"
     },
     "CVX": {
-      "precio": 204.84,
-      "mom_15m": 0.198,
-      "mom_30m": 0.179,
-      "vol_ratio": 0.27,
-      "vwap_dev": 0.48,
-      "rsi": 66.0,
-      "señal": "debil_alcista",
+      "precio": 207.5,
+      "mom_15m": 0.101,
+      "mom_30m": -0.06,
+      "vol_ratio": 0.25,
+      "vwap_dev": 0.497,
+      "rsi": 65.1,
+      "senal": "LATERAL",
       "ts": "10:16"
     },
     "DECK": {
@@ -23302,14 +23333,14 @@
       "ts": "15:45"
     },
     "BJ": {
-      "precio": 85.78,
-      "mom_15m": 0.052,
-      "mom_30m": -0.718,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.827,
-      "rsi": 26.8,
-      "señal": "LATERAL",
-      "ts": "14:49"
+      "precio": 89.97,
+      "mom_15m": 0.671,
+      "mom_30m": 0.841,
+      "vol_ratio": 0.77,
+      "vwap_dev": -1.638,
+      "rsi": 24.8,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "DDOG": {
       "precio": 222.38,
@@ -23322,14 +23353,14 @@
       "ts": "14:49"
     },
     "DE": {
-      "precio": 584.49,
-      "mom_15m": -0.118,
-      "mom_30m": -0.06,
-      "vol_ratio": 0.88,
-      "vwap_dev": -0.201,
-      "rsi": 39.7,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "precio": 604.28,
+      "mom_15m": -0.358,
+      "mom_30m": 0.989,
+      "vol_ratio": 0.69,
+      "vwap_dev": 2.254,
+      "rsi": 67.2,
+      "senal": "debil_bajista",
+      "ts": "10:16"
     },
     "NET": {
       "precio": 214.87,
@@ -23342,14 +23373,14 @@
       "ts": "14:49"
     },
     "ROST": {
-      "precio": 235.12,
-      "mom_15m": -0.208,
-      "mom_30m": -0.812,
-      "vol_ratio": 1.43,
-      "vwap_dev": -0.578,
-      "rsi": 23.5,
-      "signal": "debil_bajista",
-      "ts": "15:17"
+      "precio": 230.41,
+      "mom_15m": -0.756,
+      "mom_30m": 0.02,
+      "vol_ratio": 1.51,
+      "vwap_dev": -1.187,
+      "rsi": 29.2,
+      "senal": "BAJISTA",
+      "ts": "10:16"
     },
     "TTWO": {
       "precio": 229.34,
@@ -23490,24 +23521,24 @@
       "ts": "15:16"
     },
     "SPY": {
-      "precio": 769.71,
-      "mom_15m": 0.013,
-      "mom_30m": -0.015,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.013,
-      "rsi": 43.7,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "precio": 765.99,
+      "mom_15m": -0.076,
+      "mom_30m": -0.185,
+      "vol_ratio": 0.94,
+      "vwap_dev": -0.251,
+      "rsi": 34.6,
+      "senal": "LATERAL",
+      "ts": "10:16"
     },
     "QQQ": {
-      "precio": 716.72,
-      "mom_15m": 0.045,
-      "mom_30m": -0.039,
-      "vol_ratio": 0.1,
-      "vwap_dev": -0.003,
-      "rsi": 50.7,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "precio": 712.56,
+      "mom_15m": 0.054,
+      "mom_30m": -0.258,
+      "vol_ratio": 1.7,
+      "vwap_dev": -0.072,
+      "rsi": 63.0,
+      "senal": "LATERAL",
+      "ts": "10:16"
     },
     "HPE": {
       "precio": 43.24,
@@ -23647,14 +23678,14 @@
       "ts": "14:19"
     },
     "XOM": {
-      "precio": 165.1,
-      "mom_15m": -0.045,
-      "mom_30m": 0.149,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.186,
-      "rsi": 69.9,
-      "señal": "LATERAL",
-      "ts": "14:15"
+      "precio": 167.81,
+      "mom_15m": 0.197,
+      "mom_30m": -0.092,
+      "vol_ratio": 0.37,
+      "vwap_dev": 0.919,
+      "rsi": 72.7,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "KEYS": {
       "precio": 337.21,
@@ -23757,14 +23788,14 @@
       "ts": "14:19"
     },
     "XLE": {
-      "precio": 63.76,
-      "mom_15m": -0.015,
-      "mom_30m": -0.055,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.02,
-      "rsi": 50.9,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "precio": 64.53,
+      "mom_15m": 0.171,
+      "mom_30m": 0.023,
+      "vol_ratio": 0.46,
+      "vwap_dev": 0.77,
+      "rsi": 76.6,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "DAL": {
       "precio": 88.26,
@@ -23794,23 +23825,24 @@
       "ts": "15:15"
     },
     "LMT": {
-      "precio": 606.98,
-      "mom_15m": 0.099,
-      "mom_30m": 0.515,
-      "vol_ratio": 0.0,
-      "vwap_dev": 1.185,
-      "rsi": 86.9,
-      "señal": "LATERAL",
+      "precio": 586.36,
+      "mom_15m": 0.618,
+      "mom_30m": 0.541,
+      "vol_ratio": 1.13,
+      "vwap_dev": -0.44,
+      "rsi": 30.7,
+      "senal": "debil_alcista",
       "ts": "10:16"
     },
     "RTX": {
-      "precio": 222.49,
-      "mom_15m": -0.13,
-      "vol_ratio": 1.2,
-      "vwap_dev": -0.29,
-      "rsi": 25.0,
-      "señal": "LATERAL",
-      "ts": "15:15"
+      "precio": 219.12,
+      "mom_15m": 0.415,
+      "mom_30m": 0.645,
+      "vol_ratio": 0.17,
+      "vwap_dev": -0.655,
+      "rsi": 33.9,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "ZTO": {
       "precio": 23.17,
@@ -23833,18 +23865,14 @@
       "ts": "15:17"
     },
     "BABA": {
-      "precio": 127.93,
-      "mom_15m": 0.11,
-      "mom_30m": -0.459,
-      "vol_ratio": 0.26,
-      "vwap_dev": -0.128,
-      "rsi": 44.7,
-      "señal": "LATERAL",
-      "chg_day": -0.17,
-      "hi": 128.76,
-      "lo": 127.54,
-      "atr": 3.82,
-      "ts": "11:17"
+      "precio": 124.75,
+      "mom_15m": 0.205,
+      "mom_30m": 0.641,
+      "vol_ratio": 0.5,
+      "vwap_dev": -0.448,
+      "rsi": 72.4,
+      "senal": "debil_alcista",
+      "ts": "10:16"
     },
     "COTY": {
       "precio": 3.02,
@@ -23869,6 +23897,56 @@
       "rsi": 17.1,
       "señal": "LATERAL",
       "ts": "13:20"
+    },
+    "IWM": {
+      "precio": 298.27,
+      "mom_15m": -0.244,
+      "mom_30m": -0.482,
+      "vol_ratio": 3.02,
+      "vwap_dev": -0.504,
+      "rsi": 17.2,
+      "senal": "debil_bajista",
+      "ts": "10:16"
+    },
+    "BKE": {
+      "precio": 42.35,
+      "mom_15m": -2.024,
+      "mom_30m": -1.569,
+      "vol_ratio": 2.09,
+      "vwap_dev": -1.624,
+      "rsi": 32.6,
+      "senal": "BAJISTA",
+      "ts": "10:16"
+    },
+    "XLY": {
+      "precio": 116.51,
+      "mom_15m": -0.648,
+      "mom_30m": -0.359,
+      "vol_ratio": 0.23,
+      "vwap_dev": -1.367,
+      "rsi": 21.9,
+      "senal": "debil_bajista",
+      "ts": "10:16"
+    },
+    "USO": {
+      "precio": 134.54,
+      "mom_15m": 0.16,
+      "mom_30m": -0.152,
+      "vol_ratio": 0.27,
+      "vwap_dev": 1.381,
+      "rsi": 72.1,
+      "senal": "debil_alcista",
+      "ts": "10:16"
+    },
+    "VIXY": {
+      "precio": 18.52,
+      "mom_15m": 0.135,
+      "mom_30m": 0.679,
+      "vol_ratio": 1.79,
+      "vwap_dev": 0.773,
+      "rsi": 62.6,
+      "senal": "LATERAL",
+      "ts": "10:16"
     }
   },
   "sentinel_signals": [
@@ -24941,6 +25019,28 @@
       "ts_detected": "2026-08-19T15:17:16.276315+00:00",
       "ejecutado": false,
       "fuente": "sentinel-intraday-1520ET"
+    },
+    {
+      "ticker": "ROST",
+      "score": 2.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.63,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "razon": "asim +3.63% pero -2.0 por beat_and_fade sectorial (WMT/TJX/BJ/AAP) y momentum 15m BAJISTA vol x1.51, -1.19% vs VWAP. Score 2.5 << 7.5.",
+      "ts_detected": "2026-08-20T10:16:34.724494+00:00",
+      "ejecutado": false
+    },
+    {
+      "ticker": "DE",
+      "score": null,
+      "tipo": "ew_validacion",
+      "asimetria": 5.85,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "razon": "ACIERTO EW: whisper 5.07 vs cons 4.79 (+5.85%) -> reaccion +4.31%. Reportado BMO, ya descontado; entrada intradia descartada (RSI 67, +2.25% sobre VWAP).",
+      "ts_detected": "2026-08-20T10:16:34.724494+00:00",
+      "ejecutado": false
     }
   ],
   "skip_analysis": {
