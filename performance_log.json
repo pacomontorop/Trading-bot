@@ -4123,7 +4123,7 @@
       "score_ajustado": 7.5,
       "score_override": 7.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "caducado_gate_fallido",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-19",
       "accion_recomendada": "entrar_apertura",
@@ -4157,6 +4157,11 @@
         "ultimo": 97.25,
         "low_dia": 94.48,
         "motivo": "Apertura -0.60% bajo el cierre post-beat: PEAD dia-2 invalidado, regimen beat-and-fade confirmado."
+      },
+      "cierre_candidato": {
+        "ts": "2026-08-20T18:42:54.850507+00:00",
+        "por": "pre-close-manager",
+        "motivo": "Gate de entrada fallido (apertura 97.425 < cierre previo 98.01). No ejecutada. Candidato expira 2026-08-20T21:00:00Z."
       }
     }
   ],
@@ -16158,6 +16163,80 @@
         "paper": 0,
         "real": 0
       }
+    },
+    {
+      "timestamp": "2026-08-20T18:42:54.850473+00:00",
+      "hora_et": "2026-08-20 14:42 ET",
+      "tarea": "pre-close-manager",
+      "evaluaciones": [
+        {
+          "symbol": "BTCUSD",
+          "account": "paper",
+          "decision": "mantener",
+          "razon": "bot_autonomo — R1-R4 no aplican, sin earnings hoy/manana (pnl=+11.4%)",
+          "pnl_pct": 11.39,
+          "pnl_abs": 0.04,
+          "dias": 0,
+          "price_now": 72360.41,
+          "entry_price": 64959.1,
+          "stop_actual": 0.0,
+          "shares": 4.874e-06,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "SOLUSD",
+          "account": "paper",
+          "decision": "mantener",
+          "razon": "bot_autonomo — R1-R4 no aplican, sin earnings hoy/manana (pnl=+12.5%)",
+          "pnl_pct": 12.53,
+          "pnl_abs": 0.0,
+          "dias": 0,
+          "price_now": 86.9102,
+          "entry_price": 77.22,
+          "stop_actual": 0.0,
+          "shares": 2.5e-05,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "BTCUSD",
+          "account": "real",
+          "decision": "mantener",
+          "razon": "bot_autonomo — R1-R4 no aplican, sin earnings hoy/manana (pnl=-38.6%)",
+          "pnl_pct": -38.59,
+          "pnl_abs": -0.38,
+          "dias": 0,
+          "price_now": 72360.41,
+          "entry_price": 117828.22,
+          "stop_actual": 0.0,
+          "shares": 8.299e-06,
+          "source": "bot_autonomo"
+        }
+      ],
+      "posiciones_cerrar": 0,
+      "posiciones_mantener": 3,
+      "cierres_ejecutados": [],
+      "cierres_fallidos": [],
+      "stops_overnight": [],
+      "skips_stops": [
+        "BTCUSD(paper): bot_autonomo — hands-off",
+        "SOLUSD(paper): bot_autonomo — hands-off",
+        "BTCUSD(real): bot_autonomo — hands-off"
+      ],
+      "pnl_dia_abs": 0,
+      "posiciones_equity": 0,
+      "r0_activaciones": 0,
+      "nota": "Libro de equity VACIO al pre-cierre por 2o dia consecutivo. Unica exposicion: dust crypto (BTCUSD/SOLUSD paper $0.35+$0.00, BTCUSD real $0.60) del bot_autonomo -> hands-off, sin stops. R0 no se activo: ninguna posicion con earnings AH hoy ni pre-market manana. EL (continuation 7.5) no se ejecuto: gate del sentinel fallido a las 14:21 ET (apertura 97.425 < cierre previo 98.01) -> PEAD dia-2 invalidado, beat-and-fade confirmado. Sin ordenes abiertas en paper ni real.",
+      "anomalias": [
+        {
+          "tipo": "drawdown_dust_crypto_real",
+          "symbol": "BTCUSD",
+          "cuenta": "real",
+          "detalle": "entry 117828.22 vs precio 72535.29 = -38.59% no realizado, pero market value $0.60 (dust). Sin stop. Posicion del bot_autonomo -> Cowork no interviene por regla hands-off (leccion GE 28-abr). Recomendacion para post-market-review: valorar limpieza de dust en cuenta real, distorsiona metricas de %.",
+          "impacto_usd": -0.38,
+          "accion_tomada": "ninguna (hands-off bot_autonomo)"
+        }
+      ],
+      "infra": "Ruta canonica de filesystem inaccesible en esta sesion; lectura y escritura via GitHub. /sessions al 100% de disco -> deps instaladas en /tmp."
     }
   ],
   "historial_diario_notas": [
@@ -28555,5 +28634,5 @@
       "impacto": "El sentinel no abre posiciones por si mismo; toda la ejecucion depende de market-open-execution y pre-market scan."
     }
   ],
-  "ultima_actualizacion": "2026-08-20T13:16"
+  "ultima_actualizacion": "2026-08-20T14:42"
 }
