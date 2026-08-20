@@ -4236,24 +4236,22 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-20T10:16",
+      "timestamp": "2026-08-20T12:15",
       "nivel": "alerta",
-      "shocks": [
-        "oil_geopolitico_en_curso_iran_hormuz",
-        "consumer_weakness_wmt"
-      ],
+      "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": -0.7,
+    "macro_score": -1.7,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Consumer shock: WMT -8.8% pese a beat EPS (comps US +2.6% vs 3.8% esp., peor en 6 anios; guia Q3 floja). AAP -21.5%.",
-      "XLY -1.75%, XLP -1.07%: debilidad de consumo generalizada. Retail discount contagiado (TJX -2.8%, BJ -2.0%, ROST -2.0%).",
-      "Energia lider: XLE +1.53%, USO +2.75%. Brent ~$93 por escalada Iran/UAE y ataques a buques en Hormuz (8 este mes).",
-      "TLT -0.72% (yields al alza), GLD -0.61% (sin bid de refugio), UUP +0.07% plano. Riesgo NO es huida a refugio: es rotacion.",
-      "Vol contenida: VIXY +1.15%, SPY -0.38%. No hay shock: no se cumplen umbrales (SPY -2%/30min, VIX +15%/30min)."
+      "Indices a la baja: SPY -0.41%, QQQ -0.62%, IWM -1.26%, DIA -0.83% (amplitud negativa, small caps peor) -> -1.0",
+      "Bonos: TLT -0.84%, 10Y ~4.64% (max 20 meses 4.75% esta semana), 30Y <5.2% tras 5.34% (max 19 anios). Yields al alza SON la causa de la caida equity -> juicio -0.3 (no se aplica el +0.3 mecanico de 'TLT baja = risk-on')",
+      "Petroleo: USO +2.53%, XLE +1.24%. Brent ~$90 (+24% vs pre-guerra). Hormuz sigue cerrado: 10 buques/dia vs ~130 pre-guerra. Iran exige reparaciones y levantamiento de sanciones -> -0.4",
+      "Internacional neutro: EFA -0.21%, EEM +0.50%, FXI -0.21%, EWJ -0.27% -> 0.0",
+      "Sectores: lidera XLE +1.24%, XLB +0.59%, XLRE +0.47%; rezagados XLY -1.49% (shock consumo WMT/AAP), XLI -0.70%, XLP -0.68%. XLK -0.11% resiliente pero liderazgo value/energia, no growth -> -0.2",
+      "CNN Fear&Greed 56 (Greed, lectura 19-ago) -> +0.2"
     ],
     "futuros": {
       "SPY_proxy": -0.37836924157121815,
@@ -4262,29 +4260,26 @@
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-20T10:16",
+    "ts_actualizado": "2026-08-20T12:15",
     "sectores_hoy": {
       "lider": "energy",
-      "cambio_lider": 1.5338629749075885,
-      "tech_chg": 0.11979960792857074,
-      "rezagado": "consumer_disc",
-      "cambio_rezagado": -1.7539421536385853,
+      "cambio_lider": 1.24,
+      "tech_chg": -0.11,
       "all": {
-        "XLK": 0.11979960792857074,
-        "XLF": -0.37397808314490066,
-        "XLE": 1.5338629749075885,
-        "XLV": -0.9789413773477513,
-        "XLI": -0.4122238100472683,
-        "XLY": -1.7539421536385853,
-        "XLU": 0.22714366837024744,
-        "XLB": -0.11424219345011856,
-        "XLRE": 0.29996667036995445,
-        "XLP": -1.0691169671752163,
-        "XLC": -0.27393569247351074
+        "XLY": -1.49,
+        "XLF": -0.2,
+        "XLP": -0.68,
+        "XLE": 1.24,
+        "XLRE": 0.47,
+        "XLI": -0.7,
+        "XLB": 0.59,
+        "XLK": -0.11,
+        "XLV": -0.51,
+        "XLU": 0.02
       },
-      "ts": "10:16"
+      "ts": "12:15"
     },
-    "macro_bonus_ew": -0.21,
+    "macro_bonus_ew": -0.51,
     "bonos": {
       "tlt_chg": -0.7166947723440122,
       "ief_chg": -0.3908759905761351
@@ -23053,6 +23048,32 @@
       "macro_nivel": "alerta",
       "macro_score": -0.7,
       "nota": "Sentinel 10:20 ET 20-ago. Paper $108,335 / Real $4,548, 0 posiciones equity en ambas (solo polvo crypto qty~0). Sin stops pendientes. yfinance no instalable (disco sandbox 100%): macro y momentum migrados a Alpaca Data API (snapshots + bars 5Min, feed=iex) — funciona bien y es mas rapido. EW via API JSON www.earningswhispers.com/api/getstocksdata/{T}, universo 267 tickers, 8 con earnings 20-21 ago. Unico candidato pre-earnings: ROST (AH hoy) descartado por score 2.5. DE valida el pipeline EW (+5.85% asim -> +4.31%). WMT -8.8% y AAP -21.5% = shock de consumo, no de mercado. macro_nivel=alerta por oil geopolitico (Iran/Hormuz, Brent $93) + debilidad consumo. Sin ejecuciones. Telegram silenciado por politica."
+    },
+    {
+      "ts": "2026-08-20T12:15:41.689506+00:00",
+      "modo": "intradia",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_ew_detectados": 15,
+      "cowork_abiertas": 0,
+      "vix": null,
+      "vixy_chg": 1.26,
+      "spy_chg": -0.41,
+      "macro_score": -1.7,
+      "macro_nivel": "alerta",
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 9.0,
+      "nota": "Sentinel 12:10-12:35 ET 20-ago (mercado abierto, ciclo intradia). CUENTAS: paper $108,335.44 / real $4,548.08. CERO posiciones equity en ambas (solo polvo crypto del bot: paper BTCUSD $0.35 +11.5%, SOLUSD $0.00; real BTCUSD $0.60 -38.5%). Ninguna posicion >$50 sin stop -> PASO 1 sin acciones. Cowork 0/2. Sin ordenes abiertas. ENTORNO: yfinance sigue sin instalarse (OSError Errno 28 en /sessions/.../.local pese a 2.5G libres en /; ademas /tmp no escribible en esta sesion). Macro y momentum via Alpaca Data API (snapshots + bars 5Min feed=iex); scratch reubicado a mnt/outputs/sent/. EW: metodo API JSON www.earningswhispers.com/api/getstocksdata/{T} con warm-up + X-Requested-With + Referer CONFIRMADO POR TERCERA VEZ (266 tickers, 1 fallo). old.earningswhispers.com sigue inalcanzable. PIPELINE EW: 15 tickers con earnings 20-21 ago. HOY BMO (ya reportados): AAP whisper 0.99/cons 0.81 asim +22.22% -> la accion cae -25.06% (la mayor asimetria del pipeline resulto ser la peor operacion posible); WMT +2.74% -> -9.22%; BABA -4.64% -> -0.67%; NTES +3.83% -> -4.46%; DE +5.85% -> +8.98% (unico acierto claro); SCSC +4.50% -> +17.51%. HOY AH: ROST asim +3.63% (whisper 2.00 / cons 1.93, dif absoluta $0.07 = el minimo exacto tras la revision 0.08->0.07 de ayer), FLO -4.35% (negativa), OSIS sin whisper. MANANA (viernes 21) BMO: solo BEKE y BJ, AMBOS SIN WHISPER -> pipeline pre-earnings vacio para manana. 0 EJECUCIONES. Razonamiento: (1) manana no hay ninguna senal EW valida; (2) ROST reporta AH HOY -> entrar a las 12:3x ET seria un hold overnight sobre earnings, prohibido por no_holdings_earnings_overnight, y el propio PASO 1 lo liquidaria a las 14:45 ET; su score ~2.5-4.5 esta ademas muy por debajo del umbral efectivo 7.5; (3) las continuaciones post-earnings de hoy estan bloqueadas por el cap de momentum: DE +8.98% y SCSC +17.51% superan max_5day_momentum_pct=10.0 en una sola sesion y ambas se estan desinflando intradia (DE m15 -0.28% RSI 66.8; SCSC m15 -1.18% con VWAP -4.02%, es decir vendiendo desde maximos). Perseguir esos huecos es exactamente el error que el sistema anulo con EL (+12.97%) ayer. MACRO score -1.7 nivel ALERTA (sin shock): causa del dia = REVERSION DE YIELDS. El rally del Tesoro de ayer (anuncio de recompras mas que duplicadas de deuda 10-30a) se dio la vuelta hoy; 10Y ~4.64% tras tocar 4.75% (max 20 meses) y 30Y por debajo de 5.2% tras 5.34% (max 19 anios). Presion sobre chips y sobre activos de larga duracion. NO es shock: SPY -0.41% sin caida rapida, VIXY solo +1.26%. Oil sigue siendo regimen de fondo, no evento nuevo: Hormuz cerrado desde febrero, 10 transitos/dia vs 130 pre-guerra, Brent ~$90; USO +2.53% XLE +1.24% hoy. Umbral paper elevado 7.0->7.5, real se mantiene 9.0. OBSERVACION PARA EL MOTOR DE SCORING: hoy AAP invalida en vivo el uso de la asimetria como senal aislada — +22.22% (la mayor del pipeline, dif absoluta $0.18 perfectamente 'legitima' por todos los filtros de ruido) y la accion cierra -25%. El movimiento post-earnings de esta temporada lo esta decidiendo el GUIDANCE, no el beat (coherente con TJX -4.21% batiendo y TGT +4.36% batiendo, anotado ayer). Recomendacion para el post-market: ponderar guidance/revenue por encima de la asimetria EPS, o exigir confirmacion secundaria antes de dar peso alto a asimetrias grandes en retail. Sin Telegram (politica: sin trades / cierres / shock / EOD / real-sin-stop).",
+      "decisiones_juicio": [
+        "ROST (unica senal EW viva del dia, asim +3.63%): NO ejecutada. Reporta AH hoy -> cualquier entrada ahora es hold overnight sobre earnings. Doble bloqueo: score ~2.5-4.5 << 7.5.",
+        "DE (+8.98%, la unica validacion EW del dia) NO perseguida como continuation: el gap de un dia ya supera max_5day_momentum_pct=10.0 y el m15 es negativo con RSI 66.8. Mismo criterio que anulo EL ayer.",
+        "SCSC (+17.51%) descartada por identica razon, agravada: VWAP -4.02% indica distribucion desde maximos.",
+        "AAP: se registra como falsacion en vivo de la asimetria-como-senal-unica (+22.22% -> -25.06%). Se propone al post-market ponderar guidance sobre asimetria EPS en retail.",
+        "macro_nivel=alerta y no shock: la caida es un grind por yields, no un evento. Se evita el error simetrico de bloquear todo por ruido; los umbrales suben (7.5) pero la operativa sigue viva.",
+        "Bonos puntuados con juicio (-0.3) en vez de la regla mecanica (TLT baja = risk-on = +0.3): hoy el alza de yields es la causa de la debilidad equity, no una senal de apetito por riesgo.",
+        "Polvo crypto sin stop no intervenido en ninguna cuenta: qty~0, valor <$1, y es del bot."
+      ]
     }
   ],
   "momentum_15m": {
@@ -23095,14 +23116,15 @@
       "ts": "10:16"
     },
     "WMT": {
-      "precio": 104.32,
-      "mom_15m": 0.453,
-      "mom_30m": -0.086,
-      "vol_ratio": 0.54,
-      "vwap_dev": -3.218,
-      "rsi": 9.0,
-      "senal": "debil_alcista",
-      "ts": "10:16"
+      "last": 103.855,
+      "day": -9.217657342657343,
+      "m15": 0.737935721914754,
+      "m30": 0.6011829729467707,
+      "vr": 0.6803311231637549,
+      "vd": 0.29366752716983247,
+      "rsi": 58.6,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "YETI": {
       "precio": 44.95,
@@ -23133,14 +23155,15 @@
       "ts": "12:13"
     },
     "AAP": {
-      "precio": 43.95,
-      "mom_15m": -0.678,
-      "mom_30m": -1.612,
-      "vol_ratio": 3.54,
-      "vwap_dev": -8.092,
-      "rsi": 9.8,
-      "senal": "BAJISTA",
-      "ts": "10:16"
+      "last": 42.145,
+      "day": -25.062233285917497,
+      "m15": 0.4166170693964936,
+      "m30": -1.1715089034676665,
+      "vr": 1.339723286152199,
+      "vd": -1.6301501185857115,
+      "rsi": 23.0,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "AGYS": {
       "precio": 79.59,
@@ -23333,14 +23356,15 @@
       "ts": "15:45"
     },
     "BJ": {
-      "precio": 89.97,
-      "mom_15m": 0.671,
-      "mom_30m": 0.841,
-      "vol_ratio": 0.77,
-      "vwap_dev": -1.638,
-      "rsi": 24.8,
-      "senal": "debil_alcista",
-      "ts": "10:16"
+      "last": 90.27,
+      "day": -1.7094947735191717,
+      "m15": 0.04985597163749358,
+      "m30": -0.19341290893014715,
+      "vr": 0.5098713627295866,
+      "vd": -0.1527508661794351,
+      "rsi": 52.7,
+      "sig": "LATERAL",
+      "ts": "12:15"
     },
     "DDOG": {
       "precio": 222.38,
@@ -23353,14 +23377,15 @@
       "ts": "14:49"
     },
     "DE": {
-      "precio": 604.28,
-      "mom_15m": -0.358,
-      "mom_30m": 0.989,
-      "vol_ratio": 0.69,
-      "vwap_dev": 2.254,
-      "rsi": 67.2,
-      "senal": "debil_bajista",
-      "ts": "10:16"
+      "last": 632.8,
+      "day": 8.983190961697431,
+      "m15": -0.2799949522036929,
+      "m30": -0.396262683557066,
+      "vr": 0.3328295135568648,
+      "vd": 0.275233356290725,
+      "rsi": 66.8,
+      "sig": "debil_baj",
+      "ts": "12:15"
     },
     "NET": {
       "precio": 214.87,
@@ -23373,14 +23398,15 @@
       "ts": "14:49"
     },
     "ROST": {
-      "precio": 230.41,
-      "mom_15m": -0.756,
-      "mom_30m": 0.02,
-      "vol_ratio": 1.51,
-      "vwap_dev": -1.187,
-      "rsi": 29.2,
-      "senal": "BAJISTA",
-      "ts": "10:16"
+      "last": 228.76,
+      "day": -2.5308904985087337,
+      "m15": 0.21248630887185702,
+      "m30": 0.24762238681685858,
+      "vr": 0.7110057769219374,
+      "vd": -0.24626283017104428,
+      "rsi": 30.8,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "TTWO": {
       "precio": 229.34,
@@ -23521,14 +23547,15 @@
       "ts": "15:16"
     },
     "SPY": {
-      "precio": 765.99,
-      "mom_15m": -0.076,
-      "mom_30m": -0.185,
-      "vol_ratio": 0.94,
-      "vwap_dev": -0.251,
-      "rsi": 34.6,
-      "senal": "LATERAL",
-      "ts": "10:16"
+      "last": 765.56,
+      "day": -0.4589839940709262,
+      "m15": -0.007834841540322721,
+      "m30": 0.04834200005226222,
+      "vr": 0.2341874026967834,
+      "vd": -0.09954866622268314,
+      "rsi": 37.4,
+      "sig": "LATERAL",
+      "ts": "12:15"
     },
     "QQQ": {
       "precio": 712.56,
@@ -23638,34 +23665,37 @@
       "ts": "12:23"
     },
     "EL": {
-      "precio": 99.01,
-      "mom_15m": -0.282,
-      "mom_30m": 0.289,
-      "vol_ratio": 0.37,
-      "vwap_dev": -0.077,
-      "rsi": 58.4,
-      "signal": "debil_bajista",
-      "ts": "15:17"
+      "last": 97.54,
+      "day": -0.5099959200326397,
+      "m15": -0.23012017386858452,
+      "m30": 0.0718096019696278,
+      "vr": 0.3001973127877478,
+      "vd": 0.020572386764251722,
+      "rsi": 57.1,
+      "sig": "debil_baj",
+      "ts": "12:15"
     },
     "TGT": {
-      "precio": 160.43,
-      "mom_15m": -0.118,
-      "mom_30m": -0.675,
-      "vol_ratio": 0.17,
-      "vwap_dev": -0.482,
-      "rsi": 35.4,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "last": 159.435,
+      "day": 0.18537137111977878,
+      "m15": -0.15968438850272118,
+      "m30": -0.05954992791324445,
+      "vr": 1.0796154794182893,
+      "vd": 0.20024568594835482,
+      "rsi": 60.0,
+      "sig": "debil_baj",
+      "ts": "12:15"
     },
     "ADI": {
-      "precio": 377.39,
-      "mom_15m": 0.054,
-      "mom_30m": -0.189,
-      "vol_ratio": 1.54,
-      "vwap_dev": 0.08,
-      "rsi": 48.8,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "last": 377.775,
+      "day": 1.2204597824339396,
+      "m15": 0.07814052049533565,
+      "m30": 0.3132965165675464,
+      "vr": 0.17372563106162034,
+      "vd": -0.187815713655749,
+      "rsi": 34.5,
+      "sig": "LATERAL",
+      "ts": "12:15"
     },
     "KLAR": {
       "precio": 19.55,
@@ -23698,14 +23728,15 @@
       "ts": "14:15"
     },
     "TJX": {
-      "precio": 145.96,
-      "mom_15m": -0.05,
-      "mom_30m": -0.105,
-      "vol_ratio": 0.78,
-      "vwap_dev": -0.014,
-      "rsi": 54.8,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "last": 140.955,
+      "day": -2.5038907141621833,
+      "m15": 0.0639477049879234,
+      "m30": 0.007101264025010175,
+      "vr": 0.6208398557136051,
+      "vd": -0.4294449260681192,
+      "rsi": 19.9,
+      "sig": "LATERAL",
+      "ts": "12:15"
     },
     "BILL": {
       "precio": 47.76,
@@ -23768,14 +23799,15 @@
       "ts": "13:15"
     },
     "LOW": {
-      "precio": 221.07,
-      "mom_15m": -0.282,
-      "mom_30m": -0.399,
-      "vol_ratio": 1.13,
-      "vwap_dev": -0.275,
-      "rsi": 45.0,
-      "signal": "debil_bajista",
-      "ts": "15:17"
+      "last": 219.105,
+      "day": -0.6776971894832297,
+      "m15": 0.3757159221076716,
+      "m30": 0.44935577055343656,
+      "vr": 0.1897904816761466,
+      "vd": 0.22082860361007933,
+      "rsi": 55.0,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "META": {
       "precio": 566.28,
@@ -23855,24 +23887,26 @@
       "ts": "14:15"
     },
     "NTES": {
-      "precio": 126.56,
-      "mom_15m": 0.079,
-      "mom_30m": -0.008,
-      "vol_ratio": 1.07,
-      "vwap_dev": 0.218,
-      "rsi": 71.9,
-      "signal": "LATERAL",
-      "ts": "15:17"
+      "last": 121.505,
+      "day": -4.462179587985541,
+      "m15": 0.2764710736981049,
+      "m30": 1.1488033298647204,
+      "vr": 0.2442250941284217,
+      "vd": 0.8956740205365625,
+      "rsi": 71.4,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "BABA": {
-      "precio": 124.75,
-      "mom_15m": 0.205,
-      "mom_30m": 0.641,
-      "vol_ratio": 0.5,
-      "vwap_dev": -0.448,
-      "rsi": 72.4,
-      "senal": "debil_alcista",
-      "ts": "10:16"
+      "last": 128.08,
+      "day": -0.6708286478731093,
+      "m15": 0.3763525168574596,
+      "m30": 1.3377661679727793,
+      "vr": 0.40208988191317646,
+      "vd": 0.9895778593211344,
+      "rsi": 54.7,
+      "sig": "debil_alc",
+      "ts": "12:15"
     },
     "COTY": {
       "precio": 3.02,
@@ -23947,6 +23981,50 @@
       "rsi": 62.6,
       "senal": "LATERAL",
       "ts": "10:16"
+    },
+    "SCSC": {
+      "last": 60.33,
+      "day": 17.510712894429282,
+      "m15": -1.1793611793611776,
+      "m30": -0.24801587301587066,
+      "vr": 0.26614620298083747,
+      "vd": -4.015158405810862,
+      "rsi": 29.4,
+      "sig": "debil_baj",
+      "ts": "12:15"
+    },
+    "FLO": {
+      "last": 7.45,
+      "day": -0.1340482573726513,
+      "m15": 0.812457684495606,
+      "m30": 0.5401755570560437,
+      "vr": 0.6178965903633744,
+      "vd": 1.3406569849188388,
+      "rsi": 82.4,
+      "sig": "debil_alc",
+      "ts": "12:15"
+    },
+    "OSIS": {
+      "last": 219.415,
+      "day": -0.5371713508612884,
+      "m15": 0.8711842589187117,
+      "m30": -0.41980575474267556,
+      "vr": 0.2998928953945019,
+      "vd": 0.2958226718492054,
+      "rsi": 55.6,
+      "sig": "debil_alc",
+      "ts": "12:15"
+    },
+    "BEKE": {
+      "last": 17.015,
+      "day": -2.2407354208560792,
+      "m15": -0.17600469345849887,
+      "m30": 0.11768167107972681,
+      "vr": 0.25903822083552525,
+      "vd": 0.0718020168808252,
+      "rsi": 49.4,
+      "sig": "debil_baj",
+      "ts": "12:15"
     }
   },
   "sentinel_signals": [
@@ -25041,6 +25119,118 @@
       "razon": "ACIERTO EW: whisper 5.07 vs cons 4.79 (+5.85%) -> reaccion +4.31%. Reportado BMO, ya descontado; entrada intradia descartada (RSI 67, +2.25% sobre VWAP).",
       "ts_detected": "2026-08-20T10:16:34.724494+00:00",
       "ejecutado": false
+    },
+    {
+      "ticker": "AAP",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 22.22,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 0.99,
+      "consensus": 0.81,
+      "razon": "whisper 0.99 vs cons 0.81 = +22.22%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "BABA",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": -4.64,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 1.85,
+      "consensus": 1.94,
+      "razon": "whisper 1.85 vs cons 1.94 = -4.64%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "DE",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 5.85,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 5.07,
+      "consensus": 4.79,
+      "razon": "whisper 5.07 vs cons 4.79 = +5.85%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "FLO",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": -4.35,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "whisper": 0.22,
+      "consensus": 0.23,
+      "razon": "whisper 0.22 vs cons 0.23 = -4.35%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "NTES",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 3.83,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 2.44,
+      "consensus": 2.35,
+      "razon": "whisper 2.44 vs cons 2.35 = +3.83%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "ROST",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 3.63,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "after-hours",
+      "whisper": 2.0,
+      "consensus": 1.93,
+      "razon": "whisper 2.0 vs cons 1.93 = +3.63%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "SCSC",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 4.5,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 1.16,
+      "consensus": 1.11,
+      "razon": "whisper 1.16 vs cons 1.11 = +4.50%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "WMT",
+      "score": null,
+      "tipo": "earnings_ew",
+      "asimetria": 2.74,
+      "earnings_fecha": "2026-08-20",
+      "earnings_timing": "pre-market",
+      "whisper": 0.75,
+      "consensus": 0.73,
+      "razon": "whisper 0.75 vs cons 0.73 = +2.74%",
+      "ts_detected": "2026-08-20T12:15:41.689506+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
     }
   ],
   "skip_analysis": {
@@ -28276,5 +28466,5 @@
       "accion_sugerida": "Reescribir get_ew contra un endpoint alternativo o usar fuente de consenso distinta (yfinance earnings_dates + estimaciones) hasta reparar."
     }
   ],
-  "ultima_actualizacion": "2026-08-19T21:42:04.662619+00:00"
+  "ultima_actualizacion": "2026-08-20T12:15 ET"
 }
