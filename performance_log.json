@@ -4637,7 +4637,7 @@
     ],
     "nota_w26": "FOMC restriction cleared Jun 21 (Fed held rates Jun 17, hawkish but no hike). VIX ~17-19 declining. Macro: GEOPOLITICAL_RELIEF_RALLY. Sistema habilitado para entradas W26 (Jun 22-26). Key earnings: FDX Tue AH, MU Wed AH, PAYX Wed BMO, DRI Thu BMO.",
     "vix_updated": "2026-08-20",
-    "ts_health_check": "2026-08-20T06:08",
+    "ts_health_check": "2026-08-21T06:08",
     "spy_day": -1.29,
     "narrativa_sentinel": "18-ago 12:2x ET: selloff liderado por semis (WDC -7%, SNDK -8%, MRVL/STX -8%, NVDA -2.3%, XLK -2.56%) con 30Y en maximos de ~2 decadas y Brent ~$91 por Iran/Hormuz. Rotacion defensiva: XLV +1.71%, XLE +1.42% lideran; XLK/XLI a la cola. VIX 15.69 = sin panico.",
     "spy_chg": 0.3,
@@ -4696,7 +4696,11 @@
     "us30y_subasta": 5.216,
     "narrativa_semanal_W33": "S&P 500 cerro 3a semana consecutiva al alza (+0.41% SPY, record intrasemanal ~7827 fut). CPI julio +0.1% MoM / 3.4% YoY, core 2.5% - inflacion enfriando. PERO el mercado asigna ~40% a una SUBIDA de tipos en septiembre, no un recorte. Subasta 30Y al 5.216%, la mas alta en 25 anos: el bond market presiona por deficits. ENERGIA fue el sector dominante (XLE +7.7%) por la guerra con Iran; EEUU anuncia medidas de aislamiento economico contra Iran LA PROXIMA SEMANA. AI supercycle intacto en fundamentales (CSCO $7.5B AI target, AMAT record, SMCI guia $65-72B, CRWV backlog $104B) PERO el mercado castigo a casi todos los que batieron: AMAT -5.3%, CSCO y JD a la baja. Regimen de SELL-THE-NEWS sobre nombres AI extendidos. Consumidor de rentas bajas exprimido por gasolina.",
     "nota_weekly_review": "weekly-review W33 confirma de forma INDEPENDIENTE el filtro_beat_and_fade: AMAT bate revenue record y cae -5.3%; CSCO y JD tambien caen tras buenos numeros. Convergencia de dos analisis separados sobre el mismo patron. CORRECCION: la weekly databa las minutas FOMC el 20-ago y Jackson Hole el 21-22; las fechas correctas son las de este registro (minutas 19-ago, Jackson Hole 27-29). La fuente de la weekly (FXStreet) era un articulo de 2025.",
-    "vix_verificado": "14.25 confirmado vs Yahoo 2026-08-17",
+    "vix_verificado": {
+      "valor": 16.01,
+      "fuente": "yahoo ^VIX",
+      "ts": "2026-08-21"
+    },
     "oil": {
       "price": 86.42,
       "chg": 0.69
@@ -28771,6 +28775,36 @@
       "estado": "parcial",
       "issue": "EW headless no disponible (old.earningswhispers.com sin ruta de red). Sin asimetria whisper -> ningun candidato alcanza score>=7.5.",
       "accion_sugerida": "Anadir fuente EW alternativa o alojar mirror; evaluar API /api/todaysresults."
+    },
+    {
+      "fecha": "2026-08-21",
+      "estado": "AMARILLO",
+      "vix": 16.01,
+      "vix_log": 16.0,
+      "vix_diff": 0.01,
+      "restricciones_activas": 0,
+      "restricciones_eliminadas": 0,
+      "alpaca_paper": {
+        "ok": true,
+        "equity": 108335.45
+      },
+      "alpaca_real": {
+        "ok": true,
+        "equity": 4548.11
+      },
+      "tareas": {
+        "pre-market-earnings-scan": "2026-08-17 (4d) ALERTA",
+        "market-open-execution": "2026-08-19 (2d)",
+        "intraday-monitor": "2026-08-19 (2d)",
+        "post-market-review": "2026-08-20 (1d)",
+        "ew-daily-results": "2026-08-20 (1d)",
+        "sentinel": "2026-08-20 (1d)",
+        "pre-close-manager": "2026-08-20 (1d)"
+      },
+      "alertas": [
+        "pre-market-earnings-scan no ha corrido en 4 dias laborables (ultimo: 2026-08-17)"
+      ],
+      "fixes": []
     }
   ],
   "historial_oportunidades_perdidas": [
@@ -29013,5 +29047,5 @@
       "resolucion": "DECISION: opcion (b) conservadora. El sentinel NO se convierte en ejecutor autonomo. Se formaliza su rol como MONITOR + ESCALADOR con escala propia de 6 puntos y umbral score_min_sentinel=4.5 para ESCALAR (no para ejecutar): cuando un candidato del scan intradia supere 4.5/6, el sentinel lo escribe en candidatos_validados con estado 'vigilar_cauteloso' y alerta por Telegram, y la ejecucion sigue dependiendo de market-open-execution / pre-market-scan con el umbral completo de 8.75/10. Asi desaparece la incoherencia (un umbral de 8.75 sobre una escala de 6) sin aumentar el riesgo ni abrir posiciones con informacion incompleta."
     }
   ],
-  "ultima_actualizacion": "2026-08-20T21:41:52.728532+00:00"
+  "ultima_actualizacion": "2026-08-21T06:08Z system-health-check"
 }
