@@ -4536,23 +4536,18 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-21T13:26",
+      "timestamp": "2026-08-21T14:24",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": -0.3,
+    "macro_score": 0.0,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Indices ligeramente alcistas (+0.43%)",
-      "Yield 10Y alto (4.73%) - presion valuaciones growth",
-      "Oro disparado (+3.8%, maximos 3 meses, +14% en agosto) - senal de cobertura/miedo",
-      "Mercados globales moderadamente positivos (+0.73%)",
-      "Tech plano (+0.14%); lidera materials (+2.09%), rezaga utilities (-1.64%)",
-      "Geopolitica: bloqueo/sanciones EEUU a crudo irani (Bessent 'toughest sanctions'); petroleo NO reacciona al alza (WTI $86.98, -0.97%)",
-      "Macro data fuerte: PMI compuesto 56.0 vs 54.5 prev; servicios 56.8 vs 53.9 est"
+      "Indices ligeramente alcistas",
+      "Oro disparado (+2.2%) - senal de miedo"
     ],
     "futuros": {
       "ES": 0.47,
@@ -4562,28 +4557,27 @@
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-21T13:26",
+    "ts_actualizado": "2026-08-21T14:24",
     "sectores_hoy": {
       "lider": "materials",
-      "cambio_lider": 2.29,
-      "tech_chg": 0.19,
+      "debil": "utilities",
+      "tech_chg": 0.06553079947575609,
       "all": {
-        "tech": 0.19,
-        "financials": 0.84,
-        "energy": 0.01,
-        "healthcare": 1.59,
-        "industrials": 0.25,
-        "consumer_disc": 1.17,
-        "utilities": -1.43,
-        "materials": 2.29,
-        "realestate": -0.07
+        "tech": 0.06553079947575609,
+        "financials": 0.8342114506498093,
+        "energy": -0.05489335006272991,
+        "healthcare": 1.3918691642985592,
+        "industrials": 0.36161335187761096,
+        "consumer_disc": 1.1056826947801424,
+        "utilities": -1.6221156042951812,
+        "materials": 2.0984357115604757,
+        "realestate": -0.03327048907619068
       },
-      "ts": "12:15"
+      "ts": "14:24"
     },
-    "macro_bonus_ew": -0.09,
+    "macro_bonus_ew": 0.0,
     "bonos": {
-      "tlt_chg": -0.37,
-      "yield_10y": 4.73
+      "TLT_dia": -0.44328394461987985
     },
     "eventos_recientes": [
       {
@@ -4928,9 +4922,11 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "oro_pct": 3.8,
-      "wti": 86.98,
-      "wti_pct": -0.97
+      "GLD_dia": 2.181765640803353,
+      "USO_dia": 0.8511112762952577,
+      "UUP_dia": -0.07163323782236077,
+      "brent_websearch": 93.96,
+      "wti_websearch": 86.94
     },
     "internacional": {
       "Nikkei": -3.16,
@@ -4970,7 +4966,17 @@
     "nota_oro_2026-08-19": "CORRECCION al ciclo de las 11:2x ET: el +4% de GC=F NO era artefacto de datos. La busqueda web confirma oro spot $4,492/oz (+3.66% en el dia, +12.1% en el mes, +34.3% interanual). Es un movimiento real de debasement/dolar-debil (DXY -0.87%, TLT +1.55%), no de miedo a la renta variable (VIX 15.03 -5.11%, SPY +0.30%). Se computa -0.5 en el macro_score.",
     "nota_fomc_2026-08-19": "Minutas FOMC de la reunion 28-29 jul publicadas hoy 14:00 ET. Tipos en 3.50-3.75% con 3 disidentes a favor de SUBIR. Reaccion: yields retroceden desde los maximos de 2 decadas de ayer (30Y toco 5.2%, maximo desde 2007), TLT +1.55%, dolar en minimos. Probabilidad de 'hold' en septiembre ~65%. Sin shock: SPY +0.30% con amplitud (IWM +0.40%), VIX 15.03.",
     "vix_fuente": "rango intradia 15.60-16.09 (investing.com); cierre estimado en parte alta por SPY -0.84%. VIXY +0.98%.",
-    "vigilancia_geopolitica": true
+    "vigilancia_geopolitica": true,
+    "indices": {
+      "SPY_dia": 0.3842018305315819,
+      "QQQ_dia": 0.324926504719179,
+      "SPY_30min": -0.04114124507773617
+    },
+    "volatilidad": {
+      "VIXY_dia": -1.2709572742022686,
+      "VIXY_30min": 0.3297609233305783,
+      "nota": "VIX indice no disponible via Alpaca; VIXY usado como proxy"
+    }
   },
   "operaciones_crypto": [
     {
@@ -23674,6 +23680,27 @@
         "BEKE (sin edge)",
         "PDD/XPEV lunes BMO (sin whisper)"
       ]
+    },
+    {
+      "ts": "2026-08-21T14:24:43.170536+00:00",
+      "modo": "intradia",
+      "alertas": 2,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix_proxy_vixy": -1.2709572742022686,
+      "spy_chg": 0.3842018305315819,
+      "macro_score": 0.0,
+      "macro_nivel": "normal",
+      "ew_scan_status": "OK via www.earningswhispers.com API (quickcaldata rt1=BMO, rt3=AMC + getstocksdata). old.* y yfinance inaccesibles.",
+      "nota": "Sentinel intradia 14:10-14:40 ET viernes 21-ago. Paper $108,335 / real $4,548; 0 posiciones equity en ambas cuentas (solo polvo cripto paper BTCUSD/SOLUSD <$1, sin stop pero por debajo de umbral de accion). 0/2 slots Cowork. CALENDARIO CONFIRMADO: 21-ago AMC = CERO earnings; manana sabado -> NO hay ventana EW valida hoy, 0 ejecuciones por diseno. BJ (continuation score 8.1) NO ejecutado: su ventana es LUNES 24-ago 09:40-10:00 ET con gate de gap <=+1.5% y VWAP; ademas momentum intradia negativo (m15 -0.356%, vol x0.54, RSI 30.4, bajo VWAP) y evitar hold de 3 dias con escalada EEUU-Iran. MACRO NORMAL: SPY +0.38% dia / -0.04% 30min, VIXY -1.27%, sin spike ni caida severa. Mag7 max TSLA +5.61% (sin earnings, no shock). Sectores: lider materials +2.10%, debil utilities -1.62%, tech +0.07%. DIVERGENCIA persistente y agravada: ORO (GLD) +2.18% intradia a maximos mientras USO solo +0.85% pese a Brent $93.96/WTI $86.94 y Hormuz aun bloqueado -> confirma tesis de cobertura monetaria/fiscal (yields largos al alza, buybacks del Tesoro fallidos, Jackson Hole) por encima de prima de guerra. WebSearch: EEUU promete 'las sanciones mas duras de la historia' a Iran; sin evento nuevo hoy -> NO se clasifica shock (el standoff lleva semanas y esta descontado); se evita ejecutar el MACRO_PLAYBOOK oil_spike sobre noticia rancia. Pipeline: 25-ago AMC INTU (whisper 3.72) / ZM (1.53) / BOX (0.42) / HEI; 26-ago AMC NVDA (whisper 2.12) / CRM / CRWD / OKTA. Telegram silenciado por politica PASO 7 (sin trades, sin cierres, sin shock, fuera de ventana EOD).",
+      "decisiones": [
+        "BJ: no ejecutar hoy, mantener para lunes 09:40 ET con gate",
+        "macro: no clasificar oil_spike pese a keywords Iran/Hormuz - situacion preexistente descontada",
+        "cripto polvo <$1: sin accion (no justifica orden)"
+      ],
+      "fuentes_datos": "Alpaca (posiciones, ordenes, news, bars, snapshots) + EarningsWhispers API + WebSearch"
     }
   ],
   "momentum_15m": {
@@ -23956,15 +23983,14 @@
       "ts": "15:45"
     },
     "BJ": {
-      "price": 95.71,
-      "day": 4.83,
-      "m15": -0.27,
-      "m30": 0.37,
-      "volx": 0.43,
-      "vwapdev": 0.1,
-      "rsi": 55.5,
-      "atr": 2.49,
-      "ts": "13:26"
+      "precio": 95.16,
+      "mom_15m": -0.356,
+      "mom_30m": -0.782,
+      "vol_ratio": 0.54,
+      "vwap_dev": -0.483,
+      "rsi": 30.4,
+      "señal": "debil_bajista",
+      "ts": "14:24"
     },
     "DDOG": {
       "precio": 222.38,
@@ -28124,6 +28150,67 @@
       "tipo": "BMO",
       "razon": "W20 manual: WMT earnings jueves BMO. Beat rate 78%. Play pre-drift. Mantener hasta miércoles cierre.",
       "fecha_entrada": "2026-05-18"
+    },
+    "calendario_confirmado_21ago_1430ET": {
+      "2026-08-21": {
+        "BMO": [
+          "BJ",
+          "BEKE",
+          "UI"
+        ],
+        "AMC": []
+      },
+      "2026-08-24": {
+        "BMO": [
+          "XPEV",
+          "PDD",
+          "NSSC"
+        ],
+        "AMC": [
+          "GRRR",
+          "PICS",
+          "WDS",
+          "TUYA"
+        ]
+      },
+      "2026-08-25": {
+        "AMC": [
+          "INTU",
+          "SMTC",
+          "ZM",
+          "NCNO",
+          "BOX",
+          "HEI",
+          "JOYY",
+          "ELMD",
+          "STRT",
+          "QFIN",
+          "NOAH"
+        ]
+      },
+      "2026-08-26": {
+        "AMC": [
+          "NVDA",
+          "CRM",
+          "CRWD",
+          "OKTA",
+          "SNPS",
+          "VEEV",
+          "A",
+          "NTNX",
+          "HPQ",
+          "OOMA",
+          "URBN",
+          "P"
+        ]
+      },
+      "whispers": {
+        "INTU": 3.72,
+        "NVDA": 2.12,
+        "ZM": 1.53,
+        "BOX": 0.42
+      },
+      "metodo": "GET www.earningswhispers.com/api/quickcaldata/{YYYYMMDD}/{rt} con rt=1 BMO y rt=3 AMC; warm-up en / + X-Requested-With: XMLHttpRequest + Referer /calendar. Whisper: /api/getstocksdata/{TICKER}."
     }
   },
   "plan_semana_proxima": {
@@ -29543,7 +29630,19 @@
       "impacto": "El sentinel no abre posiciones por si mismo; toda la ejecucion depende de market-open-execution y pre-market scan.",
       "fecha_resolucion": "2026-08-20",
       "resolucion": "DECISION: opcion (b) conservadora. El sentinel NO se convierte en ejecutor autonomo. Se formaliza su rol como MONITOR + ESCALADOR con escala propia de 6 puntos y umbral score_min_sentinel=4.5 para ESCALAR (no para ejecutar): cuando un candidato del scan intradia supere 4.5/6, el sentinel lo escribe en candidatos_validados con estado 'vigilar_cauteloso' y alerta por Telegram, y la ejecucion sigue dependiendo de market-open-execution / pre-market-scan con el umbral completo de 8.75/10. Asi desaparece la incoherencia (un umbral de 8.75 sobre una escala de 6) sin aumentar el riesgo ni abrir posiciones con informacion incompleta."
+    },
+    {
+      "fecha": "2026-08-21",
+      "tarea": "sentinel",
+      "hora_et": "14:24",
+      "incidencias": [
+        "old.earningswhispers.com NO resuelve desde el sandbox (connect timeout). Usar SIEMPRE www.earningswhispers.com + API JSON.",
+        "yfinance / Yahoo Finance NO alcanzable en esta sesion (connect timeout). Sustituido por Alpaca Market Data (/v2/stocks/bars y /v2/stocks/snapshots, feed=iex) para momentum, Mag7, VIX-proxy(VIXY), bonos(TLT), oro(GLD), petroleo(USO), dolar(UUP) y sectores(XLK/XLF/...).",
+        "Volumen /sessions al 100% (0 bytes libres): pip install requiere --target=/tmp/pylibs y todo el scratch debe ir a /tmp/<dir_unico>. /tmp es compartido entre sesiones: usar nombre de directorio unico.",
+        "urllib a api.github.com funciono correctamente en esta sesion (lectura y escritura)."
+      ],
+      "aprendizaje": "Alpaca Market Data cubre practicamente todo lo que el skill pide a yfinance salvo indices (^VIX, ^TNX) y futuros/internacional; usar ETFs proxy (VIXY, TLT, USO, GLD, UUP, SPY/QQQ/DIA/IWM)."
     }
   ],
-  "ultima_actualizacion": "2026-08-21T13:26:46.432656+00:00"
+  "ultima_actualizacion": "2026-08-21T14:24 ET"
 }
