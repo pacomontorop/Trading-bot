@@ -16,9 +16,9 @@
     ],
     "total_candidatos_validados": 33,
     "ultima_actualizacion_ew_daily": "2026-08-15T20:58:42.911258+00:00",
-    "ultima_actualizacion": "2026-08-17T14:30:59Z",
+    "ultima_actualizacion": "2026-08-21T14:30:07Z",
     "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
-    "ultima_tarea": "pre-market-earnings-scan 2026-08-17 (0 senales)",
+    "ultima_tarea": "pre-market-earnings-scan 2026-08-21 (0 senales, 0 ordenes)",
     "ultima_ejecucion_post_market": "2026-07-16T20:45:46.929128+00:00",
     "ultimo_backfill": {
       "fecha_ejecucion": "2026-08-15",
@@ -28465,9 +28465,217 @@
       "vigilancia": 0,
       "descartados": 11,
       "nota": "Bloque 20-ago (WMT/BABA/DE + ADR chinos + ROST/FLO/OSIS AH). EW web inaccesible (Chrome MCP desconectado) y sin email de preview -> scoring sin whisper numbers, con consenso de WebSearch y tecnico de Alpaca. Maximo 2.5 (DE). Cero entradas previstas."
+    },
+    {
+      "fecha": "2026-08-21",
+      "ts": "2026-08-21T14:30:07Z",
+      "tarea": "pre-market-earnings-scan",
+      "modo": "HEADLESS",
+      "mercado": "abierto, 10:24 ET al inicio del scan (OpEx mensual)",
+      "macro": {
+        "vix": 15.37,
+        "vix_chg_1d": -0.64,
+        "spy": 764.91,
+        "spy_5d_pct": -1.47,
+        "macro_score": 0.0,
+        "macro_bonus": 0.0,
+        "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED + BEAT_AND_FADE",
+        "sectores_5d_pct": {
+          "XLK": -4.09,
+          "XLF": -0.96,
+          "XLV": 4.53,
+          "XLY": -0.42,
+          "XLE": 3.36,
+          "XLI": -3.36,
+          "XLC": -1.42,
+          "XLP": -0.33,
+          "XLU": -1.87,
+          "SMH": -5.08,
+          "XRT": -1.81
+        }
+      },
+      "cuentas": {
+        "paper_equity": 108335.46,
+        "paper_posiciones_equity": 0,
+        "real_equity": 4548.12,
+        "real_posiciones_equity": 0,
+        "nota": "solo dust crypto (BTCUSD/SOLUSD paper, BTCUSD real)"
+      },
+      "universo": {
+        "fuente_calendario": "Nasdaq API",
+        "fuente_whisper": "NO DISPONIBLE - old.earningswhispers.com timeout headless",
+        "hoy_21ago": 9,
+        "proxima_sesion_24ago": 20,
+        "d2_25ago": 47,
+        "filtro_mcap_min_usd": 2000000000.0,
+        "evaluados": 20
+      },
+      "candidatos_puntuados": [
+        {
+          "ticker": "INTU",
+          "score": 7.4,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 100.0,
+          "rating": "Buy",
+          "upside_pct": 6.8,
+          "mom5d": 5.8,
+          "vs_ma200": -17.34,
+          "skips": [
+            "SECTOR_BAJISTA XLK -4.1% 5d",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "NCNO",
+          "score": 5.3,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 100.0,
+          "rating": "Buy",
+          "upside_pct": 5.9,
+          "mom5d": -1.87,
+          "vs_ma200": 5.91,
+          "skips": [
+            "SECTOR_BAJISTA XLK -4.1% 5d",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "HEI",
+          "score": 4.3,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 100.0,
+          "rating": "Buy",
+          "upside_pct": 12.4,
+          "mom5d": -5.39,
+          "vs_ma200": 10.13,
+          "skips": [
+            "SECTOR_BAJISTA XLI -3.4% 5d",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "ZM",
+          "score": 4.3,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 75.0,
+          "rating": "Buy",
+          "upside_pct": 11.0,
+          "mom5d": 0.76,
+          "vs_ma200": 19.06,
+          "skips": [
+            "SECTOR_BAJISTA XLK -4.1% 5d",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "BZ",
+          "score": 3.4,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 75.0,
+          "rating": "Buy",
+          "upside_pct": 20.3,
+          "mom5d": 1.87,
+          "vs_ma200": -4.06,
+          "skips": [
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "VIPS",
+          "score": 3.4,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 50.0,
+          "rating": "Hold",
+          "upside_pct": 34.2,
+          "mom5d": 1.09,
+          "vs_ma200": -11.36,
+          "skips": [
+            "BEAT_RATE 50%<60%",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "BNS",
+          "score": 3.3,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 100.0,
+          "rating": "Hold",
+          "upside_pct": 2.9,
+          "mom5d": -4.55,
+          "vs_ma200": 13.38,
+          "skips": [
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "GRFS",
+          "score": 3.1,
+          "earnings_date": "2026-08-24",
+          "beat_rate": null,
+          "rating": "Buy",
+          "upside_pct": null,
+          "mom5d": 4.11,
+          "vs_ma200": -2.67,
+          "skips": [
+            "BEAT_RATE_N/D(conservador)"
+          ]
+        },
+        {
+          "ticker": "BOX",
+          "score": 3.1,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 75.0,
+          "rating": "Hold",
+          "upside_pct": 6.4,
+          "mom5d": 0.21,
+          "vs_ma200": 20.1,
+          "skips": [
+            "SECTOR_BAJISTA XLK -4.1% 5d",
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        },
+        {
+          "ticker": "DKS",
+          "score": 3.0,
+          "earnings_date": "2026-08-25",
+          "beat_rate": 75.0,
+          "rating": "Buy",
+          "upside_pct": 45.1,
+          "mom5d": -10.8,
+          "vs_ma200": -14.76,
+          "skips": [
+            "D-2+ (earnings 2026-08-25, entrada seria 2026-08-24)"
+          ]
+        }
+      ],
+      "ejecutados_paper": 0,
+      "ejecutados_real": 0,
+      "conclusion": "0 senales. Mejor score INTU 7.40 < umbral 8.75. Dos bloqueos estructurales: (1) BLOQUE A=0 para todo el universo porque EarningsWhispers es inaccesible headless (techo de score ~7.0-7.5); (2) el unico large-cap de la proxima sesion (PDD, 24-ago BMO) falla el filtro beat_rate (50%<60%) y tiene narrativa de compresion de margenes con EPS en caida YoY. Los mejores setups del calendario (INTU, HEI, NCNO, ZM) reportan el 25-ago -> su ventana D-1 es el lunes 24, no hoy.",
+      "acciones_no_ejecutadas": "NINGUNA ORDEN ENVIADA. Ademas del score insuficiente, esta ejecucion no coloca ordenes automaticas: las entradas requieren confirmacion del usuario.",
+      "flags": [
+        "THRESHOLD_INALCANZABLE_SIN_EW",
+        "EW_HEADLESS_TIMEOUT",
+        "OPEX_VIERNES"
+      ]
     }
   ],
-  "acciones_pendientes_manana": [],
+  "acciones_pendientes_manana": [
+    {
+      "fecha_objetivo": "2026-08-24",
+      "ticker": "INTU",
+      "motivo": "Mejor setup del calendario: beat_rate 100% (n=4), avg surprise +18.9%, consenso Buy, PT $390.72 (+6.8%), 4 beats consecutivos, guidance rev +11.5%, buyback $8B. Earnings 25-ago AH -> ventana D-1 = lunes 24-ago.",
+      "score_hoy": 7.4,
+      "bloqueo_actual": "score < 8.75 (BLOQUE A=0 sin whisper) + sector XLK -4.1% 5d",
+      "accion": "Re-puntuar el lunes 24-ago. Requiere confirmacion del usuario antes de cualquier orden."
+    },
+    {
+      "fecha_objetivo": "2026-08-24",
+      "ticker": "PDD",
+      "motivo": "Reporta BMO lunes 24-ago. NO operable: beat_rate 50%, EPS en caida YoY, compresion margenes Temu, consenso Hold.",
+      "score_hoy": -1.5,
+      "accion": "Vigilar reaccion para posible dato de pattern_database. No entrar."
+    }
+  ],
   "auditoria_tareas": [
     {
       "fecha": "2026-06-04",
@@ -29340,5 +29548,5 @@
       "resolucion": "DECISION: opcion (b) conservadora. El sentinel NO se convierte en ejecutor autonomo. Se formaliza su rol como MONITOR + ESCALADOR con escala propia de 6 puntos y umbral score_min_sentinel=4.5 para ESCALAR (no para ejecutar): cuando un candidato del scan intradia supere 4.5/6, el sentinel lo escribe en candidatos_validados con estado 'vigilar_cauteloso' y alerta por Telegram, y la ejecucion sigue dependiendo de market-open-execution / pre-market-scan con el umbral completo de 8.75/10. Asi desaparece la incoherencia (un umbral de 8.75 sobre una escala de 6) sin aumentar el riesgo ni abrir posiciones con informacion incompleta."
     }
   ],
-  "ultima_actualizacion": "2026-08-21T10:14 ET (sentinel intradia)"
+  "ultima_actualizacion": "2026-08-21T14:30:07Z"
 }
