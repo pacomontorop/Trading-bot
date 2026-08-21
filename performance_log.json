@@ -4206,7 +4206,7 @@
       "score_ajustado": 7.0,
       "score_override": 7.0,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-20",
       "accion_recomendada": "entrar_apertura",
@@ -4239,7 +4239,9 @@
       "tp_sugerido": 657.4,
       "momentum_5d_pct": 1.4,
       "gate_preapertura_sentinel": "GO CONDICIONAL para market-open-execution 09:40-10:15 ET. A FAVOR: mom_5d solo +1.40% (todo el movimiento es el gap del 20-ago, no hay extension previa -> pasa el filtro max_5day_momentum 10%); guia FY26 elevada por el suelo; beat_rate 0.94; futuros verdes; sector agro/construccion poco expuesto al riesgo Iran del lunes. EN CONTRA: score 7.0 < min_signal_score 8.75 vigente; es dia-2 de PEAD con el +6.90% ya hecho; XLI cerro -1.20% ayer (industriales debiles). CONDICION DURA: entrar SOLO si a las 09:40 ET cotiza por encima del cierre 620.94 con fuerza relativa vs SPY. Si abre con gap-down o por debajo de 610, ABORTAR. Sizing 0.75x. Stop 593.60. Real: NO (umbral 99.0). Max hold 3 dias -> cerrar antes del cierre del martes 25-ago.",
-      "revisado_por": "sentinel-preapertura-21ago"
+      "revisado_por": "sentinel-preapertura-21ago",
+      "fecha_expiracion": "2026-08-21",
+      "motivo_expiracion": "Ventana cerrada sin entrada. Score 7.0 < umbral efectivo 7.5 (macro=alerta). Momentum 11:30 ET: m15 -0.15% con vol x0.14 (sin flujo), RSI 70.3, VWAP +0.38%, mom5d +2.83%. Noticias positivas (Oppenheimer PT $685, Baird PT $640) pero sin confirmacion de momentum intradia. Coherente con la decision de ayer de no perseguir el gap +8.98%."
     }
   ],
   "macro_context": {
@@ -4328,58 +4330,57 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-21T10:14",
+      "timestamp": "2026-08-21T11:18",
       "nivel": "alerta",
       "shocks": [],
       "shock_tipo": "oil_spike_regimen_de_fondo",
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 8.75,
+      "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota_websearch": "INTRADIA 21-ago 10:10-10:25 ET. WebSearch confirma: Brent >$93 rumbo a +5% semanal por campana USA para aislar la economia de Iran; 30Y en maximos de decadas; 10Y 4.71%. Se mantiene ALERTA (no SHOCK) por JUICIO: ningun disparador mecanico activo (VIX -3.2%, SPY +0.33%, ningun Mag7 >6%), la tension US-Iran es regimen de fondo de la semana, no evento nuevo de hoy. Oro +2.71% ($4,638) es la senal de refugio mas clara del dia."
+      "nota_websearch": "INTRADIA 21-ago 11:10-11:40 ET. WebSearch: el selloff del jueves fue por yields (Bessent duplico las recompras de deuda a >=$4B/operacion sin calmar al mercado) + tension US-Iran (Trump: \"solo semi-negociando\", bloqueo naval en vez de nuevos ataques) + petroleo. HOY el mercado rebota (SPY +0.41%). Se mantiene ALERTA y no SHOCK por JUICIO: cero disparadores mecanicos (VIX 15.28 y -0.97% en 30min, SPY +0.10% en 30min, ningun Mag7 >=6% — TSLA +4.84% es el maximo). La unica grieta es el oro +2.96% a $4,650 con 30Y en 5.27%: refugio comprandose por debajo de una tape verde."
     },
     "macro_score": -0.3,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros ligeramente alcistas (ES +0.26%, NQ -0.05%)",
-      "Yield 10Y alto (4.71%) - presion valuaciones growth",
-      "Oro disparado (+2.71% a $4,638) - bid de refugio por tension US-Iran",
-      "Brent $93.6 (+5% semanal) por presion USA sobre Iran - regimen de fondo, no shock nuevo",
-      "VIX 15.5 (-3.2%), SPY +0.33% - tape intradia tranquila",
-      "Rotacion a ciclicos/valor: XLB +2.08%, XLF +1.17%, XLV +1.11%; XLK -0.14%"
+      "Futuros ligeramente alcistas (ES +0.46%, YM +0.79%) tras el selloff del jueves (+0.5)",
+      "Yield 10Y 4.73% y 30Y 5.27% (maximos de ~2 decadas) — presion sobre valuaciones growth (-0.3)",
+      "Oro +2.96% a $4,650 — la senal de refugio mas clara del dia pese a la tape tranquila (-0.5)",
+      "WTI $86.36 (-1.67%) / Brent $93.69 — regimen Hormuz de fondo, hoy sin escalada nueva",
+      "Internacional positivo (Nikkei +1.36%, HSI +1.21%, DAX/FTSE +0.67%)",
+      "Rotacion defensiva/valor: materials +2.20%, healthcare +1.72% lideran; tech -0.05%, utilities -1.31%",
+      "Fear&Greed 52 (neutral), Put/Call 0.80 (complaciente) — sin extremos de sentimiento"
     ],
     "futuros": {
-      "ES": 0.26,
-      "NQ": -0.05,
-      "YM": 0.67,
-      "RTY": 0.57
+      "ES": 0.46,
+      "NQ": 0.2,
+      "YM": 0.79,
+      "RTY": 0.43
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-21T10:14",
+    "ts_actualizado": "2026-08-21T11:18",
     "sectores_hoy": {
-      "lider": "XLB",
-      "cambio_lider": 2.08,
-      "tech_chg": -0.14,
+      "lider": "materials",
+      "cambio_lider": 2.2,
+      "tech_chg": -0.05,
       "all": {
-        "XLK": -0.14,
-        "XLF": 1.17,
-        "XLE": 0.29,
-        "XLV": 1.11,
-        "XLI": 0.28,
-        "XLY": 0.75,
-        "XLU": -0.41,
-        "XLB": 2.08,
-        "XLRE": 0.22,
-        "XLP": 0.26,
-        "XLC": 0.51
+        "XLK": -0.05,
+        "XLF": 0.83,
+        "XLE": -0.22,
+        "XLV": 1.72,
+        "XLI": 0.06,
+        "XLY": 1.15,
+        "XLU": -1.31,
+        "XLB": 2.2,
+        "XLRE": -0.13
       },
-      "ts": "10:14"
+      "ts": "11:18"
     },
     "macro_bonus_ew": -0.09,
     "bonos": {
-      "tlt_chg": -0.19,
-      "yield_10y": 4.71,
-      "yield_30y": 5.25
+      "tlt_chg": -0.35,
+      "yield_10y": 4.73,
+      "yield_30y": 5.27
     },
     "eventos_recientes": [
       {
@@ -4724,11 +4725,11 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 86.42,
-      "wti_chg": -1.61,
-      "brent": 93.6,
-      "oro": 4638.6,
-      "oro_chg": 2.71
+      "oro_chg": 2.96,
+      "oro_px": 4650.2,
+      "wti_px": 86.36,
+      "wti_chg": -1.67,
+      "brent_px": 93.69
     },
     "internacional": {
       "^N225": -0.3,
@@ -4743,7 +4744,7 @@
     "oil_wti": 84.29,
     "oil_brent": 90.93000030517578,
     "oro": 0.127,
-    "fear_greed": 59,
+    "fear_greed": 52,
     "qqq_chg": 0.04,
     "oro_chg": 4.32,
     "dxy_chg": -0.87,
@@ -4767,7 +4768,8 @@
     },
     "nota_oro_2026-08-19": "CORRECCION al ciclo de las 11:2x ET: el +4% de GC=F NO era artefacto de datos. La busqueda web confirma oro spot $4,492/oz (+3.66% en el dia, +12.1% en el mes, +34.3% interanual). Es un movimiento real de debasement/dolar-debil (DXY -0.87%, TLT +1.55%), no de miedo a la renta variable (VIX 15.03 -5.11%, SPY +0.30%). Se computa -0.5 en el macro_score.",
     "nota_fomc_2026-08-19": "Minutas FOMC de la reunion 28-29 jul publicadas hoy 14:00 ET. Tipos en 3.50-3.75% con 3 disidentes a favor de SUBIR. Reaccion: yields retroceden desde los maximos de 2 decadas de ayer (30Y toco 5.2%, maximo desde 2007), TLT +1.55%, dolar en minimos. Probabilidad de 'hold' en septiembre ~65%. Sin shock: SPY +0.30% con amplitud (IWM +0.40%), VIX 15.03.",
-    "vix_fuente": "rango intradia 15.60-16.09 (investing.com); cierre estimado en parte alta por SPY -0.84%. VIXY +0.98%."
+    "vix_fuente": "rango intradia 15.60-16.09 (investing.com); cierre estimado en parte alta por SPY -0.84%. VIXY +0.98%.",
+    "put_call_ratio": 0.8
   },
   "operaciones_crypto": [
     {
@@ -23372,6 +23374,33 @@
       "ew_scan_status": "OK 97/97 via www.earningswhispers.com/api/getstocksdata/{T} (warm-up + X-Requested-With + Referer). 0 earnings hoy/lunes en el universo: la ventana esta vacia hasta el 25-ago.",
       "nota": "Sentinel intradia 10:10-10:25 ET 21-ago (viernes). Paper $108,335 / real $4,548; 0 posiciones equity en ambas cuentas (solo polvo cripto BTCUSD/SOLUSD, mv<$1, irrelevante). 0/2 slots Cowork. EW scan 97 tickers: CERO earnings hoy, manana o lunes -> 0 oportunidades ejecutables, nada que ejecutar por diseno. Macro ALERTA por juicio (Brent $93.6 +5% semanal por presion USA/Iran, 10Y 4.71%, oro +2.71%) pero tape intradia tranquila (VIX 15.5 -3.2%, SPY +0.33%) -> entradas NO bloqueadas, umbrales 8.75 paper / 9.0 real. Unico candidato activo DE (score 7.0, post-earnings continuation) expira hoy 20:00Z sin entrada: score bajo umbral y momentum 15m -0.69% con vol x0.12; noticias POSITIVAS (Oppenheimer PT $685, Baird PT $640 tras Q2 fuerte). Se guarda calendario EW 25-ago a 02-sep en weekly_ew_intel: la carga real vuelve el martes 25 (ZM/INTU) y miercoles 26 (NVDA, CRM, CRWD, OKTA, SNPS, HPQ, NTNX). NO se ejecuto ninguna orden en cuenta REAL.",
       "sin_telegram": "ciclo sin trades/cierres/shock/EOD -> Telegram silenciado por politica"
+    },
+    {
+      "ts": "2026-08-21T15:18:26.321779+00:00",
+      "modo": "intradia",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "candidatos_detectados": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.28,
+      "spy_chg": 0.41,
+      "macro_score": -0.3,
+      "macro_nivel": "alerta",
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 9.0,
+      "ew_scan_status": "OK 115/115 via www.earningswhispers.com/api/getstocksdata/{T}. old.earningswhispers.com sigue en ConnectTimeout (2o dia) — el metodo API es el unico fiable, dejar de intentar el scraping HTML de old.",
+      "nota": "Sentinel intradia 11:10-11:40 ET 21-ago (viernes). CUENTAS: paper $108,335.46 / real $4,548.12. CERO posiciones equity en ambas cuentas (solo polvo cripto del bot: paper BTCUSD $0.38 +19.6% y SOLUSD $0.00 +19.1%; real BTCUSD $0.64 -34.1%; todas mv<$1, no intervenidas). Cowork 0/2. Cero ordenes abiertas -> PASO 1 sin acciones. EW SCAN 115/115 OK: CERO earnings hoy o el lunes 24 en todo el universo. La ventana ejecutable esta VACIA por diseno hasta el martes 25. Segunda confirmacion del dia (tras el ciclo de 10:14 ET). PIPELINE que vuelve: mar 25 AH ZM (+3.38%), INTU (+4.20%), HEI (+4.64%); mie 26 la carga grande — NVDA (+5.47%), CRM (+5.50%), CRWD (+6.90%), OKTA (+9.38%), SNPS (+4.90%), HPQ (+7.58%), NTNX (+12.24%), VEEV (+2.25%) AH y KSS (+12.73%), ANF, SJM BMO; jue 27 MRVL, ADSK, WDAY, ULTA, DG, DLTR, S (+28.57%), ESTC, BBY. Guardado en weekly_ew_intel. DE (unico candidato vivo, post-earnings continuation score 7.0) EXPIRADO sin entrada al vencer su ventana hoy 20:00Z: score < umbral efectivo 7.5 y momentum muerto (m15 -0.15% con vol x0.14, RSI 70.3). Noticias de DE claramente positivas (Oppenheimer PT $685, Baird PT $640, \"Analysts Increase Their Forecasts After Strong Q2\") pero sin flujo intradia que las respalde; mismo criterio que anulo EL y SCSC. MACRO score -0.3, nivel ALERTA sin shock. La tape es tranquila y verde (SPY +0.41%, VIX 15.28, futuros ES +0.46% / YM +0.79%, Nikkei +1.36%, HSI +1.21%) pero por debajo hay dos senales de fondo: oro +2.96% a $4,650 y 30Y en 5.27% / 10Y 4.73% (maximos de ~2 decadas). Rotacion clara hacia valor y defensivo: materials +2.20%, healthcare +1.72%, consumer_disc +1.15%, financials +0.83% vs tech -0.05% y utilities -1.31%. WTI $86.36 (-1.67%) / Brent $93.69: el regimen Hormuz sigue de fondo pero hoy sin evento nuevo. Fear&Greed 52 (neutral), Put/Call 0.80 (complaciente). 0 EJECUCIONES en ambas cuentas — no por bloqueo macro (entradas NO bloqueadas) sino porque no existe una sola senal EW valida en la ventana. NO se ejecuto ninguna orden en cuenta REAL.",
+      "decisiones_juicio": [
+        "DE expirado en vez de ejecutado: score 7.0 < 7.5 efectivo, m15 -0.15% con volumen x0.14 (ausencia total de flujo) y RSI 70.3. Las noticias positivas no compensan la falta de confirmacion de momentum — mismo criterio aplicado a EL y SCSC esta semana.",
+        "macro_nivel=alerta y no shock: ningun disparador mecanico se activa (VIX -0.97%/30min, SPY +0.10%/30min, Mag7 max +4.84%). Se mantiene la alerta por el regimen de fondo (Hormuz sin resolver, 30Y 5.27%) y por el oro +2.96%, que es refugio comprandose bajo una tape verde.",
+        "Umbral paper fijado en 7.5 por la regla del skill (max(base 7.0, 7.5) en alerta), no en el 8.75 usado en el ciclo de las 10:14 ET. Discrepancia registrada; irrelevante hoy porque hay 0 candidatos.",
+        "Bonos puntuados con juicio (-0.3 por nivel de yield) y no con la regla mecanica TLT-baja=risk-on: el alza de yields sigue siendo la causa de la fragilidad equity, no una senal de apetito por riesgo.",
+        "No se generaron macro plays de oportunidad: nivel alerta no los habilita y no hay evento nuevo que los justifique (el petroleo cae hoy, asi que un long energia seria perseguir el regimen, no el catalizador).",
+        "Polvo cripto (mv<$1 en ambas cuentas, del bot) no intervenido: sin stop pero sin riesgo material.",
+        "PASO 4C omitido: 11:3x ET esta fuera de la ventana AH (16:00-22:00 ET)."
+      ],
+      "sin_telegram": "ciclo sin trades / cierres / shock / EOD / real-sin-stop -> Telegram silenciado por politica"
     }
   ],
   "momentum_15m": {
@@ -23394,14 +23423,15 @@
       "ts": "10:16"
     },
     "NVDA": {
-      "precio": 225.61,
-      "mom_15m": -0.071,
-      "mom_30m": -0.229,
-      "vol_ratio": 0.45,
-      "vwap_dev": -0.255,
-      "rsi": 23.3,
-      "señal": "LATERAL",
-      "ts": "14:19"
+      "px": 215.5,
+      "m15": 0.13,
+      "m30": 0.177,
+      "vr": 0.16,
+      "vwap_dev": -0.014,
+      "rsi": 39.3,
+      "sig": "LATERAL",
+      "m5d": -4.29,
+      "ts": "11:18"
     },
     "SLB": {
       "precio": 54.07,
@@ -23674,13 +23704,15 @@
       "ts": "14:49"
     },
     "DE": {
-      "precio": 620.55,
-      "mom_15m": -0.69,
-      "mom_30m": -0.35,
-      "vol_ratio": 0.12,
-      "vwap_dev": 0.05,
-      "senal": "debil_bajista_sin_volumen",
-      "ts": "10:14"
+      "px": 626.06,
+      "m15": -0.15,
+      "m30": 0.422,
+      "vr": 0.14,
+      "vwap_dev": 0.378,
+      "rsi": 70.3,
+      "sig": "debil_bajista",
+      "m5d": 2.83,
+      "ts": "11:18"
     },
     "NET": {
       "precio": 214.87,
@@ -23723,14 +23755,15 @@
       "ts": "14:49"
     },
     "ZM": {
-      "precio": 106.67,
-      "mom_15m": -0.411,
-      "mom_30m": -0.009,
-      "vol_ratio": 0.13,
-      "vwap_dev": -0.368,
-      "rsi": 38.9,
-      "señal": "debil_bajista",
-      "ts": "14:49"
+      "px": 107.5,
+      "m15": -0.116,
+      "m30": 0.453,
+      "vr": 0.1,
+      "vwap_dev": 0.66,
+      "rsi": 60.3,
+      "sig": "LATERAL",
+      "m5d": 1.45,
+      "ts": "11:18"
     },
     "BBAR": {
       "precio": 17.36,
@@ -23751,14 +23784,15 @@
       "ts": "13:11"
     },
     "NTNX": {
-      "precio": 52.47,
-      "mom_15m": 0.105,
-      "mom_30m": 0.143,
-      "vol_ratio": 1.39,
-      "vwap_dev": 0.018,
-      "rsi": 56.2,
-      "señal": "LATERAL",
-      "ts": "13:11"
+      "px": 66.64,
+      "m15": 0.241,
+      "m30": 0.377,
+      "vr": 0.31,
+      "vwap_dev": 0.157,
+      "rsi": 51.8,
+      "sig": "debil_alcista",
+      "m5d": 0.05,
+      "ts": "11:18"
     },
     "SNOW": {
       "precio": 249.19,
@@ -23781,14 +23815,15 @@
       "ts": "13:11"
     },
     "KSS": {
-      "precio": 19.12,
-      "mom_15m": 0.052,
-      "mom_30m": -0.078,
-      "vol_ratio": 0.55,
-      "vwap_dev": -0.029,
-      "rsi": 53.7,
-      "señal": "LATERAL",
-      "ts": "13:15"
+      "px": 17.64,
+      "m15": -0.311,
+      "m30": 0.256,
+      "vr": 0.2,
+      "vwap_dev": -0.003,
+      "rsi": 54.1,
+      "sig": "debil_bajista",
+      "m5d": -8.17,
+      "ts": "11:18"
     },
     "ASAN": {
       "precio": 7.67,
@@ -24051,44 +24086,48 @@
       "ts": "13:15"
     },
     "OKTA": {
-      "precio": 144.63,
-      "mom_15m": 0.243,
-      "mom_30m": 0.654,
-      "vol_ratio": 0.45,
-      "vwap_dev": 0.119,
-      "rsi": 48.2,
-      "señal": "debil_alcista",
-      "ts": "13:15"
+      "px": 134.51,
+      "m15": 0.13,
+      "m30": -0.293,
+      "vr": 0.1,
+      "vwap_dev": 0.599,
+      "rsi": 59.3,
+      "sig": "LATERAL",
+      "m5d": -8.77,
+      "ts": "11:18"
     },
     "CRM": {
-      "precio": 191.11,
-      "mom_15m": 0.016,
-      "mom_30m": 0.065,
-      "vol_ratio": 0.37,
-      "vwap_dev": -0.04,
-      "rsi": 44.9,
-      "señal": "LATERAL",
-      "ts": "13:15"
+      "px": 209.75,
+      "m15": -0.392,
+      "m30": 0.303,
+      "vr": 0.17,
+      "vwap_dev": 0.707,
+      "rsi": 63.5,
+      "sig": "debil_bajista",
+      "m5d": 6.9,
+      "ts": "11:18"
     },
     "CRWD": {
-      "precio": 213.77,
-      "mom_15m": -0.037,
-      "mom_30m": 0.089,
-      "vol_ratio": 0.28,
-      "vwap_dev": -0.378,
-      "rsi": 27.8,
-      "señal": "LATERAL",
-      "ts": "13:15"
+      "px": 190.25,
+      "m15": 0.258,
+      "m30": 0.282,
+      "vr": 0.16,
+      "vwap_dev": 0.473,
+      "rsi": 55.1,
+      "sig": "debil_alcista",
+      "m5d": -12.31,
+      "ts": "11:18"
     },
     "SNPS": {
-      "precio": 414.49,
-      "mom_15m": -0.292,
-      "mom_30m": -0.214,
-      "vol_ratio": 1.12,
-      "vwap_dev": -0.632,
-      "rsi": 22.1,
-      "señal": "debil_bajista",
-      "ts": "13:15"
+      "px": 397.98,
+      "m15": -0.286,
+      "m30": -0.055,
+      "vr": 0.24,
+      "vwap_dev": 0.157,
+      "rsi": 53.9,
+      "sig": "debil_bajista",
+      "m5d": -5.58,
+      "ts": "11:18"
     },
     "LOW": {
       "last": 219.105,
@@ -24315,6 +24354,39 @@
       "rsi": 49.4,
       "sig": "debil_baj",
       "ts": "12:15"
+    },
+    "HPQ": {
+      "px": 29.9,
+      "m15": -0.217,
+      "m30": -0.134,
+      "vr": 0.15,
+      "vwap_dev": 0.352,
+      "rsi": 60.4,
+      "sig": "debil_bajista",
+      "m5d": -0.71,
+      "ts": "11:18"
+    },
+    "INTU": {
+      "px": 368.8,
+      "m15": -0.539,
+      "m30": -0.242,
+      "vr": 0.14,
+      "vwap_dev": 0.396,
+      "rsi": 63.6,
+      "sig": "debil_bajista",
+      "m5d": 6.7,
+      "ts": "11:18"
+    },
+    "HEI": {
+      "px": 351.83,
+      "m15": -0.023,
+      "m30": -0.013,
+      "vr": 0.0,
+      "vwap_dev": -0.324,
+      "rsi": 29.0,
+      "sig": "LATERAL",
+      "m5d": -6.1,
+      "ts": "11:18"
     }
   },
   "sentinel_signals": [
@@ -25983,6 +26055,213 @@
           "whisper": 0.18,
           "consensus": 0.15,
           "asimetria_pct": 20.0
+        }
+      ]
+    },
+    "2026-08-21": {
+      "ts": "2026-08-21T11:18",
+      "scan": "OK 115/115 via www.earningswhispers.com/api/getstocksdata/{T} (warm-up + X-Requested-With + Referer)",
+      "earnings_hoy_o_lunes": 0,
+      "pipeline": [
+        {
+          "ticker": "HEI",
+          "fecha": "2026-08-25",
+          "timing": "after-hours",
+          "whisper": 1.58,
+          "consensus": 1.51,
+          "asimetria_pct": 4.64
+        },
+        {
+          "ticker": "INTU",
+          "fecha": "2026-08-25",
+          "timing": "after-hours",
+          "whisper": 3.72,
+          "consensus": 3.57,
+          "asimetria_pct": 4.2
+        },
+        {
+          "ticker": "ZM",
+          "fecha": "2026-08-25",
+          "timing": "after-hours",
+          "whisper": 1.53,
+          "consensus": 1.48,
+          "asimetria_pct": 3.38
+        },
+        {
+          "ticker": "KSS",
+          "fecha": "2026-08-26",
+          "timing": "pre-market",
+          "whisper": 0.62,
+          "consensus": 0.55,
+          "asimetria_pct": 12.73
+        },
+        {
+          "ticker": "NTNX",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 0.55,
+          "consensus": 0.49,
+          "asimetria_pct": 12.24
+        },
+        {
+          "ticker": "OKTA",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 1.05,
+          "consensus": 0.96,
+          "asimetria_pct": 9.38
+        },
+        {
+          "ticker": "HPQ",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 0.71,
+          "consensus": 0.66,
+          "asimetria_pct": 7.58
+        },
+        {
+          "ticker": "CRWD",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 0.31,
+          "consensus": 0.29,
+          "asimetria_pct": 6.9
+        },
+        {
+          "ticker": "CRM",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 3.45,
+          "consensus": 3.27,
+          "asimetria_pct": 5.5
+        },
+        {
+          "ticker": "NVDA",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 2.12,
+          "consensus": 2.01,
+          "asimetria_pct": 5.47
+        },
+        {
+          "ticker": "SNPS",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 3.85,
+          "consensus": 3.67,
+          "asimetria_pct": 4.9
+        },
+        {
+          "ticker": "ANF",
+          "fecha": "2026-08-26",
+          "timing": "pre-market",
+          "whisper": 2.0,
+          "consensus": 1.95,
+          "asimetria_pct": 2.56
+        },
+        {
+          "ticker": "SJM",
+          "fecha": "2026-08-26",
+          "timing": "pre-market",
+          "whisper": 2.26,
+          "consensus": 2.21,
+          "asimetria_pct": 2.26
+        },
+        {
+          "ticker": "VEEV",
+          "fecha": "2026-08-26",
+          "timing": "after-hours",
+          "whisper": 2.27,
+          "consensus": 2.22,
+          "asimetria_pct": 2.25
+        },
+        {
+          "ticker": "S",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 0.09,
+          "consensus": 0.07,
+          "asimetria_pct": 28.57
+        },
+        {
+          "ticker": "ESTC",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 0.63,
+          "consensus": 0.58,
+          "asimetria_pct": 8.62
+        },
+        {
+          "ticker": "DG",
+          "fecha": "2026-08-27",
+          "timing": "pre-market",
+          "whisper": 2.12,
+          "consensus": 2.0,
+          "asimetria_pct": 6.0
+        },
+        {
+          "ticker": "BURL",
+          "fecha": "2026-08-27",
+          "timing": "pre-market",
+          "whisper": 2.3,
+          "consensus": 2.18,
+          "asimetria_pct": 5.5
+        },
+        {
+          "ticker": "DLTR",
+          "fecha": "2026-08-27",
+          "timing": "pre-market",
+          "whisper": 1.17,
+          "consensus": 1.11,
+          "asimetria_pct": 5.41
+        },
+        {
+          "ticker": "ULTA",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 6.5,
+          "consensus": 6.2,
+          "asimetria_pct": 4.84
+        },
+        {
+          "ticker": "BBY",
+          "fecha": "2026-08-27",
+          "timing": "pre-market",
+          "whisper": 1.41,
+          "consensus": 1.35,
+          "asimetria_pct": 4.44
+        },
+        {
+          "ticker": "MRVL",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 0.97,
+          "consensus": 0.93,
+          "asimetria_pct": 4.3
+        },
+        {
+          "ticker": "WDAY",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 2.7,
+          "consensus": 2.63,
+          "asimetria_pct": 2.66
+        },
+        {
+          "ticker": "ADSK",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 3.2,
+          "consensus": 3.12,
+          "asimetria_pct": 2.56
+        },
+        {
+          "ticker": "GAP",
+          "fecha": "2026-08-27",
+          "timing": "after-hours",
+          "whisper": 0.49,
+          "consensus": 0.5,
+          "asimetria_pct": -2.0
         }
       ]
     }
