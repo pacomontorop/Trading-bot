@@ -29546,6 +29546,31 @@
       "impacto": "El sentinel no abre posiciones por si mismo; toda la ejecucion depende de market-open-execution y pre-market scan.",
       "fecha_resolucion": "2026-08-20",
       "resolucion": "DECISION: opcion (b) conservadora. El sentinel NO se convierte en ejecutor autonomo. Se formaliza su rol como MONITOR + ESCALADOR con escala propia de 6 puntos y umbral score_min_sentinel=4.5 para ESCALAR (no para ejecutar): cuando un candidato del scan intradia supere 4.5/6, el sentinel lo escribe en candidatos_validados con estado 'vigilar_cauteloso' y alerta por Telegram, y la ejecucion sigue dependiendo de market-open-execution / pre-market-scan con el umbral completo de 8.75/10. Asi desaparece la incoherencia (un umbral de 8.75 sobre una escala de 6) sin aumentar el riesgo ni abrir posiciones con informacion incompleta."
+    },
+    {
+      "fecha": "2026-08-21",
+      "ts": "2026-08-21T14:30:47Z",
+      "severidad": "ALTA",
+      "componente": "Telegram notifier",
+      "descripcion": "sendMessage devuelve HTTP 401 Unauthorized. El bot token embebido en SKILL.md (7820557997:...) esta revocado o es invalido. Todas las notificaciones de las tareas programadas estan fallando silenciosamente (el codigo original captura la excepcion con un except generico y solo hace print).",
+      "impacto": "El usuario no recibe ninguna alerta de las tareas programadas desde que el token dejo de ser valido.",
+      "accion_requerida": "Regenerar el bot token con @BotFather y actualizarlo. Ademas: mover el token a variable de entorno y hacer que tg() propague/registre el fallo en vez de silenciarlo."
+    },
+    {
+      "fecha": "2026-08-21",
+      "ts": "2026-08-21T14:30:47Z",
+      "severidad": "ALTA",
+      "componente": "Seguridad / credenciales",
+      "descripcion": "SKILL.md contiene en texto plano: GitHub PAT, claves Alpaca PAPER y REAL (incluida la de cuenta con dinero real) y token de Telegram. El fichero se pasa completo al contexto del modelo en cada ejecucion.",
+      "accion_requerida": "Rotar las 4 credenciales (especialmente la de la cuenta real de Alpaca) y moverlas a variables de entorno o a un gestor de secretos. No dejarlas en el cuerpo de la skill."
+    },
+    {
+      "fecha": "2026-08-21",
+      "ts": "2026-08-21T14:30:47Z",
+      "severidad": "MEDIA",
+      "componente": "Pipeline EW",
+      "descripcion": "old.earningswhispers.com da timeout desde el entorno headless (calendario y fichas de ticker). BLOQUE A (whisper asymmetry, max 3.0) queda a 0 para todo el universo, lo que deja el techo de score en ~7.4 y hace matematicamente inalcanzable el umbral de 8.75. Es el mismo flag THRESHOLD_INALCANZABLE_SIN_EW ya registrado en _meta el 2026-05-23; lleva 3 meses sin resolverse.",
+      "accion_requerida": "O bien conseguir una fuente de whisper alternativa, o bien recalibrar la escala de scoring para un maximo de 7.0 (p.ej. umbral 6.0-6.5) en vez de mantener un umbral que ningun candidato puede alcanzar."
     }
   ],
   "ultima_actualizacion": "2026-08-21T14:30:07Z"
