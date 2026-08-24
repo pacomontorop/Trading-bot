@@ -567,6 +567,12 @@
       "descripcion": "El summary de epsguidance@earningswhispers.com llego a las 21:20Z el jueves 20-ago pero no hay email para el viernes 21-ago a la hora de ejecucion. Viernes de agosto = calendario ligero (15 reporters, solo BJ relevante). Cobertura cubierta por Evening Edge (InsiderFinance) + WebSearch.",
       "accion_futura": "No tratar la ausencia del email EW en viernes como fallo de pipeline. Mantener el fallback multi-fuente; si falta el email en un dia de calendario denso, entonces si escalar.",
       "impacto_score": 0.0
+    },
+    {
+      "fecha": "2026-08-24",
+      "titulo": "PASO 3 pre-close no ve los legs de brackets ya ejecutadas (padre 'filled')",
+      "descripcion": "HEI 24-ago: bracket 8b9f68d7 filled con leg stop_limit 4b296534 en 'held' @343.70. El filtro de estado del padre la oculto y el skill reporto 'SIN STOP'.",
+      "accion_correctiva": "En PASO 3 (y en cualquier deteccion de proteccion), recorrer o.legs antes de aplicar el filtro de estado del padre. El estado que importa es el del leg, no el de la orden padre."
     }
   ],
   "operaciones": [
@@ -2111,7 +2117,8 @@
       "detectado_por": "sentinel",
       "fecha_deteccion": "2026-08-24",
       "expira": "2026-08-25T20:00:00Z",
-      "notas": "[sentinel 2026-08-24] Posicion Cowork abierta 24sh, stop bracket $343.70. Earnings 25-ago AMC confirmado (call 26-ago 9:00 ET). CERRAR antes de 16:00 ET del 25-ago."
+      "notas": "[sentinel 2026-08-24] Posicion Cowork abierta 24sh, stop bracket $343.70. Earnings 25-ago AMC confirmado (call 26-ago 9:00 ET). CERRAR antes de 16:00 ET del 25-ago.",
+      "pre_close_24ago": "HOLD overnight aprobado: earnings 25-ago AMC (~28h), sin riesgo de gap esta noche. Protegida por bracket OCO stop_limit 343.70/343.12 GTC + TP 378.66. CIERRE OBLIGATORIO 25-ago antes de 15:45 ET."
     }
   ],
   "macro_context": {
@@ -7308,6 +7315,79 @@
           "r_ratio": 1.43
         }
       ]
+    },
+    {
+      "timestamp": "2026-08-24T18:42:45.177611+00:00",
+      "evaluaciones": [
+        {
+          "symbol": "BTCUSD",
+          "decision": "mantener",
+          "razon": "bot_autonomo — solo aplica R0 (sin earnings hoy); R1-R4 no aplican",
+          "pnl_pct": 21.38,
+          "pnl_abs": 0.07,
+          "price_now": 78849.9,
+          "entry_price": 64959.1,
+          "stop_actual": 0,
+          "shares": 4.874e-06,
+          "source": "bot_autonomo",
+          "earnings": ""
+        },
+        {
+          "symbol": "HEI",
+          "decision": "mantener",
+          "razon": "HOLD: earnings AMC 2026-08-25 (~28h) -> sin riesgo de gap esta noche. R0-EXTENDED es para BMO manana. Cierre obligatorio 2026-08-25 <15:45 ET",
+          "pnl_pct": -0.92,
+          "pnl_abs": -78.72,
+          "price_now": 353.15,
+          "entry_price": 356.43,
+          "stop_actual": 0.0,
+          "shares": 24.0,
+          "source": "cowork_ew_pipeline",
+          "earnings": "2026-08-25/after-hours"
+        },
+        {
+          "symbol": "SOLUSD",
+          "decision": "mantener",
+          "razon": "bot_autonomo — solo aplica R0 (sin earnings hoy); R1-R4 no aplican",
+          "pnl_pct": 24.5,
+          "pnl_abs": 0.0,
+          "price_now": 96.145,
+          "entry_price": 77.22,
+          "stop_actual": 0,
+          "shares": 2.5e-05,
+          "source": "bot_autonomo",
+          "earnings": ""
+        }
+      ],
+      "posiciones_cerrar": 0,
+      "posiciones_mantener": 3,
+      "cierres_ejecutados": [],
+      "cierres_fallidos": [],
+      "stops_overnight": [
+        {
+          "symbol": "HEI",
+          "old_stop": 343.7,
+          "new_stop": 343.7,
+          "pnl_pct": -0.92,
+          "tier": "bracket_leg_held",
+          "stop_limit": 343.12,
+          "atr": 8.45,
+          "nota": "bracket OCO activo (stop_limit 343.70/343.12 + TP 378.66). No se toca: replace/cancel = riesgo de posicion naked."
+        }
+      ],
+      "pnl_dia_abs": 0,
+      "anomalias": [
+        "BTCUSD: dust bot_autonomo qty=4.874e-06 (~$0.3843) — residuo no gestionable",
+        "SOLUSD: dust bot_autonomo qty=2.5e-05 (~$0.0024) — residuo no gestionable",
+        "BUG DETECTADO en la deteccion de stops del skill (PASO 3): el bucle hace 'continue' si el estado de la orden PADRE no esta en (new/accepted/held/...). Una bracket ya ejecutada queda 'filled', asi que sus legs activas NUNCA se inspeccionan -> el skill concluye 'sin stops' y crearia un stop GTC duplicado (fallaria por insufficient qty) o marcaria la posicion como desprotegida. FIX: evaluar o.legs SIEMPRE, con independencia del estado del padre."
+      ],
+      "nota_decision": "HEI: R0-EXTENDED NO aplicada. La regla esta redactada para earnings PRE-MARKET manana (caso CAT 30-abr). HEI reporta 25-ago AFTER-HOURS (~28h), despues del cierre de manana: la noche 24->25 no tiene riesgo de gap por earnings. Cerrar hoy habria abandonado la sesion de drift que es exactamente la ventaja que explota el sistema (drift_pre5d +1.61%, 75% positivo). Coherente con el plan documentado del propio candidato: cierre_obligatorio 25-ago antes de 15:45 ET.",
+      "leccion_propuesta": {
+        "fecha": "2026-08-24",
+        "titulo": "PASO 3 pre-close no ve los legs de brackets ya ejecutadas (padre 'filled')",
+        "descripcion": "HEI 24-ago: bracket 8b9f68d7 filled con leg stop_limit 4b296534 en 'held' @343.70. El filtro de estado del padre la oculto y el skill reporto 'SIN STOP'.",
+        "accion_correctiva": "En PASO 3 (y en cualquier deteccion de proteccion), recorrer o.legs antes de aplicar el filtro de estado del padre. El estado que importa es el del leg, no el de la orden padre."
+      }
     }
   ],
   "historial_diario_notas": [
