@@ -6478,6 +6478,107 @@
         "Entorno de ejecucion: filesystem /sessions al 100% de capacidad; performance_log local no accesible. Lectura y escritura via GitHub (source of truth).",
         "yfinance no preinstalado en el sandbox; instalado en /tmp/pylibs para esta sesion."
       ]
+    },
+    {
+      "timestamp": "2026-08-24T16:34:52.674646+00:00",
+      "hora_et": "2026-08-24 12:34 ET",
+      "posiciones_abiertas": 3,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 4.874e-06,
+          "entry": 64959.1,
+          "current": 79701.5,
+          "pnl_pct": 22.7,
+          "pnl_usd": 0.07,
+          "stop": 0.0,
+          "stop_source": "sin_stop",
+          "market_value": 0.39
+        },
+        {
+          "symbol": "HEI",
+          "shares": 24.0,
+          "entry": 356.43,
+          "current": 352.02,
+          "pnl_pct": -1.24,
+          "pnl_usd": -105.84,
+          "stop": 343.7,
+          "stop_source": "stop_bracket_leg",
+          "market_value": 8448.48
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 2.5e-05,
+          "entry": 77.22,
+          "current": 97.25,
+          "pnl_pct": 25.89,
+          "pnl_usd": 0.0,
+          "stop": 0.0,
+          "stop_source": "sin_stop",
+          "market_value": 0.0
+        }
+      ],
+      "posiciones_sin_stop": [
+        "BTCUSD",
+        "SOLUSD"
+      ],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "ordenes_ejecutadas_hoy": [
+        {
+          "symbol": "HEI",
+          "side": "buy",
+          "qty": 24,
+          "filled_avg_price": 356.43,
+          "filled_at": "2026-08-24T13:44:50Z",
+          "client_order_id": "COWORK-20260824-HEI"
+        }
+      ],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "ew_cierres_urgentes_hoy": [],
+      "mercado": {
+        "spy_intraday_pct": -0.03,
+        "modo_dip": false,
+        "vix": null,
+        "nota_vix": "yfinance ^VIX devolvio 0.0 (dato invalido) - no usable este ciclo"
+      },
+      "decisiones": [
+        "HEI 24sh @356.43: P&L -1.24% (R=-0.38) -> NO mover stop (regla: P&L negativo mantiene stop original). Bracket intacto: stop_limit 343.70/343.12 (held) + TP limit 378.66.",
+        "HEI earnings CONFIRMADO 2026-08-25 AMC 16:00 ET (verificado via WebSearch + yfinance). NO es AH de hoy -> PASO 1.8 no aplica. Cierre obligatorio manana antes de 15:45 ET.",
+        "Sin BE-lock ni parcial: R=-0.38 < 0.5 y < 1.0.",
+        "Sin nuevas entradas: ew_pipeline lunes_24 = CERO candidatos EW validos; candidatos 25-ago (VIPS/NCNO/INTU/ZM/DKS/BNS) marcados descartado/no_entrar; BOX 7.0 y JOYY 5.0 por debajo del umbral intraday 7.5.",
+        "Sin modo DIP: SPY intraday -0.03% (umbral -1.5%).",
+        "Sin candidatos post-apertura pendientes en candidatos_validados.",
+        "Slots: max_cowork_positions=2, 1 ocupado (HEI). 1 libre pero sin candidato valido."
+      ],
+      "anomalias": [
+        {
+          "tipo": "posiciones_dust_sin_stop",
+          "detalle": "BTCUSD 0.000004874 (~$0.39) y SOLUSD 0.000025 (~$0.002) sin stop. Tamano por debajo del minimo operable; no protegibles ni relevantes para el riesgo. Recomendacion: liquidar residuo en una limpieza manual.",
+          "severidad": "baja"
+        },
+        {
+          "tipo": "vix_dato_invalido",
+          "detalle": "yfinance ^VIX fast_info devolvio 0.0. El circuito de bloqueo por VIX (umbral 28) quedaria inoperante si se usara ese valor. Sugerido: fallback a ^VIX history() o proveedor alternativo.",
+          "severidad": "media"
+        },
+        {
+          "tipo": "log_path_no_accesible",
+          "detalle": "La ruta canonica /sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json no es accesible desde esta sesion (permiso denegado / disco lleno). Escritura redirigida a GitHub (source-of-truth de lecturas) + copia en outputs.",
+          "severidad": "media"
+        },
+        {
+          "tipo": "entrada_HEI_sobre_maximo",
+          "detalle": "Fill a 356.43 con apertura 353.75 y maximo 360.05; el precio se ha desvanecido a 352.01 (bajo VWAP 354.77). Entrada por market en el pico del impulso de apertura. Sugerido para market-open-execution: limite escalonado o esperar retroceso a VWAP.",
+          "severidad": "media"
+        }
+      ]
     }
   ],
   "pre_close_log": [
@@ -14373,7 +14474,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-08-24T11:18 ET (sentinel)",
+  "ultima_actualizacion": "2026-08-24T16:34:52.674673+00:00",
   "system_health": {
     "sentinel": {
       "ts": "2026-08-24T12:12",
