@@ -1075,6 +1075,31 @@
       "score": 8.5,
       "source": "sentinel_macro_oil_spike",
       "semana": "2026-W31"
+    },
+    {
+      "id": "COWORK-2026-08-24-HEI",
+      "fecha_entrada": "2026-08-24",
+      "hora_et": "09:44",
+      "simbolo": "HEI",
+      "tipo": "drift_pre_earnings",
+      "tesis": "EW pre-earnings drift: whisper 1.58 vs consenso 1.51 (+4.64% asimetria), beat 4/4 (8q y 12q), sorpresa media +11.27%. Earnings 25-ago AMC. Gate MA50 cumplido en ejecucion.",
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "score_entrada": 9.0,
+      "precio_entrada": 356.43,
+      "precio_stop": 343.7,
+      "precio_tp": 378.66,
+      "qty": 24,
+      "rr": 1.75,
+      "estado": "abierta",
+      "orden_id": "8b9f68d7-ba12-4dcc-a28d-60dad168452c",
+      "cuenta": "paper",
+      "cierre_obligatorio": "2026-08-25 15:45 ET",
+      "fecha_salida": null,
+      "precio_salida": null,
+      "pnl_dolares": null,
+      "pnl_r": null,
+      "leccion": null
     }
   ],
   "candidatos_validados": [
@@ -1259,7 +1284,7 @@
       "score_ajustado": 8.1,
       "score_override": 8.1,
       "source": "plan_semana_proxima (post-market 21-ago)",
-      "estado": "pendiente",
+      "estado": "descartado_gate_invalidado",
       "tipo": "continuation",
       "earnings_fecha": "2026-08-21",
       "earnings_timing": "pre-market",
@@ -1303,7 +1328,9 @@
       "alternativa_si_gap_alcista": "Si abre por encima de $96.53, la unica entrada valida seria con TP recalculado a 3xATR ($103.89) en vez de $100.77 — pero eso es mover el objetivo para forzar el R y NO se autoriza sin confirmacion.",
       "gate_estado_preapertura": "VIVO: cierre viernes $96.42 <= $96.53. Se invalida si abre con gap por encima de $96.53.",
       "real_eligible": false,
-      "ts_actualizado": "2026-08-24T09:16:39.068252+00:00"
+      "ts_actualizado": "2026-08-24T09:16:39.068252+00:00",
+      "fecha_descarte": "2026-08-24 13:45",
+      "motivo_descarte": "Gap alcista invalida el gate: apertura 24-ago $96.90 y precio 09:44 ET $97.52, ambos por encima del limite $96.53 definido en gate_entrada (R>=1.0). El propio candidato indica que la unica alternativa seria recalcular el TP a 3xATR ($103.89), lo que esta explicitamente NO autorizado sin confirmacion. No se entra."
     },
     {
       "ticker": "NVDA",
@@ -1335,7 +1362,7 @@
       "ticker": "HEI",
       "score": 9.0,
       "score_ajustado": 9.0,
-      "estado": "pendiente_ew",
+      "estado": "ejecutado",
       "accion_recomendada": "entrar_ventana",
       "asimetria_pct": 4.64,
       "beat_rate": 1.0,
@@ -1366,7 +1393,12 @@
       "cierre_obligatorio": "2026-08-25 antes de 15:45 ET (earnings AMC)",
       "stop_tipo": "ATR1.5",
       "umbral_real": 9.0,
-      "real_eligible": true
+      "real_eligible": true,
+      "fecha_ejecucion": "2026-08-24 13:45",
+      "orden_id": "8b9f68d7-ba12-4dcc-a28d-60dad168452c",
+      "precio_ejecucion": 356.43,
+      "cuenta_ejecutada": "paper",
+      "nota_ejecucion": "09:44 ET: gate MA50 verificado en vivo (px 355.35 vs MA50 352.26 = +0.88%). Bracket GTC 24 acc, stop 343.70/343.12 (ATR1.5=11.66), TP 378.66 (3xATR). Fill 356.43 -> R:R real 1.75. Cuenta REAL elegible (score 9.0 >= 9.0) pero NO ejecutada: politica del asistente prohibe abrir ordenes con dinero real de forma autonoma; requiere accion manual de Paco. RECORDATORIO: cierre_obligatorio 2026-08-25 antes de 15:45 ET (earnings AMC)."
     },
     {
       "ticker": "AVGO",
@@ -12945,7 +12977,14 @@
       "nota": "Bloque 20-ago (WMT/BABA/DE + ADR chinos + ROST/FLO/OSIS AH). EW web inaccesible (Chrome MCP desconectado) y sin email de preview -> scoring sin whisper numbers, con consenso de WebSearch y tecnico de Alpaca. Maximo 2.5 (DE). Cero entradas previstas."
     }
   ],
-  "acciones_pendientes_manana": [],
+  "acciones_pendientes_manana": [
+    {
+      "fecha": "2026-08-25",
+      "accion": "CERRAR HEI antes de 15:45 ET (earnings AMC 25-ago). Play de drift pre-earnings, no se mantiene sobre el evento.",
+      "prioridad": "alta",
+      "origen": "market-open-execution 24-ago"
+    }
+  ],
   "auditoria_tareas": [
     {
       "fecha": "2026-07-28",
@@ -13788,7 +13827,21 @@
       "detalle": "Tras el guardado del ciclo post-cierre el fichero alcanzo 1.054.628 bytes. La Contents API solo sirve content para ficheros <1.048.576 bytes; por encima responde content=\"\" y encoding=\"none\", con lo que json.loads(base64.b64decode(...)) revienta y _gh_read_log() cae al fallback de cache local /tmp, que en sesiones aisladas esta vacio => todas las tareas arrancarian con plog={} y params por defecto (SCORE_MIN_R=99, MAX_COWORK=2), perdiendo candidatos, lecciones y parametros.",
       "solucion": "Podado inmediato de logs rotatorios y candidatos historicos (archivados intactos en performance_log_archive_2026-08-21.json). Anadido _meta.LIMITE_TAMANO con la regla, la politica de poda y la alternativa via Blobs API.",
       "accion_pendiente": "Anadir la poda automatica al final de PASO 7 del sentinel (y del post-market) para que el fichero nunca vuelva a crecer sin limite."
+    },
+    {
+      "fecha": "2026-08-24",
+      "tarea": "market-open-execution",
+      "tipo": "restriccion_operativa",
+      "detalle": "HEI cumplia umbral de cuenta REAL (score 9.0). La orden real NO se envio: el asistente no abre posiciones con dinero real de forma autonoma. Solo se ejecuto paper. Si se desea la pata real, Paco debe colocarla manualmente.",
+      "impacto": "cuenta real sin exposicion a HEI"
+    },
+    {
+      "fecha": "2026-08-24",
+      "tarea": "market-open-execution",
+      "tipo": "bug_codigo",
+      "detalle": "SKILL.md referencia APCA_KEY_P/APCA_SECRET_P (gap check y failsafe de stop) que nunca se definen -> NameError silencioso. Definidas solo APCA_KEY/APCA_SECRET. Ademas usa 'timedelta' sin importarlo en el bloque CPI, y yfinance no esta instalado en el sandbox (sin espacio en disco); se sustituyo por la API de datos de Alpaca.",
+      "impacto": "gap check y failsafe de stop no funcionarian tal cual estan escritos"
     }
   ],
-  "ultima_actualizacion": "2026-08-24T09:16 ET (sentinel pre-apertura)"
+  "ultima_actualizacion": "2026-08-24T13:45:41.451996+00:00"
 }
