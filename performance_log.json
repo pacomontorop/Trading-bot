@@ -2218,21 +2218,22 @@
     ],
     "notas_adicionales": "CORRECCION weekly W34: el evento macro dominante de la semana que viene es el CORE PCE del MIERCOLES 26-ago 08:30 ET, que el plan del viernes no listaba explicitamente (solo listaba earnings). Coincide el mismo dia con NVDA AMC: el 26-ago es el dia de maximo riesgo bidireccional de la semana. Consenso core PCE +0.2% MoM / 3.3% YoY: una lectura >0.3% dispara la probabilidad de subida en el FOMC del 16-sep. Dust crypto sin stop (BTCUSD paper $0.38, SOLUSD paper $0.00, BTCUSD real $0.64): importes negligibles, hands-off confirmado.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-24T15:20",
+      "timestamp": "2026-08-24T16:14",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": -2.6,
+    "macro_score": -2.3,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros bajistas (-0.52%)",
-      "TLT subiendo (+0.65%) - flight to safety",
-      "Yield 10Y alto (4.70%) - presion valuaciones growth",
-      "Oro disparado (+1.5%) - senal de miedo",
-      "Tech debil (-1.5%) - cautela candidatos tech"
+      "Cierre 24-ago: SPY -0.28%, QQQ -1.00%, DIA +0.27% -> rotacion fuera de tech",
+      "SMH -2.43% / XLK -1.79%: semis y memoria castigados (Samsung crash + amenaza Trump aranceles 50% autos/acero Canada 2027)",
+      "Defensivos y financieras lideran: XLF +1.25%, XLU +1.02%, XLRE +0.58%",
+      "Risk-off suave: TLT +0.62%, 10Y 4.70% (-0.72%), GLD +0.79%, VIX 15.84 (+4.69%)",
+      "Petroleo cediendo: USO -1.84%",
+      "Sin shock macro: VIX << 28, SPY intradia -0.06% ultimos 30min"
     ],
     "futuros": {
       "ES": -0.215,
@@ -2242,25 +2243,26 @@
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-24T15:27",
+    "ts_actualizado": "2026-08-24T16:14",
     "sectores_hoy": {
       "lider": "financials",
-      "cambio_lider": 1.122,
-      "tech_chg": -1.511,
+      "cambio_lider": 1.25,
+      "tech_chg": -1.79,
       "all": {
-        "tech": -1.511,
-        "financials": 1.122,
-        "energy": -0.841,
-        "healthcare": -0.109,
-        "industrials": -0.81,
-        "consumer_disc": 0.229,
-        "utilities": 1.017,
-        "materials": -0.252,
-        "realestate": 0.366
+        "tech": -1.79,
+        "financials": 1.25,
+        "energy": -0.8,
+        "healthcare": 0.03,
+        "industrials": -0.7,
+        "utilities": 1.02,
+        "consumer_disc": 0.23,
+        "materials": 0.07,
+        "realestate": 0.58,
+        "semis_smh": -2.43
       },
-      "ts": "15:27"
+      "ts": "16:14"
     },
-    "macro_bonus_ew": -0.78,
+    "macro_bonus_ew": -0.69,
     "bonos": {
       "tlt_chg": 0.652,
       "yield_10y": 4.703999996185303,
@@ -11737,6 +11739,26 @@
       "macro_score": -2.6,
       "macro_nivel": "normal",
       "nota": "EW headless no accesible desde sandbox (old.earningswhispers.com bloqueado); scan via WebSearch"
+    },
+    {
+      "ts": "2026-08-24T20:14:11.194718+00:00",
+      "modo": "post_close_ah",
+      "alertas": 0,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "max_cowork": 2,
+      "vix": 15.84,
+      "spy_chg": -0.28,
+      "macro_score": -2.3,
+      "macro_nivel": "normal",
+      "ew_scan": "unavailable",
+      "equity_paper": 108245.23,
+      "equity_real": 4548.13,
+      "nota": "Ciclo 16:12 ET (mercado ya cerrado 16:00). Sin ejecuciones posibles. PAPER: HEI 24sh @356.43 -> 352.67 (-1.05%), bracket intacto (stop leg $343.70 held, TP $378.66 new). Crypto dust BTCUSD/SOLUSD sin stop, valor <$1 -> ignorado. REAL: solo BTCUSD $0.65 (<$50, sin alerta). EW headless sigue inaccesible (old.earningswhispers.com ConnectTimeout; www.* 200 pero shell JS sin whisperbox/epsconsensus) -> 4o ciclo consecutivo sin scan de whispers. PASO 4C: sin beats AH confirmados a las 16:12 ET (demasiado pronto). Macro: rotacion defensiva, sin shock. Telegram silenciado (sin trade/cierre/shock/EOD).",
+      "degradacion": "EW_UNREACHABLE persistente (4 ciclos: 13:19, 14:22, 15:20, 16:12 ET)",
+      "ejecucion_real": "no aplica: mercado cerrado y sin senal; ordenes con dinero real requieren accion del usuario."
     }
   ],
   "momentum_15m": {
@@ -13867,6 +13889,14 @@
       "accion": "CERRAR HEI antes de 15:45 ET (earnings AMC 25-ago). Play de drift pre-earnings, no se mantiene sobre el evento.",
       "prioridad": "alta",
       "origen": "market-open-execution 24-ago"
+    },
+    {
+      "fecha": "2026-08-25",
+      "ticker": "HEI",
+      "accion": "CERRAR antes del cierre (earnings 25-ago after-hours)",
+      "detalle": "HEI 24sh paper, entrada $356.43, stop $343.70, TP $378.66. Earnings AH martes 25-ago -> pre-close debe cerrar a 14:30-15:00 ET para evitar gap overnight.",
+      "prioridad": "alta",
+      "origen": "sentinel-24ago-16:12"
     }
   ],
   "auditoria_tareas": [
@@ -14746,7 +14776,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-08-24T13:19 ET",
+  "ultima_actualizacion": "2026-08-24T16:14 ET (sentinel post-close)",
   "system_health": {
     "sentinel": {
       "ts": "2026-08-24T12:12",
