@@ -2015,6 +2015,19 @@
       "expira": "2026-08-25T20:00:00Z",
       "ts_creado": "2026-08-21T20:33:13.555560+00:00",
       "notas": "BMO 25-ago (misma exclusion estructural que VIPS) + sector retail en prioridad -1 + -14.2% bajo MA50."
+    },
+    {
+      "ticker": "HEI",
+      "estado": "abierta",
+      "score": null,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "alerta_earnings_overnight": true,
+      "accion_recomendada": "cerrar_antes_cierre_25ago",
+      "detectado_por": "sentinel",
+      "fecha_deteccion": "2026-08-24",
+      "expira": "2026-08-25T20:00:00Z",
+      "notas": "[sentinel 2026-08-24] Posicion Cowork abierta 24sh, stop bracket $343.70. Earnings 25-ago AMC confirmado (call 26-ago 9:00 ET). CERRAR antes de 16:00 ET del 25-ago."
     }
   ],
   "macro_context": {
@@ -2114,51 +2127,53 @@
     ],
     "notas_adicionales": "CORRECCION weekly W34: el evento macro dominante de la semana que viene es el CORE PCE del MIERCOLES 26-ago 08:30 ET, que el plan del viernes no listaba explicitamente (solo listaba earnings). Coincide el mismo dia con NVDA AMC: el 26-ago es el dia de maximo riesgo bidireccional de la semana. Consenso core PCE +0.2% MoM / 3.3% YoY: una lectura >0.3% dispara la probabilidad de subida en el FOMC del 16-sep. Dust crypto sin stop (BTCUSD paper $0.38, SOLUSD paper $0.00, BTCUSD real $0.64): importes negligibles, hands-off confirmado.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-24T09:16",
+      "timestamp": "2026-08-24T10:39",
       "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0,
-      "modo": "pre-apertura (scan, sin ejecucion)"
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0
     },
-    "macro_score": -1.3,
+    "macro_score": -2.6,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros mixtos/bajistas: ES -0.17%, NQ -0.61%, YM -0.10% (Nasdaq lidera a la baja)",
-      "Yield 10Y 4.71% cerca de maximo de 20 meses -> presion sobre valuaciones growth",
-      "Oro +2.21% a $4,726 -> DEBASEMENT_TRADE_REVIVAL sigue activo; senal de cobertura/miedo",
-      "WTI $85.35 (-1.96%) / Brent $93.07 (-1.40%): crudo CAE a la espera de sanciones -> NO hay oil spike",
-      "Bessent anuncia hoy paquete de sanciones a Iran ('economic D-Day'); Iran amenaza Hormuz -> riesgo de titular intradia",
-      "Ruptura de conversaciones EE.UU.-Canada -> viento en contra para bancos canadienses (BMO/BNS reportan manana)",
-      "Asia debil: HSI -1.89%, Nikkei -0.74%, Shanghai -0.59%",
-      "Semana de maximo riesgo de evento: NVDA/CRM/CRWD/OKTA AMC miercoles; Jackson Hole (Warsh) viernes"
+      "Futuros bajistas (-0.90%)",
+      "Dow liderando vs Tech (+1.6pp) -> rotacion defensiva",
+      "TLT +0.59% - flight to safety",
+      "Yield 10Y alto (4.70%) - presion valuaciones growth",
+      "Oro +2.3% ($4729) - senal de miedo",
+      "Asia debil (-1.1%)",
+      "Tech debil (-2.3%) -> cautela candidatos tech"
     ],
     "futuros": {
-      "ES": -0.17,
-      "NQ": -0.61,
-      "YM": -0.1,
-      "RTY": -0.1
+      "ES": -0.38,
+      "NQ": -1.42,
+      "YM": 0.22
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-24T09:16",
+    "ts_actualizado": "2026-08-24T10:39",
     "sectores_hoy": {
-      "XLE": -0.17,
-      "XLF": 0.93,
-      "XLI": 0.27,
-      "XLV": 1.29,
-      "XLK": 0.14,
-      "XLY": 1.15,
-      "XLP": 0.79,
-      "XLU": -2.31,
-      "SMH": -0.4
+      "lider": "financials",
+      "cambio_lider": 1.5,
+      "tech_chg": -2.28,
+      "all": {
+        "tech": -2.28,
+        "financials": 1.5,
+        "energy": -0.49,
+        "healthcare": -0.11,
+        "industrials": -0.6,
+        "consumer_disc": 0.34,
+        "utilities": 0.28,
+        "materials": 0.81,
+        "realestate": 0.42
+      },
+      "ts": "10:39"
     },
-    "macro_bonus_ew": -0.39,
+    "macro_bonus_ew": -0.78,
     "bonos": {
-      "tlt_chg": -0.35,
-      "yield_10y": 4.71,
-      "yield_30y": 5.24
+      "tlt_chg": 0.59,
+      "yield_10y": 4.7
     },
     "eventos_recientes": [
       {
@@ -2502,18 +2517,14 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "oro_chg": 2.21,
-      "oro_px": 4726.1,
-      "wti_px": 85.35,
-      "wti_chg": -1.96,
-      "brent_px": 93.07
+      "oro_chg": 2.26,
+      "oil_chg": -2.02,
+      "oil_price": 85.3,
+      "dxy_chg": 0.18
     },
     "internacional": {
-      "N225": -0.74,
-      "DAX": -0.08,
-      "FTSE": -0.08,
-      "HSI": -1.89,
-      "SSE": -0.59
+      "avg": -0.63,
+      "asia_avg": -1.07
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike_contexto_persistente",
@@ -2548,9 +2559,9 @@
     "vix_fuente": "IG Week Ahead 21-ago (VIX semanal 16.02 vs 14.26 previa); cierre viernes ^VIX 15.16-16.01",
     "vigilancia_geopolitica": true,
     "indices": {
-      "SPY_dia": 0.3842018305315819,
-      "QQQ_dia": 0.324926504719179,
-      "SPY_30min": -0.04114124507773617
+      "SPY": -0.35,
+      "QQQ": -1.36,
+      "VIX": 15.92
     },
     "volatilidad": {
       "VIXY_dia": -1.2709572742022686,
@@ -2643,7 +2654,13 @@
       "wti_pct": 4.76,
       "dxy_chg": -0.82
     },
-    "narrativa_semanal_W34": "Primera semana negativa tras 3 al alza. La rotacion es clara: fuera de duracion y tecnologia, dentro de activos duros. El debasement trade (oro, BTC, materials) es el trade con mejor risk/reward del regimen actual; memoria/semis es el peor. Para el sistema Cowork la semana fue de CERO exposicion: estar en liquidez genero +0.67% de alpha frente al SPY, pero por accidente, no por decision."
+    "narrativa_semanal_W34": "Primera semana negativa tras 3 al alza. La rotacion es clara: fuera de duracion y tecnologia, dentro de activos duros. El debasement trade (oro, BTC, materials) es el trade con mejor risk/reward del regimen actual; memoria/semis es el peor. Para el sistema Cowork la semana fue de CERO exposicion: estar en liquidez genero +0.67% de alpha frente al SPY, pero por accidente, no por decision.",
+    "eventos_semana": [
+      "NVDA earnings 26-ago AMC",
+      "PCE julio 26-ago 8:30 ET",
+      "Jackson Hole 27-29 ago (Warsh keynote vie 28)"
+    ],
+    "narrativa": "Sanciones EEUU-Iran (Bessent \"economic D-Day\"), ruptura negociaciones comerciales EEUU-Canada, debilidad semis (rumor Apple probando CXMT, colocacion Alibaba $10.2B). Oro en maximo 3 meses, petroleo -2% a $85.3."
   },
   "operaciones_crypto": [
     {
@@ -11357,9 +11374,31 @@
       "equity_real": 4548.14,
       "posiciones": "0 equity en ambas cuentas; solo polvo cripto (paper BTCUSD $0.39 +22.2%, SOLUSD $0.00; real BTCUSD $0.66 -32.6%) - todas <$1, sin riesgo, sin stop necesario",
       "nota": "Calendario EW 24-ago vacio de setups (12 empresas, ninguna con whisper valido: PDD/XPEV/NSSC/ADRs China). 25-ago si tiene: NCNO +37.0%, BMO +15.9%, VIPS +9.1%, JOYY +5.3%, BOX +5.0%, HEI +4.6%, INTU +4.2%, ZM +3.4%. Ninguno alcanza el umbral paper de 7.5 con el scoring rapido. Operativa del dia = plan semanal: HEI (9.0) y BJ (8.1)."
+    },
+    {
+      "ts": "2026-08-24T10:39:46.138310+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "vix": 15.9,
+      "macro_score": -2.6,
+      "macro_nivel": "alerta",
+      "nota": "EW caido -> sin whisper -> 0 ejecuciones. HEI earnings 25-ago AMC registrado en CV."
     }
   ],
-  "momentum_15m": {},
+  "momentum_15m": {
+    "HEI": {
+      "precio": 354.93,
+      "mom_15m": -0.599,
+      "mom_30m": -0.978,
+      "vol_ratio": 0.33,
+      "vwap_dev": -0.299,
+      "rsi": 45.6,
+      "señal": "debil_bajista",
+      "ts": "10:39"
+    }
+  },
   "sentinel_signals": [
     {
       "ticker": "NCNO",
@@ -13841,7 +13880,16 @@
       "tipo": "bug_codigo",
       "detalle": "SKILL.md referencia APCA_KEY_P/APCA_SECRET_P (gap check y failsafe de stop) que nunca se definen -> NameError silencioso. Definidas solo APCA_KEY/APCA_SECRET. Ademas usa 'timedelta' sin importarlo en el bloque CPI, y yfinance no esta instalado en el sandbox (sin espacio en disco); se sustituyo por la API de datos de Alpaca.",
       "impacto": "gap check y failsafe de stop no funcionarian tal cual estan escritos"
+    },
+    {
+      "fecha": "2026-08-24",
+      "ts": "2026-08-24T10:39:46.138310+00:00",
+      "origen": "sentinel",
+      "severidad": "alta",
+      "titulo": "EarningsWhispers inaccesible desde sandbox",
+      "detalle": "old.earningswhispers.com no resuelve/conecta (ConnectTimeout en 443) desde el entorno de ejecucion. www.earningswhispers.com responde 200 pero es SPA JS: no contiene #whisperbox ni #epsconsensus en el HTML, y /api/card/{TICKER} devuelve un PNG, no JSON. Resultado: get_ew_headless() no puede extraer whisper/consensus. Efecto secundario grave: los 3 reintentos x 18-20s de timeout por ticker hacen que el PASO 3 tarde >20 min y no complete. MITIGACION APLICADA: earnings detectados via yfinance .calendar (rapido, paralelo) en lugar de EW. ACCION REQUERIDA: (1) reducir timeout EW a 6s y abortar el scan tras 3 fallos consecutivos de conexion; (2) buscar fuente alternativa de whisper/consensus (yfinance .calendar da EPS Average/High/Low, usable como proxy de consenso); (3) sin whisper no hay asimetria -> el gate min_whisper_asymmetry_pct queda inoperante y NO se debe ejecutar a ciegas.",
+      "resuelto": false
     }
   ],
-  "ultima_actualizacion": "2026-08-24T13:45:41.451996+00:00"
+  "ultima_actualizacion": "2026-08-24T10:39 ET"
 }
