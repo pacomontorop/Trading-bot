@@ -1163,8 +1163,8 @@
     {
       "ticker": "INTU",
       "score": 4.5,
-      "score_ajustado": 4.5,
-      "score_macro_bonus": -0.09,
+      "score_ajustado": 3.7,
+      "score_macro_bonus": -0.78,
       "estado": "reevaluado_postmarket",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 4.2,
@@ -1174,7 +1174,7 @@
       "earnings_timing": "after-hours",
       "beat_rate_4T": "4/4",
       "expira": "2026-08-25T20:00:00Z",
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +4.20% (whisper 3.72 vs consenso 3.57), beat 8T=1.0 12T=1.0, sorpresa media 8T=9.38%. Score PARCIAL 4.5 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan. | Reevaluado por post-market 2026-08-21 con scoring completo.",
+      "notas": "[sentinel 2026-08-24 11:19 ET] EW refrescado: whisper=3.72 consensus=3.57 asim=+4.20% beat_rate_4q=1.0. Score sentinel=4.5, ajustado macro=3.7 (umbral paper efectivo 8.0) -> no elegible por sentinel. ATENCION GATE: mom_5d=+10.27% EXCEDE max_5day_momentum_pct=10.0 -> parte del movimiento ya descontado. Verificar el gate en pre-market antes de entrar.",
       "detectado_por": "sentinel-postcierre-21ago",
       "fecha_deteccion": "2026-08-21",
       "ventana_entrada": "2026-08-25 pre-market scan 10:15 ET",
@@ -1190,7 +1190,16 @@
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "analistas_ew": 27,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 4.5
+      "score_scan_sentinel": 4.5,
+      "beat_rate_4q": 1.0,
+      "momentum_intradia": {
+        "precio": 370.05,
+        "m15": 0.15,
+        "vol_ratio": 0.21,
+        "vwap_dev": -0.03,
+        "mom_5d": 10.27,
+        "señal": "debil_alcista"
+      }
     },
     {
       "ticker": "BOX",
@@ -1228,8 +1237,8 @@
     {
       "ticker": "ZM",
       "score": 4.5,
-      "score_ajustado": 4.5,
-      "score_macro_bonus": -0.09,
+      "score_ajustado": 3.7,
+      "score_macro_bonus": -0.78,
       "estado": "reevaluado_postmarket",
       "accion_recomendada": "revisar_premarket",
       "asimetria_pct": 3.38,
@@ -1239,7 +1248,7 @@
       "earnings_timing": "after-hours",
       "beat_rate_4T": "3/4",
       "expira": "2026-08-25T20:00:00Z",
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +3.38% (whisper 1.53 vs consenso 1.48), beat 8T=0.88 12T=0.92, sorpresa media 8T=7.54%. Score PARCIAL 4.5 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan. | Reevaluado por post-market 2026-08-21 con scoring completo.",
+      "notas": "[sentinel 2026-08-24 11:19 ET] EW refrescado: whisper=1.53 consensus=1.48 asim=+3.38% beat_rate_4q=0.75. Score sentinel=4.5, ajustado macro=3.7 (umbral paper efectivo 8.0) -> no elegible por sentinel. mom_5d=+0.41%, gate de momentum limpio. Vol intradia x2.29 (el mas alto del grupo) — vigilar.",
       "detectado_por": "sentinel-postcierre-21ago",
       "fecha_deteccion": "2026-08-21",
       "ventana_entrada": "2026-08-25 pre-market scan 10:15 ET",
@@ -1255,7 +1264,16 @@
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "analistas_ew": 14,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 4.5
+      "score_scan_sentinel": 4.5,
+      "beat_rate_4q": 0.75,
+      "momentum_intradia": {
+        "precio": 105.99,
+        "m15": -0.22,
+        "vol_ratio": 2.29,
+        "vwap_dev": -0.19,
+        "mom_5d": 0.41,
+        "señal": "debil_bajista"
+      }
     },
     {
       "ticker": "PDD",
