@@ -1507,11 +1507,11 @@
     {
       "ticker": "VIPS",
       "estado": "sentinel_preview",
-      "score_macro_bonus": 0,
+      "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
       "score": 5.5,
-      "score_ajustado": 5.5,
+      "score_ajustado": 4.7,
       "asimetria_pct": 9.09,
       "whisper": 0.6,
       "consensus": 0.55,
@@ -1526,14 +1526,23 @@
         "asim+2.5",
         "beatEXC+3.0"
       ],
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +9.09% (whisper 0.6 vs consenso 0.55), beat 8T=1.0 12T=1.0, sorpresa media 8T=3.35%. Score PARCIAL 5.5 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=0.6 consensus=0.55 asim=+9.09% beat_rate_4q=1.0. Score sentinel=5.5 (max estructural 6.0), ajustado macro=4.7. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
       "ventana_entrada": "2026-08-25 pre-market scan 10:15 ET",
       "analistas_ew": 5,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 5.5
+      "score_scan_sentinel": 5.5,
+      "beat_rate_4q": 1.0,
+      "momentum_intradia": {
+        "precio": 14.41,
+        "m15": 0.03,
+        "vol_ratio": 0.39,
+        "vwap_dev": 0.11,
+        "mom_5d": 2.67,
+        "señal": "LATERAL"
+      }
     },
     {
       "ticker": "OKTA",
@@ -1566,11 +1575,11 @@
     {
       "ticker": "NCNO",
       "estado": "sentinel_preview",
-      "score_macro_bonus": 0,
+      "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
-      "score": 5.0,
-      "score_ajustado": 5.0,
+      "score": 6.0,
+      "score_ajustado": 5.2,
       "asimetria_pct": 37.04,
       "whisper": 0.37,
       "consensus": 0.27,
@@ -1585,7 +1594,7 @@
         "asim+3.0",
         "beat+2.0"
       ],
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +37.04% (whisper 0.37 vs consenso 0.27), beat 8T=0.75 12T=0.83, sorpresa media 8T=26.49%. Score PARCIAL 5.0 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=0.37 consensus=0.27 asim=+37.04% beat_rate_4q=1.0. Score sentinel=6.0 (max estructural 6.0), ajustado macro=5.2. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
@@ -1593,16 +1602,25 @@
       "flag_calidad": "asimetria_inflada_base_baja: 0.37 vs 0.27 EPS. +37% es artefacto de EPS absoluto pequeno, no conviccion real. Verificar en pre-market antes de puntuar alto.",
       "analistas_ew": 6,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 6.0
+      "score_scan_sentinel": 6.0,
+      "beat_rate_4q": 1.0,
+      "momentum_intradia": {
+        "precio": 20.69,
+        "m15": 0.41,
+        "vol_ratio": 0.22,
+        "vwap_dev": -0.09,
+        "mom_5d": 2.27,
+        "señal": "debil_alcista"
+      }
     },
     {
       "ticker": "BMO",
       "estado": "sentinel_preview",
-      "score_macro_bonus": 0,
+      "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
-      "score": 5.0,
-      "score_ajustado": 5.0,
+      "score": 6.0,
+      "score_ajustado": 5.2,
       "asimetria_pct": 15.87,
       "whisper": 3.14,
       "consensus": 2.71,
@@ -1617,7 +1635,7 @@
         "asim+3.0",
         "beat+2.0"
       ],
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +15.44% (whisper 3.14 vs consenso 2.72), beat 8T=0.75 12T=0.5, sorpresa media 8T=4.2%. Score PARCIAL 5.0 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=3.14 consensus=2.71 asim=+15.87% beat_rate_4q=1.0. Score sentinel=6.0 (max estructural 6.0), ajustado macro=5.2. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
@@ -1625,7 +1643,16 @@
       "flag_calidad": "banco canadiense, whisper 3.14 vs consenso 2.72 (+15.4%) posible desajuste CAD/ajustado. Verificar base del consenso antes de ejecutar.",
       "analistas_ew": 3,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 6.0
+      "score_scan_sentinel": 6.0,
+      "beat_rate_4q": 1.0,
+      "momentum_intradia": {
+        "precio": 173.28,
+        "m15": -0.09,
+        "vol_ratio": 0.11,
+        "vwap_dev": 0.19,
+        "mom_5d": -6.48,
+        "señal": "LATERAL"
+      }
     },
     {
       "ticker": "JOYY",
@@ -1746,11 +1773,11 @@
     {
       "ticker": "DKS",
       "estado": "sentinel_preview",
-      "score_macro_bonus": 0,
+      "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
-      "score": 3.0,
-      "score_ajustado": 3.0,
+      "score": 4.0,
+      "score_ajustado": 3.2,
       "asimetria_pct": 2.91,
       "whisper": 3.89,
       "consensus": 3.78,
@@ -1765,23 +1792,32 @@
         "asim+1.0",
         "beat+2.0"
       ],
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +2.91% (whisper 3.89 vs consenso 3.78), beat 8T=0.88 12T=0.83, sorpresa media 8T=5.61%. Score PARCIAL 3.0 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=3.89 consensus=3.78 asim=+2.91% beat_rate_4q=0.75. Score sentinel=4.0 (max estructural 6.0), ajustado macro=3.2. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
       "ventana_entrada": "2026-08-25 pre-market scan 10:15 ET",
       "analistas_ew": 19,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 4.0
+      "score_scan_sentinel": 4.0,
+      "beat_rate_4q": 0.75,
+      "momentum_intradia": {
+        "precio": 182.66,
+        "m15": 0.1,
+        "vol_ratio": 0.25,
+        "vwap_dev": -0.27,
+        "mom_5d": -6.92,
+        "señal": "LATERAL"
+      }
     },
     {
       "ticker": "BNS",
       "estado": "sentinel_preview",
-      "score_macro_bonus": 0,
+      "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
-      "score": 2.5,
-      "score_ajustado": 2.5,
+      "score": 4.5,
+      "score_ajustado": 3.7,
       "asimetria_pct": 3.27,
       "whisper": 1.58,
       "consensus": 1.53,
@@ -1796,14 +1832,23 @@
         "asim+1.5",
         "beat+1.0"
       ],
-      "notas": "Sentinel post-cierre 21-ago: asim REAL +3.27% (whisper 1.58 vs consenso 1.53), beat 8T=0.62 12T=0.58, sorpresa media 8T=-1.16%. Score PARCIAL 2.5 = solo bloques asimetria+beat_rate; falta guidance/sector/macro/momentum -> completar en pre-market scan.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=1.58 consensus=1.53 asim=+3.27% beat_rate_4q=1.0. Score sentinel=4.5 (max estructural 6.0), ajustado macro=3.7. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
       "ventana_entrada": "2026-08-25 pre-market scan 10:15 ET",
       "analistas_ew": 7,
       "ew_refrescado": "2026-08-24T09:16",
-      "score_scan_sentinel": 4.5
+      "score_scan_sentinel": 4.5,
+      "beat_rate_4q": 1.0,
+      "momentum_intradia": {
+        "precio": 87.06,
+        "m15": -0.06,
+        "vol_ratio": 0.28,
+        "vwap_dev": 0.26,
+        "mom_5d": -4.7,
+        "señal": "LATERAL"
+      }
     },
     {
       "ticker": "HEI",
@@ -1863,8 +1908,8 @@
     },
     {
       "ticker": "BOX",
-      "score": 7.0,
-      "score_ajustado": 7.0,
+      "score": 4.5,
+      "score_ajustado": 3.7,
       "score_total": 7.0,
       "tipo": "ew_drift_pre_earnings",
       "fecha_deteccion": "2026-08-21",
@@ -1894,19 +1939,29 @@
       "conviction_tier": "conviction_media",
       "sizing_multiplier": 0.7,
       "salida_obligatoria": "Si se entra: cerrar el 25-ago antes de las 15:45 ET.",
-      "notas": "REVISAR la regla de denominador minimo en el pre-market del 24-ago: dif whisper-consenso = $0.02 < $0.07 minimo -> probable descarte.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=0.42 consensus=0.4 asim=+5.00% beat_rate_4q=0.75. Score sentinel=4.5 (max estructural 6.0), ajustado macro=3.7. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
       "expira": "2026-08-25T19:45:00Z",
       "ts_creado": "2026-08-21T20:33:13.555560+00:00",
       "consensus": 0.4,
       "analistas_ew": 5,
       "ew_refrescado": "2026-08-24T09:16",
       "score_scan_sentinel": 5.0,
-      "nota_dedupe": "Entrada canonica (post-market-review 21-ago 20:33, mas reciente y autoritativa). Consolidado por sentinel 2026-08-24T09:17."
+      "nota_dedupe": "Entrada canonica (post-market-review 21-ago 20:33, mas reciente y autoritativa). Consolidado por sentinel 2026-08-24T09:17.",
+      "score_macro_bonus": -0.78,
+      "beat_rate_4q": 0.75,
+      "momentum_intradia": {
+        "precio": 33.19,
+        "m15": -0.21,
+        "vol_ratio": 0.14,
+        "vwap_dev": -0.35,
+        "mom_5d": 2.79,
+        "señal": "debil_bajista"
+      }
     },
     {
       "ticker": "JOYY",
       "score": 5.0,
-      "score_ajustado": 5.0,
+      "score_ajustado": 4.2,
       "score_total": 5.0,
       "tipo": "ew_drift_pre_earnings",
       "fecha_deteccion": "2026-08-21",
@@ -1939,7 +1994,18 @@
       "analistas_ew": 4,
       "ew_refrescado": "2026-08-24T09:16",
       "score_scan_sentinel": 5.0,
-      "nota_dedupe": "Entrada canonica (post-market-review 21-ago 20:33, mas reciente y autoritativa). Consolidado por sentinel 2026-08-24T09:17."
+      "nota_dedupe": "Entrada canonica (post-market-review 21-ago 20:33, mas reciente y autoritativa). Consolidado por sentinel 2026-08-24T09:17.",
+      "score_macro_bonus": -0.78,
+      "beat_rate_4q": 0.75,
+      "momentum_intradia": {
+        "precio": 73.54,
+        "m15": 0.12,
+        "vol_ratio": 0.97,
+        "vwap_dev": -0.32,
+        "mom_5d": -0.11,
+        "señal": "LATERAL"
+      },
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=1.2 consensus=1.14 asim=+5.26% beat_rate_4q=0.75. Score sentinel=5.0 (max estructural 6.0), ajustado macro=4.2. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago."
     },
     {
       "ticker": "INTU",
@@ -2127,53 +2193,54 @@
     ],
     "notas_adicionales": "CORRECCION weekly W34: el evento macro dominante de la semana que viene es el CORE PCE del MIERCOLES 26-ago 08:30 ET, que el plan del viernes no listaba explicitamente (solo listaba earnings). Coincide el mismo dia con NVDA AMC: el 26-ago es el dia de maximo riesgo bidireccional de la semana. Consenso core PCE +0.2% MoM / 3.3% YoY: una lectura >0.3% dispara la probabilidad de subida en el FOMC del 16-sep. Dust crypto sin stop (BTCUSD paper $0.38, SOLUSD paper $0.00, BTCUSD real $0.64): importes negligibles, hands-off confirmado.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-24T10:39",
-      "nivel": "alerta",
+      "timestamp": "2026-08-24T11:18",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.0,
-      "score_min_real_efectivo": 9.0
+      "score_min_real_efectivo": 9.0,
+      "nota": "Iran sanctions (Bessent, mas agresivas hasta la fecha) + amenaza arancelaria US-Canada. Oil RETROCEDE (-2.3% WTI a $85.09) por profit-taking tras +5.7% semanal; no es oil_spike. VIX 15.8 (+4.3%) sin estres. SPY -0.34% / QQQ -1.09%: debilidad LIDERADA POR TECH (XLK -1.97%), rotacion a financieras (XLF +1.34%). Oro +2.24% a $4727 = debasement trade vivo. Clasificacion: NO shock, macro_score -2.60 -> umbrales elevados."
     },
     "macro_score": -2.6,
-    "macro_nivel": "alerta",
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros bajistas (-0.90%)",
-      "Dow liderando vs Tech (+1.6pp) -> rotacion defensiva",
-      "TLT +0.59% - flight to safety",
-      "Yield 10Y alto (4.70%) - presion valuaciones growth",
-      "Oro +2.3% ($4729) - senal de miedo",
-      "Asia debil (-1.1%)",
-      "Tech debil (-2.3%) -> cautela candidatos tech"
+      "Futuros bajistas -0.70%",
+      "TLT +0.71% flight-to-safety",
+      "Yield 10Y 4.70% presiona growth",
+      "Oro +2.24% senal de miedo/debasement",
+      "Tech debil -1.97% (XLK peor sector)"
     ],
     "futuros": {
-      "ES": -0.38,
-      "NQ": -1.42,
-      "YM": 0.22
+      "ES": -0.31,
+      "NQ": -1.08,
+      "YM": 0.17,
+      "RTY": -0.54
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-24T10:39",
+    "ts_actualizado": "2026-08-24T11:18",
     "sectores_hoy": {
-      "lider": "financials",
-      "cambio_lider": 1.5,
-      "tech_chg": -2.28,
+      "lider": "XLF",
+      "cambio_lider": 1.34,
+      "tech_chg": -1.97,
       "all": {
-        "tech": -2.28,
-        "financials": 1.5,
-        "energy": -0.49,
-        "healthcare": -0.11,
-        "industrials": -0.6,
-        "consumer_disc": 0.34,
-        "utilities": 0.28,
-        "materials": 0.81,
-        "realestate": 0.42
+        "XLK": -1.97,
+        "XLF": 1.34,
+        "XLE": -1.29,
+        "XLV": -0.46,
+        "XLI": -0.8,
+        "XLY": 0.43,
+        "XLU": 0.12,
+        "XLB": 0.34,
+        "XLRE": -0.22
       },
-      "ts": "10:39"
+      "ts": "11:18"
     },
     "macro_bonus_ew": -0.78,
     "bonos": {
-      "tlt_chg": 0.59,
-      "yield_10y": 4.7
+      "tlt_chg": 0.71,
+      "yield_10y": 4.7,
+      "yield_30y": 5.23
     },
     "eventos_recientes": [
       {
@@ -2517,14 +2584,19 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "oro_chg": 2.26,
-      "oil_chg": -2.02,
-      "oil_price": 85.3,
-      "dxy_chg": 0.18
+      "wti": 85.09,
+      "wti_chg": -2.26,
+      "brent": 92.51,
+      "oro": 4727.8,
+      "oro_chg": 2.24,
+      "dxy_proxy_chg": 0.2
     },
     "internacional": {
-      "avg": -0.63,
-      "asia_avg": -1.07
+      "Nikkei": -0.3,
+      "DAX": -0.11,
+      "FTSE": 0.43,
+      "HSI": -1.89,
+      "Shanghai": -0.59
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike_contexto_persistente",
@@ -11385,18 +11457,226 @@
       "macro_score": -2.6,
       "macro_nivel": "alerta",
       "nota": "EW caido -> sin whisper -> 0 ejecuciones. HEI earnings 25-ago AMC registrado en CV."
+    },
+    {
+      "ts": "2026-08-24T11:18:59.143612+00:00",
+      "modo": "intraday",
+      "alertas": 0,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 11,
+      "cowork_abiertas": 1,
+      "max_cowork": 2,
+      "vix": 15.78,
+      "spy_chg": -0.34,
+      "qqq_chg": -1.09,
+      "macro_score": -2.6,
+      "macro_nivel": "normal",
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0,
+      "ew_scan_status": "OK 121 tickers via API www.earningswhispers.com/api/getstocksdata/{T} (campos whisper + consensusEst + nextEPSDate + releaseTime; releaseTime 1/2=BMO, 3/4=AMC). 48/121 con datos, 11 con earnings 24-25 ago. NOTA ENTORNO: /sessions al 100% -> pip falla con ENOSPC; usar PYTHONPATH=/tmp/pylibs (deps ya instaladas alli). yfinance fast_info devuelve 0 para futuros/ETF/indices: usar history(period=5d) para % cambio.",
+      "notas": "Sin ejecuciones: ningun candidato alcanza el umbral (max score sentinel 6.0 vs umbral 8.0 por macro negativo). Top: NCNO asim+37.04% br1.00 s=6.0; BMO asim+15.87% br1.00 s=6.0; VIPS +9.09% s=5.5. Nuevo: INTU (25-ago AH, asim+4.20%, br1.00) pero mom_5d +10.27% excede el gate max_5day_momentum_pct=10.0. HEI abierta -0.78% con stop bracket @343.70 OK; earnings 25-ago AH -> gestionar manana en pre-close 14:30 ET, hoy no procede cierre. Telegram silenciado (sin trade/cierre/shock/EOD)."
     }
   ],
   "momentum_15m": {
     "HEI": {
-      "precio": 354.93,
-      "mom_15m": -0.599,
-      "mom_30m": -0.978,
-      "vol_ratio": 0.33,
-      "vwap_dev": -0.299,
-      "rsi": 45.6,
+      "precio": 352.8,
+      "m15": -0.23,
+      "vol_ratio": 0.75,
+      "vwap_dev": -0.76,
+      "mom_5d": -4.98,
       "señal": "debil_bajista",
-      "ts": "10:39"
+      "ts": "2026-08-24T11:18"
+    },
+    "ADSK": {
+      "precio": 254.86,
+      "mom_15m": -0.41,
+      "mom_30m": -0.035,
+      "vol_ratio": 0.13,
+      "vwap_dev": -0.149,
+      "rsi": 46.9,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "AVGO": {
+      "precio": 362.1,
+      "mom_15m": 0.169,
+      "mom_30m": -0.305,
+      "vol_ratio": 0.13,
+      "vwap_dev": -0.105,
+      "rsi": 43.6,
+      "señal": "debil_alcista",
+      "ts": "2026-08-24T11:18"
+    },
+    "BMO": {
+      "precio": 173.28,
+      "m15": -0.09,
+      "vol_ratio": 0.11,
+      "vwap_dev": 0.19,
+      "mom_5d": -6.48,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "BNS": {
+      "precio": 87.06,
+      "m15": -0.06,
+      "vol_ratio": 0.28,
+      "vwap_dev": 0.26,
+      "mom_5d": -4.7,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "BOX": {
+      "precio": 33.19,
+      "m15": -0.21,
+      "vol_ratio": 0.14,
+      "vwap_dev": -0.35,
+      "mom_5d": 2.79,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "CRM": {
+      "precio": 210.5,
+      "mom_15m": -0.353,
+      "mom_30m": -0.604,
+      "vol_ratio": 0.38,
+      "vwap_dev": -0.447,
+      "rsi": 35.8,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "CRWD": {
+      "precio": 191.62,
+      "mom_15m": -0.128,
+      "mom_30m": 0.217,
+      "vol_ratio": 0.17,
+      "vwap_dev": 0.412,
+      "rsi": 52.5,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "DKS": {
+      "precio": 182.66,
+      "m15": 0.1,
+      "vol_ratio": 0.25,
+      "vwap_dev": -0.27,
+      "mom_5d": -6.92,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "JOYY": {
+      "precio": 73.54,
+      "m15": 0.12,
+      "vol_ratio": 0.97,
+      "vwap_dev": -0.32,
+      "mom_5d": -0.11,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "MRVL": {
+      "precio": 224.88,
+      "mom_15m": -0.266,
+      "mom_30m": -0.775,
+      "vol_ratio": 0.16,
+      "vwap_dev": 0.174,
+      "rsi": 47.3,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "NCNO": {
+      "precio": 20.69,
+      "m15": 0.41,
+      "vol_ratio": 0.22,
+      "vwap_dev": -0.09,
+      "mom_5d": 2.27,
+      "señal": "debil_alcista",
+      "ts": "2026-08-24T11:18"
+    },
+    "NVDA": {
+      "precio": 209.32,
+      "mom_15m": -0.181,
+      "mom_30m": -0.257,
+      "vol_ratio": 0.19,
+      "vwap_dev": -0.222,
+      "rsi": 45.3,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "OKTA": {
+      "precio": 130.73,
+      "mom_15m": -0.381,
+      "mom_30m": -0.332,
+      "vol_ratio": 0.28,
+      "vwap_dev": -0.321,
+      "rsi": 40.1,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "ULTA": {
+      "precio": 533.32,
+      "mom_15m": -0.213,
+      "mom_30m": -0.639,
+      "vol_ratio": 0.18,
+      "vwap_dev": -0.684,
+      "rsi": 33.1,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "VIPS": {
+      "precio": 14.41,
+      "m15": 0.03,
+      "vol_ratio": 0.39,
+      "vwap_dev": 0.11,
+      "mom_5d": 2.67,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "WDAY": {
+      "precio": 201.21,
+      "mom_15m": -0.63,
+      "mom_30m": -0.089,
+      "vol_ratio": 0.1,
+      "vwap_dev": 0.108,
+      "rsi": 52.2,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "XOM": {
+      "precio": 163.31,
+      "mom_15m": -0.11,
+      "mom_30m": -0.427,
+      "vol_ratio": 0.2,
+      "vwap_dev": -0.548,
+      "rsi": 30.7,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
+    },
+    "INTU": {
+      "precio": 370.05,
+      "m15": 0.15,
+      "vol_ratio": 0.21,
+      "vwap_dev": -0.03,
+      "mom_5d": 10.27,
+      "señal": "debil_alcista",
+      "ts": "2026-08-24T11:18"
+    },
+    "ZM": {
+      "precio": 105.99,
+      "m15": -0.22,
+      "vol_ratio": 2.29,
+      "vwap_dev": -0.19,
+      "mom_5d": 0.41,
+      "señal": "debil_bajista",
+      "ts": "2026-08-24T11:18"
+    },
+    "SMTC": {
+      "precio": 117.35,
+      "m15": 0.05,
+      "vol_ratio": 0.15,
+      "vwap_dev": 0.66,
+      "mom_5d": -23.91,
+      "señal": "LATERAL",
+      "ts": "2026-08-24T11:18"
     }
   },
   "sentinel_signals": [
@@ -11507,6 +11787,160 @@
       "ts_detected": "2026-08-24T09:16:39.068252+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preapertura"
+    },
+    {
+      "ticker": "NCNO",
+      "score": 6.0,
+      "score_ajustado": 5.2,
+      "tipo": "earnings_ew",
+      "asimetria": 37.04,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+37.04% br=1.0 score=6.0 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "BMO",
+      "score": 6.0,
+      "score_ajustado": 5.2,
+      "tipo": "earnings_ew",
+      "asimetria": 15.87,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "pre-market",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+15.87% br=1.0 score=6.0 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "VIPS",
+      "score": 5.5,
+      "score_ajustado": 4.7,
+      "tipo": "earnings_ew",
+      "asimetria": 9.09,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "pre-market",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+9.09% br=1.0 score=5.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "JOYY",
+      "score": 5.0,
+      "score_ajustado": 4.2,
+      "tipo": "earnings_ew",
+      "asimetria": 5.26,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 0.75,
+      "razon": "asim=+5.26% br=0.75 score=5.0 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "BOX",
+      "score": 4.5,
+      "score_ajustado": 3.7,
+      "tipo": "earnings_ew",
+      "asimetria": 5.0,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 0.75,
+      "razon": "asim=+5.00% br=0.75 score=4.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "HEI",
+      "score": 4.5,
+      "score_ajustado": 3.7,
+      "tipo": "earnings_ew",
+      "asimetria": 4.64,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+4.64% br=1.0 score=4.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "INTU",
+      "score": 4.5,
+      "score_ajustado": 3.7,
+      "tipo": "earnings_ew",
+      "asimetria": 4.2,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+4.20% br=1.0 score=4.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "ZM",
+      "score": 4.5,
+      "score_ajustado": 3.7,
+      "tipo": "earnings_ew",
+      "asimetria": 3.38,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 0.75,
+      "razon": "asim=+3.38% br=0.75 score=4.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "BNS",
+      "score": 4.5,
+      "score_ajustado": 3.7,
+      "tipo": "earnings_ew",
+      "asimetria": 3.27,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "pre-market",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+3.27% br=1.0 score=4.5 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "DKS",
+      "score": 4.0,
+      "score_ajustado": 3.2,
+      "tipo": "earnings_ew",
+      "asimetria": 2.91,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "pre-market",
+      "beat_rate_4q": 0.75,
+      "razon": "asim=+2.91% br=0.75 score=4.0 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
+    },
+    {
+      "ticker": "SMTC",
+      "score": 3.0,
+      "score_ajustado": 2.2,
+      "tipo": "earnings_ew",
+      "asimetria": 1.61,
+      "earnings_fecha": "2026-08-25",
+      "earnings_timing": "after-hours",
+      "beat_rate_4q": 1.0,
+      "razon": "asim=+1.61% br=1.0 score=3.0 (umbral 8.0)",
+      "ts_detected": "2026-08-24T11:18:59.143612+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-intraday-ew-api"
     }
   ],
   "skip_analysis": {
@@ -13889,7 +14323,17 @@
       "titulo": "EarningsWhispers inaccesible desde sandbox",
       "detalle": "old.earningswhispers.com no resuelve/conecta (ConnectTimeout en 443) desde el entorno de ejecucion. www.earningswhispers.com responde 200 pero es SPA JS: no contiene #whisperbox ni #epsconsensus en el HTML, y /api/card/{TICKER} devuelve un PNG, no JSON. Resultado: get_ew_headless() no puede extraer whisper/consensus. Efecto secundario grave: los 3 reintentos x 18-20s de timeout por ticker hacen que el PASO 3 tarde >20 min y no complete. MITIGACION APLICADA: earnings detectados via yfinance .calendar (rapido, paralelo) en lugar de EW. ACCION REQUERIDA: (1) reducir timeout EW a 6s y abortar el scan tras 3 fallos consecutivos de conexion; (2) buscar fuente alternativa de whisper/consensus (yfinance .calendar da EPS Average/High/Low, usable como proxy de consenso); (3) sin whisper no hay asimetria -> el gate min_whisper_asymmetry_pct queda inoperante y NO se debe ejecutar a ciegas.",
       "resuelto": false
+    },
+    {
+      "fecha": "2026-08-24",
+      "ts": "2026-08-24T11:18",
+      "detectado_por": "sentinel",
+      "severidad": "alta",
+      "titulo": "El scorer del sentinel NO puede alcanzar nunca el umbral de ejecucion",
+      "descripcion": "score_oportunidad() del sentinel suma como maximo 6.0 puntos (3.0 asimetria + 2.0 beat_rate + 1.0 timing), pero score_min_paper=7.0 (y 8.0 con macro negativo). Consecuencia: el PASO 5 del sentinel es estructuralmente inalcanzable y el sentinel nunca ejecuta por si mismo, por buena que sea la senal. Hoy NCNO (+37.04% asimetria, beat_rate 4/4) se queda en 6.0/8.0. Esto explica el patron historico de \"N oportunidades, 0 ejecuciones\" en sentinel_log.",
+      "propuesta": "O bien (a) ampliar score_oportunidad con los bloques que si usa el pre-market scan (momentum, sector, gap, guidance, revisiones) hasta una escala real de 0-10, o bien (b) definir un umbral propio del sentinel (p.ej. sentinel_score_min=5.0 sobre escala 0-6) separado de score_min_paper. Sin uno de los dos, el sentinel solo puede vigilar y anotar, no actuar.",
+      "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-08-24T10:39 ET"
+  "ultima_actualizacion": "2026-08-24T11:18 ET (sentinel)"
 }
