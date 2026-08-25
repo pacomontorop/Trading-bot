@@ -462,6 +462,14 @@
       "descripcion": "Perdida de $1.20/accion vs consenso de perdida $0.28. Revenue -16.67% YoY. Polisilicio China en sobrecapacidad.",
       "accion_futura": "Mantener veto sectorial a polisilicio/solar China.",
       "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-08-25",
+      "tarea_afectada": "intraday-monitor",
+      "titulo": "HEI cerrada pre-earnings AH con -$103.68 (-1.21%): riesgo gap evitado, pero la posicion nunca debio abrirse sin score",
+      "descripcion": "Posicion COWORK de 24sh HEI abierta el 24-ago sin entrada en operaciones[] ni score. HEICO reporto FQ3 hoy 25-ago AMC. El intraday-monitor la cerro a las 12:35 ET @ $352.11 (perdida controlada -$103.68) en lugar de exponerla a un gap overnight que el stop_limit @343.70 no habria cubierto.",
+      "accion_correctiva": "Toda orden de entrada debe registrar simultaneamente la operacion en operaciones[] con score y earnings_fecha. El market-open-execution debe rechazar cualquier candidato cuya earnings_fecha caiga dentro del horizonte de la posicion salvo score>=8.5.",
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -4243,7 +4251,7 @@
     },
     {
       "ticker": "HEI",
-      "estado": "abierta",
+      "estado": "cerrado",
       "score": null,
       "tipo": "posicion_abierta_sin_registro",
       "earnings_fecha": "2026-08-25",
@@ -4256,7 +4264,11 @@
       "fecha_deteccion": "2026-08-25",
       "expira": "2026-08-26T20:00:00Z",
       "notas": "GAP DETECTADO por sentinel 12:35 ET 25-ago: posicion Cowork de 24sh HEI ($8.4k) abierta SIN entrada en candidatos_validados. HEICO reporta FQ3 hoy 25-ago a las 16:00 ET (AMC, confirmado por nota de prensa de la compania). Sin esta entrada NI el sentinel (PASO 1, 14:45 ET) NI el pre-close (14:30 ET) habrian detectado el riesgo de gap overnight. Entrada creada para activar el cierre automatico pre-close. Stop bracket activo @ $343.70 (no protege gap AH).",
-      "ts_creado": "2026-08-25T16:21:15.220336+00:00"
+      "ts_creado": "2026-08-25T16:21:15.220336+00:00",
+      "cierre_motivo": "pre_earnings_ah_intraday_monitor_12:35ET",
+      "cierre_precio": 352.11,
+      "cierre_pnl": -103.68,
+      "cierre_timestamp": "2026-08-25T16:36:38.556919+00:00"
     }
   ],
   "macro_context": {
@@ -13592,6 +13604,110 @@
       "vix": 15.08,
       "modo_dip": false,
       "notas": "Sin exposicion equity. 4 candidatos con earnings 20-ago/AH-hoy (ROST,WMT,DE,BILL) descartados por asimetria whisper insuficiente o ausente. 5 continuaciones post-earnings descartadas (rvol<1.5x; EL vetado por momentum 12.08%>10%). Ejecutado en sesion Cowork alternativa: LOG_PATH canonico inaccesible, log escrito en outputs de sesion + push a GitHub (source-of-truth)."
+    },
+    {
+      "timestamp": "2026-08-25T16:35:56.260268+00:00",
+      "tarea": "intraday-monitor",
+      "hora_et": "2026-08-25 12:35 ET",
+      "equity": 108235.38,
+      "buying_power": 422794.87,
+      "posiciones_abiertas": 3,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 0,
+          "entry": 64959.1,
+          "current": 79068.74,
+          "pnl_pct": 0,
+          "stop": 0.0,
+          "stop_source": "sin_stop"
+        },
+        {
+          "symbol": "HEI",
+          "shares": 24,
+          "entry": 356.43,
+          "current": 352.26,
+          "pnl_pct": -1.17,
+          "stop": 343.7,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 0,
+          "entry": 77.22,
+          "current": 98.27,
+          "pnl_pct": 0,
+          "stop": 0.0,
+          "stop_source": "sin_stop"
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "parciales_ejecutados": [],
+      "cierres_preventivos_earnings": [
+        {
+          "symbol": "HEI",
+          "qty": 24,
+          "side": "sell",
+          "entry_price": 356.43,
+          "fill_price": 352.11,
+          "pnl_realizado": -103.68,
+          "motivo": "earnings_ah_no_validado",
+          "order_id": "71bc8d14",
+          "status": "filled",
+          "legs_bracket": "auto-canceladas (OCO)"
+        }
+      ],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [
+        {
+          "symbol": "HEI",
+          "side": "sell",
+          "qty": "24",
+          "type": "market",
+          "status": "new",
+          "filled_at": null,
+          "filled_avg_price": null,
+          "submitted_at": "2026-08-25T16:35:54.434544452Z"
+        }
+      ],
+      "ordenes_canceladas": [],
+      "spy_intraday_pct": -0.07,
+      "vix": 15.5,
+      "modo_dip": false,
+      "candidatos_dip": [],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "live_alertas_news": {
+        "BTCUSD": [
+          [
+            "POS",
+            "Bitcoin Beats Nvidia to Become Top-Performing Major Asset Over 10 Years as BTC S"
+          ]
+        ]
+      },
+      "anomalias": [
+        "performance_log local (/sessions/wizardly-loving-carson/mnt/Scheduled/) NO accesible en esta sesion Cowork; lectura y escritura via GitHub.",
+        "Disco /sessions al 100% — instalacion de yfinance redirigida a /tmp/pylibs.",
+        "HEI (24sh, COWORK-*) estaba abierta sin registro en operaciones[]; detectada por sync Alpaca + sentinel."
+      ],
+      "posiciones_post_cierre": [
+        {
+          "symbol": "BTCUSD",
+          "qty": 4.874e-06,
+          "mv": 0.39
+        },
+        {
+          "symbol": "SOLUSD",
+          "qty": 2.5e-05,
+          "mv": 0.002
+        }
+      ],
+      "equity_post": 108231.78
     }
   ],
   "pre_close_log": [
