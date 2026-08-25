@@ -1443,7 +1443,7 @@
     },
     {
       "ticker": "VIPS",
-      "estado": "sentinel_preview",
+      "estado": "descartado_resultado_miss",
       "score_macro_bonus": -0.78,
       "fuente": "sentinel-ew-api",
       "tipo": "earnings_ew",
@@ -1463,7 +1463,7 @@
         "asim+2.5",
         "beatEXC+3.0"
       ],
-      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=0.6 consensus=0.55 asim=+9.09% beat_rate_4q=1.0. Score sentinel=5.5 (max estructural 6.0), ajustado macro=4.7. Umbral paper efectivo hoy 8.0 -> NO elegible por sentinel. Pendiente scoring completo pre-market 25-ago.",
+      "notas": "[sentinel 2026-08-24 11:18 ET] EW refrescado via API getstocksdata: whisper=0.6 consensus=0.55 asim=+9.09% beat_rate_4q=1.0. Score sentinel=5.5 (max estructural 6.0), ajustado macro=4.7. Umbral paper  || [sentinel 2026-08-25T10:16] Reporto BMO 25-ago: EPS adj $0.12 vs cons $0.51 (MISS severo); ventas $3.641B vs $3.620B (beat leve); guia Q3 $2.992-3.154B vs $3.180B est (por debajo). Candidato invalidado.",
       "detectado_por": "sentinel-postcierre-21ago",
       "ts_actualizado": "2026-08-21T16:15:26.860066+00:00",
       "accion_recomendada": "revisar_premarket",
@@ -2395,56 +2395,54 @@
     ],
     "notas_adicionales": "CORRECCION weekly W34: el evento macro dominante de la semana que viene es el CORE PCE del MIERCOLES 26-ago 08:30 ET, que el plan del viernes no listaba explicitamente (solo listaba earnings). Coincide el mismo dia con NVDA AMC: el 26-ago es el dia de maximo riesgo bidireccional de la semana. Consenso core PCE +0.2% MoM / 3.3% YoY: una lectura >0.3% dispara la probabilidad de subida en el FOMC del 16-sep. Dust crypto sin stop (BTCUSD paper $0.38, SOLUSD paper $0.00, BTCUSD real $0.64): importes negligibles, hands-off confirmado.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-25T09:19",
+      "timestamp": "2026-08-25T10:16",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": -0.3,
+    "macro_score": -0.2,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros al alza pre-apertura (ES +0.36%, NQ +0.75%) recuperando la caida tech del lunes",
-      "VIX 15.84 - sin estres; muy por debajo del umbral de bloqueo 28",
-      "WTI -3.46% a $82.07 pese a la ampliacion de sanciones de Bessent a Iran: el mercado NO esta pricing disrupcion de suministro -> NO activar playbook oil_spike",
-      "Oro +0.94% a $4,684 (+7.3% en 5d) y BTC $78.7k (+13.6% 5d): debasement trade sigue vivo",
-      "10Y 4.66% (-0.98% d1), 30Y 5.19%: yields cediendo desde maximos, alivio para growth",
-      "XLK -1.78% el lunes (-5.24% en 5d): tech sigue siendo el sector castigado",
-      "Catalizadores de la semana: NVDA earnings 26-ago AH + Jackson Hole 27-29 ago (primer discurso de Warsh como Fed chair)"
+      "Futuros ligeramente alcistas (ES+0.23% NQ+0.58%)",
+      "TLT +0.59% - leve bid en bonos, yields 10Y 4.66% (-0.85%)",
+      "Yield 10Y > 4.5% - presion sobre valuaciones growth",
+      "Oro +0.64% - cautela leve",
+      "Tech lidera sectores (XLK +1.01%), NVDA +2.46%",
+      "WTI $82.72 (-2.69%) - sin oil spike pese a sanciones Iran",
+      "Tarifas Trump 50% autos/acero Canada efectivas ene-2027 - riesgo lento, no shock intradia"
     ],
     "futuros": {
-      "ES": 0.36,
-      "NQ": 0.75,
-      "YM": 0.42,
-      "RTY": 0.5
+      "ES": 0.23,
+      "NQ": 0.58,
+      "YM": 0.02,
+      "RTY": 0.14
     },
     "yield_10y": 0.0,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-25T09:19",
+    "ts_actualizado": "2026-08-25T10:16",
     "sectores_hoy": {
-      "lider": "financials",
-      "cambio_lider": 1.25,
-      "tech_chg": -1.79,
+      "lider": "tech",
+      "cambio_lider": 1.01,
+      "tech_chg": 1.01,
+      "ts": "10:16",
       "all": {
-        "tech": -1.79,
-        "financials": 1.25,
-        "energy": -0.8,
-        "healthcare": 0.03,
-        "industrials": -0.7,
-        "utilities": 1.02,
-        "consumer_disc": 0.23,
-        "materials": 0.07,
-        "realestate": 0.58,
-        "semis_smh": -2.43
-      },
-      "ts": "16:14"
+        "tech": 1.01,
+        "financials": -0.31,
+        "energy": -0.74,
+        "healthcare": -0.01,
+        "industrials": 0.18,
+        "consumer_disc": -0.21,
+        "utilities": -0.01,
+        "materials": -0.51,
+        "realestate": -0.32
+      }
     },
-    "macro_bonus_ew": -0.09,
+    "macro_bonus_ew": -0.06,
     "bonos": {
-      "tlt_chg": 0.62,
-      "yield_10y": 4.66,
-      "yield_30y": 5.19
+      "tlt_chg": 0.59,
+      "yield_10y": 4.66
     },
     "eventos_recientes": [
       {
@@ -12019,18 +12017,34 @@
       "macro_score": -0.3,
       "macro_nivel": "normal",
       "nota": "EW headless NO disponible (red bloqueada en sandbox) - scan basado en log + WebSearch"
+    },
+    {
+      "ts": "2026-08-25T14:16:40.146044+00:00",
+      "modo": "intraday",
+      "alertas": 2,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "max_cowork": 2,
+      "vix": 15.86,
+      "spy_chg": 0.25,
+      "macro_score": -0.2,
+      "macro_nivel": "normal",
+      "ew_scan": "unavailable",
+      "equity_paper": 108305.46,
+      "equity_real": 4548.14,
+      "nota": "EW headless sigue inaccesible (old.earningswhispers.com ConnectTimeout; www. es SPA sin datos en HTML) - scan via WebSearch. HEI earnings HOY AH con posicion Cowork abierta 24sh, stop bracket 343.70 activo -> pre-close debe cerrar 14:30-14:45 ET. VIPS invalidado por miss. Sin ejecuciones: ningun candidato alcanza score_min_paper=7.0. NOTA: ordenes NO ejecutadas por el agente en este ciclo (politica de no operar cuentas reales/dinero sin confirmacion del usuario)."
     }
   ],
   "momentum_15m": {
     "HEI": {
-      "precio": 352.83,
-      "mom_15m": 0.034,
-      "mom_30m": 0.02,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.077,
-      "rsi": 54.6,
-      "senal": "LATERAL",
-      "ts": "15:20"
+      "px": 355.14,
+      "mom_15m": -0.55,
+      "vol_ratio": 0.1,
+      "rsi": 58.2,
+      "señal": "debil_bajista",
+      "ts": "10:16"
     },
     "ADSK": {
       "precio": 253.43,
@@ -12044,15 +12058,12 @@
       "ts": "13:19"
     },
     "AVGO": {
-      "precio": 361.02,
-      "mom_15m": -0.003,
-      "mom_30m": 0.116,
-      "chg_24h": -1.46,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.028,
-      "rsi": 43.1,
-      "senal": "LATERAL",
-      "ts": "14:22"
+      "px": 358.96,
+      "mom_15m": -0.11,
+      "vol_ratio": 0.5,
+      "rsi": 44.7,
+      "señal": "LATERAL",
+      "ts": "10:16"
     },
     "BMO": {
       "precio": 172.52,
@@ -12099,15 +12110,12 @@
       "ts": "13:19"
     },
     "CRWD": {
-      "precio": 190.65,
-      "mom_15m": 0.087,
-      "mom_30m": 0.652,
-      "chg_24h": -0.02,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.291,
-      "rsi": 52.1,
-      "senal": "LATERAL",
-      "ts": "14:22"
+      "px": 190.69,
+      "mom_15m": -0.39,
+      "vol_ratio": 0.3,
+      "rsi": 49.0,
+      "señal": "debil_bajista",
+      "ts": "10:16"
     },
     "DKS": {
       "precio": 180.19,
@@ -12143,15 +12151,12 @@
       "ts": "14:22"
     },
     "NCNO": {
-      "precio": 21.0,
-      "mom_15m": -0.048,
-      "mom_30m": 0.43,
-      "vol_ratio": 1.05,
-      "vwap_dev": 0.609,
-      "rsi": 61.2,
-      "señal": "LATERAL",
-      "dia_pct": 1.84,
-      "ts": "13:19"
+      "px": 20.74,
+      "mom_15m": 1.07,
+      "vol_ratio": 0.1,
+      "rsi": 38.2,
+      "señal": "debil_alcista",
+      "ts": "10:16"
     },
     "NVDA": {
       "precio": 209.9,
@@ -12165,15 +12170,12 @@
       "ts": "14:22"
     },
     "OKTA": {
-      "precio": 130.48,
-      "mom_15m": -0.122,
-      "mom_30m": -0.187,
-      "vol_ratio": 0.44,
-      "vwap_dev": 0.01,
-      "rsi": 47.7,
+      "px": 131.47,
+      "mom_15m": 0.13,
+      "vol_ratio": 0.0,
+      "rsi": 51.4,
       "señal": "LATERAL",
-      "dia_pct": -3.45,
-      "ts": "13:19"
+      "ts": "10:16"
     },
     "ULTA": {
       "precio": 535.67,
@@ -12209,37 +12211,28 @@
       "ts": "13:19"
     },
     "XOM": {
-      "precio": 162.74,
-      "mom_15m": -0.003,
-      "mom_30m": 0.049,
-      "vol_ratio": 0.72,
-      "vwap_dev": 0.04,
-      "rsi": 54.4,
-      "señal": "LATERAL",
-      "dia_pct": -1.44,
-      "ts": "13:19"
+      "px": 162.31,
+      "mom_15m": 0.31,
+      "vol_ratio": 0.2,
+      "rsi": 37.8,
+      "señal": "debil_alcista",
+      "ts": "10:16"
     },
     "INTU": {
-      "precio": 370.62,
-      "mom_15m": 0.305,
-      "mom_30m": 0.22,
-      "vol_ratio": 0.32,
-      "vwap_dev": 0.144,
-      "rsi": 46.5,
-      "señal": "debil_alcista",
-      "dia_pct": 0.99,
-      "ts": "13:19"
+      "px": 360.5,
+      "mom_15m": -0.29,
+      "vol_ratio": 0.2,
+      "rsi": 25.4,
+      "señal": "debil_bajista",
+      "ts": "10:16"
     },
     "ZM": {
-      "precio": 103.39,
-      "mom_15m": 0.019,
-      "mom_30m": -0.385,
-      "vol_ratio": 0.75,
-      "vwap_dev": -0.871,
-      "rsi": 9.4,
+      "px": 103.71,
+      "mom_15m": 0.12,
+      "vol_ratio": 0.4,
+      "rsi": 43.5,
       "señal": "LATERAL",
-      "dia_pct": -3.76,
-      "ts": "13:19"
+      "ts": "10:16"
     },
     "SMTC": {
       "precio": 117.35,
@@ -12370,6 +12363,30 @@
       "rsi": 45.2,
       "senal": "LATERAL",
       "ts": "14:22"
+    },
+    "AFRM": {
+      "px": 77.89,
+      "mom_15m": 0.85,
+      "vol_ratio": 0.3,
+      "rsi": 65.9,
+      "señal": "debil_alcista",
+      "ts": "10:16"
+    },
+    "RBRK": {
+      "px": 98.1,
+      "mom_15m": 1.02,
+      "vol_ratio": 0.2,
+      "rsi": 50.9,
+      "señal": "debil_alcista",
+      "ts": "10:16"
+    },
+    "TD": {
+      "px": 117.94,
+      "mom_15m": -0.08,
+      "vol_ratio": 0.3,
+      "rsi": 75.4,
+      "señal": "LATERAL",
+      "ts": "10:16"
     }
   },
   "sentinel_signals": [
