@@ -4275,7 +4275,7 @@
     "fecha_actualizacion": "2026-08-20",
     "semana": "2026-W23",
     "regimen": "GEOPOLITICAL_UNCERTAINTY_RENEWED + BEAT_AND_FADE_SECTORIAL",
-    "vix": 15.5,
+    "vix": 15.51,
     "yield_spread_10y2y": 0.51,
     "narrativa_dominante": "ACTUALIZACION 2026-08-20: Jornada de dispersion extrema con indices a la baja (SPY -0.84%, QQQ -0.71%, DIA -1.26%, IWM -1.34%). (1) WMT bate EPS pero comps EEUU +2.6% vs +3.5% esperado y guia Q3/FY por debajo -> -9.23%, su peor sesion en mas de 4 anos, y arrastra a los tres indices. (2) DE ROMPE EL PATRON: EPS $5.10 vs $4.45 consenso (+14.6%), ingresos $12.61B (+17.5% sobre estimado), margen de construccion y forestal del 7.7% al 12.1%, guia FY elevada a $4.75-5.00B y el CEO declara 2026 el SUELO del ciclo de maquinaria agricola -> +6.90%. (3) Carniceria idiosincratica en consumo/salud: AAP -24.47%, MRNA -23.55% devolviendo el +177% de ayer, NTES -5.77%. (4) Cripto se dispara: BTC supera $72.000 tras la mayor ola de liquidaciones de cortos desde 2021 -> MARA +15.44%, MSTR +7.80%, COIN +7.46%. (5) Bessent y el Tesoro siguen interviniendo la curva larga (recompras ampliadas), pero JPMorgan avisa de riesgo de credibilidad; la deuda publica de EEUU supera los $40 billones por primera vez y el 10y sigue en 4.67%. (6) Trump anuncia un 'D-Day economico' contra Iran: el crudo sube por quinta sesion (WTI ~$88, USO +2.74%) y el acuerdo comercial preliminar EEUU-Canada rebaja aranceles de acero/aluminio al 25% y autos al 15%. VIX ~16.0. LECTURA CLAVE: el beat-and-fade NO es universal — se concentra en retail/consumo; el industrial ciclico con inflexion de guia SI se premia.",
     "fuentes_consultadas": [
@@ -4364,16 +4364,18 @@
       "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": 0.5,
+    "macro_score": 0.0,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros ligeramente alcistas (+0.32%)",
-      "TLT +0.85% - bid por duracion (yields cayendo)",
-      "Oro +1.18% - cautela",
-      "Petroleo -3.35% (WTI $82) - pese a tension Iran, sin oil spike",
-      "Internacional avg -0.43% (HSI -1.89%)",
-      "Tech lidera (+0.74%) - favorece candidatos EW tech",
-      "CNN Fear&Greed=55 (Greed moderado)"
+      "Futuros ligeramente alcistas (ES+0.20% NQ+0.44%)",
+      "TLT +0.85% - bid por duracion",
+      "Yield 10Y 4.64% (>4.5) - presion sobre valuaciones growth [CORREGIDO: antes se leyo el %chg como nivel]",
+      "Oro +1.18% a $4,696 - cautela",
+      "Tech lidera sectores (+0.74%) - favorece candidatos EW tech",
+      "CNN Fear&Greed=55 (Greed moderado)",
+      "Petroleo WTI $82.16 (-3.35%), Brent -5.53% - pese a la presion de EEUU sobre Iran NO hay oil spike",
+      "Internacional avg -0.43% (HSI -1.89%, Nikkei -0.74%, DAX +0.61%)",
+      "VIX 15.51 (-2.15%) - muy por debajo del umbral de bloqueo 28"
     ],
     "futuros": {
       "ES": 0.2,
@@ -4402,11 +4404,13 @@
       },
       "ts": "13:25"
     },
-    "macro_bonus_ew": 0.15,
+    "macro_bonus_ew": 0.0,
     "bonos": {
       "tlt_chg": 0.85,
-      "yield_10y": -1.34,
-      "yield_30y": -1.11
+      "yield_10y": 4.64,
+      "yield_10y_chg": -1.34,
+      "yield_30y": 5.17,
+      "yield_30y_chg": -1.11
     },
     "eventos_recientes": [
       {
@@ -4682,7 +4686,7 @@
     "ts_health_check": "2026-08-21T06:08",
     "spy_day": -1.29,
     "narrativa_sentinel": "18-ago 12:2x ET: selloff liderado por semis (WDC -7%, SNDK -8%, MRVL/STX -8%, NVDA -2.3%, XLK -2.56%) con 30Y en maximos de ~2 decadas y Brent ~$91 por Iran/Hormuz. Rotacion defensiva: XLV +1.71%, XLE +1.42% lideran; XLK/XLI a la cola. VIX 15.69 = sin panico.",
-    "spy_chg": 0.26,
+    "spy_chg": 0.22,
     "nota_web": "FOMC 29-jul hold hawkish; earnings manana 317 reportes; AAPL AH 30-jul.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -4751,10 +4755,14 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": -3.35,
-      "brent": -5.53,
-      "gold": 1.18,
-      "btc": -0.2
+      "wti": 82.16,
+      "wti_chg": -3.35,
+      "brent": 87.07,
+      "brent_chg": -5.53,
+      "gold": 4695.5,
+      "gold_chg": 1.18,
+      "btc": 78808.28,
+      "btc_chg": -0.2
     },
     "internacional": {
       "Nikkei": -0.74,
@@ -4794,7 +4802,20 @@
     "nota_oro_2026-08-19": "CORRECCION al ciclo de las 11:2x ET: el +4% de GC=F NO era artefacto de datos. La busqueda web confirma oro spot $4,492/oz (+3.66% en el dia, +12.1% en el mes, +34.3% interanual). Es un movimiento real de debasement/dolar-debil (DXY -0.87%, TLT +1.55%), no de miedo a la renta variable (VIX 15.03 -5.11%, SPY +0.30%). Se computa -0.5 en el macro_score.",
     "nota_fomc_2026-08-19": "Minutas FOMC de la reunion 28-29 jul publicadas hoy 14:00 ET. Tipos en 3.50-3.75% con 3 disidentes a favor de SUBIR. Reaccion: yields retroceden desde los maximos de 2 decadas de ayer (30Y toco 5.2%, maximo desde 2007), TLT +1.55%, dolar en minimos. Probabilidad de 'hold' en septiembre ~65%. Sin shock: SPY +0.30% con amplitud (IWM +0.40%), VIX 15.03.",
     "vix_fuente": "rango intradia 15.60-16.09 (investing.com); cierre estimado en parte alta por SPY -0.84%. VIXY +0.98%.",
-    "oil_chg": -3.36
+    "oil_chg": -3.36,
+    "niveles": {
+      "vix": 15.51,
+      "spy": 765.15,
+      "qqq": 709.96,
+      "yield_10y": 4.64,
+      "yield_30y": 5.17,
+      "wti": 82.16,
+      "brent": 87.07,
+      "gold": 4695.5,
+      "tlt": 83.26,
+      "btc": 78808.28
+    },
+    "_correccion": "macro_score recalculado 13:26 ET: bug en lectura de yield 10Y (se uso %chg como nivel). Antes +0.50, correcto +0.00."
   },
   "operaciones_crypto": [
     {
@@ -23526,9 +23547,9 @@
       "acciones": 0,
       "oportunidades": 5,
       "cowork_abiertas": 0,
-      "vix": -2.1,
+      "vix": 15.51,
       "vix_nivel": 15.51,
-      "macro_score": 0.5,
+      "macro_score": 0.0,
       "nota": "EW headless inaccesible (connect timeout) - scan via websearch fallback"
     }
   ],
