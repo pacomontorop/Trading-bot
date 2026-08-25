@@ -14660,7 +14660,8 @@
     "OKTA tiene la mejor asimetria limpia del 26-ago (+9.38%, diferencia $0.09, denominador $0.96) y beat 12/12, pero cotiza -5.4% BAJO la MA50 tras caer -9.0% en 5 sesiones. Gate de tendencia roto -> 6.0.",
     "WSM y ANF (26-ago BMO) descartados por regla estructural, no por score: entrar hoy exigiria mantener la posicion sobre el report de manana por la manana."
    ],
-   "nota_ejecucion": "Scan y scoring ejecutados de forma autonoma. NO se han enviado ordenes: con 0 candidatos sobre 7.0 no habia ninguna entrada que ejecutar. El cierre de HEI queda como accion pendiente para Paco (ver acciones_pendientes_manana)."
+   "nota_ejecucion": "Scan y scoring ejecutados de forma autonoma. NO se han enviado ordenes: con 0 candidatos sobre 7.0 no habia ninguna entrada que ejecutar. El cierre de HEI queda como accion pendiente para Paco (ver acciones_pendientes_manana).",
+   "telegram": "FALLO 401 Unauthorized — token revocado; resumen NO entregado"
   }
  ],
  "acciones_pendientes_manana": [
@@ -15648,9 +15649,20 @@
    "titulo": "EarningsWhispers inalcanzable desde el sandbox de tareas programadas (ConnectTimeout)",
    "descripcion": "old.earningswhispers.com y www.earningswhispers.com dan ConnectTimeout en el entorno de ejecucion del sentinel (allowlist de red del sandbox). El scan headless EW del PASO 3 no puede ejecutarse: cada ticker consume el timeout completo y la tarea se agota sin resultados. Tampoco es fetchable via web_fetch (provenance set). Impacto: el sentinel NO puede generar candidatos EW nuevos por si mismo; depende de candidatos_validados ya en el log y de WebSearch.",
    "workaround": "Usar candidatos_validados del log + WebSearch para preview de earnings. Para restaurar EW: (a) que el proceso que SI tiene acceso (pre-market scan) siga siendo la fuente unica de whisper/consensus, o (b) volcar el EW daily email a un fichero del repo que el sentinel pueda leer via GitHub API (que si funciona)."
+  },
+  {
+   "fecha": "2026-08-25",
+   "ts": "2026-08-25T14:36:46Z",
+   "severidad": "ALTA",
+   "componente": "telegram",
+   "titulo": "Bot de Telegram DEVUELVE 401 Unauthorized — canal de alertas caido",
+   "detalle": "getMe sobre el token 7820557997:AAGy...EaM responde {'ok':false,'error_code':401}. El token esta revocado o es invalido. TODAS las tareas programadas (pre-market-scan, intraday-monitor, post-market-review, sentinel) usan este mismo token: ninguna alerta esta llegando. Impacto directo hoy: el aviso de cierre obligatorio de HEI antes de las 15:45 ET no se ha entregado.",
+   "accion": "Regenerar el token con @BotFather y actualizarlo en los SKILL.md de todas las tareas programadas. Hasta entonces, tratar los informes escritos como unico canal.",
+   "detectado_por": "pre-market-scan 2026-08-25",
+   "estado": "ABIERTA"
   }
  ],
- "ultima_actualizacion": "2026-08-25T14:36:04Z",
+ "ultima_actualizacion": "2026-08-25T14:36:46Z",
  "system_health": {
   "sentinel": {
    "ts": "2026-08-24T12:12",
