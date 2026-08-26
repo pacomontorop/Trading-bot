@@ -14762,6 +14762,90 @@
         }
       ],
       "equity_post": 108231.78
+    },
+    {
+      "timestamp": "2026-08-26T16:34:50.296867+00:00",
+      "tarea": "intraday-monitor 12:30 ET",
+      "posiciones_abiertas": 2,
+      "posiciones_equity": 0,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 4.874e-06,
+          "entry": 64959.1,
+          "current": 78073.491,
+          "pnl_pct": 20.19,
+          "valor_usd": 0.3805,
+          "stop": 0,
+          "stop_source": "sin_stop_dust_no_operable"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 2.5e-05,
+          "entry": 77.22,
+          "current": 95.76,
+          "pnl_pct": 23.98,
+          "valor_usd": 0.0024,
+          "stop": 0,
+          "stop_source": "sin_stop_dust_no_operable"
+        }
+      ],
+      "posiciones_sin_stop": [
+        "BTCUSD",
+        "SOLUSD"
+      ],
+      "nota_sin_stop": "Solo residuos crypto (BTCUSD $0.38, SOLUSD $0.002) por redondeo de stop_limit fills previos. Por debajo del minimo operable de Alpaca -> no se colocan stops. Riesgo material = 0.",
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "ew_cierres_urgentes": [],
+      "parciales_ejecutados": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "mercado": {
+        "spy_intradia_pct": 0.01,
+        "qqq_intradia_pct": 0.12,
+        "vix": 15.6,
+        "modo_dip": false
+      },
+      "candidatos_vivos": 24,
+      "mejor_candidato": {
+        "ticker": "ESTC",
+        "score_ajustado": 6.51,
+        "umbral_entrada": 8.75,
+        "gap": -2.24
+      },
+      "scoring_intraday_ah_hoy": {
+        "evaluados": [
+          "CRM",
+          "OKTA",
+          "CRWD",
+          "VEEV",
+          "SNPS",
+          "NVDA",
+          "HPQ"
+        ],
+        "aprobados_umbral_7.5": 0,
+        "nota": "rvol proyectado 0.69-1.16x en todos; sin acumulacion institucional detectable pre-print"
+      },
+      "evento_binario_hoy": "NVDA FQ2 AMC 26-ago. Sin exposicion (posiciones equity=0). Sectores ai_infrastructure/semiconductors en lista de evitar.",
+      "decision": "NO_ACTION",
+      "resumen": "Cartera plana en equity. 0 stops que ajustar, 0 cierres urgentes, 0 entradas (ningun candidato alcanza 8.75 ni el umbral intraday 7.5). Capital preservado ante el binario NVDA AMC.",
+      "cuenta": {
+        "equity": 108231.57,
+        "buying_power": 432924.76,
+        "cash": 108231.19
+      },
+      "anomalias": [
+        "LOG_PATH canonico /sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json NO existe en esta sesion; sin carpeta Scheduled montada.",
+        "load_performance_log() fallaba: el fichero supera 1MB (1.091.800 B) y la GitHub Contents API devuelve content vacio -> JSONDecodeError. Workaround aplicado: git/blobs API con Accept application/vnd.github.raw. Recomendado parchear el loader en todos los SKILL.md.",
+        "Entorno sin yfinance preinstalado y /sessions al 100% de disco; instalado en /tmp/pylibs."
+      ]
     }
   ],
   "pre_close_log": [
