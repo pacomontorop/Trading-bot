@@ -2673,7 +2673,7 @@
       "score_ajustado": 7.5,
       "score_override": 7.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_runup",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-26",
       "accion_recomendada": "entrar_apertura",
@@ -2709,7 +2709,9 @@
         "R_con_stop_low": 0.51,
         "R_con_stop_atr15": 1.35,
         "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 12.8% por debajo del gap y rompe r_ratio_minimo=1.0."
-      }
+      },
+      "fecha_descarte": "2026-08-27 13:44 UTC",
+      "motivo_descarte": "market-open 09:40 ET CHECK1: run-up +17.80% vs cierre ayer (gap apertura +12.61%) supera umbral 3%. Score 7.5 < 9.0 -> sin excepcion de sizing. Precio 09:43 ET $242.37. NINGUNA ORDEN COLOCADA."
     },
     {
       "ticker": "CRWD",
@@ -2717,7 +2719,7 @@
       "score_ajustado": 7.3,
       "score_override": 7.3,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_runup",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-26",
       "accion_recomendada": "entrar_apertura",
@@ -2753,7 +2755,9 @@
         "R_con_stop_low": 0.79,
         "R_con_stop_atr15": 1.33,
         "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 12.0% por debajo del gap y rompe r_ratio_minimo=1.0."
-      }
+      },
+      "fecha_descarte": "2026-08-27 13:44 UTC",
+      "motivo_descarte": "market-open 09:40 ET CHECK1: run-up +15.93% vs cierre ayer (gap apertura +9.26%) supera umbral 3%. Score 7.3 < 9.0 -> sin excepcion de sizing. Precio 09:43 ET $219.69. NINGUNA ORDEN COLOCADA."
     },
     {
       "ticker": "OKTA",
@@ -2761,7 +2765,7 @@
       "score_ajustado": 7.2,
       "score_override": 7.2,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_runup",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-26",
       "accion_recomendada": "entrar_apertura",
@@ -2797,7 +2801,9 @@
         "R_con_stop_low": 0.4,
         "R_con_stop_atr15": 1.34,
         "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 21.6% por debajo del gap y rompe r_ratio_minimo=1.0."
-      }
+      },
+      "fecha_descarte": "2026-08-27 13:44 UTC",
+      "motivo_descarte": "market-open 09:40 ET CHECK1: run-up +23.23% vs cierre ayer (gap apertura +23.16%) supera umbral 3%. Score 7.2 < 9.0 -> sin excepcion de sizing. Precio 09:43 ET $166.30. NINGUNA ORDEN COLOCADA."
     }
   ],
   "macro_context": {
@@ -8134,6 +8140,14 @@
       "posiciones_cierre": 0,
       "evento_clave": "PCE julio en linea (core 3.3% a/a) con gasto estancado; NVDA reporta AMC sin resultado disponible al correr la tarea; ANF +35.7% con un beat sostenido por un reembolso arancelario de $100M, no por el consumidor.",
       "leccion": "Un beat de EPS cuyo motor es un ingreso NO OPERATIVO (reembolso arancelario, partida fiscal, one-off) no es senal de demanda y no predice drift: hay que separar la calidad del beat de su magnitud."
+    },
+    {
+      "fecha": "2026-08-27",
+      "tarea": "market-open-execution",
+      "hora_et": "09:43",
+      "resultado": "0 ejecuciones / 3 descartados por run-up",
+      "detalle": "CRM +17.8%, CRWD +15.9%, OKTA +23.2% vs cierre de ayer tras reaccion post-earnings. Los tres superan ampliamente el filtro de run-up del 3%; ninguno alcanza score 9.0 para la excepcion de sizing. Coherente con el regimen BEAT_AND_FADE_SECTORIAL del macro_context. Sin ordenes en paper ni en real. Cuenta real no aplicable: umbral 9.0 y max score hoy 7.5.",
+      "ejecutado_por": "Cowork (analisis; ejecucion de ordenes no realizada por politica - requiere confirmacion del usuario)"
     }
   ],
   "alertas_criticas": [
