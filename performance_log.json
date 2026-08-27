@@ -2701,7 +2701,15 @@
       "ts_creado": "2026-08-26T21:43:09.642167+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "aviso_sentinel_preopen": {
+        "ts": "2026-08-27T09:22",
+        "gap_premarket_pct": 10.94,
+        "stop_low_earnings_no_viable": true,
+        "R_con_stop_low": 0.51,
+        "R_con_stop_atr15": 1.35,
+        "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 12.8% por debajo del gap y rompe r_ratio_minimo=1.0."
+      }
     },
     {
       "ticker": "CRWD",
@@ -2737,7 +2745,15 @@
       "ts_creado": "2026-08-26T21:43:09.642167+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "aviso_sentinel_preopen": {
+        "ts": "2026-08-27T09:22",
+        "gap_premarket_pct": 8.91,
+        "stop_low_earnings_no_viable": true,
+        "R_con_stop_low": 0.79,
+        "R_con_stop_atr15": 1.33,
+        "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 12.0% por debajo del gap y rompe r_ratio_minimo=1.0."
+      }
     },
     {
       "ticker": "OKTA",
@@ -2773,7 +2789,15 @@
       "ts_creado": "2026-08-26T21:43:09.642167+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "aviso_sentinel_preopen": {
+        "ts": "2026-08-27T09:22",
+        "gap_premarket_pct": 21.08,
+        "stop_low_earnings_no_viable": true,
+        "R_con_stop_low": 0.4,
+        "R_con_stop_atr15": 1.34,
+        "accion": "Usar stop ATRx1.5 desde precio de entrada real. El minimo del dia de earnings queda 21.6% por debajo del gap y rompe r_ratio_minimo=1.0."
+      }
     }
   ],
   "macro_context": {
@@ -8210,6 +8234,56 @@
       "mensaje": "HEI (24-ago, 24sh @ $356.43) existio 1 sesion completa sin registro en operaciones[] ni candidatos_validados. Registro creado retroactivamente hoy.",
       "accion_tomada": "Operacion COWORK-2026-08-24-HEI anadida a operaciones[] con P&L real -$103.68. Parametro reconciliacion_posiciones_obligatoria = True.",
       "resuelto": true
+    },
+    {
+      "ts": "2026-08-27T09:22",
+      "fecha": "2026-08-27",
+      "emisor": "sentinel-preopen",
+      "severidad": "alta",
+      "dirigido_a": "market-open-execution (09:40 ET) y pre-market scan (10:15 ET)",
+      "titulo": "Los 3 continuation plays de hoy abren con gap: el stop prescrito rompe r_ratio_minimo",
+      "detalle": "CRM, CRWD y OKTA estan en candidatos_validados como pendiente_ew / entrar_apertura con la instruccion \"Stop: bajo minimo del dia de earnings o ATR x1.5\". A las 09:20 ET el gap pre-market ya se ha comido buena parte del movimiento de continuacion, y la primera mitad de esa instruccion deja de ser viable: medido desde el precio de gap, el minimo del dia de earnings queda 12-22% por debajo. Con target 2xATR eso da R = 0.40-0.79, por debajo de r_ratio_minimo = 1.0 -> los tres NO pasarian el gate.",
+      "medicion": {
+        "CRM": {
+          "gap_pre": 228.12,
+          "gap_pct": 10.94,
+          "close_earn": 205.62,
+          "low_earn": 198.95,
+          "atr": 7.51,
+          "riesgo_stop_low_pct": 12.8,
+          "riesgo_stop_atr_pct": 4.9,
+          "target_2atr_pct": 6.6,
+          "R_con_stop_low": 0.51,
+          "R_con_stop_atr": 1.35
+        },
+        "CRWD": {
+          "gap_pre": 206.03,
+          "gap_pct": 8.91,
+          "close_earn": 189.18,
+          "low_earn": 181.24,
+          "atr": 9.74,
+          "riesgo_stop_low_pct": 12.0,
+          "riesgo_stop_atr_pct": 7.1,
+          "target_2atr_pct": 9.5,
+          "R_con_stop_low": 0.79,
+          "R_con_stop_atr": 1.33
+        },
+        "OKTA": {
+          "gap_pre": 162.76,
+          "gap_pct": 21.08,
+          "close_earn": 134.42,
+          "low_earn": 127.6,
+          "atr": 6.98,
+          "riesgo_stop_low_pct": 21.6,
+          "riesgo_stop_atr_pct": 6.4,
+          "target_2atr_pct": 8.6,
+          "R_con_stop_low": 0.4,
+          "R_con_stop_atr": 1.34
+        }
+      },
+      "recomendacion": "Usar la segunda mitad de la instruccion (stop ATR x1.5 desde el precio real de entrada), NO el minimo del dia de earnings. Con ATR x1.5 los tres recuperan R ~1.33-1.35 y pasan el gate. Recalcular ATR y gap con el precio de apertura real antes de dimensionar: el sizing al 1% de riesgo cambia de 30-43 acciones (stop low) a 74-103 acciones (stop ATR), es decir de ~4-8% a ~14-20% del equity. Con max_cowork_positions=2 y 3 candidatos, priorizar por R y por calidad del beat.",
+      "nota_calidad": "CRM lleva \"VETO CALIDAD: beat contaminado por one-off -> solo paper\" en sus propias notas. OKTA es el gap mas extremo (+21%): es el que mas ha descontado ya y el que peor R deja con stop low.",
+      "contexto_ejecucion": "Ninguno de los tres alcanza score_min_real=9.0, asi que la cuenta real no esta implicada."
     }
   ],
   "mejoras_sistema": [
@@ -15158,6 +15232,23 @@
         }
       ],
       "nota": "0 oportunidades perdidas reales. ANF listado por transparencia: movimiento enorme pero no jugable (BMO gap) y de baja calidad."
+    },
+    {
+      "fecha": "2026-08-27",
+      "n_oportunidades": 0,
+      "coste_total_estimado": 0,
+      "detalle": [
+        {
+          "ticker": "BBY",
+          "motivo_descarte": "score 2.5 (asim +0.6, BR +1.2, reac +0.2, sector -0.6, drift +0.9, mom +0.1) -> descartado",
+          "resultado_earnings": "BEAT limpio: EPS $1.47 vs consenso $1.38 (+6.5%) y vs whisper $1.41 (+4.3%). Ventas $9.78B vs $9.58B (+3.6% YoY). Comparables +4.1% vs guia +1%. Sube guia FY a $42.3-42.8B desde $41.2-42.1B.",
+          "movimiento_real": -7.94,
+          "coste_est_dolares": 0,
+          "veredicto": "DESCARTE CORRECTO Y VALIOSO. Bati consenso Y whisper, subio guidance, y aun asi cotiza -7.94% en pre-market a las 09:20 ET. Beat-and-fade de manual. El score de 2.5 acerto donde la asimetria del whisper (+2.92%) por si sola habria dicho que si.",
+          "leccion": "Refuerza que en retail el beat no manda: BBY sube guia y aun asi se desploma. La penalizacion por sector (-0.6) y el drift previo hicieron el trabajo. No relajar estos bloques."
+        }
+      ],
+      "nota": "0 oportunidades perdidas. BBY listado como validacion positiva del sistema de scoring, no como fallo."
     }
   ],
   "incidencias_sistema": [
@@ -15274,5 +15365,5 @@
       "accion_requerida": "Cambiar a fi['lastPrice'] / fi['regularMarketPreviousClose'] con fallback a history()."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T13:20Z"
+  "ultima_actualizacion": "2026-08-27T13:22Z"
 }
