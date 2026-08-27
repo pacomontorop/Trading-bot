@@ -3179,7 +3179,7 @@
     ],
     "nota_w26": "FOMC restriction cleared Jun 21 (Fed held rates Jun 17, hawkish but no hike). VIX ~17-19 declining. Macro: GEOPOLITICAL_RELIEF_RALLY. Sistema habilitado para entradas W26 (Jun 22-26). Key earnings: FDX Tue AH, MU Wed AH, PAYX Wed BMO, DRI Thu BMO.",
     "vix_updated": "2026-08-25T20:30:03.722089Z",
-    "ts_health_check": "2026-08-26T06:09",
+    "ts_health_check": "2026-08-27T06:08Z",
     "spy_day": -1.29,
     "narrativa_sentinel": "25-ago 14:15 ET: sin shock. Hormuz desminado por la Navy -> WTI -3.3% a $82, prima geopolitica descomprimiendose. Riesgo binario dominante = NVDA earnings manana AH (26-ago); NVDA llega en su peor racha de perdidas desde 2022 y el mercado esta posicionado a la espera. Fear&Greed neutral. Sin cierre ni apertura de posiciones este ciclo.",
     "spy_chg": -0.06,
@@ -14754,6 +14754,45 @@
       ],
       "fixes": [],
       "nota": "GitHub Contents API devuelve content vacio para performance_log.json (>1MB); se usa git/blobs API para lectura."
+    },
+    {
+      "fecha": "2026-08-27",
+      "ts": "2026-08-27T06:08Z",
+      "estado": "VERDE",
+      "vix": 15.21,
+      "vix_log": 15.22,
+      "vix_diff": 0.01,
+      "vix_accion": "sin cambio (<1.5pts)",
+      "restricciones_activas": 0,
+      "restricciones_eliminadas": 0,
+      "regimen": "STICKY_INFLATION_HOLD + PRE_NVDA_BINARY_RESUELTO_AH + BEAT_AND_FADE_SECTORIAL",
+      "alpaca_paper": {
+        "ok": true,
+        "equity": 108231.58,
+        "status": "ACTIVE"
+      },
+      "alpaca_real": {
+        "ok": true,
+        "equity": 4548.13,
+        "status": "ACTIVE"
+      },
+      "telegram": {
+        "ok": true,
+        "bot": "@pacotrading_bot",
+        "nota": "getMe 200 — incidencia 401 del 26-ago confirmada resuelta"
+      },
+      "tareas": {
+        "pre-market-earnings-scan": "2026-08-26 (1d)",
+        "market-open-execution": "2026-08-24 (3d)",
+        "intraday-monitor": "2026-08-26 (1d)",
+        "post-market-review": "2026-08-26 (1d)",
+        "ew-daily-results": "2026-08-26 (1d)",
+        "sentinel": "2026-08-26 (1d)",
+        "pre-close-manager": "2026-08-24 (3d)"
+      },
+      "alertas": [],
+      "fixes": [],
+      "notas": "Todas las tareas dentro de umbral (<=3d laborables). Sin restricciones activas. Sin posiciones equity. Incidencia abierta persistente: EarningsWhispers inaccesible desde el sandbox (scoring por asimetria whisper ciego)."
     }
   ],
   "historial_oportunidades_perdidas": [
@@ -15080,5 +15119,5 @@
       "fix_aplicado": "1) Leer con cabecera Accept: application/vnd.github.v3.raw (devuelve el fichero completo sin base64). 2) Poda de logs historicos para volver por debajo de 1MB. RECOMENDADO: cambiar _gh_read_log en todas las SKILL.md al modo raw y anadir poda automatica cuando el log supere 900KB."
     }
   ],
-  "ultima_actualizacion": "2026-08-26T21:43:09.642167+00:00"
+  "ultima_actualizacion": "2026-08-27T06:08Z"
 }
