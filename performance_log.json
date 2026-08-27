@@ -7423,6 +7423,61 @@
         "load_performance_log() fallaba: el fichero supera 1MB (1.091.800 B) y la GitHub Contents API devuelve content vacio -> JSONDecodeError. Workaround aplicado: git/blobs API con Accept application/vnd.github.raw. Recomendado parchear el loader en todos los SKILL.md.",
         "Entorno sin yfinance preinstalado y /sessions al 100% de disco; instalado en /tmp/pylibs."
       ]
+    },
+    {
+      "timestamp": "2026-08-27T16:34:01.069474+00:00",
+      "hora_et": "2026-08-27 12:34 ET",
+      "equity": 108231.58,
+      "buying_power": 432924.76,
+      "posiciones_abiertas": 0,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 0,
+          "entry": 64959.1,
+          "current": 80365.87,
+          "pnl_pct": 23.72,
+          "stop": 0.0,
+          "stop_source": "sin_stop",
+          "nota": "dust_fraccional_crypto"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 0,
+          "entry": 77.22,
+          "current": 108.0,
+          "pnl_pct": 39.82,
+          "stop": 0.0,
+          "stop_source": "sin_stop",
+          "nota": "dust_fraccional_crypto"
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "mercado": {
+        "spy_intraday_pct": 0.33,
+        "vix": 20.0,
+        "modo_dip": false
+      },
+      "gate_nvda": {
+        "NVDA": 9.08,
+        "CRM": 21.42,
+        "CRWD": 17.18,
+        "OKTA": 27.44,
+        "SNPS": 11.17,
+        "HPQ": -4.93
+      },
+      "resumen": "Portfolio plano (solo dust crypto <$0.40). Sin trailing stops, parciales ni cierres pre-earnings que ejecutar. 0 ordenes hoy. Mercado normal (SPY +0.33%, VIX 20) -> sin modo dip. 17 tickers con earnings AH hoy en radar; score maximo 5.35 (ESTC/RY), muy por debajo del umbral intraday 7.5 y del 8.5 exigido para mantener a traves de earnings AH -> ninguna entrada.",
+      "anomalia_detectada": "Gate NVDA muy positivo (+9.08%) y los 4 nombres AH del 26-ago descartados por 'descartado_runup' explotaron hoy: OKTA +27.4%, CRM +21.4%, CRWD +17.2%, SNPS +11.2%. Capturado: 0. El filtro descartado_runup puede estar demasiado restrictivo en regimen de beats generalizados post-NVDA."
     }
   ],
   "pre_close_log": [
@@ -14370,6 +14425,13 @@
       "tipo": "log_path_inaccesible",
       "descripcion": "LOG_PATH canonico /sessions/wizardly-loving-carson/mnt/Scheduled/performance_log.json devuelve Permission denied desde esta sesion. Lectura resuelta via GitHub; escritura redirigida a outputs de sesion + push a GitHub.",
       "accion_sugerida": "Migrar los writes del pipeline a GitHub como destino primario, no solo los reads."
+    },
+    {
+      "fecha": "2026-08-27",
+      "tarea": "intraday-monitor",
+      "titulo": "descartado_runup filtro potencialmente sobre-restrictivo",
+      "descripcion": "Gate NVDA muy positivo (+9.08%) y los 4 nombres AH del 26-ago descartados por 'descartado_runup' explotaron hoy: OKTA +27.4%, CRM +21.4%, CRWD +17.2%, SNPS +11.2%. Capturado: 0. El filtro descartado_runup puede estar demasiado restrictivo en regimen de beats generalizados post-NVDA.",
+      "accion_sugerida": "Revisar en post-market-review el umbral de run-up: cuando el gate sectorial (NVDA) es fuertemente positivo, considerar rebajar la penalizacion por run-up pre-earnings en 1 punto en lugar de descartar."
     }
   ],
   "w20_pivot": {
@@ -15777,5 +15839,5 @@
       "sugerencia": "Migrar el parser a la API JSON de EW (/api/getbytime o similar) o usar un proveedor alternativo de whisper/consensus (Estimize, Benzinga, yfinance analyst EPS estimate) como fuente primaria."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T12:23 (sentinel intradia)"
+  "ultima_actualizacion": "2026-08-27T16:34:01.069474+00:00"
 }
