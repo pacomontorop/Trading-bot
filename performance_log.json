@@ -2866,25 +2866,33 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-26T15:32",
+      "timestamp": "2026-08-27T09:20",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": 0.0,
+    "macro_score": -0.3,
     "macro_nivel": "normal",
-    "contexto_resumen": [],
+    "contexto_resumen": [
+      "Futuros planos: ES -0.14%, NQ +0.07%, YM -0.53%, RTY -0.18%",
+      "VIX 15.08 - volatilidad minima, sin estres",
+      "Yield 10Y 4.66% (>4.5%) - presion sobre valuaciones growth: -0.3",
+      "Yield 30Y 5.19%, cerca de maximos de dos decadas",
+      "WTI $82.55 (+0.87%) - guerra Iran/EEUU sin resolver, prima geopolitica persistente",
+      "Fed: mercado ha girado hawkish, precia subida en diciembre (solo 32.6% de recorte en septiembre)",
+      "Internacional mixto/plano: N225 -0.19%, DAX +0.15%, FTSE -0.52%, HSI -0.34%"
+    ],
     "futuros": {
       "ES": -0.14,
-      "NQ": -0.17,
-      "YM": null,
-      "RTY": null
+      "NQ": 0.07,
+      "YM": -0.53,
+      "RTY": -0.18
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-26T15:32",
+    "ts_actualizado": "2026-08-27T09:20",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 0,
@@ -2901,10 +2909,11 @@
         "realestate": 0
       }
     },
-    "macro_bonus_ew": 0.0,
+    "macro_bonus_ew": -0.09,
     "bonos": {
-      "tlt_chg": -0.35,
-      "yield_10y": 4.67
+      "tlt_chg": -0.05,
+      "yield_10y": 4.66,
+      "yield_30y": 5.19
     },
     "eventos_recientes": [
       {
@@ -3251,10 +3260,9 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "dxy": 0.2859657576996912,
-      "oro": 0.8818244859445306,
-      "wti_px": 81.44999694824219,
-      "wti_chg": -1.1049097321096908
+      "wti": 82.55,
+      "wti_chg": 0.87,
+      "gold": 4643.2
     },
     "internacional": {
       "Nikkei": 0.62,
@@ -11645,6 +11653,27 @@
       "cowork_abiertas": 0,
       "vix": 15.3,
       "nota": "EW via API www (old.* bloqueado). Max score 5.5 < umbral 7.0 -> sin ejecuciones."
+    },
+    {
+      "ts": "2026-08-27T09:20:27.874628+00:00",
+      "modo": "pre-apertura (09:1x ET, mercado cerrado)",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.08,
+      "macro_nivel": "normal",
+      "ew_scan": "FALLIDO - old.earningswhispers.com inalcanzable",
+      "earnings_hoy": [
+        "MRVL",
+        "ULTA",
+        "ADSK",
+        "WDAY",
+        "AFRM",
+        "TITN",
+        "BBY"
+      ],
+      "nota": "Scan-only. Sin ordenes: ventana pre-apertura + sentinel_rol=monitor_y_escalador."
     }
   ],
   "momentum_15m": {
@@ -12389,6 +12418,111 @@
       "ts_detected": "2026-08-26T15:32:32.816068+00:00",
       "ejecutado": false,
       "fuente": "sentinel-ew-api"
+    },
+    {
+      "ticker": "MRVL",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 0.93,
+      "beat_rate": 0.75,
+      "avg_surprise_pct": 1.0474999999999999,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "ULTA",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 5.1,
+      "beat_rate": 0.75,
+      "avg_surprise_pct": 9.21,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "ADSK",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 3.12,
+      "beat_rate": 1.0,
+      "avg_surprise_pct": 6.715,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "WDAY",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 2.61,
+      "beat_rate": 1.0,
+      "avg_surprise_pct": 5.8175,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "AFRM",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 0.85,
+      "beat_rate": 0.25,
+      "avg_surprise_pct": -1.9450000000000003,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "TITN",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "pre-market",
+      "eps_estimate": -0.36,
+      "beat_rate": 0.5,
+      "avg_surprise_pct": 29.07,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
+    },
+    {
+      "ticker": "BBY",
+      "score": null,
+      "tipo": "earnings_calendar_sin_whisper",
+      "asimetria": null,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "pre-market",
+      "eps_estimate": 1.38,
+      "beat_rate": 1.0,
+      "avg_surprise_pct": 5.327500000000001,
+      "razon": "Calendario yfinance. Whisper NO disponible (EW caido) -> sin score EW valido.",
+      "ts_detected": "2026-08-27T09:20:27.874628+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-degradado"
     }
   ],
   "skip_analysis": {
@@ -15117,7 +15251,28 @@
       "sintoma": "GH FAIL 'Expecting value: line 1 column 1' -> plog={} y params vacios (SCORE_MIN_P caia al default 8.5, CV y lecciones invisibles).",
       "causa": "performance_log.json alcanzo 1,094,966 bytes. La GitHub Contents API devuelve content=\"\" para ficheros >1MB, por lo que base64.b64decode->json.loads falla.",
       "fix_aplicado": "1) Leer con cabecera Accept: application/vnd.github.v3.raw (devuelve el fichero completo sin base64). 2) Poda de logs historicos para volver por debajo de 1MB. RECOMENDADO: cambiar _gh_read_log en todas las SKILL.md al modo raw y anadir poda automatica cuando el log supere 900KB."
+    },
+    {
+      "fecha": "2026-08-27",
+      "ts": "2026-08-27T09:20",
+      "severidad": "alta",
+      "componente": "sentinel PASO 3 / EW headless",
+      "titulo": "old.earningswhispers.com inalcanzable desde el sandbox",
+      "detalle": "ConnectTimeout en todos los intentos a old.earningswhispers.com (los 3 URLs de fallback del skill dependen de ese host o de www, que ahora es 100% client-side JS y no expone whisperbox/consensus/tweeturl en el HTML). Resultado: asimetria_pct = 0 para todo el universo, por lo que el gate \"asim > 2.0\" nunca se cumple y el scan EW no puede generar candidatos.",
+      "impacto": "Scan EW inoperativo. Scoring degradado a beat_rate + timing (max ~3.0 pts sobre 10).",
+      "workaround_aplicado": "yfinance earnings_dates para calendario/EPS estimate/beat rate + WebSearch para resultados.",
+      "accion_requerida": "Sustituir la fuente EW por (a) API/endpoint JSON de earningswhispers si existe, (b) fuente alternativa de whisper, o (c) aceptar scoring sin whisper y recalibrar umbrales."
+    },
+    {
+      "fecha": "2026-08-27",
+      "ts": "2026-08-27T09:20",
+      "severidad": "media",
+      "componente": "sentinel PASO 6 / 6B (macro)",
+      "titulo": "fast_info con claves snake_case devuelve None en yfinance >= 1.6",
+      "detalle": "El skill usa fi.get('last_price') y fi.get('regular_market_previous_close'). En yfinance 1.6 las claves son camelCase ('lastPrice', 'previousClose', 'regularMarketPreviousClose'), asi que .get() devuelve None -> 0 y TODO el bloque macro (VIX, SPY, futuros, bonos, divisa, commodities, internacional, sectores) queda a 0.00%.",
+      "impacto": "macro_score siempre 0, VIX siempre 0 -> circuit breaker VIX y ajuste de umbrales inoperativos.",
+      "accion_requerida": "Cambiar a fi['lastPrice'] / fi['regularMarketPreviousClose'] con fallback a history()."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T06:08Z"
+  "ultima_actualizacion": "2026-08-27T13:20Z"
 }
