@@ -50,8 +50,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-08-26",
-    "motivo_actualizacion": "post-market 20-ago: DE (beat rate 94%) descartado con 3.5 y +6.90%. Se anade tier excepcional de beat rate (>=90% y >=12T = 3 pts) y se declara inmunidad a la penalizacion por revisiones de EPS a la baja cuando el beat rate >= 85% (cap -0.5 pts). Se exige verificar el peso de todos los segmentos antes de penalizar por la debilidad de uno.",
+    "ultima_actualizacion": "2026-08-27",
+    "motivo_actualizacion": "post-market 27-ago: el gate r_ratio con stop=minimo_dia_earnings vetaba mecanicamente toda continuation con gap>5%. CRM/CRWD/OKTA descartados a 09:43 cerraron +3.99/+3.76/+3.97% (coste $952). Nuevo stop para continuation gap-up = ATRx1.5 desde entrada; gate de run-up pasa a condicional con gap_hold_ratio>=0.60 + guidance no rebajada + sector_prioridad>=0 + score>=7.0, sizing 50%. Anadido bonus de cohorte sectorial +1.0 (leccion ESTC).",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -135,7 +135,14 @@
     "macro_context_max_staleness_days": 2,
     "macro_context_staleness_action": "refrescar_antes_de_puntuar",
     "reconciliacion_posiciones_obligatoria": true,
-    "motivo_actualizacion_ultima": "Sin cambio de umbrales: 0 operaciones cerradas hoy, muestra insuficiente para recalibrar. Se anade gate condicional GATE_NVDA para el 27-ago en lugar de tocar el umbral base."
+    "motivo_actualizacion_ultima": "Sin cambio de umbrales: 0 operaciones cerradas hoy, muestra insuficiente para recalibrar. Se anade gate condicional GATE_NVDA para el 27-ago en lugar de tocar el umbral base.",
+    "stop_continuation_gap_up_mode": "ATR_x1.5_desde_precio_entrada",
+    "stop_continuation_gap_up_trigger_pct": 5.0,
+    "gap_hold_ratio_min_continuation": 0.6,
+    "runup_gate_continuation_condicional": true,
+    "sizing_mult_continuation_gap_up": 0.5,
+    "bonus_cohorte_sectorial": 1.0,
+    "cohorte_min_nombres": 3
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -188,86 +195,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-08-19",
-      "titulo": "BEAT-AND-FADE se activa por GUIDANCE, no por el beat",
-      "descripcion": "19-ago: TJX bate EPS $1.22 vs $1.19 y sube la guia anual, PERO la guia de Q3 ($<1.35) decepciona -> -4.21%. TGT bate -> +4.36%. LOW -> +2.26%. EL beat-and-raise -> +16.41%. 3 de 4 beats recompensados.",
-      "accion_correctiva": "Sustituir el criterio 'beat en sector extendido = fade' por 'guidance del trimestre en curso por debajo de consenso = fade'. Priorizar en el scoring el riesgo de guidance sobre la extension tecnica.",
-      "tarea_afectada": "pre-market-earnings-scan",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-08-19",
-      "titulo": "VALIDADO: el filtro de momentum 15m evito una entrada perdedora en ADI",
-      "descripcion": "ADI llego a score 7.0 (=umbral paper) pero no se ejecuto por momentum 15m debil_bajista (-0.43%, vol x0.21) y precio +0.78% sobre VWAP. ADI cerro -0.91% (-1.46% desde apertura).",
-      "accion_correctiva": "Mantener el filtro de confirmacion de momentum intradia sin cambios. Regla validada ex-post.",
-      "tarea_afectada": "market-open-execution",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-08-19",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "EL: BEAT +5.4% vs whisper (2026-08-19) ✅",
-      "descripcion": "EPS actual=$0.39 vs whisper=$0.37 vs consenso=$0.32 (+21.9% vs cons). Rev YoY 6.0%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros actuales.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-19",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "EL: beat cons=+21.9% confirmado con reaccion +16.2% (2026-08-19)",
-      "descripcion": "Mercado confirmo el beat con el mayor movimiento del dia. EPS=0.39 vs cons=0.32, whisper=0.37.",
-      "accion_futura": "EL: la regla de denominador minimo (consenso<$0.50) rebajo este candidato a score 4.0 el 18-ago y costo el mayor movimiento del dia. Revisar: aplicar excepcion cuando la asimetria whisper/consenso >10% Y el ticker es large-cap con historial de beats consecutivos.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-19",
-      "tipo": "MISS_RESULTADO",
-      "titulo": "WOLF: MISS -53.7% vs consenso (2026-08-19)",
-      "descripcion": "EPS actual=$-2.26 vs consenso=$-1.47 (whisper no disponible). Reaccion AH -9.0%. Guia: Q1 FY2027 revenue $140-160M, non-GAAP GM aun negativo, opex $62-66M",
-      "accion_futura": "WOLF: perdida operativa estructural + guia de ingresos aun decreciente. Mantener fuera del universo hasta margen bruto no-GAAP positivo.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-08-19",
-      "tipo": "REGLA_DENOMINADOR_MINIMO",
-      "titulo": "EL: regla denominador minimo costo +16.25% (2026-08-19) — 2a confirmacion",
-      "descripcion": "EL tenia asimetria whisper/consenso +15.62% pero consenso $0.32 < $0.50 -> score rebajado a 4.0. Resultado real: beat +5.4% vs whisper, +21.9% vs consenso, accion +16.25%, el mayor movimiento del dia.",
-      "accion_futura": "Propuesta concreta: sustituir el corte duro por consenso<$0.50 por un ajuste graduado (multiplicador 0.7 en vez de descarte) cuando el ticker sea >$20B market cap y tenga >=3 beats consecutivos. Validar en backtest antes de activar.",
-      "impacto_score": 0.25
-    },
-    {
-      "fecha": "2026-08-20",
-      "tipo": "BEAT_AND_FADE_CONFIRMACION",
-      "titulo": "WMT: beat de EPS y -8.8% — el filtro beat_and_fade se valida por 6a vez",
-      "descripcion": "WMT bate EPS $0.81 vs $0.74 y revenue $187.9B vs $186.75B, pero comps US +2.6% vs +3.8% esperado (el crecimiento mas lento en 6 anios, lastrado por pricing en farmacia) y guia Q3 plana en EPS -> -8.83%. La asimetria whisper/consenso era solo +2.74%, por debajo del umbral min_whisper_asymmetry_pct=2.5 por poco. AAP: asimetria +22.2% (whisper 0.99 vs cons 0.81) y aun asi -21.5%. La asimetria alta NO protege contra guia mala.",
-      "accion_futura": "CONFIRMADO: el EPS beat no es la variable predictiva; lo son comps/guia. Mantener filtro_beat_and_fade -2 pts. Anadir regla: en retail, si un peer grande (WMT/TGT/TJX) cae >5% el mismo dia, penalizar -2 pts adicionales a todo candidato retail de esa sesion."
-    },
-    {
-      "fecha": "2026-08-20",
-      "tipo": "FILTRO_MOMENTUM_VALIDADO",
-      "titulo": "ROST: doble filtro (beat_and_fade + momentum 15m) evita entrada en dia de carniceria retail",
-      "descripcion": "ROST earnings hoy AH, asimetria whisper +3.63% (2.00 vs 1.93). Score base ~4.5 -> 2.5 tras -2.0 de beat_and_fade sectorial. Momentum 15m BAJISTA (-0.76%, vol x1.51, -1.19% bajo VWAP, RSI 29.2). Ambos filtros coinciden en NO entrar.",
-      "accion_futura": "Revisar en post-market la reaccion AH de ROST para validar el descarte."
-    },
-    {
-      "fecha": "2026-08-20",
-      "titulo": "DE: beat rate 94% descartado con score 3.5 -> +6.90%. La penalizacion por revisiones a la baja fue erronea",
-      "descripcion": "Deere reporto EPS $5.10 vs consenso $4.45 (+14.6% de sorpresa), ingresos $12.61B (+17.5% sobre lo estimado), margen de Construccion y Forestal del 7.7% al 12.1%, guia FY elevada a $4.75-5.00B y el CEO declarando que 2026 es el SUELO del ciclo de maquinaria agricola. Cerro +6.90% (rango intradia 8.35%). El scan de ayer le dio 3.5/10 y lo descarto: reconocio el beat rate del 94% (17/18 trimestres) pero lo neutralizo con la penalizacion por 18 revisiones de EPS a la baja frente a 5 al alza y por la debilidad de la demanda agricola. ERROR DE LOGICA: en una compania que bate el 94% de las veces, las revisiones a la baja BAJAN EL LISTON en lugar de anticipar un miss — son exactamente la condicion que produce sorpresas grandes. Ademas el analisis miro solo el segmento agricola (que efectivamente cayo -6% interanual) e ignoro Construccion y Forestal, que fue el motor del trimestre.",
-      "accion_correctiva": "BLOQUE 2 pasa a 0-3 pts: se anade tier excepcional beat_rate >= 90% con >= 12 trimestres = 3 pts, y clausula que prohibe penalizar por revisiones de EPS a la baja cuando beat_rate >= 85% (maximo -0.5 pts por ese concepto).",
-      "tarea_afectada": "post-market-review",
-      "aplicada": false,
-      "old_text": "BLOQUE 2 — Historial de batidos (0-2 pts)\n  beat_rate ≥ 70% → 2 pts\n  beat_rate 55-69% → 1 pt\n  < 55% → 0 pts",
-      "new_text": "BLOQUE 2 — Historial de batidos (0-3 pts)\n  beat_rate ≥ 90% con ≥12 trimestres de historial → 3 pts  [tier excepcional — regla DE 2026-08-20]\n  beat_rate ≥ 70% → 2 pts\n  beat_rate 55-69% → 1 pt\n  < 55% → 0 pts\n  CLÁUSULA REVISIONES (DE 2026-08-20): si beat_rate ≥ 85%, NO penalizar por revisiones de EPS\n  a la baja. En compañías que baten sistemáticamente, las revisiones a la baja BAJAN EL LISTÓN\n  en vez de anticipar un miss. Penalización máxima por este concepto: -0.5 pts.\n  CLÁUSULA SEGMENTOS: si la tesis bajista se apoya en la debilidad de UN segmento, verificar el peso\n  de los demás segmentos antes de penalizar (DE: agrícola -6% pero Construcción y Forestal llevó el trimestre)."
-    },
-    {
-      "fecha": "2026-08-20",
-      "titulo": "El beat-and-fade es SECTORIAL, no universal: castiga retail/consumo y premia industrial ciclico",
-      "descripcion": "Misma sesion, resultados opuestos: WMT bate EPS y cae -9.23% (comps EEUU +2.6% vs +3.5%, guia Q3/FY floja), mientras DE bate y sube +6.90%. Confirma y precisa el hallazgo del 19-ago (TJX -4.21% batiendo vs TGT +4.36% y EL +16.41% batiendo). El castigo se concentra donde la GUIA decepciona y la tesis de consumo esta agotada; donde hay INFLEXION de ciclo el beat se premia con multiplo.",
-      "accion_correctiva": "Mantener filtro_beat_and_fade restringido a retail/consumo (ya prohibida su extension por analogia el 19-ago). NO aplicarlo a industriales, energia ni salud.",
-      "tarea_afectada": "multiple",
-      "aplicada": true
-    },
     {
       "fecha": "2026-08-20",
       "titulo": "AAP: la regla de denominador minimo v2 evito una caida del -24.47%",
@@ -483,6 +410,36 @@
       "descripcion": "EPS reportado $5.90 vs cons $3.27 incluye ~$2.6B de ganancia por participacion en Anthropic (~$3.16/sh). Ex-one-off EPS ~$2.74 = MISS. El raise FY27 a $16.67-16.71 y la guia Q3 $3.42-3.44 vs $3.38 SI son limpios, y el AH +12% valida la parte operativa.",
       "accion_futura": "Regla: ante gains por inversiones estrategicas, descontar el one-off antes de puntuar el beat. 3er caso tras NSSC y ROST. Score de continuation con haircut y solo paper.",
       "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-08-27",
+      "titulo": "BUG DE DISENO — el gate r_ratio con stop=minimo_dia_earnings hace imposible TODA continuation con gap grande",
+      "descripcion": "market-open-execution descarto CRM(7.5) CRWD(7.3) OKTA(7.2) a las 09:43 ET. El motivo declarado fue 'run-up > 3%', pero el gate realmente vinculante fue el r_ratio: al usar el MINIMO DEL DIA DE EARNINGS como stop, tras un gap de +9% a +23% ese minimo queda 12-22% por debajo de la entrada, R cae por debajo de 1.0 y el trade se veta mecanicamente. Es un artefacto de la formula, no una lectura de riesgo. Los tres cerraron POR ENCIMA del precio de descarte: CRM +3.99%, CRWD +3.76%, OKTA +3.97% desde 09:43. Coste estimado $952 (notional 8.117$/trade). El sentinel de las 13:23 UTC ya habia marcado la anomalia de forma independiente.",
+      "accion_correctiva": "En post_earnings_continuation con gap de apertura > 5%, NO usar el minimo del dia de earnings como stop. Usar ATR x1.5 desde el precio de entrada real (mismo criterio que el sentinel ya aplico el 27-ago en preopen). El gate de run-up del 3% deja de ser un veto binario para tipo=post_earnings_continuation y pasa a ser condicional: se permite entrada al 50% de sizing si gap_hold_ratio >= 0.60 Y guidance no rebajada Y sector_prioridad >= 0 Y score >= 7.0.",
+      "tarea_afectada": "market-open-execution",
+      "aplicada": true,
+      "evidencia_cuantitativa": {
+        "CRM": 3.99,
+        "CRWD": 3.76,
+        "OKTA": 3.97,
+        "coste_dolares": 952
+      }
+    },
+    {
+      "fecha": "2026-08-27",
+      "titulo": "REGIMEN — el fade post-earnings ocurre en AFTER-HOURS, no en la sesion de contado",
+      "descripcion": "Doble evidencia el mismo dia. (a) Nombres del 26-ago que MANTUVIERON el gap hasta la apertura del 27 extendieron toda la sesion: CRM +22.58%, CRWD +20.50%, OKTA +28.63%, cierres en maximos. (b) Nombres que reportaron el 27-ago AMC se desinflaron en AH: ADSK -6.32%, RBRK -9.36%, WDAY -4.69%, S -3.11%, MRVL -2.09% (pese a beat, subida de guia FY27/FY28 y acuerdo TPU con Google). La conclusion es que juzgar la continuation por la reaccion AH es juzgarla en el momento de maximo ruido. El filtro correcto se evalua en la APERTURA de contado: si el gap sobrevivio la noche, el mercado ya voto y el drift intradia es explotable (+4% medio hoy, 3 de 3).",
+      "accion_correctiva": "Introducir gap_hold_ratio = gap_apertura_pct / movimiento_AH_pct. Si >= 0.60 el pop sobrevivio -> continuation valida. Si < 0.60 el pop se desinflo -> vetar (esto absorbe e implementa la mejora pendiente del 2026-06-26 sobre MU). No evaluar continuation con datos de AH.",
+      "tarea_afectada": "market-open-execution, pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-08-27",
+      "titulo": "ESTC: el sistema lo vio, lo puntuo 5.24 y exploto +22.1% en AH",
+      "descripcion": "Elastic estaba en candidatos_validados como vigilar_cauteloso con score 5.24 y earnings 27-ago AMC. Subio +5.67% en contado por contagio y reporto un beat que lo llevo a ~102.3 (+22.12% AH sobre 83.74). No fue un fallo de deteccion sino de puntuacion: el scoring no capturo que un nombre de software mediano en un regimen de beats generalizados de software tiene la cola derecha mucho mas gorda de lo que refleja su beat_rate historico.",
+      "accion_correctiva": "Cuando >=3 nombres del mismo sub-sector baten y EXTIENDEN en la misma semana, aplicar bonus de cohorte +1.0 pt a los candidatos restantes de ese sub-sector (no solo el +0.5 de supply_chain). Registrado como cohorte_sectorial_activa en macro_context para que pre-market-scan lo lea manana.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -2249,7 +2206,7 @@
       "score": 5.0,
       "score_ajustado": 4.85,
       "score_macro_bonus": -0.15,
-      "estado": "esperando_resultado",
+      "estado": "expirado",
       "accion_recomendada": "seguimiento_resultado",
       "asimetria_pct": 2.25,
       "beat_rate": 1.0,
@@ -2260,7 +2217,7 @@
       "atr14": 8.74,
       "mom_5d": -1.86,
       "rsi_intradia": 45.0,
-      "notas": "asim 2.25% < min 2.5% -> B1=1.0. beat_rate 100%/12T 3.0 + timing 1.0. Ventana cerrada. | 2026-08-26 post-market: resultado AMC NO disponible a las 16:15 ET (release 16:20-16:30 ET). Loop delegado a ew-daily-results / apertura 27-ago.",
+      "notas": "asim 2.25% < min 2.5% -> B1=1.0. beat_rate 100%/12T 3.0 + timing 1.0. Ventana cerrada. | 2026-08-26 post-market: resultado AMC NO disponible a las 16:15 ET (release 16:20-16:30 ET). Loop delegado a ew-daily-results / apertura 27-ago. | Auto-expirado 2026-08-27 en post-market (ventana vencida sin ejecucion).",
       "detectado_por": "sentinel",
       "ventana_entrada": "N/A",
       "ts_creado": "2026-08-25T18:16:14.732845+00:00",
@@ -2439,7 +2396,7 @@
       "score": 4.74,
       "score_ajustado": 4.74,
       "score_macro_bonus": 0.3,
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "accion_recomendada": "revisar_apertura_tras_gate_nvda",
       "asimetria_pct": 4.67,
       "whisper": 6.5,
@@ -2449,7 +2406,7 @@
       "earnings_fecha": "2026-08-27",
       "earnings_timing": "after-hours",
       "expira": "2026-08-27T20:00:00Z",
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 6.5 / consenso 6.21, asim +4.67%, dif $0.29). Score 4.74 = B1 1.5 + B2 2.0 (beat_rate 0.833/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.039% vol x0.29 RSI 43.7 (LATERAL). Sin penalizaciones.",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 6.5 / consenso 6.21, asim +4.67%, dif $0.29). Score 4.74 = B1 1.5 + B2 2.0 (beat_rate 0.833/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.039% vol x0.29 RSI 43.7 (LATERAL). Sin penalizaciones. | CIERRE LOOP 2026-08-27: sesion -0.57%, AH +1.85%. reporto AMC: +1.85% AH, reaccion moderada positiva",
       "detectado_por": "sentinel",
       "fecha_deteccion": "2026-08-26",
       "ventana_entrada": "2026-08-27 09:40-13:00 ET (solo si GATE_NVDA lo permite y score recalculado >= umbral)",
@@ -2493,11 +2450,16 @@
       "rsi_intradia": 38.2,
       "notas_sentinel_1330": "B1 1.5 (asim +4.67%, dif $0.29 valida) + B2 2.0 (beat_rate 83%/12T, 3/4) + B3 1.0 + macro 0.30 = 4.80 (sin bonus tech; XLY -0.82%). Consumer, -4.3% bajo MA200: beat_and_fade no aplica. Momentum negativo hoy (-2.09%, RSI 38).",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": -0.57,
+        "reaccion_ah_pct": 1.85,
+        "veredicto": "reporto AMC: +1.85% AH, reaccion moderada positiva"
+      }
     },
     {
       "ticker": "AFRM",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "tipo": "earnings_ew",
       "accion_recomendada": "revisar_apertura_tras_gate_nvda",
       "detectado_por": "sentinel-intraday-12:20ET",
@@ -2522,7 +2484,7 @@
         "señal": "debil_bajista"
       },
       "precio_ref": 76.94,
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.39 / consenso 0.33, asim +18.18%, dif $0.06). Score 3.24 = B1 1.0 + B2 1.0 (beat_rate 0.5/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m -0.468% vol x0.31 RSI 34.8 (debil_bajista). dif $0.06<$0.07 -> B1 capado a 1.0",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.39 / consenso 0.33, asim +18.18%, dif $0.06). Score 3.24 = B1 1.0 + B2 1.0 (beat_rate 0.5/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m -0.468% vol x0.31 RSI 34.8 (debil_bajista). dif $0.06<$0.07 -> B1 capado a 1.0 | CIERRE LOOP 2026-08-27: sesion +1.35%, AH +0.93%. reaccion neutra",
       "ultima_revision": "2026-08-26T11:18",
       "beat_rate": 0.5,
       "beat_n": 12,
@@ -2545,11 +2507,16 @@
       "precio": 76.8,
       "notas_sentinel_1330": "B1 2.0 (capado doble: dif $0.06<$0.07 y cons $0.33<$0.50 sin confirmacion, beat_rate 4T = 1/4 = 25%) + B2 1.0 (50%/12T) + B3 1.0 + macro 0.30 = 4.30. 3 misses en los ultimos 4T pese a whisper +18%.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 1.35,
+        "reaccion_ah_pct": 0.93,
+        "veredicto": "reaccion neutra"
+      }
     },
     {
       "ticker": "MRVL",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "tipo": "earnings_ew",
       "accion_recomendada": "revisar_apertura_tras_gate_nvda",
       "detectado_por": "sentinel",
@@ -2574,7 +2541,7 @@
         "señal": "debil_alcista"
       },
       "precio_ref": 239.71,
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.97 / consenso 0.93, asim +4.30%, dif $0.04). Score 3.74 = B1 1.0 + B2 2.0 (beat_rate 0.75/12T) + B3 1.0 + B4 -0.5 + macro +0.24. Momentum 15m 0.601% vol x0.14 RSI 63.1 (debil_alcista). dif $0.04<$0.07 -> B1 capado a 1.0; momentum 10d >10% -> -0.5",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.97 / consenso 0.93, asim +4.30%, dif $0.04). Score 3.74 = B1 1.0 + B2 2.0 (beat_rate 0.75/12T) + B3 1.0 + B4 -0.5 + macro +0.24. Momentum 15m 0.601% vol x0.14 RSI 63.1 (debil_alcista). dif $0.04<$0.07 -> B1 capado a 1.0; momentum 10d >10% -> -0.5 | CIERRE LOOP 2026-08-27: sesion -1.49%, AH -2.09%. beat rev $2.739B vs $2.711B y SUBE guia FY27 (~+40%) y FY28 + acuerdo custom TPU con Google (warrant 59M sh @206.58); brokers suben PO a 300-360. Aun asi AH -2.09%: expectativas saturadas tras +187% YTD",
       "ultima_revision": "2026-08-26T11:18",
       "beat_rate": 0.75,
       "beat_n": 12,
@@ -2606,14 +2573,19 @@
       "rsi_intradia": 54.2,
       "notas_sentinel_1330": "B1 1.5 (asim +4.30%, dif $0.04 < minimo -> tope 2.0 no eleva) + B2 2.0 (75%/12T, 3/4) + B3 1.0 + tech 1.0 + macro 0.30 = 5.80; beat_and_fade -2.0 (semis, +65.7% sobre MA200) -> 3.74. 131 analistas = maxima cobertura, sorpresa poco probable.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": -1.49,
+        "reaccion_ah_pct": -2.09,
+        "veredicto": "beat rev $2.739B vs $2.711B y SUBE guia FY27 (~+40%) y FY28 + acuerdo custom TPU con Google (warrant 59M sh @206.58); brokers suben PO a 300-360. Aun asi AH -2.09%: expectativas saturadas tras +187% YTD"
+      }
     },
     {
       "ticker": "ESTC",
       "score": 5.24,
       "score_ajustado": 5.24,
       "score_macro_bonus": 0.3,
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "asimetria_pct": 8.62,
       "whisper": 0.63,
       "consensus": 0.58,
@@ -2648,21 +2620,26 @@
         "rsi": 42.5,
         "señal": "debil_alcista"
       },
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.63 / consenso 0.58, asim +8.62%, dif $0.05). Score 5.74 = B1 1.5 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.426% vol x0.22 RSI 42.5 (debil_alcista). dif $0.05<$0.07 -> B1 capado a 1.5",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.63 / consenso 0.58, asim +8.62%, dif $0.05). Score 5.74 = B1 1.5 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.426% vol x0.22 RSI 42.5 (debil_alcista). dif $0.05<$0.07 -> B1 capado a 1.5 | CIERRE LOOP 2026-08-27: sesion +5.67%, AH +22.12%. EXPLOSION +22.12% AH sobre cierre 83.74 -> ~102.3. Mayor sorpresa del dia; el sistema lo tenia en vigilar_cauteloso con score 5.24",
       "ts_refresco_sentinel": "2026-08-27T11:11:07.916830+00:00",
       "dev_ma200_pct": 32.4,
       "rsi_intradia": 34.3,
       "precio": 84.4,
       "notas_sentinel_1330": "B1 2.0 (capado: dif $0.05 < $0.07 min) + B2 3.0 (12/12) + B3 1.0 + tech 1.0 + macro 0.30 = 7.30; beat_and_fade -2.0 (+32.4% MA200) -> 5.24. Ya +6.5% hoy, RSI 34 intradia, m30 -0.88%.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 5.67,
+        "reaccion_ah_pct": 22.12,
+        "veredicto": "EXPLOSION +22.12% AH sobre cierre 83.74 -> ~102.3. Mayor sorpresa del dia; el sistema lo tenia en vigilar_cauteloso con score 5.24"
+      }
     },
     {
       "ticker": "WDAY",
       "score": 4.24,
       "score_ajustado": 4.24,
       "score_macro_bonus": 0.3,
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "asimetria_pct": 2.66,
       "whisper": 2.7,
       "consensus": 2.63,
@@ -2697,21 +2674,26 @@
         "rsi": 41.8,
         "señal": "debil_bajista"
       },
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 2.7 / consenso 2.63, asim +2.66%, dif $0.07). Score 5.24 = B1 1.0 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m -0.187% vol x0.29 RSI 41.8 (debil_bajista). Sin penalizaciones.",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 2.7 / consenso 2.63, asim +2.66%, dif $0.07). Score 5.24 = B1 1.0 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m -0.187% vol x0.29 RSI 41.8 (debil_bajista). Sin penalizaciones. | CIERRE LOOP 2026-08-27: sesion +1.48%, AH -4.69%. reporto AMC: -4.69% AH pese a subida previa",
       "ts_refresco_sentinel": "2026-08-27T11:11:07.916830+00:00",
       "dev_ma200_pct": 22.2,
       "rsi_intradia": 45.6,
       "precio": 196.65,
       "notas_sentinel_1330": "B1 1.0 (dif $0.07 minimo) + B2 3.0 (12/12) + B3 1.0 + tech 1.0 + macro 0.30 = 6.30; beat_and_fade -2.0 (+22.2% MA200) -> 4.24. Momentum mas debil del grupo (m15 -0.80%, bajo VWAP, vol x1.19).",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 1.48,
+        "reaccion_ah_pct": -4.69,
+        "veredicto": "reporto AMC: -4.69% AH pese a subida previa"
+      }
     },
     {
       "ticker": "ADSK",
       "score": 6.3,
       "score_ajustado": 6.3,
       "score_macro_bonus": 0.3,
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "asimetria_pct": 2.56,
       "whisper": 3.2,
       "consensus": 3.12,
@@ -2751,7 +2733,7 @@
       "senal_momentum": "debil_alcista",
       "ventana_entrada": "2026-08-27 09:40-13:00 ET (solo si GATE_NVDA lo permite y score recalculado >= umbral)",
       "fuente": "sentinel-intraday-14:10ET",
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 3.2 / consenso 3.12, asim +2.56%, dif $0.08). Score 5.24 = B1 1.0 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.179% vol x0.37 RSI 70.9 (debil_alcista). Sin penalizaciones.",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 3.2 / consenso 3.12, asim +2.56%, dif $0.08). Score 5.24 = B1 1.0 + B2 3.0 (beat_rate 1.0/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.179% vol x0.37 RSI 70.9 (debil_alcista). Sin penalizaciones. | CIERRE LOOP 2026-08-27: sesion +6.21%, AH -6.32%. reporto AMC: subio 6.21% en contado por contagio de software y devuelve -6.32% en AH -> beat_and_fade clasico",
       "ts_actualizado": "2026-08-26T14:19:20.191570+00:00",
       "gate_requerido": "GATE_NVDA",
       "stop_tipo": "ATR x1.5 normal; ATR x2.5 si se entra en ventana 09:30-10:30 ET",
@@ -2762,7 +2744,12 @@
       "rsi_intradia": 58.9,
       "notas_sentinel_1330": "B1 1.0 (asim +2.56%, dif $0.08 valida) + B2 3.0 (tier excepcional 12/12=100%) + B3 1.0 + tech 1.0 + macro 0.30 = 6.30; beat_and_fade NO aplica (+8.7% sobre MA200 < +10%). Unico candidato tech sin penalizacion de fade. Ya +6.06% hoy.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 6.21,
+        "reaccion_ah_pct": -6.32,
+        "veredicto": "reporto AMC: subio 6.21% en contado por contagio de software y devuelve -6.32% en AH -> beat_and_fade clasico"
+      }
     },
     {
       "ticker": "CRM",
@@ -2906,7 +2893,7 @@
       "ticker": "S",
       "score": 3.24,
       "score_ajustado": 3.24,
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "tipo": "earnings_ew",
       "asimetria_pct": 28.57,
       "whisper": 0.09,
@@ -2930,7 +2917,7 @@
       "detectado_por": "sentinel-vivo",
       "fecha_deteccion": "2026-08-27",
       "expira": "2026-08-28T20:00:00Z",
-      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.09 / consenso 0.07, asim +28.57%, dif $0.02). Score 3.24 = B1 1.0 + B2 1.0 (beat_rate 0.667/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.429% vol x0.47 RSI 51.7 (debil_alcista). dif $0.02<$0.07 -> B1 capado a 1.0",
+      "notas": "Refrescado por sentinel 11:11 ET 2026-08-27 con EW API real (whisper 0.09 / consenso 0.07, asim +28.57%, dif $0.02). Score 3.24 = B1 1.0 + B2 1.0 (beat_rate 0.667/12T) + B3 1.0 + B4 0.0 + macro +0.24. Momentum 15m 0.429% vol x0.47 RSI 51.7 (debil_alcista). dif $0.02<$0.07 -> B1 capado a 1.0 | CIERRE LOOP 2026-08-27: sesion +10.73%, AH -3.11%. +10.73% en contado por contagio, -3.11% AH",
       "ts_creado": "2026-08-27T11:11:07.916830+00:00",
       "score_macro_bonus": 0.3,
       "mom_5d": 8.02,
@@ -2938,11 +2925,16 @@
       "rsi_intradia": 73.2,
       "notas_sentinel_1330": "asim +28.6% pero dif $0.02 (cons $0.07): B1 capado por asimetria_diferencia_minima_usd. +10.29% hoy, RSI 73, +42% sobre MA200.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 10.73,
+        "reaccion_ah_pct": -3.11,
+        "veredicto": "+10.73% en contado por contagio, -3.11% AH"
+      }
     },
     {
       "ticker": "PD",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "tipo": "earnings_ew",
       "accion_recomendada": "no_entrar_score_insuficiente",
       "detectado_por": "sentinel",
@@ -2961,11 +2953,17 @@
       "precio": 12.68,
       "notas_sentinel_1330": "B1 3.0 (asim +23.3%, dif $0.07 = minimo, cons $0.30<$0.50 pero beat_rate 4/4=100% aporta confirmacion secundaria v2) + B2 3.0 (tier excepcional 12/12=100%) + B3 1.0 + tech 1.0 + macro 0.30 = 8.30; beat_and_fade -2.0 (software, +31.2% sobre MA200, VIX 14.4<16) -> 6.30. Liquidez muy fina (vol x0.06, micro-cap $12.68).",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 3.61,
+        "reaccion_ah_pct": null,
+        "veredicto": "+3.61% por contagio de software"
+      },
+      "notas": " | CIERRE LOOP 2026-08-27: sesion +3.61%. +3.61% por contagio de software"
     },
     {
       "ticker": "RBRK",
-      "estado": "vigilar_cauteloso",
+      "estado": "resultado_conocido",
       "tipo": "earnings_ew",
       "accion_recomendada": "no_entrar_score_insuficiente",
       "detectado_por": "sentinel",
@@ -2984,18 +2982,191 @@
       "precio": 106.61,
       "notas_sentinel_1330": "B1 3.0 (asim +140%, dif $0.07 minimo, cons $0.05 con confirmacion beat_rate 4/4) + B2 2.0 (100% pero n=9T < 12T) + B3 1.0 + tech 1.0 + macro 0.30 = 7.30; beat_and_fade -2.0 (+55.9% MA200) -> 5.24. +10.9% hoy intradia = descuento previo al print.",
       "revisado_por": "sentinel",
-      "ts_revision": "2026-08-27T13:23:23.310655+00:00"
+      "ts_revision": "2026-08-27T13:23:23.310655+00:00",
+      "resultado_real_2026-08-27": {
+        "chg_sesion_regular_pct": 11.33,
+        "reaccion_ah_pct": -9.36,
+        "veredicto": "subio +11.33% en contado y devuelve -9.36% AH -> el contagio previo al resultado se pago caro"
+      },
+      "notas": " | CIERRE LOOP 2026-08-27: sesion +11.33%, AH -9.36%. subio +11.33% en contado y devuelve -9.36% AH -> el contagio previo al resultado se pago caro"
+    },
+    {
+      "ticker": "ESTC",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_total": 7.5,
+      "score_macro_bonus": 2,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "tipo": "post_earnings_continuation",
+      "sector": "technology",
+      "accion_recomendada": "entrar_solo_si_gap_hold>=0.60_Y_despues_de_warsh_10:30ET",
+      "ventana_entrada": "2026-08-28 10:30-12:00 ET (POST keynote Warsh 10:00 ET — NO entrar antes)",
+      "stop_tipo": "ATR x1.5 desde precio de entrada real (NUNCA minimo del dia de earnings: gap >5%)",
+      "sizing": "50% del sizing normal (regla continuation gap-up)",
+      "argumento": "Q1 FY27 con reaccion AH +22.12% sobre cierre 83.74 (~102.3), la mayor sorpresa de la sesion. Ya venia +5.67% en contado por contagio. Sector technology recien elevado a +2 y cohorte de software (CRM/CRWD/OKTA) validada hoy con extension intradia de +4% de media. Es la aplicacion directa de la regla nueva.",
+      "notas": "CONDICIONES OBLIGATORIAS: (1) verificar en la apertura que gap_hold_ratio = gap_apertura/22.12 >= 0.60; si el pop se desinflo por debajo de ~+13% de gap -> VETAR. (2) NO entrar antes de las 10:30 ET: keynote de Warsh a las 10:00 ET es binario y cae dentro de la ventana habitual. (3) sizing 50%. (4) el score 7.5 no alcanza el umbral real (8.0) -> SOLO PAPER.",
+      "estado": "pendiente",
+      "expira": "2026-08-28T18:36:08.826551Z",
+      "conviction_tier": "conviction_alta",
+      "sizing_multiplier": 0.5,
+      "alerta_earnings_overnight": "Sin earnings pendientes — resultado ya publicado 27-ago AMC."
+    },
+    {
+      "ticker": "MRVL",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "score_total": 6.5,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "tipo": "post_earnings_fade_watch",
+      "sector": "semiconductors",
+      "accion_recomendada": "ninguna_vigilar",
+      "ventana_entrada": "2026-08-28 solo si recupera el cierre 241.45 despues de Warsh",
+      "stop_tipo": "ATR x1.5 desde entrada",
+      "sizing": "50%",
+      "argumento": "Fundamentales excelentes y tape en contra: beat de ingresos ($2.739B vs $2.711B), CEO sube guia FY27 (~+40%) y FY28 por 'bookings AI excepcionales', acuerdo custom TPU con Google (warrant de ~59M acciones a $206.58) que Stifel cifra en hasta $120B/6.5 anos, y subidas de PO a 300-360 por Oppenheimer, UBS, Wells Fargo, Jefferies y RBC. Aun asi cotiza -2.09% en AH tras +187% YTD: expectativas saturadas, el mismo patron que NVDA el 26-ago.",
+      "notas": "Caso libro de 'buenas noticias ya en precio'. No perseguir. Vigilar reentrada si recupera 241.45 con volumen.",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-08-28T18:36:08.826551Z",
+      "conviction_tier": "conviction_media",
+      "sizing_multiplier": 0.5
+    },
+    {
+      "ticker": "NVDA",
+      "score": 6.0,
+      "score_ajustado": 6.0,
+      "score_total": 8.0,
+      "score_macro_bonus": 2,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-26",
+      "earnings_timing": "after-hours",
+      "tipo": "post_earnings_drift_dia2",
+      "sector": "ai_infrastructure",
+      "accion_recomendada": "ninguna_vigilar",
+      "ventana_entrada": "2026-08-28 10:30-12:00 ET si sostiene 227 tras Warsh",
+      "stop_tipo": "ATR x1.5 desde entrada",
+      "sizing": "50%",
+      "argumento": "Cerro +8.74% en 227.98 sosteniendo el gap toda la sesion tras guiar $108B y 70% de crecimiento para 2028 frente al 45% esperado. Dia 2 de drift: el PEAD existe pero el run-up ya esta consumido y el riesgo Warsh es binario.",
+      "notas": "Drift de dia 2 = menor esperanza matematica que el dia 1. Solo con confirmacion post-Warsh.",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-08-28T18:36:08.826551Z",
+      "conviction_tier": "conviction_media",
+      "sizing_multiplier": 0.5
+    },
+    {
+      "ticker": "ADSK",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -6.32% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "WDAY",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -4.69% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "RBRK",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -9.36% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "S",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -3.11% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "GAP",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -1.39% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "DLTR",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH -3.92% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
+    },
+    {
+      "ticker": "LULU",
+      "score": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-08-27",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "estado": "descartado",
+      "sector": "technology",
+      "accion_recomendada": "ninguna",
+      "argumento": "Reaccion AH +0.21% -> gap_hold_ratio negativo o nulo. Regla nueva: pop desinflado = veto de continuation.",
+      "expira": "2026-08-28T18:36:08.826551Z"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-08-26",
+    "fecha_actualizacion": "2026-08-27",
     "semana": "2026-W23",
-    "regimen": "STICKY_INFLATION_HOLD + PRE_NVDA_BINARY_RESUELTO_AH + BEAT_AND_FADE_SECTORIAL",
-    "vix": 14.44,
+    "regimen": "AI_RELIEF_RALLY_POST_NVDA + SOFTWARE_BEAT_AND_EXTEND_INTRADIA + PRE_WARSH_JACKSON_HOLE",
+    "vix": 14.56,
     "yield_spread_10y2y": 0.51,
-    "narrativa_dominante": "ACTUALIZACION 2026-08-26: Sesion plana de compas de espera resuelta despues del cierre. (1) PCE de julio en linea: subyacente +0.2% m/m y +3.3% a/a, con el gasto del consumidor ESTANCADO. Inflacion pegajosa muy por encima del 2% pero sin sorpresa -> la Fed tiene margen para mantener tipos; el mercado lo lee como neutral-positivo de cara a Jackson Hole. (2) Indices casi inmoviles: SPY +0.02%, QQQ +0.09%, VIX 15.22 (-1.5%) - complacencia previa al evento. (3) NVDA -1.59% (a 209.66) llega a su FQ2 AMC en negativo tras romper ayer 7 sesiones bajistas; consenso $2.09 / ~$92.2B (+97% a/a), guia propia $91B+/-2%, y el consenso de guia FQ3 esta en ~$104B con el buy-side susurrando 107-108B. La guia, no el EPS, decide el movimiento: NVDA ha batido 4 trimestres seguidos y ha CAIDO en los cuatro. Resultado no disponible a la hora de esta tarea (16:15 ET vs release 16:20-16:30 ET). (4) HALLAZGO DEL DIA - los beats del retail Q2 vienen de Washington, no del consumidor: ANF +35.67% con EPS $4.17 (mas del doble del consenso) pero apalancado en un REEMBOLSO ARANCELARIO de $100M, con comps planos y Hollister -3%. KSS beat masivo ($1.28 vs ~$0.55) tambien de calidad dudosa. El motor del beat es no recurrente y no operativo. (5) Sin posiciones de renta variable en paper ni real - el sistema pasa el evento NVDA en 100% caja.",
+    "narrativa_dominante": "ACTUALIZACION 2026-08-27: (1) NVDA +8.74% (227.98) tras FQ2 blowout: guia $108B trimestre corriente y crecimiento 2028 del 70% vs 45% esperado; Huang habla de 'edad dorada'. Unico matiz: margenes se estrechan por coste de memoria. (2) EL REGIMEN BEAT_AND_FADE QUEDA INVALIDADO EN LA SESION DE CONTADO: los tres nombres de software que reportaron el 26-ago no solo mantuvieron el gap sino que EXTENDIERON todo el dia -> CRM +22.58%, CRWD +20.50%, OKTA +28.63% (cierres en maximos). El fade ocurre en AH, no en la sesion regular. (3) Contagio de sector amplio sin earnings propios: MDB +8.49%, RBRK +11.33%, S +10.73%, ADSK +6.21%, ESTC +5.67%, SMH +3.10%. (4) Divergencia value/retail: DLTR -3.92%, GAP -1.70%, LULU -1.16%, XLV -1.12%, XLF -0.65% - el dinero rota de defensivo a AI/software. (5) SPY +0.66% (771.10), QQQ +1.37% (721.11), VIX 14.56 (-4.3%) - complacencia. (6) Hormuz: Kuwait y Qatar aumentan flujos, WTI 82.11 (-0.1%) -> la prima geopolitica se desinfla. (7) RIESGO DOMINANTE MANANA: keynote de Warsh en Jackson Hole VIERNES 28-ago 10:00 ET, su debut como presidente de la Fed, justo dentro de la ventana de entrada habitual 09:40-10:30 ET. (8) Resultados AH de esta noche predominantemente en fade: ESTC +22.1% (unica explosion), ULTA +1.9%, MDB +1.4%, AFRM +0.9% / MRVL -2.1% (pese a beat y subida de guia FY27-FY28 y acuerdo TPU con Google), S -3.1%, WDAY -4.7%, ADSK -6.3%, RBRK -9.4%.",
     "fuentes_consultadas": [
-      "WebSearch post-market 2026-06-18: VIX, recap mercado, calendario Juneteenth, earnings semana",
       "WebSearch post-market 2026-06-22: 6 busquedas (macro, KBH, earnings 23-jun, FDX, CCL, calendario)",
       "WebSearch post-market 2026-06-23: mercado, VIX, CCL, FDX, MU, PAYX (modo autonomo)",
       "WebSearch post-market 2026-06-24: market recap, MU/PAYX results, MKC/WBA preview (5 busquedas)",
@@ -3024,38 +3195,40 @@
       "Gmail post-market 2026-08-19: 24 hilos (Bloomberg/EW/InsiderFinance/TipRanks) + 5 WebSearch. EW web NO accesible (Chrome MCP desconectado).",
       "Gmail post-market 2026-08-20: 26 hilos revisados (Bloomberg Markets Daily, Morning Briefing Americas, EW Summary 19-ago, InsiderFinance Evening Edge 19-ago, TipRanks). EW Summary de HOY aun no recibido a las 22:25 CEST.",
       "post-market 2026-08-25: Gmail 25 hilos (Bloomberg Markets Daily/Energy Daily/Supply Lines, EW guidance summary, TipRanks, InsiderFinance) + 5 WebSearch + Alpaca IEX bars. EW web NO accesible (calendario JS, sin extension Chrome conectada).",
-      "post-market 2026-08-26: WebSearch x5 + Kiplinger live blog + yfinance 26 tickers (Gmail no consultado, Chrome MCP no conectado)"
+      "post-market 2026-08-26: WebSearch x5 + Kiplinger live blog + yfinance 26 tickers (Gmail no consultado, Chrome MCP no conectado)",
+      "post-market 2026-08-27: Gmail 14 hilos (Bloomberg Markets Daily, EW plays, EW summary, TipRanks) + Alpaca delayed_sip snapshots/AH + 6 WebSearch. EW web NO accesible (Chrome desconectado)."
     ],
     "sector_prioridades": {
       "defense": 0,
-      "energy": 2,
-      "ai_infrastructure": -1,
-      "memory_chips": -1,
-      "technology": 0,
+      "energy": 1,
+      "ai_infrastructure": 2,
+      "memory_chips": 1,
+      "technology": 2,
       "industrials": 2,
       "financials": 2,
       "communication": 0,
       "materials": 0,
-      "healthcare": 2,
+      "healthcare": 1,
       "consumer_discretionary": -1,
       "consumer_staples": 0,
       "utilities": 1,
       "real_estate": -1,
-      "semiconductors": -2
+      "semiconductors": 1
     },
     "sectores_a_vigilar_esta_semana": [
       "energy",
+      "ai_infrastructure",
+      "memory_chips",
+      "technology",
       "industrials",
       "financials",
       "healthcare",
-      "utilities"
+      "utilities",
+      "semiconductors"
     ],
     "sectores_a_evitar_esta_semana": [
-      "ai_infrastructure",
-      "memory_chips",
       "consumer_discretionary",
-      "real_estate",
-      "semiconductors"
+      "real_estate"
     ],
     "eventos_macro_proxima_semana": "Sesion lunes 22-jun normal. KBH earnings (AH). Mar23: FedEx+Carnival. Mie24: Micron. Nike esta semana. Watch: PMIs flash, PCE.",
     "dias_riesgo_macro": [
@@ -3073,6 +3246,10 @@
       {
         "fecha": "2026-08-27",
         "evento": "GDP Q2 2a estimacion (cons +6.6%) + jobless claims (cons 340k) 8:30 ET; KC Fed 11:00 ET; ARRANCA JACKSON HOLE (debut de Warsh) — riesgo de titular Fed a cualquier hora"
+      },
+      {
+        "fecha": "2026-08-28",
+        "evento": "KEYNOTE KEVIN WARSH — Jackson Hole 10:00 ET (debut como presidente de la Fed). Evento binario de tipos/FX. Solapa con la ventana de entrada 09:40-10:30 ET. Calendario de earnings practicamente vacio (13 reportes, ninguno relevante)."
       }
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
@@ -3126,17 +3303,6 @@
       "yield_10y": 4.675999641418457
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-07-23",
-        "evento": "Petroleo elevado + yields al alza presionan Big Tech; VIX baja a 16.64",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "energy",
-          "technology",
-          "ai_infrastructure"
-        ],
-        "fuente": "Yahoo Finance/CNBC"
-      },
       {
         "fecha": "2026-07-24",
         "evento": "Repunte crudo por geopolitica presiona equities; VIX 18.7. FOMC 28-29 jul en el horizonte.",
@@ -3351,6 +3517,18 @@
           "technology"
         ],
         "fuente": "CNBC/Bloomberg/Yahoo/Kiplinger + yfinance"
+      },
+      {
+        "fecha": "2026-08-27",
+        "evento": "NVDA FQ2 blowout (+8.74%) revalida el trade AI; software del 26-ago EXTIENDE el gap todo el dia (CRM +22.6%, CRWD +20.5%, OKTA +28.6%) invalidando el sesgo beat_and_fade en la sesion de contado. Manana keynote de Warsh (Jackson Hole) 10:00 ET.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "semiconductors",
+          "ai_infrastructure",
+          "memory_chips"
+        ],
+        "fuente": "Alpaca delayed_sip + Bloomberg Markets Daily + WebSearch"
       }
     ],
     "macro_score_pm": -0.8,
@@ -3563,6 +3741,20 @@
         "px": 14.49,
         "chg": -4.73
       }
+    },
+    "cohorte_sectorial_activa": {
+      "sub_sector": "software_aplicacion_y_ciberseguridad",
+      "nombres_confirmados": [
+        "CRM",
+        "CRWD",
+        "OKTA",
+        "ESTC",
+        "MDB"
+      ],
+      "bonus_pts": 1.0,
+      "fecha_activacion": "2026-08-27",
+      "expira": "2026-09-03",
+      "regla": "Aplicar +1.0 pt a candidatos de este sub-sector mientras la cohorte siga activa."
     }
   },
   "operaciones_crypto": [
@@ -6045,6 +6237,25 @@
         "reconciliacion_posiciones_obligatoria": true
       },
       "motivo": "macro_context.fecha_actualizacion llevaba en 2026-08-20 durante 3 sesiones (21, 24 y 25 de agosto). Todo el BLOQUE 6 del scoring (sector_prioridades) de esas sesiones se calculo con un contexto de hace 5 dias naturales, en una semana en la que el WTI ha caido -2.6% pese a nuevas sanciones a Iran y en la que NVDA rompio 7 sesiones bajistas. Ademas, la posicion HEI del 24-ago existia sin registro en operaciones[] ni en candidatos_validados."
+    },
+    {
+      "fecha": "2026-08-27",
+      "parametros": {
+        "stop_continuation_gap_up_mode": "ATR_x1.5_desde_precio_entrada",
+        "stop_continuation_gap_up_trigger_pct": 5.0,
+        "gap_hold_ratio_min_continuation": 0.6,
+        "runup_gate_continuation_condicional": true,
+        "sizing_mult_continuation_gap_up": 0.5,
+        "bonus_cohorte_sectorial": 1.0
+      },
+      "valores_anteriores": {
+        "stop_continuation_gap_up_mode": null,
+        "gap_hold_ratio_min_continuation": null,
+        "runup_gate_continuation_condicional": null,
+        "sizing_mult_continuation_gap_up": null,
+        "bonus_cohorte_sectorial": null
+      },
+      "motivo": "post-market 27-ago: el gate r_ratio con stop=minimo_dia_earnings vetaba mecanicamente toda continuation con gap>5%. CRM/CRWD/OKTA descartados a 09:43 cerraron +3.99/+3.76/+3.97% (coste $952). Nuevo stop para continuation gap-up = ATRx1.5 desde entrada; gate de run-up pasa a condicional con gap_hold_ratio>=0.60 + guidance no rebajada + sector_prioridad>=0 + score>=7.0, sizing 50%. Anadido bonus de cohorte sectorial +1.0 (leccion ESTC)."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -6086,23 +6297,23 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-08-26",
+    "_ultima_actualizacion": "2026-08-27",
     "rendimiento_global": {
-      "equity_paper_actual": 108231.57,
+      "equity_paper_actual": 108231.58,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2731.57,
+      "pnl_total_paper_dolares": 2731.58,
       "pnl_total_paper_pct": 2.59,
-      "equity_real_actual": 4548.13,
+      "equity_real_actual": 4548.14,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.13,
+      "pnl_total_real_dolares": 48.14,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 1.21,
       "alpha_paper_vs_spy_pct": 1.05,
       "alpha_real_vs_spy_pct": -0.98,
       "dias_activo_sistema": 28,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 68.58,
-      "pnl_dia_real_dolares": -0.0,
+      "pnl_dia_paper_dolares": 70.65,
+      "pnl_dia_real_dolares": 0.0,
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
@@ -6136,7 +6347,8 @@
       "avg_pnl_pct": 0.6,
       "pnl_neto_dolares": 2639.87,
       "_nota_data_quality": "Recalculado 2026-06-15 EQUITY-ONLY (excluye crypto DOGE/USD). PF=3.7 calculado solo sobre 10 ops con pnl_abs presente (las demas solo tienen pnl_r); PF dominado por GO (+$1134). win_rate/avg_R sobre 19 ops cerradas equity. Sanear pnl_abs en futuras entradas.",
-      "_comentario_w33": "2026-08-17: 7a sesion consecutiva sin posiciones de equity. La unica operacion viva de la semana (LINK/USD crypto) cerro en stop -$697.93 (-4.13%, -1.0R) en la sesion de domingo. P&L del dia paper -0.64%. Cuenta real intacta (solo dust BTCUSD $0.53)."
+      "_comentario_w33": "2026-08-17: 7a sesion consecutiva sin posiciones de equity. La unica operacion viva de la semana (LINK/USD crypto) cerro en stop -$697.93 (-4.13%, -1.0R) en la sesion de domingo. P&L del dia paper -0.64%. Cuenta real intacta (solo dust BTCUSD $0.53).",
+      "_nota_27ago": "Sin operaciones abiertas ni cerradas hoy: 0 ejecuciones (3 vetadas por runup). KPIs de trading sin cambios."
     },
     "calidad_señal": {
       "score_medio_entradas": null,
@@ -6227,7 +6439,7 @@
       "circuit_breaker_activaciones": 0,
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
-      "max_drawdown_paper_actual_pct": 1.45,
+      "max_drawdown_paper_actual_pct": 1.54,
       "drawdown_actual_pct": 1.54
     },
     "bot_metricas": {
@@ -6651,6 +6863,16 @@
         "avg_r_acumulado": -0.1,
         "operaciones_acumuladas": 22,
         "vix": 15.22
+      },
+      {
+        "fecha": "2026-08-27",
+        "equity_paper": 108231.58,
+        "equity_real": 4548.14,
+        "pnl_dia_paper": 70.65,
+        "win_rate_acumulado": 36.4,
+        "avg_r_acumulado": -0.1,
+        "operaciones_acumuladas": 22,
+        "vix": 14.56
       }
     ],
     "objetivos": {
@@ -8404,6 +8626,28 @@
       "resultado": "0 ejecuciones / 3 descartados por run-up",
       "detalle": "CRM +17.8%, CRWD +15.9%, OKTA +23.2% vs cierre de ayer tras reaccion post-earnings. Los tres superan ampliamente el filtro de run-up del 3%; ninguno alcanza score 9.0 para la excepcion de sizing. Coherente con el regimen BEAT_AND_FADE_SECTORIAL del macro_context. Sin ordenes en paper ni en real. Cuenta real no aplicable: umbral 9.0 y max score hoy 7.5.",
       "ejecutado_por": "Cowork (analisis; ejecucion de ordenes no realizada por politica - requiere confirmacion del usuario)"
+    },
+    {
+      "fecha": "2026-08-27",
+      "dia": "Thursday",
+      "equity_paper_cierre": 108231.58,
+      "equity_real_cierre": 4548.14,
+      "variacion_dia": 70.65,
+      "variacion_pct": 0.07,
+      "vix": 14.56,
+      "regimen_macro": "AI_RELIEF_RALLY_POST_NVDA + SOFTWARE_BEAT_AND_EXTEND_INTRADIA + PRE_WARSH_JACKSON_HOLE",
+      "posiciones_equity": 0,
+      "posiciones_crypto_dust": 2,
+      "indices": {
+        "SPY": 0.66,
+        "QQQ": 1.37,
+        "SMH": 3.1
+      },
+      "trades_paper": [],
+      "trades_real": [],
+      "evento_clave": "NVDA +8.74% tras guiar $108B y 70% de crecimiento 2028 (vs 45% esperado). El software del 26-ago EXTENDIO el gap toda la sesion — CRM +22.58%, CRWD +20.50%, OKTA +28.63% — invalidando el sesgo beat_and_fade en la sesion de contado. AH de esta noche vuelve al fade salvo ESTC +22.1%.",
+      "leccion": "El fade post-earnings vive en after-hours, no en la sesion regular: si el gap sobrevive a la apertura, el drift intradia es explotable (+3.9% medio, 3 de 3 hoy). El veto por run-up nos costo $952 porque el stop usaba el minimo del dia de earnings y hacia R<1 por construccion.",
+      "coste_oportunidad_dolares": 952.0
     }
   ],
   "alertas_criticas": [
@@ -8554,6 +8798,13 @@
       "recomendacion": "Usar la segunda mitad de la instruccion (stop ATR x1.5 desde el precio real de entrada), NO el minimo del dia de earnings. Con ATR x1.5 los tres recuperan R ~1.33-1.35 y pasan el gate. Recalcular ATR y gap con el precio de apertura real antes de dimensionar: el sizing al 1% de riesgo cambia de 30-43 acciones (stop low) a 74-103 acciones (stop ATR), es decir de ~4-8% a ~14-20% del equity. Con max_cowork_positions=2 y 3 candidatos, priorizar por R y por calidad del beat.",
       "nota_calidad": "CRM lleva \"VETO CALIDAD: beat contaminado por one-off -> solo paper\" en sus propias notas. OKTA es el gap mas extremo (+21%): es el que mas ha descontado ya y el que peor R deja con stop low.",
       "contexto_ejecucion": "Ninguno de los tres alcanza score_min_real=9.0, asi que la cuenta real no esta implicada."
+    },
+    {
+      "fecha": "2026-08-27",
+      "tipo": "evento_macro_binario",
+      "mensaje": "2026-08-28 10:00 ET keynote de Kevin Warsh en Jackson Hole (debut como presidente de la Fed). Cae DENTRO de la ventana de entrada habitual 09:40-10:30 ET. Calendario de earnings vacio (13 reportes irrelevantes).",
+      "accion_tomada": "Ventana de entrada de manana desplazada a 10:30-12:00 ET para todos los candidatos. Registrado en acciones_pendientes_manana.",
+      "resuelto": true
     }
   ],
   "mejoras_sistema": [
@@ -8594,7 +8845,8 @@
       "evidencia": "MU continuation expirada sin ejecutar -> MU -2.5% hoy en selloff chips. Skip fue correcto.",
       "archivo_modificado": "performance_log (lecciones_sistema) — documentada para market-open-execution",
       "impacto_esperado": "Menos entradas en continuations que fallan por debilidad sectorial; mejor seleccion.",
-      "implementada": false
+      "implementada": true,
+      "nota_cierre": "Absorbida el 2026-08-27 por gap_hold_ratio_min_continuation=0.60, que veta exactamente el caso MU (pop AH desinflado >50% en la apertura)."
     },
     {
       "fecha": "2026-07-01",
@@ -8757,6 +9009,15 @@
       "impacto_esperado": "Evita perseguir gaps de beats no repetibles (falsos positivos de alta magnitud) y evita entrar a ciegas en tech/semis la manana posterior a un print sistemico.",
       "implementada": true,
       "nota_implementacion": "GATE_NVDA queda operativo en el log desde ya. El filtro de calidad del beat queda con old_text/new_text en lecciones_sistema para que el proximo post-market con acceso de escritura a los SKILL.md lo aplique automaticamente (PASO 7E CHECK 5). Esta sesion corre con /mnt/uploads en solo lectura."
+    },
+    {
+      "fecha": "2026-08-27",
+      "tipo": "bug_corregido + parametro_ajustado",
+      "descripcion": "Stop de continuation con gap-up pasa de 'minimo del dia de earnings' a ATRx1.5 desde entrada; gate de run-up del 3% deja de ser veto binario para post_earnings_continuation y se condiciona a gap_hold_ratio>=0.60 con sizing al 50%.",
+      "evidencia": "CRM/CRWD/OKTA descartados 09:43 ET cerraron +3.99/+3.76/+3.97%. Coste estimado $952. Sentinel 13:23 UTC marco la anomalia.",
+      "archivo_modificado": "performance_log.parametros_activos (leido por market-open-execution en PASO 0.1)",
+      "impacto_esperado": "Recuperar el drift intradia de continuations validas manteniendo el veto sobre pops que se desinflan (gap_hold_ratio).",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -10458,6 +10719,15 @@
       "score_sistema": 9.0,
       "parametros_version": "2026-08-26",
       "mejora_hoy": "Filtro calidad del beat (BLOQUE 7) + GATE_NVDA"
+    },
+    {
+      "fecha": "2026-08-27",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 22,
+      "candidatos_activos": 1,
+      "score_sistema": 7.3,
+      "parametros_version": "2026-08-27",
+      "mejora_hoy": "Stop de continuation gap-up -> ATRx1.5 desde entrada; gate runup condicional con gap_hold_ratio>=0.60."
     }
   ],
   "motor_alpha_diario": {
@@ -15021,7 +15291,26 @@
       "telegram_enviado": false
     }
   ],
-  "acciones_pendientes_manana": [],
+  "acciones_pendientes_manana": [
+    {
+      "fecha_objetivo": "2026-08-28",
+      "accion": "gate_macro_warsh",
+      "detalle": "NO abrir ninguna posicion antes de las 10:30 ET. Keynote de Warsh a las 10:00 ET es binario para tipos y FX.",
+      "prioridad": "MAXIMA"
+    },
+    {
+      "fecha_objetivo": "2026-08-28",
+      "accion": "verificar_gap_hold_ESTC",
+      "detalle": "En la apertura calcular gap_hold_ratio = gap_apertura_pct / 22.12. Si >= 0.60 -> ESTC entrada valida al 50% de sizing con stop ATRx1.5 desde entrada. Si < 0.60 -> VETAR.",
+      "prioridad": "ALTA"
+    },
+    {
+      "fecha_objetivo": "2026-08-28",
+      "accion": "aplicar_regla_continuation_nueva",
+      "detalle": "market-open-execution debe leer parametros_activos: stop_continuation_gap_up_mode=ATR_x1.5_desde_precio_entrada y runup_gate_continuation_condicional=True. El minimo del dia de earnings YA NO se usa como stop si el gap supera el 5%.",
+      "prioridad": "ALTA"
+    }
+  ],
   "auditoria_tareas": [
     {
       "fecha": "2026-07-23",
@@ -15484,6 +15773,61 @@
       },
       "tareas_con_issues": [
         "post-market-review"
+      ]
+    },
+    {
+      "fecha": "2026-08-27",
+      "score_sistema": 7.3,
+      "tareas": {
+        "market-open-execution": {
+          "ok": false,
+          "score": 4,
+          "ejecutados_hoy": 0,
+          "issues": [
+            "3 candidatos con score>=7.0 (CRM 7.5, CRWD 7.3, OKTA 7.2) vetados por gate r_ratio defectuoso; los 3 cerraron por encima del precio de descarte (+3.99/+3.76/+3.97%). Coste $952."
+          ]
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 7,
+          "candidatos_detectados": 9,
+          "issues": [
+            "ESTC detectado pero puntuado 5.24; exploto +22.1% en AH. Infravaloracion de cola derecha en cohorte de software."
+          ]
+        },
+        "sentinel": {
+          "ok": false,
+          "score": 6,
+          "ciclos_hoy": 6,
+          "issues": [
+            "6 ciclos frente a >=10 esperados. Positivo: detecto la anomalia del filtro runup a las 13:23 UTC de forma autonoma."
+          ]
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "r0_cerradas_hoy": 0,
+          "issues": []
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "stops_en_breakeven": 0,
+          "issues": [
+            "Sin posiciones que gestionar."
+          ]
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 9,
+          "issues": [
+            "EW web inaccesible (Chrome desconectado): scoring de manana sin datos premium."
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "market-open-execution",
+        "sentinel"
       ]
     }
   ],
@@ -15960,6 +16304,42 @@
         }
       ],
       "nota": "0 oportunidades perdidas. BBY listado como validacion positiva del sistema de scoring, no como fallo."
+    },
+    {
+      "fecha": "2026-08-27",
+      "n_oportunidades": 3,
+      "coste_total_estimado": 952.0,
+      "notional_asumido_por_trade": 8117.0,
+      "detalle": [
+        {
+          "ticker": "CRM",
+          "motivo_descarte": "descartado_runup (gate 3% + r_ratio<1 con stop=minimo dia earnings)",
+          "score": 7.5,
+          "precio_0943ET": 242.37,
+          "cierre": 252.05,
+          "movimiento_desde_entrada_pct": 3.99,
+          "coste_est_dolares": 324.0
+        },
+        {
+          "ticker": "CRWD",
+          "motivo_descarte": "descartado_runup (gate 3% + r_ratio<1 con stop=minimo dia earnings)",
+          "score": 7.3,
+          "precio_0943ET": 219.69,
+          "cierre": 227.96,
+          "movimiento_desde_entrada_pct": 3.76,
+          "coste_est_dolares": 306.0
+        },
+        {
+          "ticker": "OKTA",
+          "motivo_descarte": "descartado_runup (gate 3% + r_ratio<1 con stop=minimo dia earnings)",
+          "score": 7.2,
+          "precio_0943ET": 166.3,
+          "cierre": 172.91,
+          "movimiento_desde_entrada_pct": 3.97,
+          "coste_est_dolares": 323.0
+        }
+      ],
+      "nota": "3/3 candidatos descartados por run-up cerraron POR ENCIMA del precio de descarte. El gate binding no fue el 3% sino el r_ratio: usar el minimo del dia de earnings como stop tras un gap del 10-23% hace R<1 mecanicamente."
     }
   ],
   "incidencias_sistema": [
@@ -16095,5 +16475,5 @@
       "accion": "Reintentar proximo ciclo; si persiste, usar fuente alternativa (yfinance earnings_dates + WebSearch) para el pipeline EW."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T14:17 ET (sentinel)"
+  "ultima_actualizacion": "2026-08-27T20:35 ET (post-market-review)"
 }
