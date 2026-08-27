@@ -2905,7 +2905,7 @@
     "fecha_actualizacion": "2026-08-26",
     "semana": "2026-W23",
     "regimen": "STICKY_INFLATION_HOLD + PRE_NVDA_BINARY_RESUELTO_AH + BEAT_AND_FADE_SECTORIAL",
-    "vix": 14.97,
+    "vix": 14.48,
     "yield_spread_10y2y": 0.51,
     "narrativa_dominante": "ACTUALIZACION 2026-08-26: Sesion plana de compas de espera resuelta despues del cierre. (1) PCE de julio en linea: subyacente +0.2% m/m y +3.3% a/a, con el gasto del consumidor ESTANCADO. Inflacion pegajosa muy por encima del 2% pero sin sorpresa -> la Fed tiene margen para mantener tipos; el mercado lo lee como neutral-positivo de cara a Jackson Hole. (2) Indices casi inmoviles: SPY +0.02%, QQQ +0.09%, VIX 15.22 (-1.5%) - complacencia previa al evento. (3) NVDA -1.59% (a 209.66) llega a su FQ2 AMC en negativo tras romper ayer 7 sesiones bajistas; consenso $2.09 / ~$92.2B (+97% a/a), guia propia $91B+/-2%, y el consenso de guia FQ3 esta en ~$104B con el buy-side susurrando 107-108B. La guia, no el EPS, decide el movimiento: NVDA ha batido 4 trimestres seguidos y ha CAIDO en los cuatro. Resultado no disponible a la hora de esta tarea (16:15 ET vs release 16:20-16:30 ET). (4) HALLAZGO DEL DIA - los beats del retail Q2 vienen de Washington, no del consumidor: ANF +35.67% con EPS $4.17 (mas del doble del consenso) pero apalancado en un REEMBOLSO ARANCELARIO de $100M, con comps planos y Hollister -3%. KSS beat masivo ($1.28 vs ~$0.55) tambien de calidad dudosa. El motor del beat es no recurrente y no operativo. (5) Sin posiciones de renta variable en paper ni real - el sistema pasa el evento NVDA en 100% caja.",
     "fuentes_consultadas": [
@@ -2991,59 +2991,63 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-27T11:11",
-      "nivel": "normal",
-      "shocks": [],
-      "shock_tipo": "ninguno",
+      "timestamp": "2026-08-27T12:23",
+      "nivel": "alerta",
+      "shocks": [
+        "earnings_sorpresa_mag7:NVDA+8.75%"
+      ],
+      "shock_tipo": "ninguno_benigno",
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.0,
+      "score_min_paper_efectivo": 8.75,
       "score_min_real_efectivo": 9.0,
-      "nota_websearch": "INTRADIA 27-ago 11:1x ET. Sin shock macro. Rally tech por NVDA (+6-7% tras beat y guia), CRM +11%, CRWD +9%. Hormuz de-escalando (corredor temporal Iran-Oman; Rubio: sin nuevos ataques). Riesgo clave: keynote de Warsh en Jackson Hole manana 28-ago; FOMC de julio 9-3 con 3 disidentes pidiendo SUBIDA -> riesgo hawkish overnight."
+      "fear_greed": "neutral",
+      "put_call_ratio": 0.8,
+      "nota_websearch": "INTRADIA 27-ago 12:11-12:30 ET. Dia risk-on de software/AI tras beats AH del 26-ago: NVDA +8.75%, CRM +20.15%, CRWD +17.30%, OKTA +26.51%, VEEV +17.13%, RBRK +10.23%. XLK +2.52% unico sector verde; resto rojo (utilities -1.06%, industrials -0.84%). VIX 14.48 (-4.80%). SPY +0.59% QQQ +1.00%. 10Y 4.66% / 30Y 5.18% elevados; PCE core julio +3.3% a/a (caliente). Oro $4.661 (+1.37%) mantiene bid refugio. WTI $82.69 (+0.56%), Brent $87.52 (-0.36%): acuerdo Iran-Oman sobre Ormuz relaja prima geopolitica frente al ruido Rusia-Ucrania. Fear&Greed NEUTRAL; put/call ~0.80 (complaciente). NIVEL=ALERTA por disparador mecanico Mag7>=6% (NVDA), pero por JUICIO el movimiento es un beat de earnings BENIGNO, no evento de riesgo: no se bloquean entradas ni se elevan umbrales."
     },
     "macro_score": 0.8,
-    "macro_nivel": "normal",
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Indices alcistas: SPY +0.61%, QQQ +1.12%, VIX 14.5 (-4.7%) -> risk-on",
-      "XLK +2.61% lidera (NVDA +6-7% tras beat); XLE -1.27%, XLU -1.17%, XLF -0.47% -> rotacion a tech",
-      "10Y 4.65% (>4.5%) -> presion sobre valoraciones growth",
-      "Oro 4647 (+1.08%) subiendo pese al risk-on -> cobertura pre-Jackson Hole",
-      "Brent 86.95 (-1.01%), WTI 82.07 -> riesgo Hormuz DE-ESCALANDO (corredor Iran-Oman, sin ataques US previstos)",
-      "Internacional mixto: Nikkei +0.62%, DAX +0.14%, FTSE -0.82%, HSI -0.34%",
-      "EVENTO CLAVE: keynote Warsh en Jackson Hole manana viernes 28-ago (manana AM) - FOMC 9-3 con 3 disidentes hawkish"
+      "Futuros alcistas (ES +0.60%, NQ +1.04%)",
+      "Yield 10Y alto (4.66%) - presion valuaciones growth",
+      "Oro subiendo (+1.37%, $4.661) - cautela/refugio",
+      "Sector tech fuerte (+2.52%) -> favorece EW candidates",
+      "Rotacion extrema: XLK unico sector verde, 9 sectores en rojo",
+      "VIX 14.48 (-4.80%) - sin estres",
+      "PCE core julio 3.3% a/a - inflacion pegajosa"
     ],
     "futuros": {
-      "ES": 0.37,
-      "NQ": 0.81,
-      "YM": -0.04,
-      "RTY": -0.14
+      "ES": 0.6,
+      "NQ": 1.04,
+      "YM": 0.23,
+      "RTY": 0.34
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-27T11:11",
+    "ts_actualizado": "2026-08-27T12:23",
     "sectores_hoy": {
-      "lider": "XLK",
-      "cambio_lider": 2.61,
-      "tech_chg": 2.61,
+      "lider": "tech",
+      "cambio_lider": 2.52,
+      "tech_chg": 2.52,
+      "rezagado": "utilities",
+      "cambio_rezagado": -1.06,
       "all": {
-        "XLK": 2.61,
-        "XLF": -0.47,
-        "XLE": -1.27,
-        "XLV": -0.3,
-        "XLI": -0.69,
-        "XLY": -0.56,
-        "XLU": -1.17,
-        "XLB": -0.49,
-        "XLRE": -0.64
+        "tech": 2.52,
+        "financials": -0.35,
+        "energy": -0.7,
+        "healthcare": -0.64,
+        "industrials": -0.84,
+        "cons_disc": -0.72,
+        "utilities": -1.06,
+        "materials": -0.71,
+        "realestate": -0.63,
+        "comm": -0.71
       },
-      "ts": "11:11"
+      "ts": "12:23"
     },
     "macro_bonus_ew": 0.24,
     "bonos": {
-      "TLT": {
-        "px": 83.25,
-        "chg": -0.06
-      },
-      "yield_10y": 4.65,
+      "tlt_chg": -0.13,
+      "yield_10y": 4.66,
       "yield_30y": 5.18
     },
     "eventos_recientes": [
@@ -3322,7 +3326,7 @@
     "ts_health_check": "2026-08-27T06:08Z",
     "spy_day": -1.29,
     "narrativa_sentinel": "25-ago 14:15 ET: sin shock. Hormuz desminado por la Navy -> WTI -3.3% a $82, prima geopolitica descomprimiendose. Riesgo binario dominante = NVDA earnings manana AH (26-ago); NVDA llega en su peor racha de perdidas desde 2022 y el mercado esta posicionado a la espera. Fear&Greed neutral. Sin cierre ni apertura de posiciones este ciclo.",
-    "spy_chg": 0.37,
+    "spy_chg": 0.59,
     "nota_web": "Core PCE julio 3.3% (cons 3.2%) - sorpresa hawkish leve; odds subida tipos sept 40.4%. Hormuz sigue con trafico reducido (oil elevado, sin shock nuevo). NVDA reporta hoy AH - evento dominante del mercado.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -3391,33 +3395,27 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "WTI": {
-        "px": 82.07,
-        "chg": -0.19
-      },
-      "BRENT": {
-        "px": 86.95,
-        "chg": -1.01
-      },
-      "GOLD": {
-        "px": 4647.8,
-        "chg": 1.08
-      }
+      "oro": 4661.0,
+      "oro_chg": 1.37,
+      "wti": 82.69,
+      "wti_chg": 0.56,
+      "brent": 87.52,
+      "brent_chg": -0.36
     },
     "internacional": {
       "Nikkei": 0.62,
-      "DAX": 0.14,
-      "FTSE": -0.82,
-      "HSI": -0.34
+      "DAX": 0.31,
+      "FTSE": -0.79,
+      "HSI": 0.56
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "ninguno",
-    "vix_chg": -1.58,
+    "vix_chg": -4.8,
     "oil_wti": 82.19,
     "oil_brent": 87.37000274658203,
     "oro": 4702.6,
     "fear_greed": "neutral (~50)",
-    "qqq_chg": 0.97,
+    "qqq_chg": 1.0,
     "oro_chg": 1.33,
     "dxy_chg": -0.07,
     "intl": {
@@ -11932,6 +11930,26 @@
       "ew_scan_status": "OK 13 tickers con earnings 2026-08-27/2026-08-28 via www.earningswhispers.com/api/getstocksdata (universo 141)",
       "mejor_candidato": "ESTC score 5.74 (asim +8.62%, beat_rate 1.0/12T)",
       "nota": "Sentinel intradia 11:11 ET 2026-08-27. Paper $108,231.58 / real $4,548.15. 0 posiciones equity en ambas cuentas (solo polvo cripto BTCUSD/SOLUSD, mv<$1, sin stop por tamano irrelevante). 0/2 slots Cowork. EW scan OK: 14 tickers con earnings hoy/manana. Mejor jugable = ESTC 5.74 < umbral paper 7.0 y < cap sentinel 6.0 -> 0 ejecuciones. Los 6 pre-market de hoy (DG, HRL, BURL, RY, BBY, DLTR) ya reportaron: ventana cerrada. Los 7 AH de hoy (S, AFRM, ESTC, ULTA, MRVL, WDAY, ADSK) tienen ventana de drift intradia pero ninguno supera 6.0. Momentum: 0 ALCISTA confirmado (vol_ratio<1.0 en los 12 tickers medidos, sesion de bajo volumen). NUEVO: S (SentinelOne) detectado con asim +28.6% pero dif solo $0.02 y consenso $0.07 -> B1 capado por regla asimetria_diferencia_minima_usd. Continuaciones de ayer (CRM +11%, CRWD +9%, OKTA +2.7% hoy) siguen excluidas por run-up (mom5d 18-24% >> max 10%, RSI 68-73). Macro normal (+0.8): risk-on tech, VIX 14.5, Hormuz de-escalando; unico riesgo relevante = Warsh en Jackson Hole manana. Telegram silenciado (sin trades/cierres/shock/EOD/real-sin-stop)."
+    },
+    {
+      "ts": "2026-08-27T12:23:30.217028+00:00",
+      "modo": "intradia",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 1,
+      "ejecuciones": 0,
+      "cowork_abiertas": 0,
+      "posiciones_paper_equity": 0,
+      "posiciones_real_equity": 0,
+      "vix": 14.48,
+      "spy_chg": 0.59,
+      "qqq_chg": 1.0,
+      "macro_score": 0.8,
+      "macro_nivel": "alerta",
+      "equity_paper": 108231.58,
+      "equity_real": 4548.15,
+      "ew_scan": "no_disponible_connect_timeout (earningswhispers bloqueado en sandbox) -> fallback WebSearch+yfinance+Alpaca",
+      "nota": "Dia de beats AH software/AI. Unico candidato EW con earnings hoy AH: MRVL (whisper 0.97 vs cons 0.93, +4.30%) -> score 5.24 << 8.75, momentum debil_bajista y perfil beat_and_fade. Sin ejecucion. Sin posiciones de equity abiertas en ninguna cuenta ni ordenes vivas; solo polvo crypto (BTCUSD/SOLUSD qty~0, mv<$1). Telegram silenciado por politica."
     }
   ],
   "momentum_15m": {
@@ -11947,25 +11965,21 @@
       "fecha": "2026-08-27"
     },
     "AFRM": {
-      "precio": 76.95,
-      "mom_15m": -0.468,
-      "mom_30m": -0.384,
-      "vol_ratio": 0.31,
-      "vwap_dev": -0.448,
-      "rsi": 34.8,
-      "señal": "debil_bajista",
-      "ts": "11:11",
+      "precio": 76.94,
+      "mom_15m": -0.25,
+      "rsi": 43.1,
+      "senal": "debil_bajista",
+      "dia_pct": 0.67,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "OKTA": {
-      "precio": 168.9,
-      "mom_15m": 2.65,
-      "mom_30m": 3.581,
-      "vol_ratio": 0.51,
-      "vwap_dev": 2.233,
-      "rsi": 69.5,
-      "señal": "debil_alcista",
-      "ts": "11:11",
+      "precio": 170.73,
+      "mom_15m": -0.15,
+      "rsi": 62.5,
+      "senal": "LATERAL",
+      "dia_pct": 26.51,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "ESTC": {
@@ -11980,14 +11994,12 @@
       "fecha": "2026-08-27"
     },
     "CRWD": {
-      "precio": 223.39,
-      "mom_15m": 0.143,
-      "mom_30m": 0.84,
-      "vol_ratio": 0.19,
-      "vwap_dev": 1.012,
-      "rsi": 68.5,
-      "señal": "LATERAL",
-      "ts": "11:11",
+      "precio": 222.35,
+      "mom_15m": -0.07,
+      "rsi": 44.1,
+      "senal": "LATERAL",
+      "dia_pct": 17.3,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "DG": {
@@ -12001,25 +12013,22 @@
       "ts": "15:32"
     },
     "CRM": {
-      "precio": 249.4,
-      "mom_15m": -0.168,
-      "mom_30m": 0.006,
-      "vol_ratio": 0.11,
-      "vwap_dev": 0.82,
-      "rsi": 72.8,
-      "señal": "debil_bajista",
-      "ts": "11:11",
+      "precio": 247.21,
+      "mom_15m": 0.98,
+      "rsi": 37.5,
+      "senal": "debil_alcista",
+      "dia_pct": 20.15,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "BURL": {
-      "precio": 314.28,
-      "mom_15m": 0.29,
-      "mom_30m": 0.07,
-      "vol_ratio": 0.03,
-      "vwap_dev": 0.21,
-      "rsi": 44.8,
-      "senal": "debil_alcista",
-      "ts": "15:32"
+      "precio": 294.79,
+      "mom_15m": -0.27,
+      "rsi": 34.8,
+      "senal": "debil_bajista",
+      "dia_pct": -6.13,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
     },
     "SNPS": {
       "precio": 447.3,
@@ -12033,14 +12042,12 @@
       "ts": "10:19"
     },
     "ULTA": {
-      "precio": 532.26,
-      "mom_15m": 0.039,
-      "mom_30m": -0.252,
-      "vol_ratio": 0.29,
-      "vwap_dev": -0.108,
-      "rsi": 43.7,
-      "señal": "LATERAL",
-      "ts": "11:11",
+      "precio": 532.1,
+      "mom_15m": -0.42,
+      "rsi": 50.9,
+      "senal": "debil_bajista",
+      "dia_pct": -2.04,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "DLTR": {
@@ -12054,68 +12061,59 @@
       "ts": "15:32"
     },
     "MRVL": {
-      "precio": 245.5,
-      "mom_15m": 0.601,
-      "mom_30m": 0.366,
-      "vol_ratio": 0.14,
-      "vwap_dev": 0.329,
-      "rsi": 63.1,
-      "señal": "debil_alcista",
-      "ts": "11:11",
+      "precio": 242.63,
+      "mom_15m": -0.83,
+      "vol_ratio": 0.5,
+      "vwap_dev": -0.5,
+      "rsi": 40.5,
+      "senal": "debil_bajista",
+      "dia_pct": -0.98,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "BBY": {
-      "precio": 87.19,
-      "mom_15m": 0.05,
-      "mom_30m": 0.22,
-      "vol_ratio": 0.17,
-      "vwap_dev": 0.14,
-      "rsi": 44.7,
-      "senal": "LATERAL",
-      "ts": "15:32"
+      "precio": 83.27,
+      "mom_15m": 0.22,
+      "rsi": 57.1,
+      "senal": "debil_alcista",
+      "dia_pct": -4.78,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
     },
     "WDAY": {
-      "precio": 197.29,
-      "mom_15m": -0.187,
-      "mom_30m": -0.291,
-      "vol_ratio": 0.29,
-      "vwap_dev": -0.254,
-      "rsi": 41.8,
-      "señal": "debil_bajista",
-      "ts": "11:11",
+      "precio": 197.61,
+      "mom_15m": 0.3,
+      "rsi": 49.9,
+      "senal": "debil_alcista",
+      "dia_pct": 3.61,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "ADSK": {
-      "precio": 270.78,
-      "mom_15m": 0.179,
-      "mom_30m": 0.444,
-      "vol_ratio": 0.37,
-      "vwap_dev": 1.229,
-      "rsi": 70.9,
-      "señal": "debil_alcista",
-      "ts": "11:11",
+      "precio": 269.85,
+      "mom_15m": -0.06,
+      "rsi": 45.0,
+      "senal": "LATERAL",
+      "dia_pct": 5.92,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "VEEV": {
-      "precio": 287.1,
-      "mom_15m": -0.485,
-      "mom_30m": -0.827,
-      "vol_ratio": 0.91,
-      "vwap_dev": -1.334,
-      "rsi": 16.3,
-      "señal": "debil_bajista",
-      "ts": "11:11",
+      "precio": 287.09,
+      "mom_15m": 0.15,
+      "rsi": 42.3,
+      "senal": "debil_alcista",
+      "dia_pct": 17.13,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "NVDA": {
-      "precio": 225.36,
-      "mom_15m": -0.701,
-      "mom_30m": 0.336,
-      "vol_ratio": 0.05,
-      "vwap_dev": 0.072,
-      "rsi": 55.4,
-      "señal": "debil_bajista",
-      "ts": "11:11",
+      "precio": 227.44,
+      "mom_15m": 0.34,
+      "rsi": 57.3,
+      "senal": "debil_alcista",
+      "dia_pct": 8.75,
+      "ts": "12:23",
       "fecha": "2026-08-27"
     },
     "HPQ": {
@@ -12210,26 +12208,22 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 469.4,
-      "mom_15m": 0.584,
-      "mom_30m": 1.101,
-      "vol_ratio": 0.3,
-      "vwap_dev": 0.952,
-      "rsi": 53.3,
-      "señal": "debil_alcista",
-      "day_chg": 0,
-      "ts": "10:19"
+      "precio": 464.54,
+      "mom_15m": -0.15,
+      "rsi": 44.6,
+      "senal": "debil_bajista",
+      "dia_pct": 0.2,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
     },
     "LULU": {
-      "precio": 117.62,
-      "mom_15m": 0.414,
-      "mom_30m": 1.148,
-      "vol_ratio": 0.54,
-      "vwap_dev": 0.774,
-      "rsi": 63.4,
-      "señal": "debil_alcista",
-      "day_chg": 0,
-      "ts": "10:19"
+      "precio": 116.66,
+      "mom_15m": 0.09,
+      "rsi": 31.6,
+      "senal": "LATERAL",
+      "dia_pct": 0.26,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
     },
     "PANW": {
       "precio": 379.0,
@@ -12252,6 +12246,24 @@
       "señal": "LATERAL",
       "day_chg": 0,
       "ts": "10:19"
+    },
+    "RBRK": {
+      "precio": 106.01,
+      "mom_15m": 1.22,
+      "rsi": 65.3,
+      "senal": "debil_alcista",
+      "dia_pct": 10.23,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
+    },
+    "NTAP": {
+      "precio": 188.93,
+      "mom_15m": 0.04,
+      "rsi": 48.9,
+      "senal": "LATERAL",
+      "dia_pct": -2.57,
+      "ts": "12:23",
+      "fecha": "2026-08-27"
     }
   },
   "sentinel_signals": [
@@ -12916,6 +12928,78 @@
       "razon": "whisper 0.39 vs cons 0.33 (asim +18.18%, dif $0.06), beat_rate 0.5",
       "ts_detected": "2026-08-27T11:11:07.916830+00:00",
       "ejecutado": false
+    },
+    {
+      "ticker": "MRVL",
+      "score": 5.24,
+      "tipo": "earnings_ew",
+      "asimetria": 4.3,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "razon": "whisper 0.97 vs consensus 0.93 (+4.30%); beat_rate 4T=75% pero sorpresa media historica ~+1.0% -> vara demasiado alta (beat_and_fade). Momentum debil_bajista. 5.24 < 8.75",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-websearch (EW inaccesible)"
+    },
+    {
+      "ticker": "OKTA",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 26.51,
+      "razon": "Q2 beat + PT raises (TD Cowen, Barclays, Bernstein). Agentic AI.",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
+    },
+    {
+      "ticker": "CRM",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 20.15,
+      "razon": "Q2 beat, PT raises masivos (Barclays 276, TD Cowen 280).",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
+    },
+    {
+      "ticker": "CRWD",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 17.3,
+      "razon": "Q2 beat, PT raises (TD Cowen 250).",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
+    },
+    {
+      "ticker": "VEEV",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 17.13,
+      "razon": "Q2 beat, PT raises (RBC 325, Barclays 315).",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
+    },
+    {
+      "ticker": "RBRK",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 10.23,
+      "razon": "Sympathy seguridad/datos; reporta AH hoy.",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
+    },
+    {
+      "ticker": "NVDA",
+      "score": null,
+      "tipo": "post_earnings_gap_D0",
+      "gap_dia_pct": 8.75,
+      "razon": "Beat FQ2 + guidance por encima; +$370B market cap.",
+      "ts_detected": "2026-08-27T12:23:30.217028+00:00",
+      "ejecutado": false,
+      "nota": "NO perseguir a media sesion. Evaluar continuation D+1 en post-market/ew-daily-results."
     }
   ],
   "skip_analysis": {
@@ -15693,5 +15777,5 @@
       "sugerencia": "Migrar el parser a la API JSON de EW (/api/getbytime o similar) o usar un proveedor alternativo de whisper/consensus (Estimize, Benzinga, yfinance analyst EPS estimate) como fuente primaria."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T11:11 ET (sentinel intradia)"
+  "ultima_actualizacion": "2026-08-27T12:23 (sentinel intradia)"
 }
