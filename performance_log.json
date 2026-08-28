@@ -8209,6 +8209,68 @@
       },
       "resumen": "Portfolio plano (solo dust crypto <$0.40). Sin trailing stops, parciales ni cierres pre-earnings que ejecutar. 0 ordenes hoy. Mercado normal (SPY +0.33%, VIX 20) -> sin modo dip. 17 tickers con earnings AH hoy en radar; score maximo 5.35 (ESTC/RY), muy por debajo del umbral intraday 7.5 y del 8.5 exigido para mantener a traves de earnings AH -> ninguna entrada.",
       "anomalia_detectada": "Gate NVDA muy positivo (+9.08%) y los 4 nombres AH del 26-ago descartados por 'descartado_runup' explotaron hoy: OKTA +27.4%, CRM +21.4%, CRWD +17.2%, SNPS +11.2%. Capturado: 0. El filtro descartado_runup puede estar demasiado restrictivo en regimen de beats generalizados post-NVDA."
+    },
+    {
+      "timestamp": "2026-08-28T16:32:25.345947+00:00",
+      "ejecutado_por": "cowork:intraday-monitor 12:30 ET",
+      "posiciones_abiertas": 2,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 4.874e-06,
+          "entry": 64959.1,
+          "current": 77674.82,
+          "pnl_pct": 19.57,
+          "market_value": 0.38,
+          "stop": 0,
+          "stop_source": "sin_stop",
+          "nota": "residuo_dust_no_accionable"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 2.5e-05,
+          "entry": 77.22,
+          "current": 104.36,
+          "pnl_pct": 35.11,
+          "market_value": 0.0026,
+          "stop": 0,
+          "stop_source": "sin_stop",
+          "nota": "residuo_dust_no_accionable"
+        }
+      ],
+      "posiciones_sin_stop": [
+        "BTCUSD",
+        "SOLUSD"
+      ],
+      "posiciones_sin_stop_accionables": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "ordenes_abiertas_broker": 0,
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "ew_cierres_urgentes": [],
+      "parciales_ejecutados": [],
+      "mercado": {
+        "SPY_intraday_pct": -0.22,
+        "QQQ_intraday_pct": -0.45,
+        "IWM_intraday_pct": -1.24,
+        "modo_dip": false
+      },
+      "equity": 108231.57,
+      "cash": 108231.19,
+      "buying_power": 432924.76,
+      "resumen": "Cartera plana en renta variable. Sin ordenes hoy, sin ordenes abiertas, sin posiciones EW/COWORK. Candidatos del ciclo 27-ago (MRVL 6.5, NVDA 8.0, resto <=3.0) todos por debajo del umbral min_signal_score=8.75 y expiran hoy 18:36Z. Proximo catalizador EW: earnings 2026-09-01 (GTLB 5.0, CRDO 5.0, PANW 3.5, MDB 3.5) y 2026-09-02 (SNOW 5.0, AVGO 3.5) — ninguno alcanza aun el umbral.",
+      "anomalias": [
+        "performance_log en filesystem inaccesible desde esta sesion (permiso denegado en /sessions/wizardly-loving-carson/mnt/Scheduled) — escritura redirigida a GitHub",
+        "/sessions al 100% de uso de disco: mkdir falla fuera de mnt/outputs"
+      ],
+      "acciones_de_escritura_omitidas": "Ninguna orden requerida: sin posiciones accionables y sin candidatos sobre umbral."
     }
   ],
   "pre_close_log": [
@@ -17362,7 +17424,7 @@
       "estado": "pendiente_aplicar_a_skills"
     }
   ],
-  "ultima_actualizacion": "2026-08-28T16:13:37.927463+00:00",
+  "ultima_actualizacion": "2026-08-28T16:32:25.345967+00:00",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T09:17:45.282956+00:00",
     "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
