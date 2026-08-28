@@ -544,6 +544,38 @@
       "descripcion": "AFRM EPS GAAP $4.62 vs cons $0.35 (+1220%) por partida no recurrente; RBRK $0.20 vs $0.04 (denominador minusculo); BURL y DLTR inflados por refundos arancelarios. Usar el beat de INGRESOS o el EPS ex-one-off como magnitud efectiva evita scores 9.5 falsos.",
       "accion_futura": "Regla: si |cons_beat| > 50% o |eps_consensus| < 0.15, sustituir magnitud por beat de revenue.",
       "impacto_score": 0.2
+    },
+    {
+      "fecha": "2026-08-28",
+      "tipo": "AH_CONFIRMACION_BEAT",
+      "titulo": "GAP: beat cons +6.1% confirmado AH +9.0% y +11.5% intradia 28-ago",
+      "descripcion": "EPS $0.52 vs cons $0.49 con ventas ligeramente por debajo, pero GUIA FY26 al alza ($2.35-2.45). El mercado premio la guia, no el beat de EPS.",
+      "accion_futura": "Retail con beat modesto de EPS + guia elevada = continuation valida aunque las ventas fallen. Priorizar delta de guidance sobre delta de EPS en el scoring de retail.",
+      "impacto_score": 0.3
+    },
+    {
+      "fecha": "2026-08-28",
+      "tipo": "SELL_THE_NEWS_AH",
+      "titulo": "S (SentinelOne): SELL-THE-NEWS — beat cons +14.3% pero AH -3.0%",
+      "descripcion": "EPS $0.08 vs cons $0.07 y rev $292M (+21% YoY) por encima, pero guidance FY27 EPS $0.30-0.32 vs cons $0.35. El recorte de guia anulo el beat.",
+      "accion_futura": "Regla reforzada: beat de EPS con RECORTE de guia anual = veto de continuation, sin importar la magnitud del beat. Añadir chequeo de delta_guidance_EPS al filtro pre-continuation.",
+      "impacto_score": -0.4
+    },
+    {
+      "fecha": "2026-08-28",
+      "tipo": "GUIDANCE_MANDA",
+      "titulo": "BBW: beat EPS +7.7% pero recorte de guia FY26 y salida de directivo",
+      "descripcion": "EPS $0.70 vs cons $0.65 con ingresos -7.2% YoY. Recorte de guia a $500-525M y cese del chief growth officer.",
+      "accion_futura": "Small-cap retail con ingresos en contraccion: el beat de EPS no es señal. Exigir crecimiento de ingresos positivo como pre-requisito de continuation en consumo discrecional.",
+      "impacto_score": -0.3
+    },
+    {
+      "fecha": "2026-08-28",
+      "tipo": "PATRON_SEMANAL",
+      "titulo": "Semana 24-28 ago 2026: la GUIA domino sobre el beat en 3 de cada 4 casos",
+      "descripcion": "MRVL, WDAY, DLTR, BBY, S y BBW batieron consenso y cayeron por guia/valoracion; GAP, ADSK, DG, ESTC, AFRM y CRM subieron por guia elevada. El delta de guidance explico la direccion mejor que el delta de EPS.",
+      "accion_futura": "Elevar el peso del componente guidance en el scoring de continuation por encima del componente beat_pct para el proximo ciclo.",
+      "impacto_score": 0.2
     }
   ],
   "operaciones": [
@@ -17177,6 +17209,48 @@
       "guidance": "raise",
       "fuente": "globenewswire",
       "en_portfolio": false
+    },
+    {
+      "ticker": "GAP",
+      "fecha": "2026-08-27",
+      "resultado": "beat",
+      "eps_actual": 0.52,
+      "eps_consensus": 0.49,
+      "eps_whisper": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 6.12,
+      "reaccion_ah_pct": 9.0,
+      "revenue_growth_yoy": null,
+      "fuente_datos": "websearch+gmail_newsletter",
+      "nota": "Rev $3.70B (ligero miss ventas). Guidance FY26 EPS $2.35-2.45 al alza. +11.5% el 28-ago."
+    },
+    {
+      "ticker": "S",
+      "fecha": "2026-08-27",
+      "resultado": "beat",
+      "eps_actual": 0.08,
+      "eps_consensus": 0.07,
+      "eps_whisper": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 14.29,
+      "reaccion_ah_pct": -3.0,
+      "revenue_growth_yoy": 21.0,
+      "fuente_datos": "websearch+gmail_newsletter",
+      "nota": "Rev $292M (+21% YoY) beat. PERO guidance FY27 EPS $0.30-0.32 vs cons $0.35 -> recorte. Sell-the-news."
+    },
+    {
+      "ticker": "BBW",
+      "fecha": "2026-08-27",
+      "resultado": "beat",
+      "eps_actual": 0.7,
+      "eps_consensus": 0.65,
+      "eps_whisper": null,
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 7.69,
+      "reaccion_ah_pct": 0.0,
+      "revenue_growth_yoy": -7.2,
+      "fuente_datos": "websearch+gmail_newsletter",
+      "nota": "EPS bate pero rev $115.3M -7.2% YoY. Recorte guia FY26 a $500-525M y cese del CGO. Reaccion AH no confirmada."
     }
   ],
   "kpis_actuales": {
@@ -18193,33 +18267,18 @@
     }
   ],
   "_last_ew_daily_run": {
-    "fecha": "2026-08-27",
-    "ts": "2026-08-27T21:49:03.371862+00:00",
-    "resumen": "EW Daily 2026-08-27. Email epsguidance del dia AUN NO EMITIDO (llega ~22:08 UTC / 02:34 UTC del dia siguiente); resultados reconstruidos desde Gmail InsiderFinance Evening Edge + investing.com/CNBC/StockTitan/GlobeNewswire/Barchart. 13 empresas del 27-ago procesadas + 2 rezagadas del 26-ago (VEEV, NTNX). Sin whisper numbers salvo ESTC (0.63 via sentinel EW API). 4 continuation plays: ADSK(score=6.5, consensus_proxy_ah_confirmado), AFRM(score=7.1, consensus_proxy_ah_confirmado), RBRK(score=6.8, consensus_proxy_ah_confirmado), DG(score=7.7, consensus_proxy_ah_confirmado). Vetos: 11. Tema del dia: la GUIA manda sobre el beat (DLTR/BBY/WDAY/MRVL beat pero rojo).",
-    "continuation_generados": [
-      "ADSK(score=6.5, consensus_proxy_ah_confirmado)",
-      "AFRM(score=7.1, consensus_proxy_ah_confirmado)",
-      "RBRK(score=6.8, consensus_proxy_ah_confirmado)",
-      "DG(score=7.7, consensus_proxy_ah_confirmado)"
-    ],
+    "fecha": "2026-08-28",
+    "ts": "2026-08-28T21:41:48.770099+00:00",
+    "resumen": "EW Daily 2026-08-28 (viernes). Email epsguidance del 27-ago NO EMITIDO (ultimo disponible: 26-ago/NVDA, ya procesado). Viernes 28-ago sin earnings relevantes (calendario ligero, 9 reportes menores; CIEN aun no ha reportado). Recuperados 3 rezagados del 27-ago AH omitidos en la run anterior: GAP, S, BBW. Sin continuation plays: todas las ventanas de entrada (28-ago open) ya cerraron. 4 lecciones generadas; tema dominante de la semana: la GUIA manda sobre el beat.",
+    "continuation_generados": [],
     "vetos": [
-      "MRVL: no cumple ninguna ruta (cons +1.1%, AH -2.2%)",
-      "ULTA: no cumple ninguna ruta (cons +6.2%, AH +2.0%)",
-      "WDAY: no cumple ninguna ruta (cons +5.4%, AH -5.7%)",
-      "ESTC: ya tiene continuation candidato hoy -> skip duplicado",
-      "IREN: no cumple ninguna ruta (cons +0.0%, AH +3.2%)",
-      "DLTR: no cumple ninguna ruta (cons +136.8%, AH -3.0%)",
-      "BBY: no cumple ninguna ruta (cons +8.0%, AH -4.4%)",
-      "BURL: no cumple ninguna ruta (cons +8.2%, AH -0.4%)",
-      "TD: no cumple ninguna ruta (cons +12.2%, AH +0.0%)",
-      "VEEV: reporto 2026-08-26, ventana de continuation ya pasada",
-      "NTNX: reporto 2026-08-26, ventana de continuation ya pasada"
+      "GAP: reporto 27-ago AH, ventana de entrada (28-ago open) ya cerrada -> no continuation",
+      "S: sell-the-news (AH -3.0%, recorte de guia) + ventana cerrada -> no continuation",
+      "BBW: ingresos -7.2% YoY + recorte de guia + ventana cerrada -> no continuation"
     ],
-    "actualizados": [
-      "ESTC"
-    ],
-    "resultados_n": 15,
-    "fuente_principal": "reconstruccion_multi_fuente (Gmail EW no disponible aun)"
+    "actualizados": [],
+    "resultados_n": 3,
+    "fuente_principal": "websearch + gmail newsletters (Gmail EW epsguidance no emitido para 27/28-ago)"
   },
   "guidance_eventos": [
     {
@@ -18890,7 +18949,7 @@
       "estado": "abierta_requiere_decision_usuario"
     }
   ],
-  "ultima_actualizacion": "2026-08-28T16:16 ET (sentinel post-cierre)",
+  "ultima_actualizacion": "2026-08-28T21:41:48.770107+00:00",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T15:17",
     "fuente": "yfinance earnings_dates + WebSearch (whisper EW NO disponible)",
