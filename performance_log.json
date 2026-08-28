@@ -3841,34 +3841,28 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-28T13:16",
-      "nivel": "alerta",
-      "shocks": [
-        "fed_hawkish_repricing"
-      ],
+      "timestamp": "2026-08-28T15:17",
+      "nivel": "normal",
+      "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.75,
       "score_min_real_efectivo": 99.0,
-      "vix": 14.5,
-      "vix_delta30m": -0.7,
-      "spy_chg": -0.27,
-      "qqq_chg": -0.74,
-      "iwm_chg": -1.23,
-      "yield_10y": 4.72,
-      "dxy_chg": 0.61,
-      "oro_chg": -2.91,
-      "oil": 83.54,
-      "tlt_chg": -0.27,
-      "sectores": {
-        "XLK": -1.45,
-        "XLF": 0.41,
-        "XLE": 0.55,
-        "XLY": 0.72,
-        "XLI": -1.09,
-        "XLU": -1.11,
-        "XLV": -0.46
-      },
-      "notas": "13:15 ET. Warsh Jackson Hole hawkish confirmado: \"work to do\" si la inflacion no vuelve al 2%; dice que los tipos actuales no son restrictivos. 2Y +6.6pb a 4.29% (max de un mes); CME pasa a ~46% prob de subida en la reunion 15-16 sep (desde 35% el jueves). Tape = repricing de tipos, NO shock: gold -2.9%, DXY +0.6%, WTI 83.5 plano, VIX 14.5 (-0.7% en 30m). Sin componente geopolitico (oro cayendo lo descarta). Dispersion extrema bajo la superficie: AMZN +3.6/MSFT +2.4/AAPL +2.0/GOOGL +1.6 vs NVDA -4.2/TSLA -2.3, XLK -1.45% arrastrado por semis. IWM -1.2% = duration hit en small caps. Rotacion mega-cap-defensiva dentro de tech, no risk-off generalizado."
+      "detalle": {
+        "SPY": -0.25,
+        "QQQ": -0.7,
+        "IWM": -1.24,
+        "VIX": 14.59,
+        "y10": 4.73,
+        "SMH": -3.37,
+        "XLK": -1.52,
+        "XLF": 0.46,
+        "XLY": 0.94,
+        "GLD": -3.26,
+        "NVDA": -4.75,
+        "MRVL": -10.42,
+        "ESTC": 20.47,
+        "WDAY": 6.51
+      }
     },
     "macro_score": 0.0,
     "macro_nivel": "normal",
@@ -13287,6 +13281,24 @@
       "macro_nivel": "normal",
       "macro_score_estimado": -1.1,
       "nota": "Warsh Jackson Hole reaviva apuestas de subida de tipos -> QQQ/IWM debiles, 10Y 4.73%. Sin shock (VIX -0.27%/30min, SPY +0.01%/30min). EW scraper CAIDO: old.earningswhispers.com inalcanzable desde sandbox (timeout DNS/red), www.* es client-rendered (placeholders '-'), navegacion del navegador integrado denegada. PASO 3 devuelve 0 en silencio. Candidatos semana 31-ago ya en log como descartado_score (DELL 0.0, PANW 1.5, MDB 1.5, GTLB 3.0, AVGO 3.5, SNOW 3.0, ZS 3.5, LULU 2.0) vs min_signal_score 8.75. Post-earnings: MRVL -10.1% pese a trimestre record de IA (beat-and-fade, no perseguir) con subidas de PT (Oppenheimer 325, Craig-Hallum 300); WDAY +6.5%, CRM +3.3%; ADSK -4.9%, ULTA -4.8%, CRWD -4.5%, NVDA -4.2%. Momentum 15m: todo LATERAL/debil_bajista, sin timing de entrada. Posiciones: solo polvo crypto (paper BTCUSD $0.38, SOLUSD $0.00; real BTCUSD $0.65) sin stop pero <$1, bajo umbral. Sin ordenes: el agente no ejecuta trades. Telegram silenciado (sin evento que cumpla politica)."
+    },
+    {
+      "ts": "2026-08-28T19:17:25.282551+00:00",
+      "modo": "intraday",
+      "hora_et": "15:17",
+      "alertas": 1,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "posiciones_paper": 2,
+      "posiciones_real": 1,
+      "equity_paper": 108231.57,
+      "equity_real": 4548.12,
+      "vix": 14.59,
+      "spy_chg": -0.25,
+      "macro_nivel": "normal",
+      "nota": "Sentinel 15:2x ET: sin posiciones equity en ninguna cuenta (solo polvo cripto: paper BTC $0.38 +19.6% / SOL $0.00, real BTC $0.64 -34.1%; ninguna supera $50 -> no requiere stop). 0 ordenes abiertas. MACRO NORMAL: SPY -0.25% (769.15), QQQ -0.70%, IWM -1.24%, VIX 14.59 (+0.55%), 10Y 4.73% (+1.16%). Rotacion defensiva intradia: SMH -3.37%, XLK -1.52% vs XLF +0.46%, XLY +0.94%. NVDA -4.75% y MRVL -10.42% (guidance/margenes memoria) arrastran semis, pero SPY plano -> NO es shock macro (umbral 6% Mag7 / -2% SPY 30min no alcanzado). GLD -3.26%: se desinfla la prima de refugio; consistente con yields al alza y Warsh hawkish pre-Jackson Hole. ESTC +20.47% y WDAY +6.51% confirman de nuevo el regimen BEAT_AND_EXTEND en sesion de contado. SIN EARNINGS HOY -> 0 oportunidades EW ejecutables, 0 ordenes emitidas. FUENTE EW SIGUE CAIDA: old.earningswhispers.com no resuelve (ConnectTimeout) y www.earningswhispers.com devuelve shell JS sin whisper/consensus; navegador tambien denegado. El scoring EW del cluster 1-3 sep NO es posible por whisper -> usar beat_rate + surprise history como proxy hasta restaurar la fuente."
     }
   ],
   "momentum_15m": {
@@ -18105,83 +18117,232 @@
       "incidencia": "old.earningswhispers.com inalcanzable (ConnectTimeout) y www.earningswhispers.com es JS-rendered -> get_ew_headless() devuelve None para TODOS los tickers.",
       "fix": "Usar API JSON: GET https://www.earningswhispers.com/api/getstocksdata/{TICKER} -> {whisper, consensusEst, nextEPSDate, releaseTime(1=BMO,2=intraday,3=AMC), sectName}. Calendario: GET /api/caldata/{YYYYMMDD}. Resultados: /api/todaysresults. Detalle: /api/epsdetails/{TICKER}.",
       "estado": "pendiente_aplicar_a_skills"
+    },
+    {
+      "fecha": "2026-08-28",
+      "componente": "fuente_whisper_EW",
+      "severidad": "alta",
+      "detalle": "old.earningswhispers.com inaccesible desde el entorno (ConnectTimeout, 3 intentos). www.earningswhispers.com responde 200 pero es client-side rendering: sin whisperbox/consensus en el HTML. Navegador in-app tambien denegado para ese dominio. Impacto: el pipeline EW no puede puntuar el cluster 1-3 sep.",
+      "workaround": "beat_rate + historial de surprise (yfinance) + run-up 5d como proxy de calidad",
+      "detectado_por": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-08-28T16:32:25.345967+00:00",
+  "ultima_actualizacion": "2026-08-28T15:17 ET (sentinel)",
   "ew_calendario_proximo": {
-    "actualizado": "2026-08-28T09:17:45.282956+00:00",
-    "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
-    "hoy_2026-08-28": "SIN earnings en el universo de seguimiento.",
-    "2026-08-31_lunes": [
+    "actualizado": "2026-08-28T15:17",
+    "fuente": "yfinance earnings_dates + WebSearch (whisper EW NO disponible)",
+    "nota": "Scoring EW incompleto: falta whisper/consensus. Estos datos son proxy de calidad, no señal de entrada.",
+    "eventos": [
       {
         "ticker": "SAIC",
+        "fecha": "2026-08-31",
         "timing": "pre-market",
-        "eps_estimate": 2.31
-      }
-    ],
-    "2026-09-01_martes_AH": [
+        "beat_rate": "4/4",
+        "surprises": [
+          41.8,
+          30.0,
+          20.2,
+          62.2
+        ],
+        "runup_5d": -1.88
+      },
       {
         "ticker": "DELL",
-        "eps_estimate": 4.92
+        "fecha": "2026-09-01",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          64.0,
+          10.7,
+          4.5,
+          1.2
+        ],
+        "runup_5d": 2.79
       },
       {
         "ticker": "PANW",
-        "eps_estimate": 0.98
-      },
-      {
-        "ticker": "MDB",
-        "eps_estimate": 1.61
+        "fecha": "2026-09-01",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          6.6,
+          9.9,
+          4.4,
+          7.3
+        ],
+        "runup_5d": 3.52
       },
       {
         "ticker": "CRDO",
-        "eps_estimate": 1.17
+        "fecha": "2026-09-01",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          12.2,
+          13.7,
+          35.3,
+          44.2
+        ],
+        "runup_5d": 0.27
       },
       {
         "ticker": "GTLB",
-        "eps_estimate": 0.18
-      }
-    ],
-    "2026-09-02_miercoles_AH": [
+        "fecha": "2026-09-01",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          12.3,
+          30.0,
+          24.0,
+          46.5
+        ],
+        "runup_5d": 7.75
+      },
+      {
+        "ticker": "MDB",
+        "fecha": "2026-09-01",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          11.5,
+          12.1,
+          66.2,
+          52.4
+        ],
+        "runup_5d": 3.57
+      },
       {
         "ticker": "AVGO",
-        "eps_estimate": 3.24
+        "fecha": "2026-09-02",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          1.7,
+          1.3,
+          4.4,
+          1.6
+        ],
+        "runup_5d": -0.24
       },
       {
         "ticker": "SNOW",
-        "eps_estimate": 0.45
+        "fecha": "2026-09-02",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          21.9,
+          17.8,
+          12.5,
+          31.4
+        ],
+        "runup_5d": -1.25
       },
       {
         "ticker": "HPE",
-        "eps_estimate": 0.93
-      }
-    ],
-    "2026-09-03_jueves": [
+        "fecha": "2026-09-02",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          48.0,
+          10.8,
+          6.5,
+          5.4
+        ],
+        "runup_5d": -2.44
+      },
       {
-        "ticker": "CIEN",
-        "timing": "pre-market",
-        "eps_estimate": 1.72
+        "ticker": "AI",
+        "fecha": "2026-09-02",
+        "timing": "after-hours",
+        "beat_rate": "2/4",
+        "surprises": [
+          11.5,
+          -38.3,
+          24.8,
+          -75.3
+        ],
+        "runup_5d": 2.18,
+        "flag": "errático - evitar"
       },
       {
         "ticker": "LULU",
+        "fecha": "2026-09-03",
         "timing": "after-hours",
-        "eps_estimate": 2.85
+        "beat_rate": "4/4",
+        "surprises": [
+          0.4,
+          4.8,
+          17.1,
+          8.7
+        ],
+        "runup_5d": -0.78
       },
       {
         "ticker": "ZS",
+        "fecha": "2026-09-03",
         "timing": "after-hours",
-        "eps_estimate": 1.09
+        "beat_rate": "4/4",
+        "surprises": [
+          7.1,
+          12.6,
+          11.4,
+          11.0
+        ],
+        "runup_5d": 1.64
       },
       {
         "ticker": "DOCU",
+        "fecha": "2026-09-03",
         "timing": "after-hours",
-        "eps_estimate": 1.09
+        "beat_rate": "4/4",
+        "surprises": [
+          9.7,
+          6.4,
+          10.3,
+          8.6
+        ],
+        "runup_5d": 3.52
+      },
+      {
+        "ticker": "GWRE",
+        "fecha": "2026-09-03",
+        "timing": "after-hours",
+        "beat_rate": "4/4",
+        "surprises": [
+          10.4,
+          52.5,
+          7.5,
+          33.3
+        ],
+        "runup_5d": 8.08
       },
       {
         "ticker": "ASAN",
+        "fecha": "2026-09-03",
         "timing": "after-hours",
-        "eps_estimate": 0.09
+        "beat_rate": "4/4",
+        "surprises": [
+          33.2,
+          13.2,
+          29.4,
+          20.8
+        ],
+        "runup_5d": 7.46
+      },
+      {
+        "ticker": "PATH",
+        "fecha": "2026-09-03",
+        "timing": "after-hours",
+        "beat_rate": "3/4",
+        "surprises": [
+          -5.5,
+          17.8,
+          9.6,
+          79.8
+        ],
+        "runup_5d": 10.98,
+        "flag": "run-up >10% - veto gate"
       }
-    ],
-    "nota": "Faltan numeros whisper: EarningsWhispers migro a render cliente y bloquea old.* -> el scraper headless devuelve 0 datos. Requiere fuente alternativa antes del cluster del 1-3 sep."
+    ]
   }
 }
