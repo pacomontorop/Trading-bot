@@ -3575,17 +3575,22 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-28T11:18",
-      "nivel": "normal",
-      "shocks": [],
+      "timestamp": "2026-08-28T12:13",
+      "nivel": "alerta",
+      "shocks": [
+        "fed_hawkish_repricing"
+      ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.75,
       "score_min_real_efectivo": 99.0,
-      "vix": -1.7918692266062903,
-      "spy_chg": 0.38387006437226395,
-      "oil": -0.8021048470449316,
-      "yield_10y": 0.0,
-      "notas": "Jackson Hole: Warsh sin forward guidance, ~34% prob subida tipos sept 15-16. Ronda de aranceles a semis en estudio (riesgo AVGO/CRDO/MRVL). Hormuz reabriendo -> prima geopolitica del crudo bajando."
+      "vix": 14.55,
+      "spy_chg": 0.02,
+      "qqq_chg": -0.39,
+      "iwm_chg": -1.09,
+      "oil": 82.93,
+      "yield_10y": 4.71,
+      "dxy_chg": 0.48,
+      "notas": "Warsh (10:00 ET) hawkish: \"work to do\" si la inflacion no vuelve al 2%. FedWatch pasa a ~56% prob de subida 25pb en septiembre (desde ~30% pre-discurso); Kalshi 48%. 2Y +6.6pb a 4.29%, DXY +0.4%. Renta variable plana (SPY +0.0%, QQQ -0.4%, IWM -1.1%), VIX 14.5 -> NO es shock, es alerta: headwind de duracion para growth. Sin earnings hoy en el universo. Cluster 27-ago confirma beat-and-fade: AFRM/GAP/ESTC abren con gap y ceden -4 a -6% desde la apertura; MRVL/RBRK -10/-12%. Ninguna continuation valida."
     },
     "macro_score": 0.0,
     "macro_nivel": "normal",
@@ -12878,6 +12883,24 @@
       "cowork_abiertas": 0,
       "vix": -1.7918692266062903,
       "nota": "run manual/scheduled; EW scraper HTML roto -> migrado a API JSON"
+    },
+    {
+      "ts": "2026-08-28T16:13:37.927454+00:00",
+      "modo": "intraday",
+      "hora_et": "12:13",
+      "alertas": 1,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "posiciones_paper": 2,
+      "posiciones_real": 1,
+      "equity_paper": 108231.57,
+      "equity_real": 4548.13,
+      "vix": 14.55,
+      "spy_chg": 0.02,
+      "macro_nivel": "alerta",
+      "nota": "Solo polvo cripto en ambas cuentas (BTC/SOL <$1), 0 posiciones equity, 0 ordenes abiertas. Sin earnings hoy en el universo; proximo cluster 1-3 sep (DELL/PANW/MDB/CRDO/GTLB, AVGO/SNOW/HPE, LULU/ZS/DOCU). Fuente whisper EW sigue caida -> bloqueante para ese cluster. Warsh hawkish: prob subida sept ~56%. Telegram silenciado (sin evento). Sin ordenes: el agente no ejecuta trades."
     }
   ],
   "momentum_15m": {
@@ -12892,14 +12915,10 @@
       "ts": "10:15"
     },
     "AFRM": {
-      "precio": 84.87,
-      "mom_15m": -0.714,
-      "mom_30m": -2.111,
-      "vol_ratio": 0.32,
-      "vwap_dev": -0.151,
-      "rsi": 70.9,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": 5.99,
+      "mom15m": -0.51,
+      "vs_open": -4.37,
+      "ts": "12:13"
     },
     "OKTA": {
       "precio": 168.68,
@@ -12912,14 +12931,10 @@
       "ts": "10:15"
     },
     "ESTC": {
-      "precio": 99.95,
-      "mom_15m": -3.751,
-      "mom_30m": -2.659,
-      "vol_ratio": 0.75,
-      "vwap_dev": 3.002,
-      "rsi": 75.3,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": 18.58,
+      "mom15m": 0.37,
+      "vs_open": -4.42,
+      "ts": "12:13"
     },
     "CRWD": {
       "precio": 211.15,
@@ -12942,14 +12957,10 @@
       "ts": "10:15"
     },
     "CRM": {
-      "precio": 258.54,
-      "mom_15m": -1.087,
-      "mom_30m": 0.715,
-      "vol_ratio": 0.48,
-      "vwap_dev": 0.982,
-      "rsi": 66.0,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": 3.78,
+      "mom15m": 0.35,
+      "vs_open": 4.44,
+      "ts": "12:13"
     },
     "BURL": {
       "precio": 294.79,
@@ -12991,14 +13002,10 @@
       "ts": "15:32"
     },
     "MRVL": {
-      "precio": 222.3,
-      "mom_15m": -0.185,
-      "mom_30m": -1.277,
-      "vol_ratio": 0.28,
-      "vwap_dev": -2.986,
-      "rsi": 23.8,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": -10.02,
+      "mom15m": -0.17,
+      "vs_open": -3.58,
+      "ts": "12:13"
     },
     "BBY": {
       "precio": 83.27,
@@ -13010,14 +13017,10 @@
       "fecha": "2026-08-27"
     },
     "WDAY": {
-      "precio": 196.01,
-      "mom_15m": 0.541,
-      "mom_30m": 1.363,
-      "vol_ratio": 0.37,
-      "vwap_dev": 1.4,
-      "rsi": 74.4,
-      "señal": "debil_alcista",
-      "ts": "10:15"
+      "day": 6.67,
+      "mom15m": 0.45,
+      "vs_open": 8.29,
+      "ts": "12:13"
     },
     "ADSK": {
       "precio": 256.52,
@@ -13044,14 +13047,10 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 223.52,
-      "mom_15m": -0.772,
-      "mom_30m": -1.989,
-      "vol_ratio": 0.58,
-      "vwap_dev": -1.483,
-      "rsi": 31.7,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": -3.08,
+      "mom15m": -0.17,
+      "vs_open": -2.8,
+      "ts": "12:13"
     },
     "HPQ": {
       "precio": 30.0,
@@ -13064,14 +13063,10 @@
       "ts": "10:15"
     },
     "GAP": {
-      "precio": 23.91,
-      "mom_15m": 0.865,
-      "mom_30m": -0.957,
-      "vol_ratio": 0.56,
-      "vwap_dev": 4.835,
-      "rsi": 72.3,
-      "señal": "debil_alcista",
-      "ts": "10:15"
+      "day": 13.71,
+      "mom15m": 0.57,
+      "vs_open": -6.04,
+      "ts": "12:13"
     },
     "RY": {
       "precio": 207.4,
@@ -13184,14 +13179,10 @@
       "ts": "10:19"
     },
     "RBRK": {
-      "precio": 95.87,
-      "mom_15m": -1.793,
-      "mom_30m": -5.013,
-      "vol_ratio": 0.55,
-      "vwap_dev": -6.515,
-      "rsi": 8.1,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "day": -11.88,
+      "mom15m": -1.05,
+      "vs_open": -4.69,
+      "ts": "12:13"
     },
     "NTAP": {
       "precio": 188.93,
@@ -17371,7 +17362,7 @@
       "estado": "pendiente_aplicar_a_skills"
     }
   ],
-  "ultima_actualizacion": "2026-08-28T11:18:06.213397+00:00",
+  "ultima_actualizacion": "2026-08-28T16:13:37.927463+00:00",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T09:17:45.282956+00:00",
     "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
