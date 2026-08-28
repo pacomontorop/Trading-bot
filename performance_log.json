@@ -3420,6 +3420,56 @@
       "umbral_real": 7.5,
       "max_hold_dias": 3,
       "play_horizon": "post_earnings_1_3d"
+    },
+    {
+      "ticker": "AFRM",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "estado": "sentinel_preview",
+      "tipo": "post_earnings_continuation",
+      "accion_recomendada": "revisar_premarket_scan",
+      "gap_premarket_pct": 12.99,
+      "cierre_previo": 77.54,
+      "precio_premarket": 87.62,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "ventana_entrada": "2026-08-28 10:30 ET o posterior (GATE WARSH activo hasta 10:30)",
+      "stop_tipo": "ATR_x1.5_desde_precio_entrada (gap>5%)",
+      "sizing": "0.5x (sizing_mult_continuation_gap_up)",
+      "gate_gap_hold_ratio_min": 0.6,
+      "argumento": "Q4 FY26: EPS $4.62 vs cons $0.85, rev $1.17B; guia Q1 $1.19-1.22B por encima. PT raises BMO $101 / MS $82 / Cantor $88.",
+      "cautela": "EPS muy por encima del consenso sugiere partidas no recurrentes. DOS de tres PT actualizados ($82, $88) quedan POR DEBAJO del precio pre-market ($87.6) -> techo analista ya alcanzado en la apertura.",
+      "detectado_por": "sentinel-preapertura",
+      "fecha_deteccion": "2026-08-28",
+      "expira": "2026-08-28T20:00:00Z",
+      "max_hold_dias": 3,
+      "notas": "Sin ejecucion automatica: run pre-apertura (mercado cerrado) + gate macro Warsh 10:00 ET. Scoring completo pendiente de pre-market scan.",
+      "ts_creado": "2026-08-28T09:17:45.282956+00:00"
+    },
+    {
+      "ticker": "GAP",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "estado": "sentinel_preview",
+      "tipo": "post_earnings_continuation",
+      "accion_recomendada": "revisar_premarket_scan",
+      "gap_premarket_pct": 19.14,
+      "cierre_previo": 20.82,
+      "precio_premarket": 24.81,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "ventana_entrada": "2026-08-28 10:30 ET o posterior (GATE WARSH activo hasta 10:30)",
+      "stop_tipo": "ATR_x1.5_desde_precio_entrada (gap>5%)",
+      "sizing": "0.5x (sizing_mult_continuation_gap_up)",
+      "gate_gap_hold_ratio_min": 0.6,
+      "argumento": "Q2 FY26: EPS aj. $0.52 bate; ventas $3.7B -2% YoY (por debajo). Guia FY EPS subida a $2.35-2.45. Marca Gap 11o trimestre consecutivo de comps positivos.",
+      "cautela": "Gap >19% con ventas por debajo de lo esperado y Old Navy en comps negativos por primera vez en ~3 anos. Retail: el filtro beat_and_fade NO aplica (guia subida), pero la extension es extrema.",
+      "detectado_por": "sentinel-preapertura",
+      "fecha_deteccion": "2026-08-28",
+      "expira": "2026-08-28T20:00:00Z",
+      "max_hold_dias": 3,
+      "notas": "Sin ejecucion automatica: run pre-apertura (mercado cerrado) + gate macro Warsh 10:00 ET. Scoring completo pendiente de pre-market scan.",
+      "ts_creado": "2026-08-28T09:17:45.282956+00:00"
     }
   ],
   "macro_context": {
@@ -3517,22 +3567,21 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-27T14:17",
-      "nivel": "alerta",
-      "shocks": [
-        "earnings_sorpresa_mag7"
-      ],
-      "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
+      "timestamp": "2026-08-28T09:17",
+      "nivel": "normal",
+      "shocks": [],
+      "bloquear_entradas": true,
+      "motivo_bloqueo": "gate_macro_warsh hasta 10:30 ET + run pre-apertura sin ejecucion",
+      "score_min_paper_efectivo": 7.0,
       "score_min_real_efectivo": 9.0
     },
-    "macro_score": 0.8,
-    "macro_nivel": "alerta",
+    "macro_score": 0.0,
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros alcistas (+0.82%)",
-      "Yield 10Y alto (4.68%)",
-      "Oro subiendo - cautela",
-      "Tech fuerte (+2.5%)"
+      "SPY +0.06% / QQQ -0.10% / IWM -0.08% en pre-market: apertura plana.",
+      "VIXY -2.4% (VIX ~14-15) -> regimen de baja volatilidad; filtro_beat_and_fade sigue ACTIVO para tech/semis.",
+      "TLT -0.15%, DXY(UUP) +0.11%, USO -1.0%, oro plano: sin rotacion defensiva.",
+      "RIESGO BINARIO: keynote de Kevin Warsh (Fed) en Jackson Hole a las 10:00 ET. PCE general de julio acelero a 3.7% YoY; el core cumplio previsiones."
     ],
     "futuros": {
       "ES": 0.6209362808842653,
@@ -3542,7 +3591,7 @@
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-27T14:17",
+    "ts_actualizado": "2026-08-28T09:17",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 2.55,
@@ -3560,7 +3609,7 @@
       },
       "ts": "14:17"
     },
-    "macro_bonus_ew": 0.24,
+    "macro_bonus_ew": 0.0,
     "bonos": {
       "tlt_chg": -0.28812182997752944,
       "yield_10y": 4.675999641418457
@@ -4020,6 +4069,11 @@
       "fecha_activacion": "2026-08-27",
       "expira": "2026-09-03",
       "regla": "Aplicar +1.0 pt a candidatos de este sub-sector mientras la cohorte siga activa."
+    },
+    "evento_binario_hoy": {
+      "evento": "Warsh Jackson Hole keynote",
+      "hora_et": "10:00",
+      "gate": "sin aperturas antes de 10:30 ET"
     }
   },
   "operaciones_crypto": [
@@ -9080,6 +9134,11 @@
       "mensaje": "pre-close-manager sin commits desde 2026-08-24 (4 dias laborables). pre_close_log sin entradas nuevas desde 2026-08-20. La gestion de cierre (R1-R4, stops, salidas pre-earnings) lleva 3 sesiones sin ejecutarse.",
       "accion_tomada": "Alerta emitida a Telegram. Requiere revision manual del scheduler de pre-close-manager.",
       "resuelto": false
+    },
+    {
+      "fecha": "2026-08-28",
+      "tipo": "accion_pendiente_no_resoluble",
+      "detalle": "verificar_gap_hold_ESTC (pendiente del 27-ago) usa como denominador un gap del 22.12% que no se observa: ESTC cerro el 27-ago en $83.74, +5.63% sobre $79.28. La accion queda sin base de calculo -> marcar como obsoleta o recalcular el denominador."
     }
   ],
   "mejoras_sistema": [
@@ -12657,6 +12716,16 @@
       "cowork_abiertas": 0,
       "vix": 14.6,
       "nota": "EW scan sin red; sin ejecuciones; macro=alerta(NVDA +8.5% post-earnings)"
+    },
+    {
+      "ts": "2026-08-28T09:17:45.282956+00:00",
+      "modo": "pre-apertura",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 2,
+      "cowork_abiertas": 0,
+      "vix": 14.6,
+      "nota": "Mercado cerrado (09:2x ET). Sin ejecuciones. AFRM +13.0% y GAP +19.1% pre-market como continuation; RBRK/MRVL/ULTA descartados por fade. EW scraper caido. Gate Warsh 10:00 ET."
     }
   ],
   "momentum_15m": {
@@ -13837,6 +13906,30 @@
       "ejecutado": false,
       "fuente": "sentinel-intraday-13:30ET",
       "bloqueo": "score < score_min_paper 7.0 y < cap sentinel 6.0"
+    },
+    {
+      "ticker": "AFRM",
+      "score": 7.0,
+      "tipo": "post_earnings_continuation",
+      "gap_premarket_pct": 12.99,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "razon": "Q4 FY26: EPS $4.62 vs cons $0.85, rev $1.17B; guia Q1 $1.19-1.22B por encima. PT raises BMO $101 / MS $82 / Cantor $88.",
+      "ts_detected": "2026-08-28T09:17:45.282956+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preapertura"
+    },
+    {
+      "ticker": "GAP",
+      "score": 6.5,
+      "tipo": "post_earnings_continuation",
+      "gap_premarket_pct": 19.14,
+      "earnings_fecha": "2026-08-27",
+      "earnings_timing": "after-hours",
+      "razon": "Q2 FY26: EPS aj. $0.52 bate; ventas $3.7B -2% YoY (por debajo). Guia FY EPS subida a $2.35-2.45. Marca Gap 11o trimestre consecutivo de comps positivos.",
+      "ts_detected": "2026-08-28T09:17:45.282956+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preapertura"
     }
   ],
   "skip_analysis": {
@@ -16984,7 +17077,91 @@
       "detalle": "earningswhispers.com (old./www.) inalcanzable desde el entorno de ejecucion: ConnectTimeout en 443 tanto warm-up como paginas /stocks/<tk>. PASO 3 (scan EW headless) sin datos este ciclo. yfinance y Alpaca OK.",
       "impacto": "Sin deteccion de nuevas oportunidades EW por scraping; se depende de candidatos_validados y WebSearch.",
       "accion": "Reintentar proximo ciclo; si persiste, usar fuente alternativa (yfinance earnings_dates + WebSearch) para el pipeline EW."
+    },
+    {
+      "fecha": "2026-08-28",
+      "detectado_por": "sentinel-preapertura",
+      "severidad": "alta",
+      "incidencia": "Scraper EarningsWhispers inoperativo. old.earningswhispers.com da ConnectTimeout; www.* responde 200 pero es SPA de render cliente (whisperbox/epsconsensus/tweeturl ausentes del HTML). El scan EW headless devuelve 0 candidatos desde al menos el 27-ago.",
+      "impacto": "Sin numeros whisper no hay asimetria -> BLOQUE 1 del scoring no puntua. Afecta al cluster de earnings del 1-3 sep (DELL, PANW, MDB, AVGO, SNOW, LULU, ZS).",
+      "accion_requerida": "Sustituir fuente de whisper antes del 01-sep o pasar el scoring a consenso+beat_rate+revisiones con umbral recalibrado."
     }
   ],
-  "ultima_actualizacion": "2026-08-27T21:49:03.371869+00:00"
+  "ultima_actualizacion": "2026-08-28T09:17:45.282956+00:00",
+  "ew_calendario_proximo": {
+    "actualizado": "2026-08-28T09:17:45.282956+00:00",
+    "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
+    "hoy_2026-08-28": "SIN earnings en el universo de seguimiento.",
+    "2026-08-31_lunes": [
+      {
+        "ticker": "SAIC",
+        "timing": "pre-market",
+        "eps_estimate": 2.31
+      }
+    ],
+    "2026-09-01_martes_AH": [
+      {
+        "ticker": "DELL",
+        "eps_estimate": 4.92
+      },
+      {
+        "ticker": "PANW",
+        "eps_estimate": 0.98
+      },
+      {
+        "ticker": "MDB",
+        "eps_estimate": 1.61
+      },
+      {
+        "ticker": "CRDO",
+        "eps_estimate": 1.17
+      },
+      {
+        "ticker": "GTLB",
+        "eps_estimate": 0.18
+      }
+    ],
+    "2026-09-02_miercoles_AH": [
+      {
+        "ticker": "AVGO",
+        "eps_estimate": 3.24
+      },
+      {
+        "ticker": "SNOW",
+        "eps_estimate": 0.45
+      },
+      {
+        "ticker": "HPE",
+        "eps_estimate": 0.93
+      }
+    ],
+    "2026-09-03_jueves": [
+      {
+        "ticker": "CIEN",
+        "timing": "pre-market",
+        "eps_estimate": 1.72
+      },
+      {
+        "ticker": "LULU",
+        "timing": "after-hours",
+        "eps_estimate": 2.85
+      },
+      {
+        "ticker": "ZS",
+        "timing": "after-hours",
+        "eps_estimate": 1.09
+      },
+      {
+        "ticker": "DOCU",
+        "timing": "after-hours",
+        "eps_estimate": 1.09
+      },
+      {
+        "ticker": "ASAN",
+        "timing": "after-hours",
+        "eps_estimate": 0.09
+      }
+    ],
+    "nota": "Faltan numeros whisper: EarningsWhispers migro a render cliente y bloquea old.* -> el scraper headless devuelve 0 datos. Requiere fuente alternativa antes del cluster del 1-3 sep."
+  }
 }
