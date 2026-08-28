@@ -3575,21 +3575,24 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-28T09:17",
+      "timestamp": "2026-08-28T10:15",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": true,
-      "motivo_bloqueo": "gate_macro_warsh hasta 10:30 ET + run pre-apertura sin ejecucion",
+      "motivo_bloqueo": "0 senales validas (beat-and-fade activo en todo el cluster) + gate Warsh hasta 10:30 ET + ejecucion de ordenes no realizada por el agente (restriccion operativa: no ejecuta trades)",
       "score_min_paper_efectivo": 7.0,
-      "score_min_real_efectivo": 9.0
+      "score_min_real_efectivo": 9.0,
+      "vix": 14.55,
+      "spy_desde_apertura": -0.18
     },
     "macro_score": 0.0,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "SPY +0.06% / QQQ -0.10% / IWM -0.08% en pre-market: apertura plana.",
-      "VIXY -2.4% (VIX ~14-15) -> regimen de baja volatilidad; filtro_beat_and_fade sigue ACTIVO para tech/semis.",
-      "TLT -0.15%, DXY(UUP) +0.11%, USO -1.0%, oro plano: sin rotacion defensiva.",
-      "RIESGO BINARIO: keynote de Kevin Warsh (Fed) en Jackson Hole a las 10:00 ET. PCE general de julio acelero a 3.7% YoY; el core cumplio previsiones."
+      "10:15 ET: SPY -0.18% desde apertura, QQQ -0.30%, IWM -0.64%. VIX 14.55 (+0.5% en 30min) — sin shock.",
+      "Warsh (Fed) hablando en Jackson Hole desde 10:00 ET; sin reaccion de mercado medible aun. Gate macro sigue vigente hasta 10:30 ET.",
+      "Sectores: comm +1.07% y cons_disc +0.60% lideran; tech -0.95% e indus -0.46% rezagados. Rotacion fuera de tech.",
+      "WTI -1.33% ($82.42), oro +0.83% ($4648), TLT +0.07%, UUP +0.27%, 10Y 4.67%. Sin rotacion defensiva ni shock geopolitico nuevo.",
+      "BEAT-AND-FADE CONFIRMADO hoy: AFRM gap +10.8% -> -1.7% desde apertura (-6.7% vs HOD); ESTC gap +24.1% -> -4.4% (-8.0% vs HOD); GAP gap +21.0% -> -5.1% (-7.5% vs HOD). Filtro beat_and_fade VALIDADO."
     ],
     "futuros": {
       "ES": 0.6209362808842653,
@@ -3599,7 +3602,7 @@
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-08-28T09:17",
+    "ts_actualizado": "2026-08-28T10:15",
     "sectores_hoy": {
       "lider": "tech",
       "cambio_lider": 2.55,
@@ -4082,6 +4085,104 @@
       "evento": "Warsh Jackson Hole keynote",
       "hora_et": "10:00",
       "gate": "sin aperturas antes de 10:30 ET"
+    },
+    "beat_and_fade_check_2026-08-28": {
+      "AFRM": {
+        "gap": 10.83,
+        "from_open": -1.73,
+        "day": 8.92,
+        "retr_hod": -6.68,
+        "estado": "FADE",
+        "now": 84.4
+      },
+      "ESTC": {
+        "gap": 24.06,
+        "from_open": -4.39,
+        "day": 18.62,
+        "retr_hod": -8.03,
+        "estado": "FADE",
+        "now": 99.33
+      },
+      "RBRK": {
+        "gap": -7.54,
+        "from_open": -2.98,
+        "day": -10.3,
+        "retr_hod": -10.59,
+        "estado": "gap_neg",
+        "now": 96.0
+      },
+      "WDAY": {
+        "gap": -1.49,
+        "from_open": 2.39,
+        "day": 0.86,
+        "retr_hod": -0.9,
+        "estado": "plano",
+        "now": 195.23
+      },
+      "S": {
+        "gap": -5.37,
+        "from_open": -1.12,
+        "day": -6.43,
+        "retr_hod": -4.49,
+        "estado": "gap_neg",
+        "now": 21.25
+      },
+      "ADSK": {
+        "gap": -3.48,
+        "from_open": -1.99,
+        "day": -5.41,
+        "retr_hod": -4.14,
+        "estado": "gap_neg",
+        "now": 255.96
+      },
+      "DG": {
+        "gap": -0.51,
+        "from_open": -1.47,
+        "day": -1.97,
+        "retr_hod": -1.96,
+        "estado": "plano",
+        "now": 123.42
+      },
+      "GAP": {
+        "gap": 21.02,
+        "from_open": -5.13,
+        "day": 14.81,
+        "retr_hod": -7.48,
+        "estado": "FADE",
+        "now": 23.87
+      },
+      "ULTA": {
+        "gap": 0.35,
+        "from_open": -6.54,
+        "day": -6.21,
+        "retr_hod": -6.63,
+        "estado": "plano",
+        "now": 506.56
+      },
+      "PD": {
+        "gap": 3.64,
+        "from_open": 6.38,
+        "day": 10.25,
+        "retr_hod": -0.08,
+        "estado": "HOLD",
+        "now": 13.93
+      },
+      "MRVL": {
+        "gap": -6.69,
+        "from_open": -1.32,
+        "day": -7.92,
+        "retr_hod": -2.86,
+        "estado": "gap_neg",
+        "now": 222.32
+      },
+      "NVDA": {
+        "gap": -0.29,
+        "from_open": -1.72,
+        "day": -2.0,
+        "retr_hod": -2.55,
+        "estado": "plano",
+        "now": 223.43
+      }
     }
   },
   "operaciones_crypto": [
@@ -12749,90 +12850,95 @@
       "cowork_abiertas": 0,
       "vix": 14.6,
       "nota": "Mercado cerrado (09:2x ET). Sin ejecuciones. AFRM +13.0% y GAP +19.1% pre-market como continuation; RBRK/MRVL/ULTA descartados por fade. EW scraper caido. Gate Warsh 10:00 ET."
+    },
+    {
+      "ts": "2026-08-28T10:15:34.357518+00:00",
+      "modo": "intraday",
+      "hora_et": "10:15",
+      "alertas": 0,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "posiciones_paper_equity": 0,
+      "posiciones_real_equity": 0,
+      "vix": 14.55,
+      "spy_chg": -0.08,
+      "qqq_chg": -0.46,
+      "macro_nivel": "normal",
+      "nota": "Sin earnings hoy en universo. Cluster 27-ago en beat-and-fade (AFRM/ESTC/GAP gap alto -> fade fuerte). EW scraper caido. 0 senales validas. Sin ordenes: el agente no ejecuta trades."
     }
   ],
   "momentum_15m": {
     "S": {
-      "precio": 22.78,
-      "mom_15m": 0.335,
-      "mom_30m": 0.176,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.483,
-      "rsi": 58.1,
-      "señal": "debil_alcista",
-      "ts": "14:17"
+      "precio": 21.19,
+      "mom_15m": -0.165,
+      "mom_30m": -2.102,
+      "vol_ratio": 0.41,
+      "vwap_dev": -3.611,
+      "rsi": 22.8,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "AFRM": {
-      "precio": 76.54,
-      "mom_15m": -0.111,
-      "mom_30m": -0.533,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.387,
-      "rsi": 42.0,
-      "señal": "LATERAL",
-      "ts": "14:17"
+      "precio": 84.87,
+      "mom_15m": -0.714,
+      "mom_30m": -2.111,
+      "vol_ratio": 0.32,
+      "vwap_dev": -0.151,
+      "rsi": 70.9,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "OKTA": {
-      "precio": 171.9,
-      "mom_15m": 0.32,
-      "mom_30m": 0.24,
-      "vol_ratio": 0.45,
-      "vwap_dev": 2.07,
-      "rsi": 55.7,
-      "mom_5d": 28.13,
-      "dev_ma200_pct": 73.1,
-      "atr_pct": 5.29,
-      "chg_dia_pct": 27.88,
-      "señal": "debil_alcista",
-      "ts": "2026-08-27T13:23"
+      "precio": 168.68,
+      "mom_15m": -0.018,
+      "mom_30m": -1.656,
+      "vol_ratio": 0.16,
+      "vwap_dev": -2.129,
+      "rsi": 30.3,
+      "señal": "LATERAL",
+      "ts": "10:15"
     },
     "ESTC": {
-      "precio": 84.34,
-      "mom_15m": -0.024,
-      "mom_30m": -0.531,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.422,
-      "rsi": 41.5,
-      "señal": "LATERAL",
-      "ts": "14:17"
+      "precio": 99.95,
+      "mom_15m": -3.751,
+      "mom_30m": -2.659,
+      "vol_ratio": 0.75,
+      "vwap_dev": 3.002,
+      "rsi": 75.3,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "CRWD": {
-      "precio": 224.81,
-      "mom_15m": 0.06,
-      "mom_30m": 1.02,
-      "vol_ratio": 0.09,
-      "vwap_dev": 0.94,
-      "rsi": 68.2,
-      "mom_5d": 18.11,
-      "dev_ma200_pct": 60.5,
-      "atr_pct": 4.98,
-      "chg_dia_pct": 18.83,
-      "señal": "LATERAL",
-      "ts": "2026-08-27T13:23"
+      "precio": 211.15,
+      "mom_15m": -1.172,
+      "mom_30m": -3.027,
+      "vol_ratio": 0.61,
+      "vwap_dev": -4.365,
+      "rsi": 14.6,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "DG": {
-      "precio": 123.31,
-      "mom_15m": -0.14,
-      "mom_30m": -0.36,
-      "vol_ratio": 0.14,
-      "vwap_dev": 0.16,
-      "rsi": 55.0,
-      "senal": "LATERAL",
-      "ts": "15:32"
+      "precio": 123.78,
+      "mom_15m": 1.397,
+      "mom_30m": 1.86,
+      "vol_ratio": 0.57,
+      "vwap_dev": -1.07,
+      "rsi": 30.8,
+      "señal": "debil_alcista",
+      "ts": "10:15"
     },
     "CRM": {
-      "precio": 249.3,
-      "mom_15m": 0.07,
-      "mom_30m": -0.06,
-      "vol_ratio": 0.45,
-      "vwap_dev": 0.32,
-      "rsi": 79.9,
-      "mom_5d": 21.36,
-      "dev_ma200_pct": 24.5,
-      "atr_pct": 4.07,
-      "chg_dia_pct": 21.24,
-      "señal": "LATERAL",
-      "ts": "2026-08-27T13:23"
+      "precio": 258.54,
+      "mom_15m": -1.087,
+      "mom_30m": 0.715,
+      "vol_ratio": 0.48,
+      "vwap_dev": 0.982,
+      "rsi": 66.0,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "BURL": {
       "precio": 294.79,
@@ -12844,25 +12950,24 @@
       "fecha": "2026-08-27"
     },
     "SNPS": {
-      "precio": 447.3,
-      "mom_15m": 0.253,
-      "mom_30m": 2.828,
-      "vol_ratio": 0.84,
-      "vwap_dev": 5.389,
-      "rsi": 90.9,
-      "señal": "debil_alcista",
-      "day_chg": 0,
-      "ts": "10:19"
+      "precio": 445.12,
+      "mom_15m": -1.486,
+      "mom_30m": -1.902,
+      "vol_ratio": 0.41,
+      "vwap_dev": -3.271,
+      "rsi": 21.5,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "ULTA": {
-      "precio": 530.23,
-      "mom_15m": -0.029,
-      "mom_30m": -0.178,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.116,
-      "rsi": 37.1,
-      "señal": "LATERAL",
-      "ts": "14:17"
+      "precio": 506.17,
+      "mom_15m": -1.206,
+      "mom_30m": -2.096,
+      "vol_ratio": 0.25,
+      "vwap_dev": -4.018,
+      "rsi": 25.1,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "DLTR": {
       "precio": 132.38,
@@ -12875,14 +12980,14 @@
       "ts": "15:32"
     },
     "MRVL": {
-      "precio": 244.52,
-      "mom_15m": 0.25,
-      "mom_30m": -0.195,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.123,
-      "rsi": 44.0,
-      "señal": "debil_alcista",
-      "ts": "14:17"
+      "precio": 222.3,
+      "mom_15m": -0.185,
+      "mom_30m": -1.277,
+      "vol_ratio": 0.28,
+      "vwap_dev": -2.986,
+      "rsi": 23.8,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "BBY": {
       "precio": 83.27,
@@ -12894,24 +12999,24 @@
       "fecha": "2026-08-27"
     },
     "WDAY": {
-      "precio": 191.71,
-      "mom_15m": 0.435,
-      "mom_30m": -1.609,
-      "vol_ratio": 1.07,
-      "vwap_dev": -1.281,
-      "rsi": 17.3,
+      "precio": 196.01,
+      "mom_15m": 0.541,
+      "mom_30m": 1.363,
+      "vol_ratio": 0.37,
+      "vwap_dev": 1.4,
+      "rsi": 74.4,
       "señal": "debil_alcista",
-      "ts": "14:17"
+      "ts": "10:15"
     },
     "ADSK": {
-      "precio": 269.37,
-      "mom_15m": 0.082,
-      "mom_30m": -0.035,
-      "vol_ratio": 1.32,
-      "vwap_dev": -0.237,
-      "rsi": 25.8,
-      "señal": "LATERAL",
-      "ts": "14:17"
+      "precio": 256.52,
+      "mom_15m": 0.811,
+      "mom_30m": -0.373,
+      "vol_ratio": 0.45,
+      "vwap_dev": -3.205,
+      "rsi": 23.2,
+      "señal": "debil_alcista",
+      "ts": "10:15"
     },
     "VEEV": {
       "precio": 285.0,
@@ -12928,43 +13033,34 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 229.84,
-      "mom_15m": 0.0,
-      "mom_30m": 0.25,
-      "vol_ratio": 0.0,
-      "vwap_dev": 1.23,
-      "rsi": 78.3,
-      "mom_5d": 5.99,
-      "dev_ma200_pct": 17.4,
-      "atr_pct": 2.82,
-      "chg_dia_pct": 9.63,
-      "señal": "LATERAL",
-      "ts": "2026-08-27T13:23"
+      "precio": 223.52,
+      "mom_15m": -0.772,
+      "mom_30m": -1.989,
+      "vol_ratio": 0.58,
+      "vwap_dev": -1.483,
+      "rsi": 31.7,
+      "señal": "debil_bajista",
+      "ts": "10:15"
     },
     "HPQ": {
-      "precio": 28.51,
-      "mom_15m": -0.989,
-      "mom_30m": 0.53,
-      "vol_ratio": 0.46,
-      "vwap_dev": -2.311,
-      "rsi": 30.2,
-      "señal": "debil_bajista",
-      "day_chg": 0,
-      "ts": "10:19"
+      "precio": 30.0,
+      "mom_15m": 0.503,
+      "mom_30m": 0.184,
+      "vol_ratio": 0.24,
+      "vwap_dev": 1.167,
+      "rsi": 61.4,
+      "señal": "debil_alcista",
+      "ts": "10:15"
     },
     "GAP": {
-      "precio": 21.28,
-      "mom_15m": 0.19,
-      "mom_30m": 0.45,
-      "vol_ratio": 0.49,
-      "vwap_dev": 1.01,
-      "rsi": 69.4,
-      "mom_5d": 8.3,
-      "dev_ma200_pct": -11.3,
-      "atr_pct": 3.2,
-      "chg_dia_pct": 0.61,
+      "precio": 23.91,
+      "mom_15m": 0.865,
+      "mom_30m": -0.957,
+      "vol_ratio": 0.56,
+      "vwap_dev": 4.835,
+      "rsi": 72.3,
       "señal": "debil_alcista",
-      "ts": "2026-08-27T13:23"
+      "ts": "10:15"
     },
     "RY": {
       "precio": 207.4,
@@ -13077,14 +13173,14 @@
       "ts": "10:19"
     },
     "RBRK": {
-      "precio": 106.25,
-      "mom_15m": -0.235,
-      "mom_30m": -0.552,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.289,
-      "rsi": 40.5,
+      "precio": 95.87,
+      "mom_15m": -1.793,
+      "mom_30m": -5.013,
+      "vol_ratio": 0.55,
+      "vwap_dev": -6.515,
+      "rsi": 8.1,
       "señal": "debil_bajista",
-      "ts": "14:17"
+      "ts": "10:15"
     },
     "NTAP": {
       "precio": 188.93,
@@ -13096,14 +13192,14 @@
       "fecha": "2026-08-27"
     },
     "PD": {
-      "precio": 12.65,
-      "mom_15m": 0.158,
-      "mom_30m": 0.238,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.028,
-      "rsi": 41.3,
+      "precio": 13.86,
+      "mom_15m": 0.69,
+      "mom_30m": 3.432,
+      "vol_ratio": 0.41,
+      "vwap_dev": 5.129,
+      "rsi": 76.7,
       "señal": "debil_alcista",
-      "ts": "14:17"
+      "ts": "10:15"
     },
     "IREN": {
       "precio": 41.33,
@@ -17108,9 +17204,19 @@
       "incidencia": "Scraper EarningsWhispers inoperativo. old.earningswhispers.com da ConnectTimeout; www.* responde 200 pero es SPA de render cliente (whisperbox/epsconsensus/tweeturl ausentes del HTML). El scan EW headless devuelve 0 candidatos desde al menos el 27-ago.",
       "impacto": "Sin numeros whisper no hay asimetria -> BLOQUE 1 del scoring no puntua. Afecta al cluster de earnings del 1-3 sep (DELL, PANW, MDB, AVGO, SNOW, LULU, ZS).",
       "accion_requerida": "Sustituir fuente de whisper antes del 01-sep o pasar el scoring a consenso+beat_rate+revisiones con umbral recalibrado."
+    },
+    {
+      "fecha": "2026-08-28",
+      "hora_et": "10:15",
+      "severidad": "alta",
+      "tipo": "fuente_datos",
+      "detalle": "EarningsWhispers sigue caido para scraping: old.earningswhispers.com da ConnectTimeout (DNS/host retirado); www.earningswhispers.com devuelve 200 pero render 100% cliente sin whisperbox ni JSON embebido ni endpoint /api de datos. 0 whisper numbers disponibles.",
+      "impacto": "Cluster PANW/MDB/DELL/CRDO/GTLB (1-sep AH) y AVGO/SNOW/HPE (2-sep AH) sin numeros whisper -> scoring EW degradado a yfinance eps_estimate.",
+      "accion": "Requiere fuente alternativa (Benzinga/Alpaca corporate-actions, Nasdaq earnings API o navegador headless con JS) antes del 1-sep.",
+      "nota_ejecucion": "El agente Cowork no coloca ordenes (buy/sell/stop/close) en ninguna cuenta. El sentinel opera en modo monitorizacion+analisis; las ejecuciones deben lanzarlas el bot o el usuario."
     }
   ],
-  "ultima_actualizacion": "2026-08-28T13:43:40Z",
+  "ultima_actualizacion": "2026-08-28T10:15 ET (sentinel intraday)",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T09:17:45.282956+00:00",
     "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
