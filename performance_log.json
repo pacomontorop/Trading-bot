@@ -3279,7 +3279,7 @@
       "score_ajustado": 6.5,
       "score_override": 6.5,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_score",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-27",
       "accion_recomendada": "entrar_apertura",
@@ -3308,7 +3308,9 @@
       "ts_creado": "2026-08-27T21:49:03.371816+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_descarte": "2026-08-28",
+      "motivo_descarte": "score 6.5 < 8.75; reaccion post-earnings -4.8% invalida tesis de continuacion alcista"
     },
     {
       "ticker": "AFRM",
@@ -3316,7 +3318,7 @@
       "score_ajustado": 7.1,
       "score_override": 7.1,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_score",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-27",
       "accion_recomendada": "entrar_apertura",
@@ -3345,7 +3347,9 @@
       "ts_creado": "2026-08-27T21:49:03.371830+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_descarte": "2026-08-28",
+      "motivo_descarte": "score 7.1 < 8.75; run-up +12.0% > 3%"
     },
     {
       "ticker": "RBRK",
@@ -3353,7 +3357,7 @@
       "score_ajustado": 6.8,
       "score_override": 6.8,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_score",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-27",
       "accion_recomendada": "entrar_apertura",
@@ -3382,7 +3386,9 @@
       "ts_creado": "2026-08-27T21:49:03.371846+00:00",
       "umbral_real": 99.0,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_descarte": "2026-08-28",
+      "motivo_descarte": "score 6.8 < 8.75; reaccion post-earnings -7.3% invalida tesis de continuacion alcista"
     },
     {
       "ticker": "DG",
@@ -3390,7 +3396,7 @@
       "score_ajustado": 7.7,
       "score_override": 7.7,
       "source": "log_validated",
-      "estado": "pendiente_ew",
+      "estado": "descartado_score",
       "tipo": "post_earnings_continuation",
       "earnings_fecha": "2026-08-27",
       "accion_recomendada": "entrar_apertura",
@@ -3419,7 +3425,9 @@
       "ts_creado": "2026-08-27T21:49:03.371857+00:00",
       "umbral_real": 7.5,
       "max_hold_dias": 3,
-      "play_horizon": "post_earnings_1_3d"
+      "play_horizon": "post_earnings_1_3d",
+      "fecha_descarte": "2026-08-28",
+      "motivo_descarte": "score 7.7 < 8.75; reaccion post-earnings -3.3% invalida tesis de continuacion alcista"
     },
     {
       "ticker": "AFRM",
@@ -8967,6 +8975,21 @@
       "evento_clave": "NVDA +8.74% tras guiar $108B y 70% de crecimiento 2028 (vs 45% esperado). El software del 26-ago EXTENDIO el gap toda la sesion — CRM +22.58%, CRWD +20.50%, OKTA +28.63% — invalidando el sesgo beat_and_fade en la sesion de contado. AH de esta noche vuelve al fade salvo ESTC +22.1%.",
       "leccion": "El fade post-earnings vive en after-hours, no en la sesion regular: si el gap sobrevive a la apertura, el drift intradia es explotable (+3.9% medio, 3 de 3 hoy). El veto por run-up nos costo $952 porque el stop usaba el minimo del dia de earnings y hacia R<1 por construccion.",
       "coste_oportunidad_dolares": 952.0
+    },
+    {
+      "fecha": "2026-08-28",
+      "tarea": "market-open-execution",
+      "hora_et": "09:43",
+      "ejecutados": 0,
+      "descartados": [
+        "ADSK",
+        "AFRM",
+        "RBRK",
+        "DG"
+      ],
+      "nota": "Sin ejecuciones. Los 4 candidatos pendiente_ew (post-earnings continuation del 27-ago) tienen score 6.5-7.7, por debajo del umbral 8.75. Ademas 3 de 4 abrieron con reaccion post-earnings negativa fuerte (RBRK -7.4%, ADSK -4.8%, DG -3.3%), invalidando la tesis de continuacion alcista; AFRM +12.0% supera el filtro de run-up >3%. Sentinel_signals con score 4.0-5.0, todos por debajo de umbral. Gap check: sin posiciones de equity abiertas. NOTA: la colocacion de ordenes no fue realizada por el asistente por politica; en esta sesion no habia candidatos ejecutables de todos modos.",
+      "equity_paper": 108231.58,
+      "equity_real": 4548.14
     }
   ],
   "alertas_criticas": [
@@ -17087,7 +17110,7 @@
       "accion_requerida": "Sustituir fuente de whisper antes del 01-sep o pasar el scoring a consenso+beat_rate+revisiones con umbral recalibrado."
     }
   ],
-  "ultima_actualizacion": "2026-08-28T09:17:45.282956+00:00",
+  "ultima_actualizacion": "2026-08-28T13:43:40Z",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T09:17:45.282956+00:00",
     "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
