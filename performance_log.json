@@ -3575,15 +3575,17 @@
     ],
     "notas_adicionales": "Real account: BTCUSD dust qty 0.000008299 (~$0.52) sin stop, importe negligible. No accion. Actualizado 2026-06-18.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-08-28T10:15",
+      "timestamp": "2026-08-28T11:18",
       "nivel": "normal",
       "shocks": [],
-      "bloquear_entradas": true,
-      "motivo_bloqueo": "0 senales validas (beat-and-fade activo en todo el cluster) + gate Warsh hasta 10:30 ET + ejecucion de ordenes no realizada por el agente (restriccion operativa: no ejecuta trades)",
-      "score_min_paper_efectivo": 7.0,
-      "score_min_real_efectivo": 9.0,
-      "vix": 14.55,
-      "spy_desde_apertura": -0.18
+      "bloquear_entradas": false,
+      "score_min_paper_efectivo": 8.75,
+      "score_min_real_efectivo": 99.0,
+      "vix": -1.7918692266062903,
+      "spy_chg": 0.38387006437226395,
+      "oil": -0.8021048470449316,
+      "yield_10y": 0.0,
+      "notas": "Jackson Hole: Warsh sin forward guidance, ~34% prob subida tipos sept 15-16. Ronda de aranceles a semis en estudio (riesgo AVGO/CRDO/MRVL). Hormuz reabriendo -> prima geopolitica del crudo bajando."
     },
     "macro_score": 0.0,
     "macro_nivel": "normal",
@@ -12867,6 +12869,15 @@
       "qqq_chg": -0.46,
       "macro_nivel": "normal",
       "nota": "Sin earnings hoy en universo. Cluster 27-ago en beat-and-fade (AFRM/ESTC/GAP gap alto -> fade fuerte). EW scraper caido. 0 senales validas. Sin ordenes: el agente no ejecuta trades."
+    },
+    {
+      "ts": "2026-08-28T11:18:06.213397+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 9,
+      "cowork_abiertas": 0,
+      "vix": -1.7918692266062903,
+      "nota": "run manual/scheduled; EW scraper HTML roto -> migrado a API JSON"
     }
   ],
   "momentum_15m": {
@@ -14049,6 +14060,132 @@
       "ts_detected": "2026-08-28T09:17:45.282956+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preapertura"
+    },
+    {
+      "ticker": "SAIC",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 13.78,
+      "earnings_fecha": "2026-08-31",
+      "earnings_timing": "pre-market",
+      "razon": "whisper asim=+13.78% beat_rate=1.0 px=$129.16 mom5d=+0.88% RSI=61.8 ATR=2.67%",
+      "stop_sugerido": 123.99,
+      "tp_sugerido": 139.52,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "GTLB",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 22.22,
+      "earnings_fecha": "2026-09-01",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+22.22% beat_rate=1.0 px=$45.11 mom5d=+8.26% RSI=63.7 ATR=4.31%",
+      "stop_sugerido": 42.19,
+      "tp_sugerido": 50.95,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "CRDO",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 12.15,
+      "earnings_fecha": "2026-09-01",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+12.15% beat_rate=1.0 px=$236.36 mom5d=+2.51% RSI=48.7 ATR=7.62%",
+      "stop_sugerido": 209.33,
+      "tp_sugerido": 290.42,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "PANW",
+      "score": 3.5,
+      "tipo": "earnings_ew",
+      "asimetria": 4.08,
+      "earnings_fecha": "2026-09-01",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+4.08% beat_rate=1.0 px=$371.39 mom5d=+3.78% RSI=45.2 ATR=4.82%",
+      "stop_sugerido": 344.55,
+      "tp_sugerido": 425.06,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "MDB",
+      "score": 3.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.73,
+      "earnings_fecha": "2026-09-01",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+3.73% beat_rate=1.0 px=$451.0 mom5d=+4.68% RSI=58.2 ATR=5.0%",
+      "stop_sugerido": 417.19,
+      "tp_sugerido": 518.62,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "DELL",
+      "score": 2.0,
+      "tipo": "earnings_ew",
+      "asimetria": 1.41,
+      "earnings_fecha": "2026-09-01",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+1.41% beat_rate=1.0 px=$472.83 mom5d=+6.96% RSI=54.0 ATR=5.11%",
+      "stop_sugerido": 436.58,
+      "tp_sugerido": 545.32,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "SNOW",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 13.33,
+      "earnings_fecha": "2026-09-02",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+13.33% beat_rate=1.0 px=$332.41 mom5d=-0.11% RSI=48.4 ATR=3.66%",
+      "stop_sugerido": 314.18,
+      "tp_sugerido": 368.87,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "AVGO",
+      "score": 3.5,
+      "tipo": "earnings_ew",
+      "asimetria": 4.04,
+      "earnings_fecha": "2026-09-02",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+4.04% beat_rate=1.0 px=$372.31 mom5d=+1.05% RSI=24.7 ATR=3.44%",
+      "stop_sugerido": 353.09,
+      "tp_sugerido": 410.77,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
+    },
+    {
+      "ticker": "HPE",
+      "score": 3.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.13,
+      "earnings_fecha": "2026-09-02",
+      "earnings_timing": "after-hours",
+      "razon": "whisper asim=+2.13% beat_rate=1.0 px=$53.54 mom5d=+0.17% RSI=47.0 ATR=4.92%",
+      "stop_sugerido": 49.59,
+      "tp_sugerido": 61.44,
+      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-scan-ewapi"
     }
   ],
   "skip_analysis": {
@@ -15807,6 +15944,16 @@
       "score_min_paper_vigente": 8.75,
       "nota": "Book vacío: todos los candidatos no expirados están en descartado/sentinel_preview/vigilar_cauteloso. Mejor score del book=7.0 (XOM, acción no-apertura). sentinel_signals BIDU/EL/TGT/ADI (4.0-5.0) sin campo 'accion'=comprar → no promovidos. Sin posiciones equity abiertas. Pendiente: dust BTCUSD real -45.5% (~$0.53) y BTCUSD/SOLUSD paper.",
       "ts_utc": "2026-08-18T13:43:58.223702+00:00"
+    },
+    {
+      "ts": "2026-08-28T11:18:06.213397+00:00",
+      "tarea": "sentinel",
+      "metodo": "earningswhispers /api/caldata + /api/getstocksdata",
+      "universo": 83,
+      "con_earnings_28ago_02sep": 22,
+      "candidatos_scoreados": 9,
+      "ejecuciones": 0,
+      "motivo_no_ejecucion": "sin earnings hoy AH ni manana (sabado); scores 2.0-5.0 < umbral 8.75"
     }
   ],
   "pre_market_scan_log": [
@@ -17214,9 +17361,17 @@
       "impacto": "Cluster PANW/MDB/DELL/CRDO/GTLB (1-sep AH) y AVGO/SNOW/HPE (2-sep AH) sin numeros whisper -> scoring EW degradado a yfinance eps_estimate.",
       "accion": "Requiere fuente alternativa (Benzinga/Alpaca corporate-actions, Nasdaq earnings API o navegador headless con JS) antes del 1-sep.",
       "nota_ejecucion": "El agente Cowork no coloca ordenes (buy/sell/stop/close) en ninguna cuenta. El sentinel opera en modo monitorizacion+analisis; las ejecuciones deben lanzarlas el bot o el usuario."
+    },
+    {
+      "fecha": "2026-08-28",
+      "tarea": "sentinel",
+      "severidad": "alta",
+      "incidencia": "old.earningswhispers.com inalcanzable (ConnectTimeout) y www.earningswhispers.com es JS-rendered -> get_ew_headless() devuelve None para TODOS los tickers.",
+      "fix": "Usar API JSON: GET https://www.earningswhispers.com/api/getstocksdata/{TICKER} -> {whisper, consensusEst, nextEPSDate, releaseTime(1=BMO,2=intraday,3=AMC), sectName}. Calendario: GET /api/caldata/{YYYYMMDD}. Resultados: /api/todaysresults. Detalle: /api/epsdetails/{TICKER}.",
+      "estado": "pendiente_aplicar_a_skills"
     }
   ],
-  "ultima_actualizacion": "2026-08-28T10:15 ET (sentinel intraday)",
+  "ultima_actualizacion": "2026-08-28T11:18:06.213397+00:00",
   "ew_calendario_proximo": {
     "actualizado": "2026-08-28T09:17:45.282956+00:00",
     "fuente": "yfinance earnings_dates (EarningsWhispers no disponible)",
