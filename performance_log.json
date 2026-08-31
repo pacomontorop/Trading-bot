@@ -2140,7 +2140,7 @@
     ],
     "nota_w26": "FOMC restriction cleared Jun 21 (Fed held rates Jun 17, hawkish but no hike). VIX ~17-19 declining. Macro: GEOPOLITICAL_RELIEF_RALLY. Sistema habilitado para entradas W26 (Jun 22-26). Key earnings: FDX Tue AH, MU Wed AH, PAYX Wed BMO, DRI Thu BMO.",
     "vix_updated": "2026-08-25T20:30:03.722089Z",
-    "ts_health_check": "2026-08-28T06:08",
+    "ts_health_check": "2026-08-31T06:10",
     "spy_day": -1.29,
     "narrativa_sentinel": "25-ago 14:15 ET: sin shock. Hormuz desminado por la Navy -> WTI -3.3% a $82, prima geopolitica descomprimiendose. Riesgo binario dominante = NVDA earnings manana AH (26-ago); NVDA llega en su peor racha de perdidas desde 2022 y el mercado esta posicionado a la espera. Fear&Greed neutral. Sin cierre ni apertura de posiciones este ciclo.",
     "spy_chg": 0.79,
@@ -16640,6 +16640,53 @@
       "yfinance": "ok",
       "earningswhispers": "FAIL_network",
       "telegram": "no_enviado_policy"
+    },
+    {
+      "fecha": "2026-08-31",
+      "ts": "2026-08-31T06:10Z",
+      "estado": "AMARILLO",
+      "vix": 14.43,
+      "vix_log": 14.4,
+      "vix_diff": 0.03,
+      "vix_accion": "sin cambio (<1.5pts)",
+      "restricciones_activas": 0,
+      "restricciones_eliminadas": 0,
+      "regimen": "HAWKISH_WARSH + NARROW_AI_LEADERSHIP",
+      "alpaca_paper": {
+        "ok": true,
+        "equity": 108231.57,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "posiciones": [
+          "BTCUSD",
+          "SOLUSD"
+        ]
+      },
+      "alpaca_real": {
+        "ok": true,
+        "equity": 4548.13,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "posiciones": [
+          "BTCUSD"
+        ]
+      },
+      "tareas": {
+        "pre-market-earnings-scan": "2026-08-26 (3d)",
+        "market-open-execution": "2026-08-28 (1d)",
+        "intraday-monitor": "2026-08-28 (1d)",
+        "post-market-review": "2026-08-27 (2d)",
+        "ew-daily-results": "2026-08-28 (1d)",
+        "sentinel": "2026-08-28 (1d)",
+        "pre-close-manager": "2026-08-24 (5d)",
+        "system-health-check": "2026-08-28 (1d)",
+        "weekly-performance-review": "2026-08-29 (sabado, OK)"
+      },
+      "alertas": [
+        "pre-close-manager sin actividad en 5 dias laborables (ultimo run: 2026-08-24) — 2o dia consecutivo con esta alerta"
+      ],
+      "fixes": [],
+      "nota": "Primer dia de la semana W36 (31-ago a 4-sep, 5 sesiones; Labor Day cae el 7-sep). VIX 14.43 estable. Sin restricciones activas: sistema habilitado para operar. Contents API funciono (no hizo falta blobs API). Deteccion de tareas: se excluyen los commits system-health-check del matching para evitar falsos positivos por menciones de otras tareas en el propio mensaje del health check (bug que ocultaba la inactividad de pre-close-manager)."
     }
   ],
   "historial_oportunidades_perdidas": [
