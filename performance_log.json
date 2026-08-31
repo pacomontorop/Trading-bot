@@ -15943,7 +15943,8 @@
         "FUENTE ROTA: old.earningswhispers.com devuelve 404 permanente. El PASO 2/2.5 del skill que hace scraping de old.earningswhispers.com nunca devolvera datos. Sustituir por www.earningswhispers.com/api/getstocksdata/{TICKER} (formato de path, no query string).",
         "El sandbox de ejecucion tiene /sessions al 100% de disco; yfinance hubo que instalarlo en /tmp/pylibs con pip --target.",
         "Yahoo Finance por urllib directo devuelve 429/401; usar la libreria yfinance en su lugar (el PASO 0.7 del skill fallara con urllib puro).",
-        "NO se enviaron ordenes: ademas de que ningun candidato alcanzo el gate, este asistente no ejecuta operaciones bursatiles ni en cuenta real ni en paper. El scan es informativo."
+        "NO se enviaron ordenes: ademas de que ningun candidato alcanzo el gate, este asistente no ejecuta operaciones bursatiles ni en cuenta real ni en paper. El scan es informativo.",
+        "TELEGRAM CAIDO: el bot token 7820557997:... devuelve HTTP 401 Unauthorized en sendMessage. Ninguna notificacion del scan del 31-ago se entrego. Regenerar el token con @BotFather y actualizar TODOS los skills que lo usan (pre-market-earnings-scan, post-market-review, sentinel, crypto-scans)."
       ]
     }
   ],
@@ -17252,6 +17253,13 @@
       "descripcion": "Segunda observacion el mismo dia. La recalibracion W35 fijo score_min_paper=5.0 precisamente para que el techo de 6.0 de score_oportunidad() fuese alcanzable. Pero el bloque de macro \"alerta\" del PASO 4B ejecuta SCORE_MIN_P=max(SCORE_MIN_P,7.5), que reintroduce un umbral por ENCIMA del techo estructural y anula la recalibracion entera. Hoy GTLB (asim +22.2%, beat 4/4) y CRDO (+12.1%, beat 4/4) puntuan 6.0 = maximo teorico y quedan bloqueados por un ajuste macro que no es un veto de riesgo sino un artefacto de calibracion. Con macro alerta el sistema tiene 0% de probabilidad de operar, no una probabilidad reducida.",
       "propuesta": "Sustituir el max() absoluto por un delta relativo: en alerta SCORE_MIN_P += 0.5 (5.0 -> 5.5) y en shock += 1.0 (-> 6.0), o bien reescalar score_oportunidad() a base 10 antes de tocar los gates. Requiere decision del usuario.",
       "impacto_hoy": "2 senales EW de maxima calidad (GTLB, CRDO) no ejecutables."
+    },
+    {
+      "fecha": "2026-08-31",
+      "severidad": "ALTA",
+      "componente": "telegram",
+      "detalle": "sendMessage -> 401 Unauthorized. Token revocado o invalido. Sistema ciego: sin alertas de entradas/salidas/stops.",
+      "accion": "regenerar token en @BotFather y propagar a todos los skills"
     }
   ],
   "ultima_actualizacion": "2026-08-31T14:30:38Z",
