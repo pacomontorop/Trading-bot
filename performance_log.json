@@ -2358,13 +2358,15 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-01T12:18",
+      "timestamp": "2026-09-01T13:20",
       "nivel": "alerta",
-      "shocks": [],
+      "shocks": [
+        "oil_spike"
+      ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "Patron oil_spike/geopolitico confirmado por WebSearch (Iran-Hormuz, WTI +3.1%, 10Y 4.77%) pero SIN confirmacion cuantitativa (VIX 15.25 plano, SPY +0.19%). Degradado shock->alerta para evitar falso positivo. Sin slots Cowork libres (2/2), macro plays no aplicables."
+      "nota": "oil_spike con confirmacion sectorial hoy (WTI +4.49%, XLE unico verde) pero sin umbral de shock tocado (SPY 30m +0.01%, VIX 15.84). Mantener ALERTA. Slots 2/2, sin macro plays aplicables."
     },
     "macro_score": -1.6,
     "macro_nivel": "alerta",
@@ -12390,6 +12392,28 @@
       "vix": 15.2,
       "macro_score": -1.6,
       "macro_nivel": "alerta"
+    },
+    {
+      "ts": "2026-09-01T17:20:00+00:00",
+      "modo": "intraday",
+      "hora_et": "13:20",
+      "alertas": 2,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "posiciones_paper": 4,
+      "posiciones_real": 1,
+      "posiciones_paper_equity": 2,
+      "posiciones_real_equity": 0,
+      "equity_paper": 108218.59,
+      "equity_real": 4548.12,
+      "vix": 15.84,
+      "spy_chg": -0.68,
+      "macro_nivel": "alerta",
+      "shock_tipo": "oil_spike",
+      "macro_score": -1.4,
+      "nota": "Sentinel intradia 13:20 ET martes 01-sep. PROTECCION OK: SNOW 16sh (stop_limit 303.74, held) y FIVE 22sh (stop_limit 232.34, held), ambas con stop activo; resto es polvo cripto <$1 (paper BTCUSD/SOLUSD, real BTCUSD) sin riesgo. Cuenta real sin posiciones equity. SLOTS 2/2 -> ninguna entrada nueva posible este ciclo por diseno. P&L abierto: SNOW -0.41% (-0.07R), FIVE +0.15% (+0.03R); riesgo vivo combinado $603 = 0.56% del equity, exposicion $10.562 = 9.8% (limites 1%/trade y 30% cowork respetados). Ningun umbral de parcial (1.5R) ni de BE tocado. RIESGO PRINCIPAL MANANA: SNOW y FIVE reportan AMBAS el 02-sep AH (16:00 ET). Benzinga documenta que SNOW ha movido de media 12.8% en los ultimos 7 earnings; el stop esta a -5.4% y ES stop_limit, que no protege contra gap. Igual para FIVE (-5.8%, stop_limit). Regla no_holdings_earnings_overnight y accion_recomendada ya registrada en CV = cerrar_antes_earnings_AH -> cerrar ambas antes de 15:45 ET del 02-sep, o convertir a stop de mercado si se decide mantener bajo la excepcion (score>=9.0, que NINGUNA cumple: SNOW 7.3/6.0, FIVE 6.0). MACRO: oil_spike sigue vivo y hoy SI tiene confirmacion de precio parcial - WTI $89.61 (+4.49%), XLE +0.89% unico sector verde junto a salud, frente a XLK -1.51%, XLY -1.58%, XLI -1.63%; SPY -0.68%, QQQ -1.19%, VIX 15.84 (+6.17%), 10Y 4.79%, DXY +0.28%, oro -0.76%. Causa confirmada por WebSearch: EEUU e Iran intercambian ataques, minado del Estrecho de Ormuz, Kharg Island; Brent >90. NINGUN umbral cuantitativo de SHOCK tocado (SPY 30min +0.01%, VIX 30min +0.38%, peor Mag7 TSLA -2.96% < 6%) -> se mantiene ALERTA, no shock. Sin macro plays. INCIDENCIA REPETIDA (3a vez): con macro=alerta el PASO 4B fuerza SCORE_MIN_P=max(...,7.5), por encima del techo estructural 6.0 de score_oportunidad(); el gate es matematicamente inalcanzable. Ademas el clasificador por keywords de WebSearch marca 'shock' con la noticia Iran/Ormuz, que lleva semanas en precio, y ayer forzo BLOQUEAR_NUEVAS_ENTRADAS con SPY -0.3%. Propuesta ya registrada: delta relativo (+0.5 alerta / +1.0 shock) en vez de max(), y exigir confirmacion cuantitativa antes de elevar a shock. NOTICIAS: 50 titulares sobre 13 tickers, 0 criticos negativos en las posiciones abiertas; flujo positivo en ambas (SNOW: Rosenblatt PT 345, Cantor PT 405; FIVE: Telsey Outperform PT 280). Unico rojo: CIEN, PT bajado por B.Riley, sin posicion. TELEGRAM SILENCIADO por politica: sin trade, sin cierre, sin shock, fuera de ventana EOD, sin posicion real sin stop. SIN ORDENES: el agente no ejecuta operaciones ni en paper ni en real; toda ejecucion queda para el usuario."
     }
   ],
   "momentum_15m": {
