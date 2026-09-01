@@ -2094,46 +2094,43 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-01T09:25",
-      "nivel": "shock",
-      "shocks": [
-        "oil_spike_geopolitico"
-      ],
-      "bloquear_entradas": true,
-      "score_min_paper_efectivo": 5.5,
+      "timestamp": "2026-09-01T10:22",
+      "nivel": "alerta",
+      "shocks": [],
+      "bloquear_entradas": false,
+      "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "Umbral paper elevado 5.0->5.5 (no a 7.5) porque el scorer del sentinel tiene techo 6.0; aplicar el floor absoluto de PASO 6B reintroduciría BIQ-006/BIQ-W33-02."
+      "nota": "Escalada Iran/Hormuz confirmada por WebSearch (WTI +2.9% a $88, Brent $92.5, ataque Larak Island, mina en supertanker). NO se clasifica SHOCK: VIX 15.85 plano (-0.4%/30m), SPY +0.06%/30m. Riesgo trasladado a rotacion sectorial (XLK -1.63%, XLE +0.58%, XLV +0.86%), no a volatilidad. Sin macro plays ejecutados."
     },
-    "macro_score": -1.8,
-    "macro_nivel": "shock",
+    "macro_score": -1.3,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas: ES -0.72%, NQ -1.39%, YM -0.63%",
-      "VIX 15.9 (+6.5%) — absoluto aún bajo, sin pánico",
-      "Yield 10Y 4.78% — presión sobre valuaciones growth",
-      "Oro -0.93% — NO hay flight-to-safety clásico",
-      "Brent $92.6 (+2.4%) / WTI $88.3 (+2.9%) — riesgo Ormuz",
-      "Energía lidera (XLE +2.0%); industriales y utilities los más débiles",
-      "Internacional levemente negativo (avg -0.52%)"
+      "Futuros bajistas (-1.05%)",
+      "WTI +2.90% ($88) - escalada Iran/Hormuz",
+      "Internacional mixto-negativo (-0.64%)",
+      "Tech debil (XLK -1.63%) - cautela candidatos tech"
     ],
     "futuros": {
-      "ES": -0.72,
-      "NQ": -1.39,
-      "YM": -0.63,
-      "RTY": -0.71
+      "ES": -0.6754123912196389,
+      "NQ": -1.4197133466607936,
+      "YM": -0.44327573253193087,
+      "RTY": -0.8787643366709754
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-01T09:25",
+    "ts_actualizado": "2026-09-01T10:22",
     "sectores_hoy": {
-      "lider": "energy",
-      "cambio_lider": 2.04,
-      "tech_chg": 0.44
+      "XLK": -1.6300232097226877,
+      "XLE": 0.5752105508945394,
+      "XLV": 0.8561081103231788,
+      "XLY": -1.368036402270849,
+      "XLI": -0.982128232026292,
+      "ts": "10:22"
     },
-    "macro_bonus_ew": -0.54,
+    "macro_bonus_ew": -0.39,
     "bonos": {
-      "tlt_chg": -0.43,
-      "yield_10y": 4.78,
-      "yield_30y": 5.27
+      "tlt_chg": -0.4423144433079658,
+      "yield_10y": 0.29425002322551785
     },
     "eventos_recientes": [
       {
@@ -2483,11 +2480,9 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 88.26,
-      "wti_chg": 2.92,
-      "brent": 92.64,
-      "brent_chg": 2.38,
-      "oro_chg": -0.93
+      "wti": 2.903448929273753,
+      "brent": 2.1880908428293258,
+      "oro": -0.5303423412265026
     },
     "internacional": {
       "Nikkei": 0.62,
@@ -11967,6 +11962,17 @@
       "cv_actualizados": 20,
       "ew_scan_status": "OK - EW JSON API (caldata+getstocksdata): 46 tickers 01/02-sep, 24 con whisper+consensus. old.* sigue caído.",
       "nota": "Mercado CERRADO al inicio (09:11 ET, next_open 09:30). Modo pre-apertura = SOLO scan, sin ejecución. Shock oil_spike confirmado por WebSearch (US-Iran / Ormuz) -> BLOQUEAR_NUEVAS_ENTRADAS=True. 0 posiciones equity en ambas cuentas; sólo polvo crypto (BTCUSD $0.38 paper / $0.65 real, SOLUSD $0.00) sin riesgo. Macro playbook oil_spike NO ejecutado: requiere confirmación del usuario para abrir posiciones."
+    },
+    {
+      "ts": "2026-09-01T10:22:04.371198+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.9,
+      "macro_nivel": "alerta",
+      "macro_score": -1.3,
+      "nota": "EW scraper caido (incidencia EW_SCRAPER_DOWN). Sin ejecuciones: 0 senales ALCISTA en 14 candidatos, todos bajo VWAP. Umbral efectivo paper 7.5."
     }
   ],
   "momentum_15m": {
@@ -12241,12 +12247,15 @@
       "ts": "13:16"
     },
     "PANW": {
-      "precio": 373.78,
-      "mom_15m": -1.27,
-      "vwap_dev": -0.62,
-      "rsi": 57.1,
+      "precio": 363.39,
+      "mom_15m": -0.356,
+      "mom_30m": 0.078,
+      "vol_ratio": 0.12,
+      "vwap_dev": -2.803,
+      "rsi": 14.7,
+      "mom_5d": 6.91,
       "señal": "debil_bajista",
-      "ts": "10:25"
+      "ts": "10:22"
     },
     "ANET": {
       "precio": 202.82,
@@ -12299,22 +12308,26 @@
       "ts": "2026-08-27T13:23"
     },
     "AVGO": {
-      "precio": 366.08,
-      "mom_15m": -0.146,
-      "mom_30m": 0.027,
-      "vol_ratio": 0.17,
-      "vwap_dev": -0.388,
-      "rsi": 43.0,
-      "senal": "LATERAL",
-      "ts": "13:16"
+      "precio": 365.08,
+      "mom_15m": -0.18,
+      "mom_30m": 0.41,
+      "vol_ratio": 0.09,
+      "vwap_dev": -0.391,
+      "rsi": 34.8,
+      "mom_5d": 2.34,
+      "señal": "debil_bajista",
+      "ts": "10:22"
     },
     "CRDO": {
-      "precio": 230.66,
-      "mom_15m": -0.5,
-      "vwap_dev": -1.13,
-      "rsi": 44.6,
+      "precio": 214.2,
+      "mom_15m": -0.939,
+      "mom_30m": -0.195,
+      "vol_ratio": 0.06,
+      "vwap_dev": -2.342,
+      "rsi": 27.7,
+      "mom_5d": -5.43,
       "señal": "debil_bajista",
-      "ts": "10:25"
+      "ts": "10:22"
     },
     "DOCU": {
       "precio": 64.65,
@@ -12335,14 +12348,15 @@
       "ts": "10:25"
     },
     "HPE": {
-      "precio": 52.46,
-      "mom_15m": -0.304,
-      "mom_30m": -0.2,
-      "vol_ratio": 0.57,
-      "vwap_dev": -0.52,
-      "rsi": 39.6,
-      "senal": "debil_bajista",
-      "ts": "13:16"
+      "precio": 50.83,
+      "mom_15m": -0.372,
+      "mom_30m": -0.177,
+      "vol_ratio": 0.08,
+      "vwap_dev": -2.219,
+      "rsi": 27.1,
+      "mom_5d": -4.9,
+      "señal": "debil_bajista",
+      "ts": "10:22"
     },
     "MDB": {
       "precio": 444.01,
@@ -12361,14 +12375,15 @@
       "ts": "10:25"
     },
     "SNOW": {
-      "precio": 328.81,
-      "mom_15m": 0.015,
-      "mom_30m": 0.189,
+      "precio": 322.88,
+      "mom_15m": -0.219,
+      "mom_30m": 0.423,
       "vol_ratio": 0.07,
-      "vwap_dev": 0.129,
-      "rsi": 56.7,
-      "senal": "LATERAL",
-      "ts": "13:16"
+      "vwap_dev": -1.791,
+      "rsi": 18.9,
+      "mom_5d": 1.85,
+      "señal": "debil_bajista",
+      "ts": "10:22"
     },
     "ZS": {
       "precio": 185.17,
@@ -12379,6 +12394,105 @@
       "rsi": 49.5,
       "senal": "LATERAL",
       "ts": "13:16"
+    },
+    "FIVE": {
+      "precio": 244.69,
+      "mom_15m": 0.489,
+      "mom_30m": 0.945,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.221,
+      "rsi": 36.7,
+      "mom_5d": -5.67,
+      "señal": "debil_alcista",
+      "ts": "10:22"
+    },
+    "PVH": {
+      "precio": 73.69,
+      "mom_15m": 0.336,
+      "mom_30m": 0.745,
+      "vol_ratio": 0.41,
+      "vwap_dev": -0.304,
+      "rsi": 46.1,
+      "mom_5d": -1.11,
+      "señal": "debil_alcista",
+      "ts": "10:22"
+    },
+    "CIEN": {
+      "precio": 361.24,
+      "mom_15m": -0.679,
+      "mom_30m": -1.122,
+      "vol_ratio": 0.18,
+      "vwap_dev": -3.616,
+      "rsi": 20.4,
+      "mom_5d": -6.82,
+      "señal": "debil_bajista",
+      "ts": "10:22"
+    },
+    "AMBA": {
+      "precio": 67.65,
+      "mom_15m": 0.252,
+      "mom_30m": 0.378,
+      "vol_ratio": 0.36,
+      "vwap_dev": -1.437,
+      "rsi": 28.3,
+      "mom_5d": -4.42,
+      "señal": "debil_alcista",
+      "ts": "10:22"
+    },
+    "GIII": {
+      "precio": 32.4,
+      "mom_15m": 0.403,
+      "mom_30m": 0.95,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.384,
+      "rsi": 41.3,
+      "mom_5d": -2.67,
+      "señal": "debil_alcista",
+      "ts": "10:22"
+    },
+    "WOOF": {
+      "precio": 2.65,
+      "mom_15m": -0.188,
+      "mom_30m": 0.0,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.017,
+      "rsi": 51.8,
+      "mom_5d": -3.8,
+      "señal": "debil_bajista",
+      "ts": "10:22"
+    },
+    "AGX": {
+      "precio": 405.86,
+      "mom_15m": -0.248,
+      "mom_30m": -1.015,
+      "vol_ratio": 0.03,
+      "vwap_dev": -3.049,
+      "rsi": 20.1,
+      "mom_5d": -9.9,
+      "señal": "debil_bajista",
+      "ts": "10:22"
+    },
+    "PHR": {
+      "precio": 12.11,
+      "mom_15m": 0.498,
+      "mom_30m": 0.415,
+      "vol_ratio": 0.34,
+      "vwap_dev": -0.354,
+      "rsi": 49.7,
+      "mom_5d": 5.12,
+      "señal": "debil_alcista",
+      "ts": "10:22"
+    },
+    "NTSK": {
+      "precio": 14.59,
+      "mom_15m": -0.984,
+      "mom_30m": -0.224,
+      "vol_ratio": 0.06,
+      "vwap_dev": -3.867,
+      "rsi": 18.3,
+      "mom_5d": 8.04,
+      "señal": "debil_bajista",
+      "ts": "10:22"
     }
   },
   "sentinel_signals": [
@@ -17503,9 +17617,20 @@
         "PHR",
         "NTSK"
       ]
+    },
+    {
+      "fecha": "2026-09-01",
+      "ts": "2026-09-01T10:22",
+      "codigo": "EW_SCRAPER_DOWN_2026-09-01",
+      "severidad": "alta",
+      "detectado_por": "sentinel",
+      "descripcion": "EarningsWhispers ya no es scrapeable con requests+BeautifulSoup. www/old devuelven HTTP 200 pero el HTML no contiene #whisperbox, #epsconsensus, #earningsdate ni var tweeturl. La pagina es Blazor (atributos b-5bvfnf2466) y renderiza los datos por cliente/WebSocket. /api/card/{TICKER} devuelve un PNG (imagen), no JSON. old.earningswhispers.com/ (homepage) hace timeout. In-app browser: navegacion al dominio denegada.",
+      "impacto": "get_ew_headless() devuelve None para el 100% de tickers. Afecta a sentinel PASO 3, pre-market scan, post-market y ew-daily-results. 0 candidatos EW nuevos validables.",
+      "workaround_sugerido": "(a) parsear /api/card/{T}.png con OCR; (b) fuente alternativa de estimaciones (yfinance earnings_dates / Benzinga / MarketBeat) y recalibrar score_oportunidad sin whisper; (c) sesion autenticada con cookieConsent.",
+      "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-01T13:15:46.454641+00:00",
+  "ultima_actualizacion": "2026-09-01T10:22 ET (sentinel)",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
