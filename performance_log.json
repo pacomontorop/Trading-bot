@@ -7210,6 +7210,97 @@
         "/sessions al 100% de uso de disco: mkdir falla fuera de mnt/outputs"
       ],
       "acciones_de_escritura_omitidas": "Ninguna orden requerida: sin posiciones accionables y sin candidatos sobre umbral."
+    },
+    {
+      "timestamp": "2026-09-01T16:33:26.601095+00:00",
+      "fuente": "intraday-monitor 12:30 ET (Cowork)",
+      "posiciones_abiertas": 2,
+      "posiciones_detalle": [
+        {
+          "symbol": "FIVE",
+          "shares": 22,
+          "entry": 246.52,
+          "current": 247.575,
+          "pnl_pct": 0.43,
+          "stop": 232.34,
+          "stop_limit": 230.02,
+          "tp": 273.25,
+          "stop_source": "stop_bracket_leg(held)",
+          "R": 0.07
+        },
+        {
+          "symbol": "SNOW",
+          "shares": 16,
+          "entry": 321.95,
+          "current": 319.4,
+          "pnl_pct": -0.79,
+          "stop": 303.74,
+          "stop_limit": 300.7,
+          "tp": 357.85,
+          "stop_source": "stop_bracket_leg(held)",
+          "R": -0.14
+        }
+      ],
+      "posiciones_dust_crypto": [
+        {
+          "symbol": "BTCUSD",
+          "qty": 4.874e-06,
+          "valor_usd": 0.38
+        },
+        {
+          "symbol": "SOLUSD",
+          "qty": 2.5e-05,
+          "valor_usd": 0.0025
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "motivo_sin_cambios_stops": "FIVE R=0.07 y SNOW R=-0.14: ninguna alcanza BE-lock (0.5R) ni parcial (1.5R). Trailing 4xATR quedaria por debajo del stop del bracket vigente -> no se mueve nada.",
+      "parciales_ejecutados": [],
+      "cierres_urgentes_earnings_hoy": [],
+      "ordenes_ejecutadas_hoy": [
+        {
+          "symbol": "SNOW",
+          "side": "buy",
+          "qty": 16,
+          "fill": 321.95,
+          "cid": "COWORK-SENT-202609011518-SNOW"
+        },
+        {
+          "symbol": "FIVE",
+          "side": "buy",
+          "qty": 22,
+          "fill": 246.52,
+          "cid": "COWORK-SENT-202609011518-FIVE"
+        }
+      ],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "mercado": {
+        "SPY_last": 761.97,
+        "SPY_intraday_pct": -0.0,
+        "SPY_vs_prev_close_pct": -0.64,
+        "VIX": 15.44,
+        "modo_dip": false
+      },
+      "nuevas_entradas": {
+        "ejecutadas": 0,
+        "motivo_bloqueo": "max_cowork_positions=2 alcanzado (FIVE+SNOW). PASOS 2.5/2.6/3/4/5 omitidos por limite."
+      },
+      "riesgo_clave": "FIVE y SNOW reportan earnings AH el 2026-09-02. SNOW ha movido de media 12.8% en los ultimos 7 earnings. Ambas DEBEN cerrarse antes de 14:30 ET del 02-sep (pre-close-manager). Un stop_limit no protege ante gap overnight.",
+      "news_flags": {
+        "SNOW": [
+          "Rosenblatt Buy PT $345 (01-sep)",
+          "Q2 preview: mov. medio 12.8% en 7 earnings"
+        ],
+        "FIVE": [
+          "Telsey Outperform PT $280 (28-ago)",
+          "Loop Capital downgrade a Hold PT $250 (25-ago)"
+        ]
+      },
+      "acciones_no_ejecutadas_por_politica": "Ninguna accion de orden era necesaria en esta sesion segun las reglas del skill; no se enviaron ni modificaron ordenes.",
+      "log_escrito_en": "GitHub (filesystem de sesion sin espacio: /sessions 100% lleno)"
     }
   ],
   "pre_close_log": [
@@ -18022,9 +18113,15 @@
       "impacto": "Scan EW headless inoperativo. Sin deteccion de nuevas oportunidades por esta via.",
       "accion_requerida": "Reescribir get_ew_headless contra la nueva estructura (probable endpoint JSON) o migrar a fuente alternativa.",
       "detectado_por": "sentinel"
+    },
+    {
+      "fecha": "2026-09-01",
+      "tarea": "intraday-monitor",
+      "incidencia": "Sandbox sin espacio en disco (/sessions 100%). No se pudo escribir performance_log local ni instalar deps en HOME; se escribio directamente en GitHub y se uso Alpaca Data API en lugar de yfinance para precios/ATR.",
+      "severidad": "media"
     }
   ],
-  "ultima_actualizacion": "2026-09-01T12:18:16.482359+00:00",
+  "ultima_actualizacion": "2026-09-01T16:33:26.601115+00:00",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
