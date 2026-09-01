@@ -17494,11 +17494,15 @@
     {
       "fecha": "2026-09-01",
       "id": "INC-2026-09-01-CV-GAP",
-      "severidad": "alta",
+      "severidad": "baja",
       "tarea": "pre-market scan / weekend scan",
-      "descripcion": "candidatos_validados NO contenía ninguno de los 5 reportes AMC de hoy 01-sep (DELL, PANW, MDB, GTLB, CRDO) ni PHR/NTSK del 02-sep. El universo hardcoded del scan (UNIVERSO_SENTINEL/UNIVERSO_WEEKEND) no incluye CRDO, MDB, GTLB, PHR.",
-      "accion": "Sustituir el universo hardcoded por el calendario EW completo (api/caldata/YYYYMMDD) que ya devuelve todos los reportes del día.",
-      "estado": "abierta"
+      "descripcion": "CV ya contenía DELL/PANW/MDB/GTLB/CRDO del 01-sep (corrección: la alerta inicial fue un falso positivo por lectura parcial). Huecos reales: PHR (score 6.0, asim +30%, 02-sep AMC) y NTSK (asim +28.6%, 02-sep AMC) NO estaban en CV. Ninguno de los dos está en UNIVERSO_SENTINEL ni UNIVERSO_WEEKEND (universos hardcoded de ~60 mega/large caps).",
+      "accion": "Sustituir el universo hardcoded por el calendario EW completo (api/caldata/YYYYMMDD), que devuelve los 46 reportes de 01-02 sep incluidos small/mid caps como PHR, NTSK, AGX, WOOF. Coste: ~46 llamadas a getstocksdata, ~15s.",
+      "estado": "abierta",
+      "tickers_perdidos": [
+        "PHR",
+        "NTSK"
+      ]
     }
   ],
   "ultima_actualizacion": "2026-09-01T13:15:46.454641+00:00",
