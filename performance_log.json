@@ -2358,17 +2358,19 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-01T13:20",
+      "timestamp": "2026-09-01T14:14",
       "nivel": "alerta",
       "shocks": [
-        "oil_spike"
+        "oil_spike",
+        "bond_selloff",
+        "geopolitico_iran"
       ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "oil_spike con confirmacion sectorial hoy (WTI +4.49%, XLE unico verde) pero sin umbral de shock tocado (SPY 30m +0.01%, VIX 15.84). Mantener ALERTA. Slots 2/2, sin macro plays aplicables."
+      "nota": "US-Iran: dos petroleros alcanzados; WTI +4.8% a $89.85, 30Y USA maximos desde 2006, JGB 10Y toca 3%. Riesgo de subida de tipos Fed presiona Nasdaq (-1.3%) y tech (XLK -1.62%). Energia unico sector fuerte (+0.99%). Umbrales mecanicos de SHOCK no tocados: SPY 30m +0.00%, VIX 16.03 (+0.19% 30m). Mantener ALERTA."
     },
-    "macro_score": -1.6,
+    "macro_score": -1.7,
     "macro_nivel": "alerta",
     "contexto_resumen": [
       "Futuros bajistas (-0.59%)",
@@ -2383,7 +2385,7 @@
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-01T12:18",
+    "ts_actualizado": "2026-09-01T14:14",
     "sectores_hoy": {
       "lider": "healthcare",
       "all": {
@@ -2400,7 +2402,7 @@
       "tech_chg": -1.1569434771908513,
       "ts": "12:18"
     },
-    "macro_bonus_ew": -0.48,
+    "macro_bonus_ew": -0.51,
     "bonos": {
       "tlt_chg": -0.5513744791195242,
       "yield_10y": 4.769999980926514
@@ -12414,6 +12416,55 @@
       "shock_tipo": "oil_spike",
       "macro_score": -1.4,
       "nota": "Sentinel intradia 13:20 ET martes 01-sep. PROTECCION OK: SNOW 16sh (stop_limit 303.74, held) y FIVE 22sh (stop_limit 232.34, held), ambas con stop activo; resto es polvo cripto <$1 (paper BTCUSD/SOLUSD, real BTCUSD) sin riesgo. Cuenta real sin posiciones equity. SLOTS 2/2 -> ninguna entrada nueva posible este ciclo por diseno. P&L abierto: SNOW -0.41% (-0.07R), FIVE +0.15% (+0.03R); riesgo vivo combinado $603 = 0.56% del equity, exposicion $10.562 = 9.8% (limites 1%/trade y 30% cowork respetados). Ningun umbral de parcial (1.5R) ni de BE tocado. RIESGO PRINCIPAL MANANA: SNOW y FIVE reportan AMBAS el 02-sep AH (16:00 ET). Benzinga documenta que SNOW ha movido de media 12.8% en los ultimos 7 earnings; el stop esta a -5.4% y ES stop_limit, que no protege contra gap. Igual para FIVE (-5.8%, stop_limit). Regla no_holdings_earnings_overnight y accion_recomendada ya registrada en CV = cerrar_antes_earnings_AH -> cerrar ambas antes de 15:45 ET del 02-sep, o convertir a stop de mercado si se decide mantener bajo la excepcion (score>=9.0, que NINGUNA cumple: SNOW 7.3/6.0, FIVE 6.0). MACRO: oil_spike sigue vivo y hoy SI tiene confirmacion de precio parcial - WTI $89.61 (+4.49%), XLE +0.89% unico sector verde junto a salud, frente a XLK -1.51%, XLY -1.58%, XLI -1.63%; SPY -0.68%, QQQ -1.19%, VIX 15.84 (+6.17%), 10Y 4.79%, DXY +0.28%, oro -0.76%. Causa confirmada por WebSearch: EEUU e Iran intercambian ataques, minado del Estrecho de Ormuz, Kharg Island; Brent >90. NINGUN umbral cuantitativo de SHOCK tocado (SPY 30min +0.01%, VIX 30min +0.38%, peor Mag7 TSLA -2.96% < 6%) -> se mantiene ALERTA, no shock. Sin macro plays. INCIDENCIA REPETIDA (3a vez): con macro=alerta el PASO 4B fuerza SCORE_MIN_P=max(...,7.5), por encima del techo estructural 6.0 de score_oportunidad(); el gate es matematicamente inalcanzable. Ademas el clasificador por keywords de WebSearch marca 'shock' con la noticia Iran/Ormuz, que lleva semanas en precio, y ayer forzo BLOQUEAR_NUEVAS_ENTRADAS con SPY -0.3%. Propuesta ya registrada: delta relativo (+0.5 alerta / +1.0 shock) en vez de max(), y exigir confirmacion cuantitativa antes de elevar a shock. NOTICIAS: 50 titulares sobre 13 tickers, 0 criticos negativos en las posiciones abiertas; flujo positivo en ambas (SNOW: Rosenblatt PT 345, Cantor PT 405; FIVE: Telsey Outperform PT 280). Unico rojo: CIEN, PT bajado por B.Riley, sin posicion. TELEGRAM SILENCIADO por politica: sin trade, sin cierre, sin shock, fuera de ventana EOD, sin posicion real sin stop. SIN ORDENES: el agente no ejecuta operaciones ni en paper ni en real; toda ejecucion queda para el usuario."
+    },
+    {
+      "ts": "2026-09-01T18:14:27.249303+00:00",
+      "modo": "intraday_reporte",
+      "hora_et": "14:14",
+      "ejecuciones": 0,
+      "acciones": 0,
+      "alertas": 1,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "posiciones_paper": 4,
+      "posiciones_real": 1,
+      "equity_paper": 108219.97,
+      "equity_real": 4548.12,
+      "vix": 16.03,
+      "vix_chg_dia_pct": 11.09,
+      "spy_chg": -0.71,
+      "qqq_chg": -1.3,
+      "macro_nivel": "alerta",
+      "shock_tipo": "oil_spike_geopolitico",
+      "macro_score": -1.7,
+      "wti": 89.85,
+      "wti_chg": 4.77,
+      "yield_10y": 4.792,
+      "oro_chg": -2.03,
+      "sectores": {
+        "energy": 0.99,
+        "health": 0.62,
+        "util": 0.24,
+        "reit": -0.08,
+        "fin": -0.69,
+        "mat": -0.74,
+        "indus": -1.38,
+        "cons_disc": -1.58,
+        "tech": -1.62
+      },
+      "spy_30m": 0.0,
+      "vix_30m": 0.19,
+      "stops_verificados": {
+        "FIVE": "bracket stop_limit 232.34/230.02 [held] + TP 273.25 [new]",
+        "SNOW": "bracket stop_limit 303.74/300.70 [held] + TP 357.85 [new]"
+      },
+      "telegram_enviado": false,
+      "nota": "Sentinel ejecutado en modo REPORTE (sin ordenes). Politica del asistente: no ejecuta trades/ordenes. Este ciclo la logica del propio skill no generaba escrituras de todas formas: slots Cowork 2/2 llenos, macro=alerta (no shock), sin earnings AH hoy en cartera, y ambos stops bracket presentes en estado 'held'.",
+      "nota_bug": "Verificacion de stops debe consultar /orders?status=all (o incluir legs 'held'); una consulta status=open muestra solo la pata TP y produce falso 'SIN STOP'.",
+      "earnings_confirmado": {
+        "SNOW": "2026-09-02 AMC (confirmado por press release)",
+        "FIVE": "2026-09-02 AMC (segun log, sin reconfirmar)"
+      }
     }
   ],
   "momentum_15m": {
