@@ -2358,58 +2358,50 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-01T11:19",
+      "timestamp": "2026-09-01T12:18",
       "nivel": "alerta",
-      "shocks": [
-        "oil_spike_iran_hormuz"
-      ],
+      "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 5.5,
+      "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "Oil spike por tanqueros atacados en Hormuz (Brent +3.4% -> $91.3, WTI +2.6% -> $88.0). NO escalado a SHOCK: VIX 15.4 (+0.7% en 30min), SPY -0.15% en 30min, ningun Mag7 movio >6%. Guerra Iran de 6 meses ya descontada (ver macro_context W36). Clasificado ALERTA -> vigilancia elevada sin macro-plays forzados."
+      "nota": "Patron oil_spike/geopolitico confirmado por WebSearch (Iran-Hormuz, WTI +3.1%, 10Y 4.77%) pero SIN confirmacion cuantitativa (VIX 15.25 plano, SPY +0.19%). Degradado shock->alerta para evitar falso positivo. Sin slots Cowork libres (2/2), macro plays no aplicables."
     },
-    "macro_score": -1.9,
+    "macro_score": -1.6,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas (ES -0.49%, NQ -0.98%) -> -1.0",
-      "Yield 10Y 4.77% >4.5 presiona growth -> -0.3",
-      "Brent >$90 y subiendo (+2.1%) presion inflacionaria -> -0.3",
-      "Tech debil XLK -1.49% -> -0.3",
-      "Rotacion defensiva: XLU +0.82% XLP +0.86% XLV +0.58% XLE +0.68% vs XLK -1.49% XLY -1.31%",
-      "GLD -0.56% pese al shock geopolitico -> confirma que Iran ya esta descontado (regimen Warsh hawkish)"
+      "Futuros bajistas (-0.59%)",
+      "TLT bajando - yields subiendo",
+      "Yield 10Y alto (4.77%) presion growth",
+      "Petroleo $88 +3.1% - riesgo geopolitico",
+      "Tech debil (-1.2%) - cautela candidatos tech"
     ],
     "futuros": {
-      "ES": -0.6754123912196389,
-      "NQ": -1.4197133466607936,
-      "YM": -0.44327573253193087,
-      "RTY": -0.8787643366709754
+      "ES": -0.38966099493440703,
+      "NQ": -0.7920238538948937
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-01T11:19",
+    "ts_actualizado": "2026-09-01T12:18",
     "sectores_hoy": {
-      "lider": "consumer_staples_XLP",
-      "cambio_lider": 0.86,
-      "tech_chg": -1.49,
-      "ts": "11:19",
+      "lider": "healthcare",
       "all": {
-        "XLK": -1.49,
-        "XLF": -0.27,
-        "XLE": 0.68,
-        "XLV": 0.58,
-        "XLI": -0.85,
-        "XLY": -1.31,
-        "XLU": 0.82,
-        "XLB": -0.81,
-        "XLRE": 0.16,
-        "XLC": -0.16,
-        "XLP": 0.86
-      }
+        "tech": -1.1569434771908513,
+        "financials": -0.33789585499523084,
+        "energy": 0.35177998333604704,
+        "healthcare": 0.5863727215716463,
+        "industrials": -1.1077498928321245,
+        "consumer_disc": -1.3165761050941769,
+        "utilities": 0.42623799935340745,
+        "materials": -0.8825207149505946,
+        "realestate": 0.011337719442381381
+      },
+      "tech_chg": -1.1569434771908513,
+      "ts": "12:18"
     },
-    "macro_bonus_ew": -0.57,
+    "macro_bonus_ew": -0.48,
     "bonos": {
-      "tlt_chg": -0.4423144433079658,
-      "yield_10y": 0.29425002322551785
+      "tlt_chg": -0.5513744791195242,
+      "yield_10y": 4.769999980926514
     },
     "eventos_recientes": [
       {
@@ -2752,8 +2744,8 @@
       "actualizado": false
     },
     "oil": {
-      "price": 86.42,
-      "chg": 0.69
+      "wti": 88.38999938964844,
+      "chg_pct": 3.066694482166869
     },
     "gold": 4440.4,
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
@@ -3035,7 +3027,8 @@
       "VIXY": -3.05
     },
     "nota_dias_riesgo": "NFP el viernes 4-sep 08:30 ET: NO abrir posiciones nuevas antes de las 10:30 ET ese dia. Con Warsh hawkish, un dato de empleo fuerte = mas presion en tipos.",
-    "shock_descripcion": "US-Iran: ataques a 2 petroleros (saudi + surcoreano) en Estrecho de Ormuz la noche del 31-ago; EEUU atacó activos iraníes tras detectar preparativos de minado. Brent >$92 (+2.4%), WTI $88.3 (+2.9%). XLE +2.0% lidera sectores."
+    "shock_descripcion": "US-Iran: ataques a 2 petroleros (saudi + surcoreano) en Estrecho de Ormuz la noche del 31-ago; EEUU atacó activos iraníes tras detectar preparativos de minado. Brent >$92 (+2.4%), WTI $88.3 (+2.9%). XLE +2.0% lidera sectores.",
+    "shock_texto": "Reanudacion hostilidades EEUU-Iran: 2 petroleros (saudi + surcoreano) alcanzados por proyectiles la noche del 31-ago. EEUU golpea isla en Hormuz; Iran responde sobre EAU y Jordania. WTI >$86 (+3.1% hoy, $88.4). Yield 10Y 4.77% = maximo en 18 meses. Chipmakers arrastrados por Kospi -6% (SK Hynix/Samsung)."
   },
   "operaciones_crypto": [
     {
@@ -12296,6 +12289,16 @@
         "FIVE 22sh @246.52 stop232.34 tp273.25",
         "SNOW 16sh @321.95 stop303.74 tp357.85"
       ]
+    },
+    {
+      "ts": "2026-09-01T12:18:16.482359+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 15.2,
+      "macro_score": -1.6,
+      "macro_nivel": "alerta"
     }
   ],
   "momentum_15m": {
@@ -12570,16 +12573,14 @@
       "ts": "13:16"
     },
     "PANW": {
-      "precio": 360.34,
-      "mom_15m": -0.11,
-      "mom_30m": -0.79,
-      "vol_ratio": 0.14,
-      "vwap_dev": -0.84,
-      "rsi": 25.4,
-      "mom_5d": 6.01,
-      "chg_hoy": -5.7,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "precio": 360.74,
+      "mom_15m": -0.322,
+      "mom_30m": -0.133,
+      "vol_ratio": 0.66,
+      "vwap_dev": -0.103,
+      "rsi": 45.6,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "ANET": {
       "precio": 202.82,
@@ -12632,28 +12633,24 @@
       "ts": "2026-08-27T13:23"
     },
     "AVGO": {
-      "precio": 367.45,
-      "mom_15m": 0.14,
-      "mom_30m": 0.19,
-      "vol_ratio": 0.1,
-      "vwap_dev": 0.62,
-      "rsi": 72.6,
-      "mom_5d": 2.99,
-      "chg_hoy": -0.79,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "precio": 368.95,
+      "mom_15m": 0.073,
+      "mom_30m": -0.254,
+      "vol_ratio": 1.05,
+      "vwap_dev": 0.258,
+      "rsi": 73.0,
+      "señal": "LATERAL",
+      "ts": "12:18"
     },
     "CRDO": {
-      "precio": 215.38,
-      "mom_15m": -0.23,
-      "mom_30m": -0.05,
-      "vol_ratio": 0.1,
-      "vwap_dev": 0.43,
-      "rsi": 49.2,
-      "mom_5d": -4.91,
-      "chg_hoy": -4.78,
-      "senal": "debil_bajista",
-      "ts": "11:19"
+      "precio": 216.71,
+      "mom_15m": -0.908,
+      "mom_30m": -1.165,
+      "vol_ratio": 0.61,
+      "vwap_dev": -0.011,
+      "rsi": 55.7,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "DOCU": {
       "precio": 64.65,
@@ -12678,16 +12675,14 @@
       "ts": "11:19"
     },
     "HPE": {
-      "precio": 51.19,
-      "mom_15m": -0.12,
-      "mom_30m": 0.05,
-      "vol_ratio": 0.14,
-      "vwap_dev": 0.41,
-      "rsi": 60.7,
-      "mom_5d": -4.21,
-      "chg_hoy": -2.01,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "precio": 51.18,
+      "mom_15m": 0.078,
+      "mom_30m": -0.283,
+      "vol_ratio": 0.5,
+      "vwap_dev": -0.015,
+      "rsi": 50.6,
+      "señal": "LATERAL",
+      "ts": "12:18"
     },
     "MDB": {
       "precio": 438.22,
@@ -12710,16 +12705,14 @@
       "ts": "10:25"
     },
     "SNOW": {
-      "precio": 321.9,
-      "mom_15m": -0.33,
-      "mom_30m": -0.82,
-      "vol_ratio": 0.16,
-      "vwap_dev": -0.41,
-      "rsi": 39.9,
-      "mom_5d": 1.54,
-      "chg_hoy": -2.87,
-      "senal": "debil_bajista",
-      "ts": "11:19"
+      "precio": 321.19,
+      "mom_15m": -0.49,
+      "mom_30m": -0.57,
+      "vol_ratio": 0.47,
+      "vwap_dev": -0.504,
+      "rsi": 29.0,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "ZS": {
       "precio": 185.17,
@@ -12732,108 +12725,94 @@
       "ts": "13:16"
     },
     "FIVE": {
-      "precio": 246.38,
-      "mom_15m": 0.34,
-      "mom_30m": 0.01,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.49,
-      "rsi": 68.0,
-      "mom_5d": -5.02,
-      "chg_hoy": -0.19,
-      "senal": "debil_alcista",
-      "ts": "11:19"
+      "precio": 246.97,
+      "mom_15m": 0.248,
+      "mom_30m": 0.341,
+      "vol_ratio": 0.5,
+      "vwap_dev": 0.301,
+      "rsi": 67.8,
+      "señal": "debil_alcista",
+      "ts": "12:18"
     },
     "PVH": {
-      "precio": 73.39,
-      "mom_15m": -0.02,
-      "mom_30m": -0.49,
-      "vol_ratio": 0.26,
-      "vwap_dev": -0.27,
-      "rsi": 48.4,
-      "mom_5d": -1.52,
-      "chg_hoy": -1.05,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "precio": 72.53,
+      "mom_15m": -0.206,
+      "mom_30m": -0.323,
+      "vol_ratio": 0.35,
+      "vwap_dev": -0.627,
+      "rsi": 29.1,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "CIEN": {
-      "precio": 361.24,
-      "mom_15m": -0.679,
-      "mom_30m": -1.122,
-      "vol_ratio": 0.18,
-      "vwap_dev": -3.616,
-      "rsi": 20.4,
-      "mom_5d": -6.82,
-      "señal": "debil_bajista",
-      "ts": "10:22"
+      "precio": 362.85,
+      "mom_15m": 0.126,
+      "mom_30m": -0.034,
+      "vol_ratio": 1.16,
+      "vwap_dev": -0.185,
+      "rsi": 36.1,
+      "señal": "LATERAL",
+      "ts": "12:18"
     },
     "AMBA": {
-      "precio": 67.65,
-      "mom_15m": 0.252,
-      "mom_30m": 0.378,
-      "vol_ratio": 0.36,
-      "vwap_dev": -1.437,
-      "rsi": 28.3,
-      "mom_5d": -4.42,
-      "señal": "debil_alcista",
-      "ts": "10:22"
+      "precio": 67.38,
+      "mom_15m": -0.568,
+      "mom_30m": -0.554,
+      "vol_ratio": 0.37,
+      "vwap_dev": -0.663,
+      "rsi": 31.3,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "GIII": {
-      "precio": 32.55,
-      "mom_15m": 0.0,
-      "mom_30m": -0.58,
-      "vol_ratio": 0.15,
-      "vwap_dev": 0.32,
-      "rsi": 68.2,
-      "mom_5d": -2.22,
-      "chg_hoy": -0.12,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "precio": 32.38,
+      "mom_15m": -0.216,
+      "mom_30m": -0.385,
+      "vol_ratio": 0.18,
+      "vwap_dev": -0.568,
+      "rsi": 21.2,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "WOOF": {
-      "precio": 2.65,
-      "mom_15m": -0.188,
-      "mom_30m": 0.0,
-      "vol_ratio": 0.0,
-      "vwap_dev": -0.017,
-      "rsi": 51.8,
-      "mom_5d": -3.8,
+      "precio": 2.63,
+      "mom_15m": -1.128,
+      "mom_30m": -0.942,
+      "vol_ratio": 0.62,
+      "vwap_dev": -0.591,
+      "rsi": 36.1,
       "señal": "debil_bajista",
-      "ts": "10:22"
+      "ts": "12:18"
     },
     "AGX": {
-      "precio": 412.62,
-      "mom_15m": -0.31,
-      "mom_30m": 0.16,
-      "vol_ratio": 0.08,
-      "vwap_dev": 0.85,
-      "rsi": 68.9,
-      "mom_5d": -8.4,
-      "chg_hoy": -2.91,
-      "senal": "debil_bajista",
-      "ts": "11:19"
+      "precio": 408.84,
+      "mom_15m": -0.068,
+      "mom_30m": 0.282,
+      "vol_ratio": 0.24,
+      "vwap_dev": -0.409,
+      "rsi": 29.9,
+      "señal": "LATERAL",
+      "ts": "12:18"
     },
     "PHR": {
-      "precio": 12.12,
-      "mom_15m": -0.41,
-      "mom_30m": -0.16,
-      "vol_ratio": 0.34,
-      "vwap_dev": 0.02,
-      "rsi": 63.4,
-      "mom_5d": 5.21,
-      "chg_hoy": -0.74,
-      "senal": "debil_bajista",
-      "ts": "11:19"
+      "precio": 12.02,
+      "mom_15m": -0.497,
+      "mom_30m": -1.07,
+      "vol_ratio": 0.39,
+      "vwap_dev": -0.776,
+      "rsi": 19.6,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     },
     "NTSK": {
-      "precio": 14.59,
-      "mom_15m": -0.984,
-      "mom_30m": -0.224,
-      "vol_ratio": 0.06,
-      "vwap_dev": -3.867,
-      "rsi": 18.3,
-      "mom_5d": 8.04,
+      "precio": 14.1,
+      "mom_15m": -0.739,
+      "mom_30m": -1.433,
+      "vol_ratio": 0.61,
+      "vwap_dev": -2.029,
+      "rsi": 9.0,
       "señal": "debil_bajista",
-      "ts": "10:22"
+      "ts": "12:18"
     },
     "CXM": {
       "precio": 7.79,
@@ -12846,6 +12825,16 @@
       "chg_hoy": -5.12,
       "senal": "debil_bajista",
       "ts": "11:19"
+    },
+    "OLLI": {
+      "precio": 73.8,
+      "mom_15m": -0.552,
+      "mom_30m": -0.94,
+      "vol_ratio": 0.23,
+      "vwap_dev": -0.803,
+      "rsi": 35.8,
+      "señal": "debil_bajista",
+      "ts": "12:18"
     }
   },
   "sentinel_signals": [
@@ -18023,9 +18012,19 @@
       "estado": "abierto",
       "descripcion": "El bloque de ajuste macro del SKILL hace SCORE_MIN_P = max(SCORE_MIN_P, 7.5) cuando macro_score<=-1.0. Eso importa un umbral de la escala de 10 puntos (min_signal_score) sobre el scorer de 6 puntos del sentinel -> umbral inalcanzable y 0 entradas.",
       "accion_tomada": "Sentinel aplico el endurecimiento PROPORCIONAL en su propia escala: score_min_paper 5.0 -> 5.5 (macro alerta + macro_score -1.9), en vez del 7.5 literal. Documentado para revision humana."
+    },
+    {
+      "fecha": "2026-09-01",
+      "ts": "2026-09-01T12:18:16.482359+00:00",
+      "severidad": "alta",
+      "componente": "sentinel PASO 3 - scraper EarningsWhispers",
+      "descripcion": "old.earningswhispers.com da ReadTimeout desde el sandbox (100% de intentos). www./beta.earningswhispers.com responden 200 pero YA NO contienen los IDs del parser (whisperbox=0, epsconsensus=0, tweeturl=0, earningsdate=0) -> sitio re-renderizado client-side. Resultado: 0/15 tickers con datos EW en este ciclo.",
+      "impacto": "Scan EW headless inoperativo. Sin deteccion de nuevas oportunidades por esta via.",
+      "accion_requerida": "Reescribir get_ew_headless contra la nueva estructura (probable endpoint JSON) o migrar a fuente alternativa.",
+      "detectado_por": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-01T11:19:51.002773+00:00",
+  "ultima_actualizacion": "2026-09-01T12:18:16.482359+00:00",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
