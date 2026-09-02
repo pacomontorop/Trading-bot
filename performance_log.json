@@ -2372,6 +2372,58 @@
       "ventana_entrada": "pre-market scan 10:15 ET",
       "ts_creado": "2026-09-02T16:16:14.119269+00:00",
       "notas": "Detectado por sentinel 12:16 ET via EW JSON API. Pendiente scoring completo pre-market."
+    },
+    {
+      "ticker": "AMBA",
+      "estado": "abierta",
+      "tipo": "earnings_ew",
+      "side": "buy",
+      "score": 6.0,
+      "score_ajustado": 6.0,
+      "asimetria_pct": 17.65,
+      "whisper": 0.2,
+      "consensus": 0.17,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "ejecutado_por_sentinel",
+      "detectado_por": "sentinel-vivo",
+      "fecha_ejecucion": "2026-09-02",
+      "ts_entrada": "2026-09-02T14:28:46.654019+00:00",
+      "precio_entrada_estimado": 66.71,
+      "stop_propuesto": 61.86,
+      "tp_propuesto": 76.22,
+      "qty_paper": 80,
+      "cid_paper": "COWORK-SENT-202609021827-AMBA",
+      "atr": 3.19,
+      "alerta_earnings_overnight": false,
+      "expira": "2026-09-03T20:00:00Z",
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer)."
+    },
+    {
+      "ticker": "GWRE",
+      "estado": "abierta",
+      "tipo": "earnings_ew",
+      "side": "buy",
+      "score": 5.5,
+      "score_ajustado": 5.5,
+      "asimetria_pct": 9.57,
+      "whisper": 1.03,
+      "consensus": 0.94,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "ejecutado_por_sentinel",
+      "detectado_por": "sentinel-vivo",
+      "fecha_ejecucion": "2026-09-02",
+      "ts_entrada": "2026-09-02T14:28:46.654019+00:00",
+      "precio_entrada_estimado": 191.17,
+      "stop_propuesto": 179.3,
+      "tp_propuesto": 214.46,
+      "qty_paper": 28,
+      "cid_paper": "COWORK-SENT-202609021827-GWRE",
+      "atr": 7.81,
+      "alerta_earnings_overnight": false,
+      "expira": "2026-09-03T20:00:00Z",
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer)."
     }
   ],
   "macro_context": {
@@ -2448,23 +2500,22 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-02T13:16",
-      "nivel": "alerta",
+      "timestamp": "2026-09-02T14:28",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0
+      "score_min_paper_efectivo": 5.0,
+      "score_min_real_efectivo": 9.0,
+      "nota": "Nivel baja de alerta -> normal: VIX -6.7% a 15.24, SPY +0.45%. Iran/petroleo es backdrop persistente, no evento nuevo."
     },
     "macro_score": -0.3,
-    "macro_nivel": "alerta",
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros ligeramente alcistas (ES +0.47%, NQ +0.17%)",
-      "Yield 10Y 4.79% (>4.5%) - presion sobre valuaciones growth",
-      "Oro +1.55% ($4415) - senal de miedo persistente pese a VIX 15.4",
-      "WTI $90.9 (+0.74%) - spike de oil desacelerando, no escalando",
-      "Desmontaje de la prima geopolitica: aerolineas UAL +3.9% DAL +2.3%, defensa LMT -2.2% RTX -1.7%",
-      "Rotacion a valor: XLB +1.77% XLF +0.79% XLV +0.82% vs XLK -0.29% XLRE -0.65%",
-      "Internacional flojo (N225 -0.15%, DAX -0.50%, FTSE -0.30%) pero sin contagio"
+      "SPY +0.45% intradia, VIX 15.24 (-6.7%) -> risk-on moderado",
+      "Yield 10Y 4.79% (>4.5%) presiona valuaciones growth",
+      "Oro +1.72% y Brent $95.62 (+1.0%) por tension US-Iran (Estrecho de Ormuz) - backdrop conocido, no shock nuevo",
+      "Tech plano (XLK -0.2%); NVDA +3.2% y META +2.4% compensan MSFT -1.0%",
+      "Internacional debil pero contenido: HSI -0.93%, DAX -0.5%, Nikkei -0.15%"
     ],
     "futuros": {
       "ES": 0.47,
@@ -2472,44 +2523,27 @@
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-02T13:16",
+    "ts_actualizado": "2026-09-02T14:28",
     "sectores_hoy": {
-      "lider": "materials",
-      "cambio_lider": 1.77,
-      "tech_chg": -0.29,
+      "lider": "financials",
+      "cambio_lider": 0.86,
+      "tech_chg": -0.2,
       "all": {
-        "XLB": 1.77,
-        "IWM": 0.94,
-        "XLY": 0.22,
-        "DIA": 0.46,
-        "XLE": 0.24,
-        "VIXY": -2.55,
-        "CVX": 0.5,
-        "XLF": 0.79,
-        "QQQ": 0.04,
-        "UUP": -0.16,
-        "DAL": 2.25,
-        "LMT": -2.18,
-        "XLV": 0.82,
-        "XLI": 0.02,
-        "SPY": 0.41,
-        "TLT": 0.0,
-        "XOM": -0.78,
-        "RTX": -1.71,
-        "XLRE": -0.65,
-        "GLD": 1.03,
-        "XLU": -0.21,
-        "XLK": -0.29,
-        "USO": 0.5,
-        "UAL": 3.91
+        "tech": -0.2,
+        "fin": 0.86,
+        "energy": 0.58,
+        "health": 0.82,
+        "indu": 0.05,
+        "cons_disc": 0.2,
+        "util": 0.21
       },
-      "ts": "13:16"
+      "ts": "14:28"
     },
     "macro_bonus_ew": -0.09,
     "bonos": {
-      "tlt_chg": 0.0,
+      "tlt_chg": -0.01,
       "yield_10y": 4.79,
-      "yield_30y": 5.26
+      "yield_30y": 5.27
     },
     "eventos_recientes": [
       {
@@ -2861,10 +2895,9 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 90.62,
-      "brent": 95.47,
-      "oro": 4421.4,
-      "wti_chg": 0.44336235919615175
+      "wti": 91.11,
+      "brent": 95.62,
+      "oro_chg": 1.72
     },
     "internacional": {
       "Nikkei": 0.62,
@@ -12815,6 +12848,33 @@
       "ew_scan_status": "DEGRADADO - solo /api/caldata/{YYYYMMDD} devuelve JSON; getstocksdata y old.* sirven shell SPA",
       "telegram_enviado": true,
       "nota": "Sentinel 13:11 ET mie 02-sep, modo MONITOR_Y_ESCALADOR (sentinel_rol en parametros_activos; el asistente no ejecuta ordenes). CAMBIO CLAVE DEL CICLO: las 2 posiciones Cowork se CERRARON a las 12:33 ET por el proceso preearnings_close (cid preearnings_close_{SNOW,FIVE}_2026-09-02), no por stop. SNOW 16sh 321.95->306.11 = -4.92% (-253.4 USD); FIVE 22sh 246.52->242.46 = -1.65% (-89.3 USD). Total realizado aprox -343 USD. Patas bracket canceladas correctamente al cerrar. Post-cierre FIVE rebota a 244.92 (+1.13% en 15min): la venta a mercado se ejecuto ~1% por debajo del precio actual; SNOW plano (306.02). Ambas reportan hoy AMC, asi que la decision de cerrar es correcta pese al slippage. SLOTS: cowork_abiertas 0/2 -> 2 libres por primera vez en 2 dias. Solo queda polvo cripto (BTCUSD 0.38 USD y SOLUSD 0.00 paper; BTCUSD 0.64 USD real), sin stop pero irrelevante por tamano (<50 USD, no cumple umbral de alerta). PROTECCION: 0 posiciones de renta variable abiertas -> nada que proteger; 0 ordenes vivas en ambas cuentas. Equity paper 107,888.80 (-343 en el dia por los cierres), real 4,548.12. MACRO: ALERTA, no shock. VIX 15.38 (-5.9%), SPY +0.41%, QQQ +0.04%, IWM +0.94%. Ningun gatillo de shock (VIX 30min -0.58%, SPY 30min plano, ningun Mag7 con +-6%). La prima geopolitica del oil_spike se esta desmontando: aerolineas suben fuerte (UAL +3.91%, DAL +2.25%) y defensa cae (LMT -2.18%, RTX -1.71%), lo contrario del playbook oil_spike -> el mercado descuenta desescalada en Ormuz. Sigue el fondo incomodo: WTI 90.89, 10Y 4.79%, 30Y 5.26%, oro +1.55% a 4415. macro_score -0.3. NOTICIAS: 40 titulares / 17 tickers, 0 negativos criticos. Positivos: BTIG sube PT de DOCU a 75 y de GWRE a 230 (ambos Buy). PATH lleva +36.9% en un mes segun preview de Benzinga -> riesgo alto de sell-the-news. EW: old.earningswhispers.com y /api/getstocksdata devuelven ahora el shell SPA (HTML) para toda ruta; el UNICO endpoint JSON vivo es /api/caldata/{YYYYMMDD} (formato path, sin query string). Da consenso y releaseTime pero NO whisper. FIX PARA OTRAS TAREAS: usar https://www.earningswhispers.com/api/caldata/20260903 con headers X-Requested-With+Referer y reintentos (falla ~1 de cada 3 llamadas devolviendo HTML). Whisper hay que tomarlo del scan pre-market ya cacheado en sentinel_signals. PIPELINE 03-sep (whispers del scan de esta manana + momentum intradia de ahora): IOT s=6.0 asim+25.0% br=1.0 (dia -5.63%, 5d -7.56%, RSI 31.7, LATERAL); PATH s=6.0 asim+20.0% br=0.75 (dia -1.52% pero +36.9% en 1 mes -> descontado); AMBA s=6.0 asim+17.6% br=1.0 (dia -2.07%, 5d -4.63%, debil_bajista); VSXY s=6.0 asim+14.1% BMO (dia +1.68%, 5d -5.74%); PL s=6.0 asim+50% pero sobre consenso -0.02 (asimetria artificial, descartar); GWRE s=5.5 asim+9.6% (dia -5.18%, RSI 27.8, el mas debil del grupo); CPB s=5.5 asim+7.5% BMO (RSI 78 sobrecomprado); DOCU s=5.0 asim+6.4% (dia +0.26%, 5d +9.28%, RSI 66.8, el unico verde con PT al alza); CIEN s=5.0 asim+6.3% BMO (dia -2.77%, 5d -13.27%, capitulacion pre-print); ZS s=4.5 asim+3.7% n=45. LECTURA: 0 candidatos con momentum ALCISTA; el grupo entero cotiza a la baja hoy (de-risking pre-earnings). El unico ALCISTA del universo es NTAP (+0.40% 15min, vol x1.24) pero reporta HOY AMC -> inelegible por no_holdings_earnings_overnight. EJECUCIONES: 0. Con 2 slots libres el limitante ya NO es la capacidad sino el gate. INCIDENCIA REPETIDA (5a vez, sin resolver desde 01-sep): score_oportunidad() tiene techo estructural 6.0 (asim max 3.0 + beat_rate max 2.0 + timing 1.0) y sentinel_score_min_entrada=7.5 -> el gate es matematicamente inalcanzable. Los 10 candidatos de manana puntuan 4.5-6.0 y quedan fuera POR CONSTRUCCION, no por calidad. Hoy es especialmente visible porque por primera vez habia 2 slots libres y aun asi el sistema no puede entrar en nada. PROPUESTA (repetida): reescalar score_oportunidad a base 10 (asim 0-5, beat_rate 0-3, timing 0-1, momentum 0-1) o bajar sentinel_score_min_entrada a 5.5-6.0 para earnings_ew con beat_rate>=1.0 y asimetria>=15%. Sin uno de los dos cambios el sentinel no puede entrar nunca."
+    },
+    {
+      "ts": "2026-09-02T14:28:46.654019+00:00",
+      "modo": "intradia",
+      "hora_et": "14:28",
+      "alertas": 1,
+      "acciones": 2,
+      "ejecuciones": 2,
+      "oportunidades": 3,
+      "cowork_abiertas": 2,
+      "posiciones_paper": 4,
+      "posiciones_real": 0,
+      "equity_paper": 107888.8,
+      "equity_real": 4548.12,
+      "vix": 15.24,
+      "spy_chg": 0.45,
+      "qqq_chg": 0.08,
+      "macro_nivel": "normal",
+      "macro_score": -0.3,
+      "ejecutados": [
+        "AMBA",
+        "GWRE"
+      ],
+      "descartados": [
+        "PL (asimetria artefacto)"
+      ],
+      "nota": "Cartera estaba vacia (SNOW/FIVE cerradas 12:33 ET por pre-earnings). 2 slots libres usados."
     }
   ],
   "momentum_15m": {
@@ -13079,15 +13139,14 @@
       "ts": "13:16"
     },
     "LULU": {
-      "px": 121.14,
-      "m15": 0.05,
-      "m30": -0.12,
-      "vr": 0.64,
-      "vwap": 0.18,
-      "rsi": 65.4,
-      "dchg": 2.66,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 121.07,
+      "mom_15m": -0.099,
+      "mom_30m": 0.215,
+      "vol_ratio": 0.62,
+      "vwap_dev": -0.062,
+      "rsi": 46.8,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "PANW": {
       "precio": 360.74,
@@ -13152,15 +13211,14 @@
       "ts": "2026-08-27T13:23"
     },
     "AVGO": {
-      "px": 368.12,
-      "m15": -0.24,
-      "m30": -0.18,
-      "vr": 1.15,
-      "vwap": -0.27,
-      "rsi": 31.8,
-      "dchg": -0.42,
-      "sig": "debil_baj",
-      "ts": "13:16"
+      "precio": 368.69,
+      "mom_15m": 0.179,
+      "mom_30m": 0.226,
+      "vol_ratio": 0.68,
+      "vwap_dev": 0.142,
+      "rsi": 62.0,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "CRDO": {
       "precio": 216.71,
@@ -13173,15 +13231,14 @@
       "ts": "12:18"
     },
     "DOCU": {
-      "px": 64.81,
-      "m15": -0.08,
-      "m30": 0.14,
-      "vr": 0.34,
-      "vwap": 0.36,
-      "rsi": 66.8,
-      "dchg": 0.26,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 65.01,
+      "mom_15m": 0.0,
+      "mom_30m": 0.069,
+      "vol_ratio": 0.41,
+      "vwap_dev": 0.142,
+      "rsi": 74.4,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "GTLB": {
       "precio": 45.3,
@@ -13196,15 +13253,14 @@
       "ts": "11:19"
     },
     "HPE": {
-      "px": 50.34,
-      "m15": 0.34,
-      "m30": 0.22,
-      "vr": 0.4,
-      "vwap": 0.04,
-      "rsi": 43.8,
-      "dchg": -1.04,
-      "sig": "debil_alc",
-      "ts": "13:16"
+      "precio": 50.97,
+      "mom_15m": 0.691,
+      "mom_30m": 1.595,
+      "vol_ratio": 0.0,
+      "vwap_dev": 1.164,
+      "rsi": 67.2,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "MDB": {
       "precio": 438.22,
@@ -13238,15 +13294,14 @@
       "ts": "13:16"
     },
     "ZS": {
-      "px": 172.26,
-      "m15": 0.52,
-      "m30": 0.29,
-      "vr": 0.71,
-      "vwap": -0.14,
-      "rsi": 36.5,
-      "dchg": -3.42,
-      "sig": "debil_alc",
-      "ts": "13:16"
+      "precio": 173.35,
+      "mom_15m": 0.33,
+      "mom_30m": 0.435,
+      "vol_ratio": 0.62,
+      "vwap_dev": 0.544,
+      "rsi": 67.1,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "FIVE": {
       "px": 244.92,
@@ -13271,66 +13326,64 @@
       "ts": "13:16"
     },
     "CIEN": {
-      "px": 350.36,
-      "m15": -0.41,
-      "m30": 0.1,
-      "vr": 0.78,
-      "vwap": -0.21,
-      "rsi": 40.1,
-      "dchg": -2.77,
-      "sig": "debil_baj",
-      "ts": "13:16"
+      "precio": 350.32,
+      "mom_15m": -0.185,
+      "mom_30m": -0.084,
+      "vol_ratio": 0.97,
+      "vwap_dev": -0.127,
+      "rsi": 48.9,
+      "señal": "debil_bajista",
+      "ts": "14:28"
     },
     "AMBA": {
-      "px": 66.43,
-      "m15": -0.36,
-      "m30": -0.33,
-      "vr": 0.32,
-      "vwap": -0.31,
-      "rsi": 38.4,
-      "dchg": -2.07,
-      "sig": "debil_baj",
-      "ts": "13:16"
+      "precio": 66.64,
+      "mom_15m": 0.015,
+      "mom_30m": -0.045,
+      "vol_ratio": 0.26,
+      "vwap_dev": 0.167,
+      "rsi": 63.9,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "GIII": {
-      "precio": 29.04,
-      "mom_15m": 0.103,
-      "mom_30m": -1.493,
-      "vol_ratio": 1.35,
-      "vwap_dev": -1.582,
-      "rsi": 18.8,
-      "señal": "LATERAL",
-      "ts": "12:16"
+      "precio": 28.92,
+      "mom_15m": 0.61,
+      "mom_30m": 0.26,
+      "vol_ratio": 1.16,
+      "vwap_dev": -0.338,
+      "rsi": 34.9,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "WOOF": {
-      "precio": 2.62,
-      "mom_15m": 0.337,
-      "mom_30m": -0.232,
-      "vol_ratio": 0.27,
-      "vwap_dev": 0.009,
-      "rsi": 52.1,
-      "señal": "debil_alcista",
-      "ts": "12:16"
+      "precio": 2.63,
+      "mom_15m": -0.152,
+      "mom_30m": -0.529,
+      "vol_ratio": 0.16,
+      "vwap_dev": -0.486,
+      "rsi": 50.6,
+      "señal": "debil_bajista",
+      "ts": "14:28"
     },
     "AGX": {
-      "precio": 411.86,
-      "mom_15m": 0.27,
-      "mom_30m": 0.148,
-      "vol_ratio": 0.85,
-      "vwap_dev": 0.632,
-      "rsi": 62.3,
-      "señal": "debil_alcista",
-      "ts": "12:16"
+      "precio": 408.48,
+      "mom_15m": -0.904,
+      "mom_30m": -1.259,
+      "vol_ratio": 0.88,
+      "vwap_dev": -0.927,
+      "rsi": 23.9,
+      "señal": "debil_bajista",
+      "ts": "14:28"
     },
     "PHR": {
-      "precio": 11.9,
-      "mom_15m": 0.084,
-      "mom_30m": -0.251,
-      "vol_ratio": 0.14,
-      "vwap_dev": -0.29,
-      "rsi": 39.3,
-      "señal": "LATERAL",
-      "ts": "12:16"
+      "precio": 11.91,
+      "mom_15m": 0.253,
+      "mom_30m": 0.676,
+      "vol_ratio": 0.39,
+      "vwap_dev": 0.305,
+      "rsi": 59.0,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "NTSK": {
       "precio": 13.45,
@@ -13365,92 +13418,84 @@
       "ts": "12:16"
     },
     "IOT": {
-      "px": 36.86,
-      "m15": 0.0,
-      "m30": -0.59,
-      "vr": 0.45,
-      "vwap": -0.38,
-      "rsi": 31.7,
-      "dchg": -5.63,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 36.97,
+      "mom_15m": -0.081,
+      "mom_30m": 0.108,
+      "vol_ratio": 1.52,
+      "vwap_dev": 0.089,
+      "rsi": 60.7,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "PATH": {
-      "px": 17.86,
-      "m15": 0.11,
-      "m30": 0.2,
-      "vr": 0.82,
-      "vwap": 0.24,
-      "rsi": 52.5,
-      "dchg": -1.52,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 18.08,
+      "mom_15m": 0.389,
+      "mom_30m": 0.865,
+      "vol_ratio": 0.73,
+      "vwap_dev": 0.871,
+      "rsi": 80.5,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "GWRE": {
-      "px": 190.67,
-      "m15": -0.51,
-      "m30": -0.7,
-      "vr": 0.64,
-      "vwap": -0.81,
-      "rsi": 27.8,
-      "dchg": -5.18,
-      "sig": "debil_baj",
-      "ts": "13:16"
+      "precio": 191.22,
+      "mom_15m": -0.054,
+      "mom_30m": 0.373,
+      "vol_ratio": 1.16,
+      "vwap_dev": 0.112,
+      "rsi": 50.5,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "VSXY": {
-      "px": 85.58,
-      "m15": -0.31,
-      "m30": -0.05,
-      "vr": 0.45,
-      "vwap": 0.27,
-      "rsi": 57.4,
-      "dchg": 1.68,
-      "sig": "debil_baj",
-      "ts": "13:16"
+      "precio": 84.4,
+      "mom_15m": -0.142,
+      "mom_30m": 0.059,
+      "vol_ratio": 0.47,
+      "vwap_dev": -0.419,
+      "rsi": 36.2,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "CPB": {
-      "px": 24.07,
-      "m15": -0.03,
-      "m30": -0.04,
-      "vr": 0.56,
-      "vwap": 0.29,
-      "rsi": 78.0,
-      "dchg": 1.5,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 24.1,
+      "mom_15m": -0.062,
+      "mom_30m": 0.125,
+      "vol_ratio": 1.1,
+      "vwap_dev": 0.16,
+      "rsi": 55.0,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "TTC": {
-      "px": 99.24,
-      "m15": -0.13,
-      "m30": 0.19,
-      "vr": 0.46,
-      "vwap": 0.2,
-      "rsi": 63.9,
-      "dchg": 1.31,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 99.65,
+      "mom_15m": 0.09,
+      "mom_30m": 0.196,
+      "vol_ratio": 4.33,
+      "vwap_dev": 0.224,
+      "rsi": 65.4,
+      "señal": "LATERAL",
+      "ts": "14:28"
     },
     "ASAN": {
-      "px": 9.77,
-      "m15": 0.05,
-      "m30": 0.46,
-      "vr": 1.1,
-      "vwap": 0.69,
-      "rsi": 73.3,
-      "dchg": -0.56,
-      "sig": "LATERAL",
-      "ts": "13:16"
+      "precio": 9.82,
+      "mom_15m": 0.409,
+      "mom_30m": 0.512,
+      "vol_ratio": 1.27,
+      "vwap_dev": 0.424,
+      "rsi": 68.8,
+      "señal": "ALCISTA",
+      "ts": "14:28"
     },
     "PL": {
-      "px": 19.64,
-      "m15": 0.19,
-      "m30": 0.18,
-      "vr": 0.46,
-      "vwap": 0.16,
-      "rsi": 45.6,
-      "dchg": 1.95,
-      "sig": "debil_alc",
-      "ts": "13:16"
+      "precio": 19.83,
+      "mom_15m": 0.431,
+      "mom_30m": 0.405,
+      "vol_ratio": 0.69,
+      "vwap_dev": 0.709,
+      "rsi": 79.7,
+      "señal": "debil_alcista",
+      "ts": "14:28"
     },
     "AI": {
       "px": 10.36,
@@ -13465,32 +13510,6 @@
     }
   },
   "sentinel_signals": [
-    {
-      "ticker": "GAP",
-      "score": 6.5,
-      "tipo": "post_earnings_continuation",
-      "gap_premarket_pct": 19.14,
-      "earnings_fecha": "2026-08-27",
-      "earnings_timing": "after-hours",
-      "razon": "Q2 FY26: EPS aj. $0.52 bate; ventas $3.7B -2% YoY (por debajo). Guia FY EPS subida a $2.35-2.45. Marca Gap 11o trimestre consecutivo de comps positivos.",
-      "ts_detected": "2026-08-28T09:17:45.282956+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-preapertura"
-    },
-    {
-      "ticker": "SAIC",
-      "score": 5.0,
-      "tipo": "earnings_ew",
-      "asimetria": 13.78,
-      "earnings_fecha": "2026-08-31",
-      "earnings_timing": "pre-market",
-      "razon": "whisper asim=+13.78% beat_rate=1.0 px=$129.16 mom5d=+0.88% RSI=61.8 ATR=2.67%",
-      "stop_sugerido": 123.99,
-      "tp_sugerido": 139.52,
-      "ts_detected": "2026-08-28T11:18:06.213397+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-scan-ewapi"
-    },
     {
       "ticker": "GTLB",
       "score": 5.0,
@@ -14860,6 +14879,30 @@
       "ejecutado": false,
       "fuente": "sentinel-ew-json-api",
       "razon": "whisper 0.07 vs consenso 0.05 (asim +40.0%), beat_rate=1.0, liquidez=MARGINAL"
+    },
+    {
+      "ticker": "AMBA",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 17.65,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "razon": "asim=17.65% beat_rate=1.0 score=6.0",
+      "ts_detected": "2026-09-02T14:28:46.654019+00:00",
+      "ejecutado": true,
+      "fuente": "sentinel-intradia"
+    },
+    {
+      "ticker": "GWRE",
+      "score": 5.5,
+      "tipo": "earnings_ew",
+      "asimetria": 9.57,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "razon": "asim=9.57% beat_rate=1.0 score=5.5",
+      "ts_detected": "2026-09-02T14:28:46.654019+00:00",
+      "ejecutado": true,
+      "fuente": "sentinel-intradia"
     }
   ],
   "skip_analysis": {
@@ -14898,7 +14941,18 @@
         "asimetria_whisper_pct": 2.56,
         "gap_dia_pct": 37.15
       }
-    }
+    },
+    "semana_2026-09-02": [
+      {
+        "ticker": "PL",
+        "fecha": "2026-09-02",
+        "ts": "2026-09-02T14:28:46.654019+00:00",
+        "score": 6.0,
+        "asimetria_pct": 50.0,
+        "motivo": "Asimetria 50% es artefacto matematico: whisper -0.01 vs consensus -0.02 (ambos negativos, denominador ~0). Senal sin contenido informativo. Ademas RSI=79.7 sobrecomprado. Descartado pese a superar umbral.",
+        "decidido_por": "sentinel"
+      }
+    ]
   },
   "weekly_ew_intel": {
     "semana": "2026-05-25",
@@ -18768,9 +18822,19 @@
       "titulo": "Gate SCORE_MIN_P=7.5 inalcanzable: score_oportunidad() tiene techo 6.0",
       "detalle": "PASO 4B con macro=alerta aplica max(SCORE_MIN_P,7.5). score_oportunidad() suma como maximo 3.0 (asimetria) + 2.0 (beat_rate) + 1.0 (timing) = 6.0. Ningun candidato puede pasar el gate. Hoy: 10 candidatos EW validos para 03-sep con scores 4.5-6.0, todos filtrados por construccion.",
       "propuesta": "(a) usar delta relativo sobre el umbral base en lugar de max(); (b) reescalar score_oportunidad a base 10 anadiendo bloques de sector, momentum, drift y n_analistas."
+    },
+    {
+      "fecha": "2026-09-02",
+      "ts": "2026-09-02T14:28:46.654019+00:00",
+      "severidad": "media",
+      "componente": "get_ew_headless (PASO 3)",
+      "titulo": "Scraper HTML de EarningsWhispers roto - sitio migrado a render JS",
+      "detalle": "old.earningswhispers.com/stocks/<t> ya no sirve el HTML con #whisperbox/#epsconsensus/tweeturl (ademas da ReadTimeout intermitente). www.earningswhispers.com sirve una SPA: los ids existen vacios (#ewno = \"-\"). Resultado: get_ew_headless() devuelve None para el 100% de tickers.",
+      "workaround": "Endpoint JSON funcional: GET https://www.earningswhispers.com/api/getstocksdata/<ticker EN MINUSCULA> con header Referer: https://www.earningswhispers.com/stocks/<TICKER>. Con ticker en mayuscula devuelve HTML. Campos: whisper, consensusEst, nextEPSDate, releaseTime (1=pre-market, 2=during, 3=after-hours), revenueEst. Reintentar 2-3 veces: responde HTML de forma intermitente.",
+      "accion": "Sustituir get_ew_headless() por cliente JSON en el SKILL. Este ciclo se uso el workaround y los datos cuadran con el CV previo."
     }
   ],
-  "ultima_actualizacion": "2026-09-02T13:16 ET",
+  "ultima_actualizacion": "2026-09-02T14:28:46.654019+00:00",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
