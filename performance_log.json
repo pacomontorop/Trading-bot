@@ -2346,54 +2346,58 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-01T14:14",
+      "timestamp": "2026-09-02T11:15",
       "nivel": "alerta",
       "shocks": [
-        "oil_spike",
-        "bond_selloff",
-        "geopolitico_iran"
+        "oil_spike_residual",
+        "yields_altos"
       ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota": "US-Iran: dos petroleros alcanzados; WTI +4.8% a $89.85, 30Y USA maximos desde 2006, JGB 10Y toca 3%. Riesgo de subida de tipos Fed presiona Nasdaq (-1.3%) y tech (XLK -1.62%). Energia unico sector fuerte (+0.99%). Umbrales mecanicos de SHOCK no tocados: SPY 30m +0.00%, VIX 16.03 (+0.19% 30m). Mantener ALERTA."
+      "nota": "11:11 ET 02-sep: SIN shock nuevo. El oil_spike del 01-sep se ha normalizado parcialmente — SPY +0.51%, VIX 15.52 (-5.02%), Dow al alza. Persiste el fondo: WTI $90.5, 10Y 4.8%, 30Y en maximos, oro +1.71%. Ningun umbral mecanico de SHOCK tocado (SPY 30m -0.01%, VIX 30m +0.5%, mejor/peor Mag7 META +4.9%/MSFT -1.4% <6%). Se mantiene ALERTA, no shock."
     },
-    "macro_score": -1.7,
+    "macro_score": -0.9,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros bajistas (-0.59%)",
-      "TLT bajando - yields subiendo",
-      "Yield 10Y alto (4.77%) presion growth",
-      "Petroleo $88 +3.1% - riesgo geopolitico",
-      "Tech debil (-1.2%) - cautela candidatos tech"
+      "SPY +0.51% / VIX 15.52 (-5.02%) — tape estabilizando tras el shock oil del 01-sep",
+      "WTI $90.5 (0.31%) sigue >$90 — headwind margenes",
+      "Yield 10Y 4.8% / 30Y 5.27% en maximos — presion valoraciones growth",
+      "Oro 1.71% a $4422.4 — prima de riesgo geopolitica viva",
+      "Rotacion valor: XLB 1.83%, XLF 1.38%, XLV 0.82% vs XLK -0.11%",
+      "Internacional flojo: DAX -0.52%, SSE -0.97%, Nikkei -0.15%"
     ],
     "futuros": {
-      "ES": -0.38966099493440703,
-      "NQ": -0.7920238538948937
+      "ES": 0.47,
+      "NQ": -0.04,
+      "YM": 0.77,
+      "RTY": 0.78
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-01T14:14",
+    "ts_actualizado": "2026-09-02T11:15",
     "sectores_hoy": {
-      "lider": "healthcare",
+      "lider": "materials",
+      "cambio_lider": 1.83,
+      "tech_chg": -0.11,
       "all": {
-        "tech": -1.1569434771908513,
-        "financials": -0.33789585499523084,
-        "energy": 0.35177998333604704,
-        "healthcare": 0.5863727215716463,
-        "industrials": -1.1077498928321245,
-        "consumer_disc": -1.3165761050941769,
-        "utilities": 0.42623799935340745,
-        "materials": -0.8825207149505946,
-        "realestate": 0.011337719442381381
+        "XLK": -0.11,
+        "XLF": 1.38,
+        "XLE": -0.14,
+        "XLV": 0.82,
+        "XLI": 0.09,
+        "XLY": 0.31,
+        "XLU": -0.42,
+        "XLB": 1.83,
+        "XLRE": -0.74
       },
-      "tech_chg": -1.1569434771908513,
-      "ts": "12:18"
+      "ts": "11:15"
     },
-    "macro_bonus_ew": -0.51,
+    "macro_bonus_ew": -0.27,
     "bonos": {
-      "tlt_chg": -0.5513744791195242,
-      "yield_10y": 4.769999980926514
+      "tlt_chg": -0.09,
+      "yield_10y": 4.8,
+      "yield_30y": 5.27
     },
     "eventos_recientes": [
       {
@@ -12498,6 +12502,34 @@
         "SNOW": "2026-09-02 AMC (confirmado por press release)",
         "FIVE": "2026-09-02 AMC (segun log, sin reconfirmar)"
       }
+    },
+    {
+      "ts": "2026-09-02T15:15:47.407935+00:00",
+      "modo": "intraday_reporte",
+      "hora_et": "11:15",
+      "alertas": 2,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 10,
+      "cowork_abiertas": 2,
+      "posiciones_paper": 4,
+      "posiciones_paper_equity": 2,
+      "posiciones_real": 1,
+      "posiciones_real_equity": 0,
+      "equity_paper": 108027.54,
+      "equity_real": 4548.12,
+      "vix": 15.52,
+      "spy_chg": 0.51,
+      "macro_nivel": "alerta",
+      "macro_score": -0.9,
+      "wti": 90.5,
+      "yield_10y": 4.8,
+      "telegram_enviado": false,
+      "stops_verificados": {
+        "FIVE": "bracket stop_limit 232.34 [held] + TP 273.25",
+        "SNOW": "bracket stop_limit 303.74 [held] + TP 357.85"
+      },
+      "nota": "Sentinel 11:11 ET mie 02-sep, modo REPORTE (el asistente no ejecuta ordenes; toda ejecucion queda para el usuario). PROTECCION OK: SNOW 16sh -2.82% y FIVE 22sh -1.08%, ambas con pata stop_limit 'held'; resto polvo cripto <$1. SLOTS 2/2 -> ninguna entrada posible por diseno. RIESGO CRITICO HOY: SNOW y FIVE reportan AMBAS hoy 02-sep AMC (confirmado por EW quickcaldata). Los stops son stop_limit y NO protegen contra gap overnight; SNOW mueve de media ~12.8% en earnings. Regla no_holdings_earnings_overnight y accion_recomendada=cerrar_antes_earnings_AH -> cerrar ambas antes de 15:45 ET. pre-close-manager corre a 14:38 ET y es el handler designado. Ninguna cumple la excepcion score>=9.0 (SNOW 7.3/6.0, FIVE 6.0). MACRO: alerta, no shock. Mercado recupera del oil_spike (SPY +0.51%, VIX 15.52 -5%, Dow arriba) pero el fondo sigue: WTI $90.5, 10Y 4.8%, 30Y 5.27%, oro +1.71%. Rotacion a valor (XLB +1.83%, XLF +1.38%) vs XLK -0.11%. NOTICIAS: 30 titulares / 6 tickers, 0 negativos criticos sobre SNOW/FIVE (SNOW: revisiones al alza pre-print; HPE: +4% AH ayer por lectura Dell). OLLI batio EPS 1.42 vs 1.14 pero ventas 741.3M < 752.9M y sube guidance -> accion -2.1% intradia, confirma que un beat de EPS con miss de ventas no basta. PIPELINE MANANA (03-sep): IOT +25.0% br=1.0 n=22, PATH +20.0% br=0.75 n=19, AMBA +17.7% br=1.0 n=13, VSXY +14.1% BMO, GWRE +9.6%, CPB +7.5% BMO, DOCU +6.4%, CIEN +6.3% BMO, ZS +3.7% n=45. Descartado ASAN (+1144%) por >60% no fiable. INCIDENCIA REPETIDA (4a vez): con macro=alerta el PASO 4B fuerza SCORE_MIN_P=max(...,7.5) mientras score_oportunidad() tiene techo estructural 6.0 -> gate matematicamente inalcanzable; los 10 candidatos de manana puntuan 4.5-6.0 y todos quedan fuera por construccion, no por calidad. Propuesta pendiente desde 01-sep: delta relativo (+0.5 alerta/+1.0 shock) en lugar de max(), y reescalar score_oportunidad a 10 puntos."
     }
   ],
   "momentum_15m": {
@@ -12832,14 +12864,14 @@
       "ts": "2026-08-27T13:23"
     },
     "AVGO": {
-      "precio": 368.95,
-      "mom_15m": 0.073,
-      "mom_30m": -0.254,
-      "vol_ratio": 1.05,
-      "vwap_dev": 0.258,
-      "rsi": 73.0,
-      "señal": "LATERAL",
-      "ts": "12:18"
+      "precio": 369.74,
+      "mom_15m": 0.421,
+      "mom_30m": 0.103,
+      "vol_ratio": 0.11,
+      "vwap_dev": 0.379,
+      "rsi": 60.5,
+      "señal": "debil_alcista",
+      "ts": "11:15"
     },
     "CRDO": {
       "precio": 216.71,
@@ -12874,14 +12906,14 @@
       "ts": "11:19"
     },
     "HPE": {
-      "precio": 51.18,
-      "mom_15m": 0.078,
-      "mom_30m": -0.283,
-      "vol_ratio": 0.5,
-      "vwap_dev": -0.015,
-      "rsi": 50.6,
+      "precio": 50.26,
+      "mom_15m": 0.133,
+      "mom_30m": -1.244,
+      "vol_ratio": 0.14,
+      "vwap_dev": -0.894,
+      "rsi": 45.7,
       "señal": "LATERAL",
-      "ts": "12:18"
+      "ts": "11:15"
     },
     "MDB": {
       "precio": 438.22,
@@ -12904,14 +12936,14 @@
       "ts": "10:25"
     },
     "SNOW": {
-      "precio": 321.19,
-      "mom_15m": -0.49,
-      "mom_30m": -0.57,
-      "vol_ratio": 0.47,
-      "vwap_dev": -0.504,
-      "rsi": 29.0,
-      "señal": "debil_bajista",
-      "ts": "12:18"
+      "precio": 313.0,
+      "mom_15m": -0.035,
+      "mom_30m": -1.73,
+      "vol_ratio": 0.07,
+      "vwap_dev": -0.233,
+      "rsi": 52.8,
+      "señal": "LATERAL",
+      "ts": "11:15"
     },
     "ZS": {
       "precio": 185.17,
@@ -12924,14 +12956,14 @@
       "ts": "13:16"
     },
     "FIVE": {
-      "precio": 246.97,
-      "mom_15m": 0.248,
-      "mom_30m": 0.341,
-      "vol_ratio": 0.5,
-      "vwap_dev": 0.301,
-      "rsi": 67.8,
-      "señal": "debil_alcista",
-      "ts": "12:18"
+      "precio": 244.0,
+      "mom_15m": 0.008,
+      "mom_30m": -0.209,
+      "vol_ratio": 0.13,
+      "vwap_dev": -0.283,
+      "rsi": 30.8,
+      "señal": "LATERAL",
+      "ts": "11:15"
     },
     "PVH": {
       "precio": 72.53,
@@ -12994,14 +13026,14 @@
       "ts": "12:18"
     },
     "PHR": {
-      "precio": 12.02,
-      "mom_15m": -0.497,
-      "mom_30m": -1.07,
-      "vol_ratio": 0.39,
-      "vwap_dev": -0.776,
-      "rsi": 19.6,
+      "precio": 11.93,
+      "mom_15m": -0.167,
+      "mom_30m": -0.334,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.379,
+      "rsi": 25.0,
       "señal": "debil_bajista",
-      "ts": "12:18"
+      "ts": "11:15"
     },
     "NTSK": {
       "precio": 14.1,
@@ -13026,14 +13058,14 @@
       "ts": "11:19"
     },
     "OLLI": {
-      "precio": 73.8,
-      "mom_15m": -0.552,
-      "mom_30m": -0.94,
-      "vol_ratio": 0.23,
-      "vwap_dev": -0.803,
-      "rsi": 35.8,
+      "precio": 76.01,
+      "mom_15m": -2.099,
+      "mom_30m": -2.175,
+      "vol_ratio": 0.07,
+      "vwap_dev": -1.914,
+      "rsi": 32.1,
       "señal": "debil_bajista",
-      "ts": "12:18"
+      "ts": "11:15"
     }
   },
   "sentinel_signals": [
@@ -14371,6 +14403,156 @@
       "senal_momentum": "LATERAL",
       "razon": "asim=+2.1% br=1.0 n=30",
       "ts_detected": "2026-09-01T11:19:51.002773+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "PL",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 50.0,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 0.75,
+      "analistas": 13,
+      "sector": "Aerospace",
+      "razon": "asim=+50.0% br=0.75 n=13",
+      "ts_detected": "2026-09-02T15:15:47.407909+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "IOT",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 25.0,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 1.0,
+      "analistas": 22,
+      "sector": "Technology",
+      "razon": "asim=+25.0% br=1.0 n=22",
+      "ts_detected": "2026-09-02T15:15:47.407917+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "PATH",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 20.0,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 0.75,
+      "analistas": 19,
+      "sector": "Technology",
+      "razon": "asim=+20.0% br=0.75 n=19",
+      "ts_detected": "2026-09-02T15:15:47.407919+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "AMBA",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 17.65,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 1.0,
+      "analistas": 13,
+      "sector": "Technology",
+      "razon": "asim=+17.6% br=1.0 n=13",
+      "ts_detected": "2026-09-02T15:15:47.407921+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "VSXY",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 14.1,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "pre-market",
+      "beat_rate": 1.0,
+      "analistas": 12,
+      "sector": "Retail-Wholesale",
+      "razon": "asim=+14.1% br=1.0 n=12",
+      "ts_detected": "2026-09-02T15:15:47.407923+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "GWRE",
+      "score": 5.5,
+      "tipo": "earnings_ew",
+      "asimetria": 9.57,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 1.0,
+      "analistas": 17,
+      "sector": "Technology",
+      "razon": "asim=+9.6% br=1.0 n=17",
+      "ts_detected": "2026-09-02T15:15:47.407925+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "CPB",
+      "score": 5.5,
+      "tipo": "earnings_ew",
+      "asimetria": 7.5,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "pre-market",
+      "beat_rate": 0.75,
+      "analistas": 20,
+      "sector": "Staples",
+      "razon": "asim=+7.5% br=0.75 n=20",
+      "ts_detected": "2026-09-02T15:15:47.407927+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "DOCU",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 6.42,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 1.0,
+      "analistas": 20,
+      "sector": "Technology",
+      "razon": "asim=+6.4% br=1.0 n=20",
+      "ts_detected": "2026-09-02T15:15:47.407929+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "CIEN",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 6.32,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "pre-market",
+      "beat_rate": 1.0,
+      "analistas": 19,
+      "sector": "Technology",
+      "razon": "asim=+6.3% br=1.0 n=19",
+      "ts_detected": "2026-09-02T15:15:47.407931+00:00",
+      "fuente": "sentinel-ew-json-api",
+      "ejecutado": false
+    },
+    {
+      "ticker": "ZS",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 3.67,
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "beat_rate": 1.0,
+      "analistas": 45,
+      "sector": "Technology",
+      "razon": "asim=+3.7% br=1.0 n=45",
+      "ts_detected": "2026-09-02T15:15:47.407932+00:00",
       "fuente": "sentinel-ew-json-api",
       "ejecutado": false
     }
@@ -18271,9 +18453,19 @@
       "tarea": "intraday-monitor",
       "incidencia": "Sandbox sin espacio en disco (/sessions 100%). No se pudo escribir performance_log local ni instalar deps en HOME; se escribio directamente en GitHub y se uso Alpaca Data API en lugar de yfinance para precios/ATR.",
       "severidad": "media"
+    },
+    {
+      "fecha": "2026-09-02",
+      "ts": "2026-09-02T11:15",
+      "origen": "sentinel",
+      "severidad": "media",
+      "ocurrencia": 4,
+      "titulo": "Gate SCORE_MIN_P=7.5 inalcanzable: score_oportunidad() tiene techo 6.0",
+      "detalle": "PASO 4B con macro=alerta aplica max(SCORE_MIN_P,7.5). score_oportunidad() suma como maximo 3.0 (asimetria) + 2.0 (beat_rate) + 1.0 (timing) = 6.0. Ningun candidato puede pasar el gate. Hoy: 10 candidatos EW validos para 03-sep con scores 4.5-6.0, todos filtrados por construccion.",
+      "propuesta": "(a) usar delta relativo sobre el umbral base en lugar de max(); (b) reescalar score_oportunidad a base 10 anadiendo bloques de sector, momentum, drift y n_analistas."
     }
   ],
-  "ultima_actualizacion": "2026-09-01T20:28:52.068603+00:00",
+  "ultima_actualizacion": "2026-09-02T11:15",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
