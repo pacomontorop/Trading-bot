@@ -1319,7 +1319,7 @@
       "ticker": "SNOW",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "abierta",
+      "estado": "cerrado",
       "accion_recomendada": "esperar_fin_shock",
       "asimetria_pct": 13.33,
       "whisper": 0.51,
@@ -1348,7 +1348,12 @@
       "stop_verificado_post_market": "2026-09-01",
       "R_actual": -0.27,
       "atr14": 11.61,
-      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)"
+      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 306.11
+      }
     },
     {
       "ticker": "HPE",
@@ -1563,7 +1568,7 @@
       "ticker": "FIVE",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "abierta",
+      "estado": "cerrado",
       "asimetria_pct": 12.69,
       "whisper": 1.51,
       "consensus": 1.34,
@@ -1593,7 +1598,12 @@
       "stop_verificado_post_market": "2026-09-01",
       "R_actual": -0.1,
       "atr14": 8.21,
-      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)"
+      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 242.46
+      }
     },
     {
       "ticker": "OLLI",
@@ -2004,7 +2014,7 @@
       "ticker": "SNOW",
       "score": 7.3,
       "score_ajustado": 7.3,
-      "estado": "abierta",
+      "estado": "cerrado",
       "earnings_fecha": "2026-09-02",
       "earnings_timing": "after-hours",
       "asimetria_pct_PROXY": null,
@@ -2033,7 +2043,12 @@
       "stop_verificado_post_market": "2026-09-01",
       "R_actual": -0.27,
       "atr14": 11.61,
-      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)"
+      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 306.11
+      }
     },
     {
       "ticker": "OLLI",
@@ -2064,7 +2079,7 @@
       "ticker": "FIVE",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "abierta",
+      "estado": "cerrado",
       "earnings_fecha": "2026-09-02",
       "earnings_timing": "after-hours",
       "asimetria_pct_PROXY": null,
@@ -2093,7 +2108,12 @@
       "stop_verificado_post_market": "2026-09-01",
       "R_actual": -0.1,
       "atr14": 8.21,
-      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)"
+      "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 242.46
+      }
     },
     {
       "ticker": "AVGO",
@@ -2197,7 +2217,7 @@
     },
     {
       "ticker": "FIVE",
-      "estado": "abierta",
+      "estado": "cerrado",
       "tipo": "earnings_ew_drift",
       "side": "buy",
       "score": 6.0,
@@ -2231,11 +2251,16 @@
       "take_profit": 273.25,
       "qty": 22,
       "stop_verificado_post_market": "2026-09-01",
-      "R_actual": -0.1
+      "R_actual": -0.1,
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 242.46
+      }
     },
     {
       "ticker": "SNOW",
-      "estado": "abierta",
+      "estado": "cerrado",
       "tipo": "earnings_ew_drift",
       "side": "buy",
       "score": 6.0,
@@ -2269,7 +2294,12 @@
       "take_profit": 357.85,
       "qty": 16,
       "stop_verificado_post_market": "2026-09-01",
-      "R_actual": -0.27
+      "R_actual": -0.27,
+      "cierre_intraday": {
+        "fecha": "2026-09-02 12:34 ET",
+        "motivo": "earnings_AH_hoy_score<8.5",
+        "precio_salida": 306.11
+      }
     },
     {
       "ticker": "VSXY",
@@ -7386,6 +7416,104 @@
       },
       "acciones_no_ejecutadas_por_politica": "Ninguna accion de orden era necesaria en esta sesion segun las reglas del skill; no se enviaron ni modificaron ordenes.",
       "log_escrito_en": "GitHub (filesystem de sesion sin espacio: /sessions 100% lleno)"
+    },
+    {
+      "timestamp": "2026-09-02T16:34:50.027071+00:00",
+      "hora_et": "2026-09-02 12:34 ET",
+      "posiciones_abiertas_inicio": 2,
+      "posiciones_detalle": [
+        {
+          "symbol": "FIVE",
+          "shares": 22,
+          "entry": 246.52,
+          "current": 242.07,
+          "pnl_pct": -1.81,
+          "stop": 232.34,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "SNOW",
+          "shares": 16,
+          "entry": 321.95,
+          "current": 306.37,
+          "pnl_pct": -4.84,
+          "stop": 303.74,
+          "stop_source": "stop_bracket_leg"
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "motivo_sin_trailing": "ambas posiciones con P&L negativo -> regla: no mover stop",
+      "cierres_preventivos_pre_earnings": [
+        {
+          "symbol": "FIVE",
+          "entry": 246.52,
+          "exit": 242.46,
+          "qty": 22,
+          "pnl": -89.32,
+          "pnl_pct": -1.65,
+          "motivo": "earnings_ah_no_validado_score<8.5"
+        },
+        {
+          "symbol": "SNOW",
+          "entry": 321.95,
+          "exit": 306.11,
+          "qty": 16,
+          "pnl": -253.44,
+          "pnl_pct": -4.92,
+          "motivo": "earnings_ah_no_validado_score<8.5"
+        }
+      ],
+      "pnl_realizado_sesion": -342.76,
+      "ordenes_ejecutadas_hoy": [
+        {
+          "symbol": "SNOW",
+          "side": "sell",
+          "qty": "16",
+          "type": "market",
+          "status": "filled",
+          "filled_avg_price": "306.11",
+          "filled_at": "2026-09-02T16:33:32.743582578Z",
+          "cid": "preearnings_close_SNOW_2026-09-02"
+        },
+        {
+          "symbol": "FIVE",
+          "side": "sell",
+          "qty": "22",
+          "type": "market",
+          "status": "filled",
+          "filled_avg_price": "242.46",
+          "filled_at": "2026-09-02T16:33:32.65552523Z",
+          "cid": "preearnings_close_FIVE_2026-09-02"
+        }
+      ],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas_por_cierre": [
+        "FIVE bracket TP limit 273.25",
+        "SNOW bracket TP limit 357.85"
+      ],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "hpe_evaluado": {
+        "score": 7.7,
+        "decision": "NO ENTRAR",
+        "razon": "earnings AH hoy 2-sep y score 7.7 < 8.5 -> misma regla que forzo cierre de FIVE/SNOW; ademas consenso $0.94 > guia alta $0.93"
+      },
+      "mercado": {
+        "spy_intraday_pct": 0.33,
+        "vix": 20.0,
+        "modo_dip": false
+      },
+      "cuenta": {
+        "equity": 107888.8,
+        "buying_power": 431553.68
+      },
+      "anomalias": [
+        "performance_log local NO montado en esta sesion (/sessions/.../Scheduled ausente) -> lectura via GitHub, escritura via GitHub API",
+        "yfinance no preinstalado en el sandbox; instalado en /tmp/pylibs (disco /sessions al 100%)"
+      ]
     }
   ],
   "pre_close_log": [
