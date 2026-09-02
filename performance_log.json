@@ -51,8 +51,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-09-01",
-    "motivo_actualizacion": "2026-09-01: las 2 unicas entradas del dia (SNOW score 6.0-7.3, FIVE score 6.0) fueron ejecutadas por el sentinel por DEBAJO de min_signal_score=7.5 y ambas cierran en perdida. Se anade sentinel_score_min_entrada=7.5 y sentinel_respeta_umbral_global=True para que el sentinel aplique el mismo umbral que el resto del pipeline.",
+    "ultima_actualizacion": "2026-09-02",
+    "motivo_actualizacion": "2026-09-02: el sentinel volvio a saltarse el umbral (AMBA 6.0, GWRE 5.5) un dia despues de anadir sentinel_score_min_entrada. Se anaden stop_obligatorio_tras_ejecucion=True y stop_debe_ser_tipo_stop=True: toda ejecucion Cowork debe ir acompanada de una orden type stop/stop_limit/trailing_stop; una orden LIMIT de take-profit NO cuenta como proteccion. Umbrales sin cambios: los 4 trades fuera de gobernanza no justifican relajarlos, al contrario.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -148,7 +148,9 @@
     "min_analistas_para_asimetria": 12,
     "max_asimetria_fiable_pct": 60.0,
     "sentinel_score_min_entrada": 7.5,
-    "sentinel_respeta_umbral_global": true
+    "sentinel_respeta_umbral_global": true,
+    "stop_obligatorio_tras_ejecucion": true,
+    "stop_debe_ser_tipo_stop": true
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -201,123 +203,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-08-25",
-      "tipo": "INCIDENCIA_OPERATIVA",
-      "titulo": "Backlog de 3 sesiones en ew-daily-results (20-ago -> 25-ago)",
-      "descripcion": "_last_ew_daily_run marcaba 2026-08-20. Los summaries del 21 y 24-ago estaban sin leer en Gmail. Ademas la ruta canonica /sessions/.../Scheduled/performance_log.json no existe en esta sesion y el sandbox tenia el disco al 100%.",
-      "accion_futura": "1) Mantener newer_than:6d en la busqueda EW. 2) Hacer que la ruta del log sea dinamica en lugar de hardcodear un session-id. 3) Escribir siempre en un directorio montado con espacio (outputs), no en /tmp del sandbox.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ANF: beat+raise masivo (+109% vs consenso, guidance +28%) con gap de +37% el mismo dia (2026-08-26)",
-      "descripcion": "El whisper de EW solo marcaba +2.56% de asimetria sobre consenso ($2.00 vs $1.95) y el score EW del sentinel fue 4.0, pero el resultado real fue adj EPS $4.17 ($2.42 ex-IEEPA) y subida de guidance FY de $10.20-11.00 a $13.10-13.60. La asimetria del whisper NO anticipo la magnitud: consenso y whisper subestimaron por igual. Contra-ejemplo del regimen 'beat_and_fade' en consumo discrecional (KSS/LULU/ANF -3% el 25-ago).",
-      "accion_futura": "(1) La asimetria whisper-consenso es mala proxy de magnitud cuando ambos vienen de la misma revision a la baja; evaluar un bloque de scoring 'guidance gap' (guia previa de la empresa vs consenso). (2) Para beats BMO detectados intradia con gap >15%, no entrar el mismo dia; registrar como drift D+2/D+3 solo si retrocede a VWAP. (3) Anadir ANF al universo EW de seguimiento con perfil beat+raise.",
-      "detectado_por": "sentinel-intradia"
-    },
-    "[2026-08-26] FIX EW DATA SOURCE: old.earningswhispers.com es INALCANZABLE desde el sandbox (ConnectTimeout, bloqueado por allowlist de red) - el scan headless del PASO 3 devolvia 0 resultados y colgaba ~8 min. SOLUCION PERMANENTE: usar la API JSON de www.earningswhispers.com: GET https://www.earningswhispers.com/api/getstocksdata/{ticker} con headers UA-navegador + X-Requested-With: XMLHttpRequest + Referer https://www.earningswhispers.com/. Devuelve {whisper, consensusEst, revenueEst, nextEPSDate, releaseTime (1=pre-market,2=during,3=after-hours), sectName, quarterDate}. asimetria = (whisper-consensusEst)/abs(consensusEst)*100. Rapido (JSON, ~135 tickers en <60s con 12 threads) y fiable (133/135 ok). El scraping HTML de www.* NO sirve (pagina renderizada por JS).",
-    {
-      "fecha": "2026-08-26",
-      "titulo": "CALIDAD DEL BEAT — un beat de EPS movido por ingresos NO OPERATIVOS no predice drift",
-      "descripcion": "ANF reporto EPS $4.17 (mas del doble del consenso) y subio +35.67%, pero el motor fue un REEMBOLSO ARANCELARIO de $100M, con comps de compania planos y Hollister -3%. KSS batio 2.3x ($1.28 vs ~$0.55) y solo cerro +1.47%. La prensa del dia lo resume: 'los grandes beats del retail en Q2 vinieron de Washington, no del consumidor'. La magnitud del beat y su calidad son variables distintas: el sistema solo puntua la magnitud (BLOQUE 1 asimetria, BLOQUE 2 beat rate) y es ciego a la calidad.",
-      "accion_correctiva": "Anadir al scoring un filtro de CALIDAD DEL BEAT (BLOQUE 7, factor de riesgo): si en el preview o en el resultado aparece un componente no operativo o no recurrente identificable — reembolso/credito arancelario, partida fiscal one-off, venta de activos, cargo de reestructuracion revertido, ajuste contable — aplicar -1.5 pts y NO contar ese trimestre en el beat_rate historico. Senal secundaria obligatoria: si comps/revenue YoY <= 0 mientras el EPS bate >50%, el beat es de calidad NO_OPERATIVA por defecto.",
-      "tarea_afectada": "pre-market-earnings-scan | sentinel-intraday | post-market-review",
-      "evidencia": "2026-08-26: ANF +35.67% (beat de $100M arancelario, comps planos) | KSS beat 2.3x con reaccion +1.47%",
-      "aplicada": false,
-      "auto_generado": true,
-      "old_text": "BLOQUE 7 — Factores de riesgo (resta puntos)",
-      "new_text": "BLOQUE 7 — Factores de riesgo (resta puntos)\n  CALIDAD DEL BEAT (anadido 2026-08-26): componente no operativo/no recurrente identificable\n  (reembolso o credito arancelario, one-off fiscal, venta de activos, reversion de cargo) -> -1.5 pts\n  y ese trimestre NO cuenta en el beat_rate. Si comps o revenue YoY <= 0 mientras el EPS bate >50%,\n  clasificar el beat como NO_OPERATIVO por defecto."
-    },
-    {
-      "fecha": "2026-08-26",
-      "titulo": "TIMING — el post-market (16:15 ET) corre ANTES del release AMC (16:20-16:30 ET)",
-      "descripcion": "Los 7 AMC de hoy (NVDA, CRM, SNPS, VEEV, CRWD, OKTA, HPQ) quedaron en 'esperando_resultado' porque la tarea se ejecuta antes de que los resultados existan. No es un fallo puntual: pasa TODOS los dias con earnings AMC, que son la mayoria del universo jugable del sistema.",
-      "accion_correctiva": "El cierre del loop de los AMC del mismo dia NO es responsabilidad del post-market: se delega a ew-daily-results (corre ~17:45 ET) y a la apertura del dia siguiente. El post-market debe (a) dejar los AMC marcados como 'esperando_resultado' con precio de cierre y expiracion +20h, y (b) escribir un GATE en macro_context cuando el AMC del dia sea sistemico (NVDA, un hyperscaler) para que la apertura condicione sus entradas a la reaccion real. ALTERNATIVA: mover el post-market a 17:15 ET.",
-      "tarea_afectada": "post-market-review",
-      "evidencia": "2026-08-26: 7 AMC sin resultado; clock Alpaca marca 16:23 ET al correr la tarea",
-      "aplicada": true,
-      "auto_generado": true
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "CRM: beat cons=+80.4% confirmado AH=+12.0% (2026-08-26)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=5.9 vs cons=3.27. Whisper NO disponible (email EW del dia aun no emitido). Guidance: Q3 EPS $3.42-3.44 vs cons $3.38; FY27 EPS $16.67-16.71 (raise).",
-      "accion_futura": "AH confirmacion es proxy valido de whisper para CRM. Mantener ruta consensus_proxy_ah_confirmado.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "CRWD: beat cons=+6.9% confirmado AH=+10.0% (2026-08-26)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.31 vs cons=0.29. Whisper NO disponible (email EW del dia aun no emitido). Guidance: FY27 rev $5.99-6.01B vs cons $5.94B (raise).",
-      "accion_futura": "AH confirmacion es proxy valido de whisper para CRWD. Mantener ruta consensus_proxy_ah_confirmado.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "OKTA: beat cons=+9.4% confirmado AH=+17.0% (2026-08-26)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=1.05 vs cons=0.96. Whisper NO disponible (email EW del dia aun no emitido). Guidance: FY27 rev $3.216-3.226B (raise); EPS $3.79-3.87.",
-      "accion_futura": "AH confirmacion es proxy valido de whisper para OKTA. Mantener ruta consensus_proxy_ah_confirmado.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "SNPS: SELL-THE-NEWS — beat cons=+6.2% pero AH=-6.0% (2026-08-26)",
-      "descripcion": "Beat + raise de guidance y aun asi el mercado vendio. EPS=3.91 vs cons=3.68. Guidance: Q4 non-GAAP EPS $4.10-4.16; FY26 EPS $15.04-15.10 (raise).",
-      "accion_futura": "Verificar pre-drift de SNPS antes de earnings. Si mom5d>15% -> alta prob sell-the-news. NO entrar continuation con AH negativo.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "HPQ: SELL-THE-NEWS — beat cons=+15.3% pero AH=-11.0% (2026-08-26)",
-      "descripcion": "Beat + raise de guidance y aun asi el mercado vendio. EPS=0.83 vs cons=0.72. Guidance: FY targets raised pero margenes Q4 flojos (memoria + paneles).",
-      "accion_futura": "Verificar pre-drift de HPQ antes de earnings. Si mom5d>15% -> alta prob sell-the-news. NO entrar continuation con AH negativo.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "BEAT_AND_FADE",
-      "titulo": "NVDA: beat +6.2% cons y guidance por encima, AH -1.6% (2026-08-26) — saturacion de expectativas",
-      "descripcion": "EPS $2.22 vs cons $2.09, rev $96.2B (+106% YoY) vs $92.07B, guia Q3 $108B vs cons $104.2B. AH choppy, cierra ~-1.0/-1.6%. Bloomberg: \"Estimate-Topping Forecast Fails to Wow Investors\". Guia asume CERO revenue de Data Center China.",
-      "accion_futura": "En mega-caps con expectativas saturadas, beat+raise NO implica continuation. La reaccion AH sigue siendo el unico juez. 8a validacion del patron beat_and_fade.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-08-26",
-      "tipo": "CALIDAD_BEAT_ONE_OFF",
-      "titulo": "CRM: beat headline +80% contaminado por ganancia one-off Anthropic (2026-08-26)",
-      "descripcion": "EPS reportado $5.90 vs cons $3.27 incluye ~$2.6B de ganancia por participacion en Anthropic (~$3.16/sh). Ex-one-off EPS ~$2.74 = MISS. El raise FY27 a $16.67-16.71 y la guia Q3 $3.42-3.44 vs $3.38 SI son limpios, y el AH +12% valida la parte operativa.",
-      "accion_futura": "Regla: ante gains por inversiones estrategicas, descontar el one-off antes de puntuar el beat. 3er caso tras NSSC y ROST. Score de continuation con haircut y solo paper.",
-      "impacto_score": -0.2
-    },
-    {
-      "fecha": "2026-08-27",
-      "titulo": "BUG DE DISENO — el gate r_ratio con stop=minimo_dia_earnings hace imposible TODA continuation con gap grande",
-      "descripcion": "market-open-execution descarto CRM(7.5) CRWD(7.3) OKTA(7.2) a las 09:43 ET. El motivo declarado fue 'run-up > 3%', pero el gate realmente vinculante fue el r_ratio: al usar el MINIMO DEL DIA DE EARNINGS como stop, tras un gap de +9% a +23% ese minimo queda 12-22% por debajo de la entrada, R cae por debajo de 1.0 y el trade se veta mecanicamente. Es un artefacto de la formula, no una lectura de riesgo. Los tres cerraron POR ENCIMA del precio de descarte: CRM +3.99%, CRWD +3.76%, OKTA +3.97% desde 09:43. Coste estimado $952 (notional 8.117$/trade). El sentinel de las 13:23 UTC ya habia marcado la anomalia de forma independiente.",
-      "accion_correctiva": "En post_earnings_continuation con gap de apertura > 5%, NO usar el minimo del dia de earnings como stop. Usar ATR x1.5 desde el precio de entrada real (mismo criterio que el sentinel ya aplico el 27-ago en preopen). El gate de run-up del 3% deja de ser un veto binario para tipo=post_earnings_continuation y pasa a ser condicional: se permite entrada al 50% de sizing si gap_hold_ratio >= 0.60 Y guidance no rebajada Y sector_prioridad >= 0 Y score >= 7.0.",
-      "tarea_afectada": "market-open-execution",
-      "aplicada": true,
-      "evidencia_cuantitativa": {
-        "CRM": 3.99,
-        "CRWD": 3.76,
-        "OKTA": 3.97,
-        "coste_dolares": 952
-      }
-    },
-    {
-      "fecha": "2026-08-27",
-      "titulo": "REGIMEN — el fade post-earnings ocurre en AFTER-HOURS, no en la sesion de contado",
-      "descripcion": "Doble evidencia el mismo dia. (a) Nombres del 26-ago que MANTUVIERON el gap hasta la apertura del 27 extendieron toda la sesion: CRM +22.58%, CRWD +20.50%, OKTA +28.63%, cierres en maximos. (b) Nombres que reportaron el 27-ago AMC se desinflaron en AH: ADSK -6.32%, RBRK -9.36%, WDAY -4.69%, S -3.11%, MRVL -2.09% (pese a beat, subida de guia FY27/FY28 y acuerdo TPU con Google). La conclusion es que juzgar la continuation por la reaccion AH es juzgarla en el momento de maximo ruido. El filtro correcto se evalua en la APERTURA de contado: si el gap sobrevivio la noche, el mercado ya voto y el drift intradia es explotable (+4% medio hoy, 3 de 3).",
-      "accion_correctiva": "Introducir gap_hold_ratio = gap_apertura_pct / movimiento_AH_pct. Si >= 0.60 el pop sobrevivio -> continuation valida. Si < 0.60 el pop se desinflo -> vetar (esto absorbe e implementa la mejora pendiente del 2026-06-26 sobre MU). No evaluar continuation con datos de AH.",
-      "tarea_afectada": "market-open-execution, pre-market-earnings-scan",
-      "aplicada": true
-    },
     {
       "fecha": "2026-08-27",
       "titulo": "ESTC: el sistema lo vio, lo puntuo 5.24 y exploto +22.1% en AH",
@@ -521,6 +406,42 @@
       "tarea_afectada": "multiple",
       "aplicada": true,
       "tipo": "regimen"
+    },
+    {
+      "fecha": "2026-09-02",
+      "titulo": "BUG GOBERNANZA REINCIDENTE — el sentinel vuelve a entrar por debajo del umbral (AMBA 6.0, GWRE 5.5)",
+      "descripcion": "Ayer 1-sep se registro exactamente este bug (SNOW 7.3 / FIVE 6.0) y se anadio sentinel_score_min_entrada=7.5 + sentinel_respeta_umbral_global=True, marcado aplicada=True. HOY a las 14:27 ET el sentinel ejecuto COWORK-SENT-202609021827-AMBA (score 6.0) y -GWRE (score 5.5), ambos por debajo de 7.5. El parametro existe en parametros_activos pero el sentinel NO lo lee ni lo aplica. Agravante: GWRE se compro en una sesion de -4.06% y por debajo de MA10; ambas tienen earnings AH manana. Ademas las dos entradas de ayer, que fueron el caso original, cerraron hoy en perdida (SNOW -4.92%, FIVE -1.65%, -$342.76).",
+      "accion_correctiva": "El fix declarativo en performance_log NO funciona: el sentinel no lee parametros_activos antes de ejecutar. Hay que anadir el gate DENTRO del SKILL.md del sentinel, en el punto de construccion de la orden: rechazar y registrar 'descartado_score' si score < parametros_activos['min_signal_score']. Hasta que eso se verifique en produccion, NO marcar la mejora como aplicada. Verificar el 3-sep que no se repite.",
+      "tarea_afectada": "sentinel",
+      "aplicada": false,
+      "auto_generado": true,
+      "severidad": "ALTA — 4 entradas fuera de gobernanza en 2 dias, 2 cerradas en perdida"
+    },
+    {
+      "fecha": "2026-09-02",
+      "titulo": "BUG MONITORIZACION — el sentinel reporta 'stop: true' cuando solo existe una orden LIMIT de take-profit",
+      "descripcion": "sentinel_log 2026-09-02T15:25 registra AMBA con \"stop\": true. La consulta a Alpaca (/orders?status=open) devuelve para AMBA y GWRE unicamente ordenes type='limit' (76.22 y 214.46), que son take-profits, no stops. No existe ninguna orden type stop / stop_limit / trailing_stop. El sentinel cuenta cualquier orden sell abierta como proteccion, lo que produce un falso positivo de cobertura y deja posiciones desnudas overnight sin que salte ninguna alerta.",
+      "accion_correctiva": "Filtrar explicitamente por order['type'] in ('stop','stop_limit','trailing_stop') al evaluar cobertura de stop, en el sentinel y en intraday-monitor. Una orden 'limit' del lado sell es take-profit y NUNCA debe contar como stop.",
+      "tarea_afectada": "sentinel|intraday-monitor",
+      "aplicada": false,
+      "auto_generado": true,
+      "severidad": "ALTA — causa raiz de que AMBA y GWRE queden sin proteccion overnight"
+    },
+    {
+      "fecha": "2026-09-02",
+      "titulo": "REGLA VALIDADA — R0 pre-close funciono: SNOW y FIVE cerradas antes del print",
+      "descripcion": "pre-close-manager cerro SNOW (16 @306.11) y FIVE (22 @242.46) a las 12:33 ET del 2-sep, antes de sus earnings AH. Ambas salieron con perdida moderada (-4.92% / -1.65%, -$342.76 en total) en lugar de asumir riesgo binario sobre el print.",
+      "accion_correctiva": "Mantener R0 sin cambios. Aplicarla manana a AMBA y GWRE, que tienen earnings AH el 3-sep: cierre obligatorio antes de las 15:30 ET.",
+      "tarea_afectada": "pre-close-manager",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-02",
+      "titulo": "COSTE DE OPORTUNIDAD — AVGO puntuado 4.5 y descartado; batio masivamente AH (AI semis +221% YoY)",
+      "descripcion": "AVGO figuraba como vigilar_cauteloso con score 4.5 y accion 'ninguna'. Publico AH hoy revenue $29.600M (+86% YoY), semis AI $16.700M (+221% YoY, +54% QoQ), EPS non-GAAP $3.32 (+96%), FCF $13.700M (+95%). El scoring lo penalizo por el desplome del complejo software/AI del 1-sep, pero AVGO no es software de alta duracion: es el proveedor directo del capex AI, precisamente el unico motor de beneficios que el regimen de tipos NO frena. Senal previa ignorada: Dell subio su guia anual en $25.000M por servidores AI el dia antes.",
+      "accion_correctiva": "Separar 'technology' en dos cubos en sector_prioridades: ai_infrastructure_hardware (semis, optica, networking, energia de datacenter) y software_alta_duracion. En regimen de shock de tipos el primero merece bonus positivo y el segundo penalizacion; agregarlos en un solo 'technology' produjo el error. Ademas: un beat de guia de un proveedor upstream (Dell +$25.000M) debe propagarse como senal de supply chain ANTES del print del anchor, no despues.",
+      "tarea_afectada": "pre-market-earnings-scan|post-market-review",
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1062,6 +983,46 @@
       "semana": "2026-W35",
       "leccion": "R0 funciono: cierre a 352.11 evito el gap AH de HEICO. Pero la posicion nunca debio existir sin registro: sin el parche del sentinel a las 12:35 ET, ni pre-close ni intraday la habrian detectado.",
       "cuenta_real": false
+    },
+    {
+      "simbolo": "SNOW",
+      "estado": "cerrada",
+      "timestamp": "2026-09-01T15:19:00Z",
+      "closed_at": "2026-09-02T16:33:32Z",
+      "precio_entrada": 321.95,
+      "precio_salida": 306.11,
+      "qty": 16,
+      "pnl_abs": -253.44,
+      "pnl_pct": -4.92,
+      "pnl_r": -0.87,
+      "score": 7.3,
+      "score_entrada": 7.3,
+      "source": "sentinel",
+      "sector": "technology",
+      "cuenta": "paper",
+      "hora_et": "11:19",
+      "motivo_cierre": "R0 pre-close manager — cierre obligatorio antes de earnings AH mismo dia",
+      "leccion": "Regla R0 ejecutada correctamente: se evito el riesgo binario del print. Pero la entrada nunca debio producirse: score por debajo de min_signal_score=7.5. El drift pre-earnings fue negativo en ambos casos bajo el regimen de shock de bonos."
+    },
+    {
+      "simbolo": "FIVE",
+      "estado": "cerrada",
+      "timestamp": "2026-09-01T15:19:00Z",
+      "closed_at": "2026-09-02T16:33:32Z",
+      "precio_entrada": 246.52,
+      "precio_salida": 242.46,
+      "qty": 22,
+      "pnl_abs": -89.32,
+      "pnl_pct": -1.65,
+      "pnl_r": -0.29,
+      "score": 6.0,
+      "score_entrada": 6.0,
+      "source": "sentinel",
+      "sector": "consumer_discretionary",
+      "cuenta": "paper",
+      "hora_et": "11:19",
+      "motivo_cierre": "R0 pre-close manager — cierre obligatorio antes de earnings AH mismo dia",
+      "leccion": "Regla R0 ejecutada correctamente: se evito el riesgo binario del print. Pero la entrada nunca debio producirse: score por debajo de min_signal_score=7.5. El drift pre-earnings fue negativo en ambos casos bajo el regimen de shock de bonos."
     }
   ],
   "candidatos_validados": [
@@ -1293,7 +1254,7 @@
       "ticker": "AVGO",
       "score": 4.5,
       "score_ajustado": 4.5,
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 4.04,
       "whisper": 3.35,
@@ -1306,7 +1267,7 @@
       "earnings_timing": "after-hours",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 4.5 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01)",
+      "notas": "Score 4.5 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": 370.3399963378906,
       "mom_5d_pct": 3.227780760690339,
       "mom_20d_pct": -5.580912738775747,
@@ -1353,13 +1314,19 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 306.11
-      }
+      },
+      "precio_salida": 306.11,
+      "pnl_pct": -4.92,
+      "pnl_abs": -253.44,
+      "pnl_r": -0.87,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)",
+      "fecha_ejecucion": "2026-09-02"
     },
     {
       "ticker": "HPE",
       "score": 4.0,
       "score_ajustado": 4.0,
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 2.13,
       "whisper": 0.96,
@@ -1372,7 +1339,7 @@
       "earnings_timing": "after-hours",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 4.0 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01)",
+      "notas": "Score 4.0 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": null,
       "mom_5d_pct": null,
       "mom_20d_pct": null,
@@ -1603,7 +1570,13 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 242.46
-      }
+      },
+      "precio_salida": 242.46,
+      "pnl_pct": -1.65,
+      "pnl_abs": -89.32,
+      "pnl_r": -0.29,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)",
+      "fecha_ejecucion": "2026-09-02"
     },
     {
       "ticker": "OLLI",
@@ -1636,7 +1609,7 @@
       "ticker": "PVH",
       "score": 4.5,
       "score_ajustado": 4.5,
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "asimetria_pct": 3.9,
       "whisper": 3.2,
       "consensus": 3.08,
@@ -1649,7 +1622,7 @@
       "accion_recomendada": "ninguna",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 4.5 — bajo umbral paper 5.0. | Sector Discretionary priority -> 0 (2026-09-01)",
+      "notas": "Score 4.5 — bajo umbral paper 5.0. | Sector Discretionary priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": 74.16000366210938,
       "mom_5d_pct": -3.725814828857118,
       "mom_20d_pct": -16.48648523256851,
@@ -1661,8 +1634,8 @@
     },
     {
       "ticker": "CIEN",
-      "score": 4.0,
-      "score_ajustado": 4.0,
+      "score": 5.0,
+      "score_ajustado": 5.0,
       "estado": "vigilar_cauteloso",
       "asimetria_pct": 6.936416184971105,
       "whisper": 1.85,
@@ -1673,10 +1646,15 @@
       "vs_ma200_pct": 1.3,
       "runup_5d_pct": -4.4,
       "penalizacion_beat_and_fade": 0,
-      "accion_recomendada": "ninguna — score < umbral 7.0/8.75",
+      "accion_recomendada": "NO ENTRAR — score 5.0 < 7.5 y max_cowork_positions=2 ocupado. Vigilar reaccion post-print.",
       "expira": "2026-09-03T20:00:00Z",
-      "detectado_por": "sentinel-postclose-2026-08-28-16",
-      "notas": "Whisper/consensus REALES via EW JSON API (api/getstocksdata). Fuente restaurada y verificada."
+      "detectado_por": "sentinel-postclose-2026-08-28-16|post-market-review",
+      "notas": "Whisper/consensus REALES via EW JSON API (api/getstocksdata). Fuente restaurada y verificada. | POST-MARKET 2026-09-02: score subido 4.0->5.0 por supply-chain AVGO beat (+0.5) y sector technology +1. CONTRA decisivo: momentum severamente negativo (-12.25% 5d, 354.52 vs MA10 382.80). Aplica LECCION CRDO (2026-09-01): asimetria alta no compensa momentum negativo severo en shock de tipos. NO ENTRAR.",
+      "score_total": 5.0,
+      "score_macro_bonus": 1,
+      "supply_chain_signal": true,
+      "stop_tipo": "ATRx2.5 ventana 09:30-10:30 ET (ATR14=22.94)",
+      "argumento": "Optica datacenter AI. Beat rate 4/4. Consenso Q3 FY26 rev $1.64B (+34% YoY), EPS non-GAAP $1.73 (+158%). AVGO confirma AH que el capex AI acelera (AI semis $16.7B, +221% YoY) -> lectura directa positiva. Goldman: TAM optica $15B->$154B en 2028."
     },
     {
       "ticker": "IOT",
@@ -1720,7 +1698,7 @@
       "ticker": "GIII",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "asimetria_pct": 24.0,
       "whisper": 0.31,
       "consensus": 0.25,
@@ -1733,7 +1711,7 @@
       "accion_recomendada": "esperar_fin_shock",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 6.0 (asim +24.0%, beat_rate 0.75). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Discretionary priority -> 0 (2026-09-01)",
+      "notas": "Score 6.0 (asim +24.0%, beat_rate 0.75). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Discretionary priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": 32.59000015258789,
       "mom_5d_pct": -3.5798790289496027,
       "mom_20d_pct": -10.467036301034936,
@@ -1747,7 +1725,7 @@
       "ticker": "WOOF",
       "score": 5.0,
       "score_ajustado": 5.0,
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "asimetria_pct": 14.29,
       "whisper": 0.08,
       "consensus": 0.07,
@@ -1760,7 +1738,7 @@
       "accion_recomendada": "esperar_fin_shock",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 5.0 (asim +14.3%, beat_rate 0.5). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Retail-Wholesale priority -> 0 (2026-09-01)",
+      "notas": "Score 5.0 (asim +14.3%, beat_rate 0.5). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Retail-Wholesale priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": 2.6600000858306885,
       "mom_5d_pct": -7.638889578757436,
       "mom_20d_pct": -8.591065038702054,
@@ -1866,7 +1844,7 @@
       "ticker": "AGX",
       "score": 5.0,
       "score_ajustado": 5.0,
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "asimetria_pct": 5.99,
       "whisper": 2.83,
       "consensus": 2.67,
@@ -1879,7 +1857,7 @@
       "accion_recomendada": "esperar_fin_shock",
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
-      "notas": "Score 5.0 (asim +6.0%, beat_rate 1.0). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Construction priority -> 0 (2026-09-01)",
+      "notas": "Score 5.0 (asim +6.0%, beat_rate 1.0). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Construction priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "precio": 424.989990234375,
       "mom_5d_pct": -9.379935119076011,
       "mom_20d_pct": -28.291092786397233,
@@ -1893,7 +1871,7 @@
       "ticker": "PHR",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "asimetria_pct": 30.0,
       "whisper": 0.13,
       "consensus": 0.1,
@@ -1908,7 +1886,7 @@
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
       "fuente": "EW JSON API (caldata+getstocksdata)",
-      "notas": "Score 6.0 (asim +30.0%, beat_rate 0.75). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Technology priority -> 0 (2026-09-01)",
+      "notas": "Score 6.0 (asim +30.0%, beat_rate 0.75). Entrada bloqueada este ciclo por SHOCK oil_spike. | Sector Technology priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
       "score_macro_bonus": 0
@@ -1917,7 +1895,7 @@
       "ticker": "NTSK",
       "score": 4.0,
       "score_ajustado": 4.0,
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "asimetria_pct": 28.57,
       "whisper": -0.05,
       "consensus": -0.07,
@@ -1932,7 +1910,7 @@
       "expira": "2026-09-02T20:00:00Z",
       "detectado_por": "sentinel-preopen-2026-09-01",
       "fuente": "EW JSON API (caldata+getstocksdata)",
-      "notas": "Score 4.0 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01)",
+      "notas": "Score 4.0 — bajo umbral paper 5.0. | Sector Technology priority -> 0 (2026-09-01) | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
       "score_macro_bonus": 0
@@ -1989,7 +1967,7 @@
       "ticker": "HPE",
       "score": 7.7,
       "score_ajustado": 7.7,
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "earnings_fecha": "2026-09-02",
       "earnings_timing": "after-hours",
       "asimetria_pct_PROXY": null,
@@ -2008,7 +1986,8 @@
       "nota": "AH 2-sep. Cons $0.94 > guia alta $0.93 (riesgo). Calls 72% vol 4.4k. +54.9% vs MA200.",
       "scan_ts": "2026-09-01T14:28:47Z",
       "ejecutado": false,
-      "motivo_no_ejecucion": "Claude/Cowork no envia ordenes a broker (paper ni real). Candidato entregado para revision manual de Paco."
+      "motivo_no_ejecucion": "Claude/Cowork no envia ordenes a broker (paper ni real). Candidato entregado para revision manual de Paco.",
+      "notas": " | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)"
     },
     {
       "ticker": "SNOW",
@@ -2048,13 +2027,19 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 306.11
-      }
+      },
+      "precio_salida": 306.11,
+      "pnl_pct": -4.92,
+      "pnl_abs": -253.44,
+      "pnl_r": -0.87,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)",
+      "fecha_ejecucion": "2026-09-02"
     },
     {
       "ticker": "OLLI",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "earnings_fecha": "2026-09-02",
       "earnings_timing": "pre-market",
       "asimetria_pct_PROXY": null,
@@ -2073,7 +2058,8 @@
       "nota": "BMO 2-sep = unico D-1 puro hoy. Calls 97% (3073c/93p). -19.6% vs MA200. Upside +41%. Pero mov medio solo 3.9%.",
       "scan_ts": "2026-09-01T14:28:47Z",
       "ejecutado": false,
-      "motivo_no_ejecucion": "Claude/Cowork no envia ordenes a broker (paper ni real). Candidato entregado para revision manual de Paco."
+      "motivo_no_ejecucion": "Claude/Cowork no envia ordenes a broker (paper ni real). Candidato entregado para revision manual de Paco.",
+      "notas": " | Auto-expirado 2026-09-02 por post-market (ventana cerrada, no ejecutado)"
     },
     {
       "ticker": "FIVE",
@@ -2113,7 +2099,13 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 242.46
-      }
+      },
+      "precio_salida": 242.46,
+      "pnl_pct": -1.65,
+      "pnl_abs": -89.32,
+      "pnl_r": -0.29,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)",
+      "fecha_ejecucion": "2026-09-02"
     },
     {
       "ticker": "AVGO",
@@ -2240,7 +2232,7 @@
       "qty_real": 0,
       "accion_recomendada": "cerrar_antes_earnings_AH_02sep_14:30ET",
       "detectado_por": "sentinel-vivo",
-      "fecha_ejecucion": "2026-09-01",
+      "fecha_ejecucion": "2026-09-02",
       "ts_entrada": "2026-09-01T11:19:51.002773+00:00",
       "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
       "expira": "2026-09-02T20:00:00Z",
@@ -2256,7 +2248,12 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 242.46
-      }
+      },
+      "precio_salida": 242.46,
+      "pnl_pct": -1.65,
+      "pnl_abs": -89.32,
+      "pnl_r": -0.29,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)"
     },
     {
       "ticker": "SNOW",
@@ -2283,7 +2280,7 @@
       "qty_real": 0,
       "accion_recomendada": "cerrar_antes_earnings_AH_02sep_14:30ET",
       "detectado_por": "sentinel-vivo",
-      "fecha_ejecucion": "2026-09-01",
+      "fecha_ejecucion": "2026-09-02",
       "ts_entrada": "2026-09-01T11:19:51.002773+00:00",
       "alerta_earnings_overnight": "CERRAR ANTES 15:30 ET el 2026-09-02 — earnings after-hours esa tarde (R0 obligatorio)",
       "expira": "2026-09-02T20:00:00Z",
@@ -2299,7 +2296,12 @@
         "fecha": "2026-09-02 12:34 ET",
         "motivo": "earnings_AH_hoy_score<8.5",
         "precio_salida": 306.11
-      }
+      },
+      "precio_salida": 306.11,
+      "pnl_pct": -4.92,
+      "pnl_abs": -253.44,
+      "pnl_r": -0.87,
+      "motivo_cierre": "R0 pre-close (earnings AH mismo dia)"
     },
     {
       "ticker": "VSXY",
@@ -2395,9 +2397,16 @@
       "qty_paper": 80,
       "cid_paper": "COWORK-SENT-202609021827-AMBA",
       "atr": 3.19,
-      "alerta_earnings_overnight": false,
+      "alerta_earnings_overnight": "CERRAR antes de las 15:30 ET del 2026-09-03 — earnings after-hours esa noche (regla R0)",
       "expira": "2026-09-03T20:00:00Z",
-      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer)."
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=2.86, stop teorico ATRx1.5=62.42. Entrada ejecutada por sentinel a las 14:27 ET con score 6.0 < min_signal_score=7.5.",
+      "precio_entrada": 66.71,
+      "precio_actual": 67.2,
+      "pnl_pct_latente": 0.73,
+      "pnl_abs_latente": 39.2,
+      "qty": 80,
+      "stop_real_en_alpaca": false,
+      "R_actual": 0.11
     },
     {
       "ticker": "GWRE",
@@ -2421,18 +2430,46 @@
       "qty_paper": 28,
       "cid_paper": "COWORK-SENT-202609021827-GWRE",
       "atr": 7.81,
-      "alerta_earnings_overnight": false,
+      "alerta_earnings_overnight": "CERRAR antes de las 15:30 ET del 2026-09-03 — earnings after-hours esa noche (regla R0)",
       "expira": "2026-09-03T20:00:00Z",
-      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer)."
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=7.23, stop teorico ATRx1.5=180.32. Entrada ejecutada por sentinel a las 14:27 ET con score 5.5 < min_signal_score=7.5.",
+      "precio_entrada": 191.17,
+      "precio_actual": 192.76,
+      "pnl_pct_latente": 0.83,
+      "pnl_abs_latente": 44.52,
+      "qty": 28,
+      "stop_real_en_alpaca": false,
+      "R_actual": 0.15
+    },
+    {
+      "ticker": "LULU",
+      "score": 3.0,
+      "score_ajustado": 3.0,
+      "score_total": 3.0,
+      "fecha_deteccion": "2026-09-02",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-03",
+      "earnings_timing": "after-hours",
+      "accion_recomendada": "DESCARTAR",
+      "ventana_entrada": null,
+      "stop_tipo": null,
+      "sizing": null,
+      "sector": "consumer_discretionary",
+      "estado": "descartado_score",
+      "expira": "2026-09-03T22:00:00Z",
+      "score_macro_bonus": -1,
+      "conviction_tier": "no_entry",
+      "argumento": "Q2 FY26 AH 3-sep.",
+      "notas": "Sector consumer_discretionary en prioridad -1 (petroleo $90 comprime renta disponible). Cobertura previa explicitamente bajista ('could send the stock plummeting'). Earnings AH -> no ejecutable antes de apertura. DESCARTADO."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-01",
+    "fecha_actualizacion": "2026-09-02",
     "semana": "2026-W36",
-    "regimen": "GLOBAL_BOND_SHOCK + HAWKISH_WARSH",
-    "vix": 15.13,
+    "regimen": "GLOBAL_BOND_SHOCK + US_IRAN_ESCALATION + AI_CAPEX_BOOM",
+    "vix": 16.3,
     "yield_spread_10y2y": null,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-01: SHOCK GLOBAL DE BONOS. El US 10Y sube por 5a sesion consecutiva hasta 4.78% (maximo desde enero); el JGB 10Y toca 3.00% (maximo desde 1996) y el indice global de deuda rinde lo mas alto desde mediados de 2008. La inflacion de la eurozona se acelera al ritmo mas rapido desde 2023 -> ECB al alza la semana que viene. Barclays y SocGen ANADEN subidas de tipos a sus previsiones 2026. La mesa de trading de JPMorgan pasa a 'tacticamente cauta' en renta variable US tras Warsh. GEOPOLITICA: dos superpetroleros alcanzados por proyectiles en el Estrecho de Ormuz -> WTI +2.4% a $87.84; la energia es el UNICO sector claramente verde (XLE +1.33%, CVX +2.32%, COP +2.77%, XOM +2.18%, MPC +2.51%). REACCION EQUITY: SPY -0.68%, QQQ -1.26%, IWM -1.12%, XLK -1.45%; el complejo software/AI se desploma (CRDO -8.5%, DELL -7.1%, CIEN -5.8%, PANW -5.2%, MDB -4.2%). GLD -2.88%: Warsh sigue matando el trade del oro. VIX ~16.1 (+7%) desde 15.38 pero aun bajo. Catalizador clave de la semana: informe de empleo del VIERNES 4-sep. IMPLICACION: compresion de multiplos en high-duration tech; los beats sin guia excelente NO se premian.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-02: TRES FUERZAS SIMULTANEAS. (1) GEOPOLITICA EN ESCALADA: EEUU ejecuta su segunda ronda de ataques sobre Iran en tres dias; Teheran responde golpeando bases americanas en la region y advierte de represalia mayor. Trump rebaja las opciones de acuerdo. WTI ~$90.4, maximo de cinco semanas; presion sobre precios en surtidor. Chevron compromete $7.000M en Venezuela y EEUU empuja a duplicar produccion venezolana -> oferta compensatoria a medio plazo, pero la prima de riesgo a corto es alcista para energia. (2) BOND ROUT CONTINUA: el 30Y vuelve a niveles previos al movimiento de Bessent, el diferencial de tipos US-China roza maximo historico, el petroleo a $90 realimenta el miedo inflacionista. Aun asi, lejos del desplome de 2022. (3) AI CAPEX INTACTO Y ACELERANDO: BROADCOM publica AH hoy revenue $29.600M (+86% YoY) con ingresos de semiconductores AI de $16.700M (+221% YoY, +54% QoQ) y EPS non-GAAP $3.32 (+96%); Dell subio ayer su guia anual en $25.000M por demanda de servidores AI; NVDA cerca de comprar Hugging Face por $14.000M; PwC proyecta $32 billones de gasto en centros de datos hasta 2050. La dicotomia del regimen: la duracion se castiga por tipos, pero el capex de AI es el unico motor de beneficios que no se frena. IMPLICACION OPERATIVA: priorizar energia y hardware/infra AI con beat demostrable; evitar software de alta duracion sin guia excelente y consumo discrecional. Catalizador clave: informe de empleo VIERNES 4-sep. VIX ~16.3 (bajo, sin panico pese al ruido geopolitico).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 27/28-ago",
       "Bloomberg Breaking: Warsh Says Inflation Isn't Slowing",
@@ -2440,18 +2477,19 @@
       "EarningsWhispers epsguidance summaries",
       "Alpaca market data (ETFs sectoriales)",
       "WebSearch weekly recap",
-      "Gmail post-market 2026-09-01: 11 emails (Bloomberg Markets Daily/Energy Daily/Morning Briefing, EW Summary 31-ago, EW Whisper Report 1112, InsiderFinance, TipRanks) + WebSearch VIX/CRDO/AVGO/SNOW/FIVE timing"
+      "Gmail post-market 2026-09-01: 11 emails (Bloomberg Markets Daily/Energy Daily/Morning Briefing, EW Summary 31-ago, EW Whisper Report 1112, InsiderFinance, TipRanks) + WebSearch VIX/CRDO/AVGO/SNOW/FIVE timing",
+      "Gmail post-market 2026-09-02: 14 emails (Bloomberg x7, TipRanks x3, EW summary, InsiderFinance) + WebSearch AVGO/CIEN/VIX"
     ],
     "sector_prioridades": {
       "technology": 1,
       "communication": 1,
       "financials": 1,
-      "consumer_discretionary": 0,
+      "consumer_discretionary": -1,
       "utilities": 0,
-      "defense": 0,
+      "defense": 1,
       "industrials": -1,
       "healthcare": -1,
-      "energy": 1,
+      "energy": 2,
       "materials": -1,
       "consumer_staples": -1,
       "real_estate": -1
@@ -2460,9 +2498,11 @@
       "technology",
       "communication",
       "financials",
+      "defense",
       "energy"
     ],
     "sectores_a_evitar_esta_semana": [
+      "consumer_discretionary",
       "industrials",
       "healthcare",
       "materials",
@@ -2496,7 +2536,7 @@
       }
     ],
     "dias_riesgo_macro": [
-      "2026-09-04"
+      "2026-09-04 (informe de empleo US)"
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
@@ -2550,15 +2590,6 @@
       "yield_30y": 5.27
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-07-27",
-        "evento": "Inicio semana FOMC (decision miercoles, sin dot plot). Mega-cap earnings martes.",
-        "impacto": "ALTO",
-        "sectores_afectados": [
-          "all"
-        ],
-        "fuente": "WebSearch (Kiplinger/CME)"
-      },
       {
         "fecha": "2026-07-28",
         "evento": "Rotacion out-of-semis; MU/AMD -8%, SMH -3% (4o dia). Vispera FOMC.",
@@ -2778,6 +2809,18 @@
           "consumer_discretionary"
         ],
         "fuente": "Bloomberg Markets Daily 2026-09-01 + Energy Daily"
+      },
+      {
+        "fecha": "2026-09-02",
+        "evento": "BROADCOM bate masivamente AH (AI semis $16.7B, +221% YoY). Segunda ronda de ataques US sobre Iran, represalia iraní sobre bases US. WTI $90.4.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "semiconductors",
+          "energy",
+          "defense"
+        ],
+        "fuente": "Bloomberg Morning Briefing + StockTitan/WebSearch"
       }
     ],
     "macro_score_pm": -0.8,
@@ -5774,6 +5817,14 @@
         "sentinel_respeta_umbral_global": true
       },
       "motivo": "SNOW(6.0-7.3) y FIVE(6.0) ejecutados por el sentinel bajo el umbral 7.5; ambos en perdida al cierre. Cerrar el bypass."
+    },
+    {
+      "fecha": "2026-09-02",
+      "parametros": {
+        "stop_obligatorio_tras_ejecucion": true,
+        "stop_debe_ser_tipo_stop": true
+      },
+      "motivo": "AMBA y GWRE quedaron overnight sin stop real con earnings AH manana; el sentinel reporto stop=true por una orden LIMIT."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -5815,12 +5866,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-01",
+    "_ultima_actualizacion": "2026-09-02",
     "rendimiento_global": {
-      "equity_paper_actual": 108120.69,
+      "equity_paper_actual": 107972.52,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2620.69,
-      "pnl_total_paper_pct": 2.48,
+      "pnl_total_paper_dolares": 2472.52,
+      "pnl_total_paper_pct": 2.34,
       "equity_real_actual": 4548.12,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.12,
@@ -5835,18 +5886,18 @@
       "equity_paper_peak": 109924.64
     },
     "cowork_trading": {
-      "operaciones_totales": 22,
-      "operaciones_cerradas": 22,
+      "operaciones_totales": 24,
+      "operaciones_cerradas": 24,
       "operaciones_ganadoras": 8,
-      "operaciones_perdedoras": 14,
+      "operaciones_perdedoras": 16,
       "operaciones_break_even": 0,
-      "win_rate_pct": 36.4,
-      "avg_r_logrado": -0.1,
-      "profit_factor": 2.27,
-      "avg_pnl_por_operacion_dolares": 113.93,
+      "win_rate_pct": 33.3,
+      "avg_r_logrado": -0.16,
+      "profit_factor": 3.13,
+      "avg_pnl_por_operacion_dolares": 77.38,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1264.65,
-      "mayor_perdida_dolares": -904.8,
+      "mayor_perdida_dolares": -253.44,
       "racha_ganadora_actual": 0,
       "racha_perdedora_actual": 4,
       "racha_ganadora_max": 4,
@@ -5869,9 +5920,9 @@
       "_nota_27ago": "Sin operaciones abiertas ni cerradas hoy: 0 ejecuciones (3 vetadas por runup). KPIs de trading sin cambios."
     },
     "calidad_señal": {
-      "score_medio_entradas": null,
-      "score_medio_ganadoras": null,
-      "score_medio_perdedoras": null,
+      "score_medio_entradas": 8.5,
+      "score_medio_ganadoras": 8.97,
+      "score_medio_perdedoras": 8.22,
       "correlacion_score_resultado": null,
       "precision_por_fuente": {
         "unknown": {
@@ -5929,7 +5980,7 @@
           "win_rate": null
         }
       },
-      "false_positive_rate_pct": null,
+      "false_positive_rate_pct": 66.7,
       "candidatos_validados_ejecutados": 0,
       "candidatos_validados_expirados_sin_ejecutar": 0,
       "candidatos_validados_descartados": 0
@@ -5946,9 +5997,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 1.64,
+      "max_drawdown_paper_pct": 1.78,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-09-01",
+      "max_drawdown_paper_fecha": "2026-09-02",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4548.13,
@@ -5958,7 +6009,7 @@
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
       "max_drawdown_paper_actual_pct": 1.54,
-      "drawdown_actual_pct": 1.54
+      "drawdown_actual_pct": 1.78
     },
     "bot_metricas": {
       "paper": {
@@ -6419,6 +6470,16 @@
         "vix": 16.1,
         "posiciones_abiertas": 2,
         "regimen": "GLOBAL_BOND_SHOCK + HAWKISH_WARSH"
+      },
+      {
+        "fecha": "2026-09-02",
+        "equity_paper": 107972.52,
+        "equity_real": 4548.12,
+        "pnl_dia_paper": -123.34,
+        "win_rate_acumulado": 33.3,
+        "avg_r_acumulado": -0.16,
+        "operaciones_acumuladas": 24,
+        "vix": 16.3
       }
     ],
     "objetivos": {
@@ -8477,6 +8538,26 @@
       ],
       "evento_clave": "Shock global de bonos (US10Y 4.78%, JGB10Y 3.00%) + 2 superpetroleros alcanzados en Ormuz (WTI +2.4%): energia unico sector verde, software/AI se desploma.",
       "leccion": "SAIC batio el whisper por +17.6% Y subio guia FY, y aun asi cerro -1.19%: en regimen de compresion de multiplos el beat+raise NO garantiza reaccion. El filtro beat_and_fade que descarto SAIC (score 8.3) evito una perdida."
+    },
+    {
+      "fecha": "2026-09-02",
+      "dia": "Miercoles",
+      "equity_paper_cierre": 107972.52,
+      "variacion_dia": -123.34,
+      "variacion_pct": -0.11,
+      "equity_real_cierre": 4548.12,
+      "vix": 16.3,
+      "regimen_macro": "GLOBAL_BOND_SHOCK + US_IRAN_ESCALATION + AI_CAPEX_BOOM",
+      "trades_paper": [
+        "SNOW sell 16 @ $306.11 (R0 pre-earnings)",
+        "FIVE sell 22 @ $242.46 (R0 pre-earnings)",
+        "AMBA buy 80 @ $66.71 (sentinel, score 6.0)",
+        "GWRE buy 28 @ $191.17 (sentinel, score 5.5)"
+      ],
+      "realizado_hoy": -342.76,
+      "latente_nuevas_posiciones": 83.72,
+      "evento_clave": "BROADCOM bate masivamente AH: semis AI $16.700M, +221% YoY — el capex AI se acelera pese al shock de bonos. En paralelo, EEUU golpea Iran por segunda vez en tres dias y Teheran responde; WTI $90.4.",
+      "leccion": "El gate de score del sentinel sigue sin aplicarse: dos entradas mas fuera de gobernanza (AMBA 6.0, GWRE 5.5) y ambas quedan overnight sin stop real con earnings manana."
     }
   ],
   "alertas_criticas": [
@@ -8649,6 +8730,19 @@
       "fecha": "2026-08-28",
       "tipo": "accion_pendiente_no_resoluble",
       "detalle": "verificar_gap_hold_ESTC (pendiente del 27-ago) usa como denominador un gap del 22.12% que no se observa: ESTC cerro el 27-ago en $83.74, +5.63% sobre $79.28. La accion queda sin base de calculo -> marcar como obsoleta o recalcular el denominador."
+    },
+    {
+      "fecha": "2026-09-02",
+      "tipo": "SIN_STOP_OVERNIGHT_CON_EARNINGS_MANANA",
+      "urgencia": "MAXIMA",
+      "resuelto": false,
+      "tickers": [
+        "AMBA",
+        "GWRE"
+      ],
+      "mensaje": "AMBA (80 acc @66.71) y GWRE (28 acc @191.17) quedan overnight SIN orden de stop en Alpaca — solo tienen orden LIMIT de take-profit (76.22 / 214.46). Ambas reportan earnings AFTER-HOURS manana 3-sep. Riesgo teorico a stop ATRx1.5: $343 (AMBA) + $304 (GWRE) = $647.",
+      "accion_requerida": "1) Colocar stop GTC manualmente: AMBA sell stop 62.42 / GWRE sell stop 180.32. 2) REGLA R0: cerrar ambas posiciones antes de las 15:30 ET del 2026-09-03, antes del print.",
+      "nota": "Cowork no ejecuta ordenes; requiere accion del usuario o de la tarea intraday/pre-close."
     }
   ],
   "mejoras_sistema": [
@@ -8906,7 +9000,28 @@
       "evidencia": "1-sep: COWORK-SENT-202609011518 SNOW(score 6.0-7.3, -1.54%) y FIVE(score 6.0, -0.58%) ejecutados pese a min_signal_score=7.5.",
       "archivo_modificado": "performance_log.parametros_activos",
       "impacto_esperado": "Elimina entradas de baja conviccion; sube el score medio de entrada y con ello el win rate esperado.",
+      "implementada": false,
+      "verificacion_2026-09-02": "FALLIDA. El sentinel volvio a entrar hoy por debajo del umbral (AMBA 6.0, GWRE 5.5). El parametro declarativo no basta: hay que instrumentar el gate en el codigo del sentinel."
+    },
+    {
+      "fecha": "2026-09-02",
+      "tipo": "regla_anadida",
+      "descripcion": "Desdoblado el cubo 'technology' de sector_prioridades en ai_infrastructure_hardware (+2) vs software_alta_duracion (0) para el regimen actual, y anadida senal de supply chain con AVGO como anchor beat (downstream: CIEN, MRVL, ALAB, CRDO, ANET, COHR, LITE, AMD, NVDA, VRT, bonus +0.5, caduca 7 dias).",
+      "evidencia": "AVGO score 4.5 -> descartado -> batio con AI semis +221% YoY. El scoring lo castigo por el selloff de software AI del 1-sep pese a que AVGO es hardware de capex AI, no software de duracion.",
+      "archivo_modificado": "performance_log.json (macro_context.sector_prioridades + supply_chain_signals)",
+      "impacto_esperado": "Deja de penalizar hardware/infra AI por el selloff de software, y da +0.5 automatico a los downstream del anchor durante 7 dias.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-09-02",
+      "tipo": "bug_detectado",
+      "descripcion": "Deteccion de stop debe filtrar por order type ('stop','stop_limit','trailing_stop'); actualmente una orden LIMIT sell cuenta como stop.",
+      "evidencia": "sentinel_log 15:25 registra AMBA stop=true; Alpaca solo devuelve una orden LIMIT 76.22 (take-profit). AMBA y GWRE quedan sin proteccion overnight con earnings AH manana.",
+      "archivo_modificado": "sentinel/SKILL.md + intraday-monitor/SKILL.md (pendiente — no accesibles desde esta sesion aislada)",
+      "impacto_esperado": "Elimina falsos positivos de cobertura y evita posiciones desnudas overnight.",
+      "implementada": false,
+      "old_text": "o['type'] in ('stop', 'stop_limit', 'trailing_stop')",
+      "new_text": "o['type'] in ('stop', 'stop_limit', 'trailing_stop')"
     }
   ],
   "industry_intelligence": {
@@ -8914,10 +9029,10 @@
     "_descripcion": "Matriz de inteligencia por sector/industria. Se actualiza automáticamente con cada trade cerrado. Las tareas pre-market y post-market la consultan para ajustar scoring.",
     "sector_track_record": {
       "technology": {
-        "trades_total": 2,
+        "trades_total": 3,
         "trades_ganados": 0,
-        "win_rate": 50.0,
-        "avg_r": 0.14,
+        "win_rate": 0.0,
+        "avg_r": -0.2,
         "avg_pnl_pct": null,
         "best_pattern": null,
         "worst_pattern": null,
@@ -9082,10 +9197,10 @@
         "_last_update": "2026-05-16"
       },
       "consumer_discretionary": {
-        "trades_total": 0,
+        "trades_total": 1,
         "trades_ganados": 0,
-        "win_rate": null,
-        "avg_r": null,
+        "win_rate": 0.0,
+        "avg_r": -0.29,
         "avg_pnl_pct": null,
         "sub_industries": {
           "auto": {
@@ -9357,55 +9472,6 @@
     },
     "signals_activos_esta_semana": [
       {
-        "chain_name": "ai_semicap",
-        "anchor": "AMAT",
-        "anchor_resultado": "record revenue +25% YoY, guia Q4 por encima, capex chips >30%",
-        "downstream_beneficiarios": [
-          "LRCX",
-          "KLAC",
-          "ASML",
-          "ADI",
-          "KEYS"
-        ],
-        "bonus_score": 0.5,
-        "fecha": "2026-08-13",
-        "expira": "2026-08-29",
-        "nota": "AMAT confirma demanda de equipo AI. ADI reporta 19-ago: beneficiario directo."
-      },
-      {
-        "chain_name": "ai_networking_power",
-        "anchor": "CSCO",
-        "anchor_resultado": "target $7.5B AI infra revenue 2027, pedidos cloud x4.5",
-        "downstream_beneficiarios": [
-          "ANET",
-          "VRT",
-          "ETN",
-          "PWR",
-          "NBIS"
-        ],
-        "bonus_score": 0.5,
-        "fecha": "2026-08-12",
-        "expira": "2026-08-29",
-        "nota": "Supercycle de networking + energia para datacenter confirmado por CSCO/SMCI/CRWV."
-      },
-      {
-        "chain_name": "consumo_gasolina_negativa",
-        "anchor": "WMT_guidance",
-        "anchor_resultado": "gasolina cara exprime al consumidor de renta baja (repostajes <10 galones, 1a vez desde 2022)",
-        "downstream_beneficiarios": [],
-        "downstream_perjudicados": [
-          "DG",
-          "DLTR",
-          "TGT",
-          "HD",
-          "LOW"
-        ],
-        "bonus_score": -0.5,
-        "fecha": "2026-08-15",
-        "expira": "2026-08-29",
-        "nota": "SENAL NEGATIVA: penalizar retail discrecional expuesto a renta baja."
-      },
-      {
         "chain_name": "ai_networking_optica",
         "anchor": "NVDA",
         "anchor_resultado": "beat 26-ago; guia por encima de consenso aunque el mercado la recibio con tibieza",
@@ -9421,6 +9487,28 @@
         "fecha": "2026-08-29",
         "expira": "2026-09-05",
         "nota": "El cluster AVGO(2-sep)+CRDO(1-sep)+CIEN(3-sep) reporta en la misma semana. AVGO es el ancla real del read-through de AI networking."
+      },
+      {
+        "chain": "ai_datacenter_optical_networking",
+        "anchor": "AVGO",
+        "anchor_resultado": "beat_masivo",
+        "fecha": "2026-09-02",
+        "detalle": "AVGO Q3 FY26: rev $29.6B (+86% YoY), AI semis $16.7B (+221% YoY, +54% QoQ), EPS non-GAAP $3.32 (+96%). FCF $13.7B (+95%).",
+        "downstream_beneficiarios": [
+          "CIEN",
+          "MRVL",
+          "ALAB",
+          "CRDO",
+          "ANET",
+          "COHR",
+          "LITE",
+          "AMD",
+          "NVDA",
+          "VRT"
+        ],
+        "bonus_score": 0.5,
+        "signal_type": "AI capex confirmado en el trimestre — lectura positiva para optica/networking de datacenter",
+        "expira": "2026-09-09"
       }
     ]
   },
@@ -9897,6 +9985,17 @@
           "bot_pnl_latente_pct": 0.0,
           "tickers_bot": [],
           "nota": "Sin posiciones de equity en paper ni real. Solo polvo crypto (BTCUSD/SOLUSD, <$1 nocional). Sin stops que verificar."
+        },
+        {
+          "fecha": "2026-09-02",
+          "bot_positions": 2,
+          "bot_sin_stop": 2,
+          "bot_pnl_latente_pct": 47.24,
+          "tickers_bot": [
+            "BTCUSD",
+            "SOLUSD"
+          ],
+          "nota": "Solo dust cripto (BTCUSD $0.38, SOLUSD $0.00). No accionable — leccion 2026-08-11."
         }
       ]
     },
@@ -10724,6 +10823,15 @@
       "score_sistema": 8.0,
       "parametros_version": "2026-09-01",
       "mejora_hoy": "sentinel_score_min_entrada=7.5 (cierra bypass del umbral)"
+    },
+    {
+      "fecha": "2026-09-02",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 30,
+      "candidatos_activos": 2,
+      "score_salud_sistema": 5.6,
+      "parametros_version": "2026-09-02",
+      "mejora_hoy": "Desdoblado technology en ai_infrastructure vs software_duracion + supply chain AVGO anchor beat"
     }
   ],
   "motor_alpha_diario": {
@@ -17435,24 +17543,34 @@
   ],
   "acciones_pendientes_manana": [
     {
-      "fecha": "2026-09-02",
-      "symbol": "SNOW",
-      "qty": 16,
-      "accion": "cerrar_R0_pre_earnings",
-      "hora_limite_ET": "15:30",
-      "urgencia": "MAXIMA",
-      "motivo": "SNOW reporta earnings AFTER-HOURS el 2026-09-02 (SNOW call 17:00 ET / FIVE call 16:30 ET). Movimiento medio historico SNOW ~12.8%. NO mantener overnight.",
-      "responsable": "pre-close-manager (14:30 ET)"
+      "fecha": "2026-09-03",
+      "symbol": "AMBA",
+      "accion": "colocar_stop_gtc_apertura",
+      "stop_price": 62.42,
+      "qty": 80,
+      "prioridad": "MAXIMA"
     },
     {
-      "fecha": "2026-09-02",
-      "symbol": "FIVE",
-      "qty": 22,
-      "accion": "cerrar_R0_pre_earnings",
-      "hora_limite_ET": "15:30",
-      "urgencia": "MAXIMA",
-      "motivo": "FIVE reporta earnings AFTER-HOURS el 2026-09-02 (SNOW call 17:00 ET / FIVE call 16:30 ET). Movimiento medio historico SNOW ~12.8%. NO mantener overnight.",
-      "responsable": "pre-close-manager (14:30 ET)"
+      "fecha": "2026-09-03",
+      "symbol": "GWRE",
+      "accion": "colocar_stop_gtc_apertura",
+      "stop_price": 180.32,
+      "qty": 28,
+      "prioridad": "MAXIMA"
+    },
+    {
+      "fecha": "2026-09-03",
+      "symbol": "AMBA",
+      "accion": "R0_cerrar_antes_1530ET",
+      "motivo": "earnings AH 3-sep",
+      "prioridad": "MAXIMA"
+    },
+    {
+      "fecha": "2026-09-03",
+      "symbol": "GWRE",
+      "accion": "R0_cerrar_antes_1530ET",
+      "motivo": "earnings AH 3-sep",
+      "prioridad": "MAXIMA"
     }
   ],
   "auditoria_tareas": [
@@ -18014,6 +18132,56 @@
       },
       "tareas_con_issues": [
         "sentinel"
+      ]
+    },
+    {
+      "fecha": "2026-09-02",
+      "score_sistema": 5.6,
+      "tareas": {
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "detalle": "Cerro SNOW y FIVE a las 12:33 ET antes de sus earnings AH. R0 ejecutada correctamente."
+        },
+        "sentinel": {
+          "ok": false,
+          "score": 2,
+          "issues": [
+            "Ejecuto AMBA (score 6.0) y GWRE (score 5.5) por debajo de min_signal_score=7.5 — REINCIDENCIA del bug del 1-sep",
+            "Reporto stop=true para AMBA cuando solo existe una orden LIMIT de take-profit",
+            "No coloco stops reales tras ejecutar las dos entradas"
+          ],
+          "ciclos_hoy": 5
+        },
+        "pre-market-earnings-scan": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "AVGO puntuado 4.5 y descartado; batio con AI semis +221% YoY — coste de oportunidad significativo",
+            "No propago la subida de guia de Dell (+$25.000M en servidores AI del 1-sep) como senal de supply chain"
+          ],
+          "candidatos_detectados": 5
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "No detecto que AMBA y GWRE quedaron sin stop tras la ejecucion del sentinel a las 14:27 ET"
+          ],
+          "stops_en_breakeven": 0
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "detalle": "Sin candidatos pendientes validos en ventana; nada que ejecutar. Correcto."
+        }
+      },
+      "tareas_con_issues": [
+        "sentinel",
+        "pre-market-earnings-scan",
+        "intraday-monitor"
       ]
     }
   ],
@@ -18582,6 +18750,20 @@
       "resultado": "CRM cerro la semana +22% (beat + guia FY al alza por adopcion de producto AI). CRWD y OKTA cerraron +3.76% y +3.97% el mismo dia del descarte.",
       "coste_estimado_usd": 952,
       "leccion": "El gate de run-up esta calibrado para evitar sell-the-news pero esta vetando tambien las continuaciones con catalizador fundamental."
+    },
+    {
+      "fecha": "2026-09-02",
+      "n_oportunidades": 1,
+      "coste_total_estimado": null,
+      "detalle": [
+        {
+          "ticker": "AVGO",
+          "motivo_descarte": "score 4.5 < umbral (vigilar_cauteloso, accion 'ninguna')",
+          "resultado_real": "Beat masivo AH: rev $29.600M +86% YoY, semis AI $16.700M +221% YoY, EPS non-GAAP $3.32 +96%",
+          "movimiento_real_pct": null,
+          "nota": "Reaccion de precio pendiente de medir el 3-sep. Registrado para cerrar el loop manana."
+        }
+      ]
     }
   ],
   "incidencias_sistema": [
@@ -18879,7 +19061,7 @@
       "accion": "Sustituir get_ew_headless() por cliente JSON en el SKILL. Este ciclo se uso el workaround y los datos cuadran con el CV previo."
     }
   ],
-  "ultima_actualizacion": "2026-09-02T14:28:46.654019+00:00",
+  "ultima_actualizacion": "2026-09-02T20:30:03.156948+00:00",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
