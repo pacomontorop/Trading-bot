@@ -442,6 +442,27 @@
       "accion_correctiva": "Separar 'technology' en dos cubos en sector_prioridades: ai_infrastructure_hardware (semis, optica, networking, energia de datacenter) y software_alta_duracion. En regimen de shock de tipos el primero merece bonus positivo y el segundo penalizacion; agregarlos en un solo 'technology' produjo el error. Ademas: un beat de guia de un proveedor upstream (Dell +$25.000M) debe propagarse como senal de supply chain ANTES del print del anchor, no despues.",
       "tarea_afectada": "pre-market-earnings-scan|post-market-review",
       "aplicada": false
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-preapertura-09:11ET",
+      "severidad": "alta",
+      "leccion": "AVGO batio consenso +5.06% el 02-sep AH y abre -3.0% premkt: BEAT-AND-FADE confirmado en el cohorte AI/semis. El beat de EPS NO es condicion suficiente para generar candidato post_earnings_continuation. Regla propuesta: exigir gap premarket >0 ADEMAS del beat antes de crear continuation.",
+      "accion": "No se genero candidato continuation para AVGO pese al beat."
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-preapertura-09:11ET",
+      "severidad": "media",
+      "leccion": "FUENTE EW CAIDA: earningswhispers.com (www y old, HTML y api/getstocksdata) devuelve shell SPA identico de 96.276 bytes para TODOS los tickers - sin datos por ticker. El navegador integrado tambien tiene el dominio bloqueado. El scan EW headless del sentinel no es operativo este ciclo.",
+      "accion": "Scan EW omitido. Se necesita fuente alternativa de whisper/consensus (ej. calendario earnings + consenso via yfinance/news)."
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-preapertura-09:11ET",
+      "severidad": "media",
+      "leccion": "SNOW cerrada el 02-sep 12:33 ET por regla pre-earnings; abrio +23.3% premkt el 03-sep tras reportar. La regla evita el riesgo de gap adverso pero renuncia a la cola derecha. Documentar como coste conocido de la politica, no como error: sin la regla, un gap -23% habria sido igualmente posible.",
+      "accion": "Registrado para revision de politica en el resumen semanal."
     }
   ],
   "operaciones": [
@@ -2399,14 +2420,15 @@
       "atr": 3.19,
       "alerta_earnings_overnight": "CERRAR antes de las 15:30 ET del 2026-09-03 — earnings after-hours esa noche (regla R0)",
       "expira": "2026-09-03T20:00:00Z",
-      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=2.86, stop teorico ATRx1.5=62.42. Entrada ejecutada por sentinel a las 14:27 ET con score 6.0 < min_signal_score=7.5.",
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=2.86, stop teorico ATRx1.5=62.42. Entrada ejecutada por sentinel a las 14:27 ET con score 6.0 < min_signal_score=7.5. | CORRECCION SENTINEL 2026-09-03 09:11 ET: la nota post-market del 09-02 ('SIN STOP REAL') es un FALSO POSITIVO. Verificado via /orders?status=all&nested=true: el bracket TIENE leg sell stop_limit viva en status='held' (AMBA stop=61.86/lim=61.24; GWRE stop=179.30/lim=177.51). El query con status=open no devuelve legs 'held'. NO se anade stop duplicado (crearia riesgo de venta 2x qty sobre el OCO). AMBBA/GWRE reportan HOY AH -> cierre obligatorio <=14:30 ET via pre-close.",
       "precio_entrada": 66.71,
       "precio_actual": 67.2,
       "pnl_pct_latente": 0.73,
       "pnl_abs_latente": 39.2,
       "qty": 80,
       "stop_real_en_alpaca": false,
-      "R_actual": 0.11
+      "R_actual": 0.11,
+      "stop_verificado_2026-09-03_premarket": true
     },
     {
       "ticker": "GWRE",
@@ -2432,14 +2454,15 @@
       "atr": 7.81,
       "alerta_earnings_overnight": "CERRAR antes de las 15:30 ET del 2026-09-03 — earnings after-hours esa noche (regla R0)",
       "expira": "2026-09-03T20:00:00Z",
-      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=7.23, stop teorico ATRx1.5=180.32. Entrada ejecutada por sentinel a las 14:27 ET con score 5.5 < min_signal_score=7.5.",
+      "notas": "Entrada sentinel 14:28 ET. Earnings 2026-09-03 AH -> hold overnight limpio (sin riesgo earnings esta noche). Salida obligatoria manana <=14:30 ET via pre-close. Bracket stop 1.5xATR / TP 3.0xATR, ambos verificados (leg status=held). Fuente EW: api/getstocksdata (ticker minuscula + Referer). | POST-MARKET 2026-09-02: SIN STOP REAL en Alpaca (solo orden LIMIT de take-profit). ATR14=7.23, stop teorico ATRx1.5=180.32. Entrada ejecutada por sentinel a las 14:27 ET con score 5.5 < min_signal_score=7.5. | CORRECCION SENTINEL 2026-09-03 09:11 ET: la nota post-market del 09-02 ('SIN STOP REAL') es un FALSO POSITIVO. Verificado via /orders?status=all&nested=true: el bracket TIENE leg sell stop_limit viva en status='held' (AMBA stop=61.86/lim=61.24; GWRE stop=179.30/lim=177.51). El query con status=open no devuelve legs 'held'. NO se anade stop duplicado (crearia riesgo de venta 2x qty sobre el OCO). AMBBA/GWRE reportan HOY AH -> cierre obligatorio <=14:30 ET via pre-close.",
       "precio_entrada": 191.17,
       "precio_actual": 192.76,
       "pnl_pct_latente": 0.83,
       "pnl_abs_latente": 44.52,
       "qty": 28,
       "stop_real_en_alpaca": false,
-      "R_actual": 0.15
+      "R_actual": 0.15,
+      "stop_verificado_2026-09-03_premarket": true
     },
     {
       "ticker": "LULU",
@@ -2467,7 +2490,7 @@
     "fecha_actualizacion": "2026-09-02",
     "semana": "2026-W36",
     "regimen": "GLOBAL_BOND_SHOCK + US_IRAN_ESCALATION + AI_CAPEX_BOOM",
-    "vix": 16.3,
+    "vix": 15.04,
     "yield_spread_10y2y": null,
     "narrativa_dominante": "ACTUALIZACION 2026-09-02: TRES FUERZAS SIMULTANEAS. (1) GEOPOLITICA EN ESCALADA: EEUU ejecuta su segunda ronda de ataques sobre Iran en tres dias; Teheran responde golpeando bases americanas en la region y advierte de represalia mayor. Trump rebaja las opciones de acuerdo. WTI ~$90.4, maximo de cinco semanas; presion sobre precios en surtidor. Chevron compromete $7.000M en Venezuela y EEUU empuja a duplicar produccion venezolana -> oferta compensatoria a medio plazo, pero la prima de riesgo a corto es alcista para energia. (2) BOND ROUT CONTINUA: el 30Y vuelve a niveles previos al movimiento de Bessent, el diferencial de tipos US-China roza maximo historico, el petroleo a $90 realimenta el miedo inflacionista. Aun asi, lejos del desplome de 2022. (3) AI CAPEX INTACTO Y ACELERANDO: BROADCOM publica AH hoy revenue $29.600M (+86% YoY) con ingresos de semiconductores AI de $16.700M (+221% YoY, +54% QoQ) y EPS non-GAAP $3.32 (+96%); Dell subio ayer su guia anual en $25.000M por demanda de servidores AI; NVDA cerca de comprar Hugging Face por $14.000M; PwC proyecta $32 billones de gasto en centros de datos hasta 2050. La dicotomia del regimen: la duracion se castiga por tipos, pero el capex de AI es el unico motor de beneficios que no se frena. IMPLICACION OPERATIVA: priorizar energia y hardware/infra AI con beat demostrable; evitar software de alta duracion sin guia excelente y consumo discrecional. Catalizador clave: informe de empleo VIERNES 4-sep. VIX ~16.3 (bajo, sin panico pese al ruido geopolitico).",
     "fuentes_consultadas": [
@@ -2540,32 +2563,37 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-02T15:25",
-      "nivel": "normal",
-      "shocks": [],
-      "bloquear_entradas": false,
-      "shock_tipo": "ninguno",
-      "score_min_paper_efectivo": 5.0,
-      "score_min_real_efectivo": 9.0,
-      "ew_disponible": true
+      "timestamp": "2026-09-03T09:15",
+      "nivel": "alerta",
+      "shocks": [
+        "geopolitico_ormuz_persistente"
+      ],
+      "bloquear_entradas": true,
+      "motivo_bloqueo": "pre-apertura (09:11 ET) + 2/2 slots Cowork ocupados",
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0
     },
-    "macro_score": -0.5,
-    "macro_nivel": "normal",
+    "macro_score": -0.8,
+    "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros ligeramente alcistas (+0.30%)",
-      "Yield 10Y alto (4.80%) - presion valuaciones growth",
-      "Oro +1.8% - senal de miedo",
-      "WTI $91 elevado (regimen Hormuz) - coste input alto"
+      "Regimen geopolitico ACTIVO: crisis Estrecho de Ormuz / conflicto EEUU-Iran. Brent ~$96, WTI $91.9.",
+      "Oro +3.93% (Sep-2) - prima de riesgo geopolitico + dolar debil (UUP -0.53% premkt).",
+      "Yield 10Y 4.73% (-1.29%), TLT +0.44% premkt - leve flight-to-safety.",
+      "Futuros mixtos/planos: ES +0.26%, NQ +0.08%; SPY premkt +0.29%, QQQ +0.15%.",
+      "VIX 15.04 - mercado NO en panico pese al conflicto: shock ya descontado, no spike nuevo.",
+      "Sectores premkt: XLI +0.64%, XLE +0.58% lideran; XLK -0.06% rezagado -> tech sin liderazgo.",
+      "AVGO batio EPS +5.06% vs consenso (Sep-2 AH) y cotiza -3.0% premkt -> BEAT-AND-FADE. Aviso para cohorte software/semis que reporta hoy.",
+      "SNOW +23.3% premkt tras earnings Sep-2 AH (cerrada por regla pre-earnings el 09-02 a 12:33 ET)."
     ],
     "futuros": {
-      "ES": 0.47,
-      "NQ": 0.12,
+      "ES": 0.26,
+      "NQ": 0.08,
       "YM": 0.54,
-      "RTY": 1.26
+      "RTY": 0.57
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-02T15:25",
+    "ts_actualizado": "2026-09-03T09:15",
     "sectores_hoy": {
       "lider": "xlb",
       "cambio_lider": 1.78,
@@ -2583,11 +2611,10 @@
       },
       "ts": "15:25"
     },
-    "macro_bonus_ew": -0.15,
+    "macro_bonus_ew": -0.24,
     "bonos": {
-      "tlt_chg": -0.01,
-      "yield_10y": 4.8,
-      "yield_30y": 5.27
+      "tlt_chg": 0.44,
+      "yield_10y": 4.73
     },
     "eventos_recientes": [
       {
@@ -2942,10 +2969,9 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 90.83,
-      "wti_chg": 0.68,
-      "oro_chg": 1.79,
-      "dxy_chg": -0.16
+      "wti": 91.88,
+      "brent_aprox": 96.0,
+      "gold_chg": 3.93
     },
     "internacional": {
       "Nikkei": 0.62,
@@ -3226,7 +3252,8 @@
       "estado_hoy": "sin escalada nueva; prima geopolitica relajandose (LMT -2.2%, DAL +2.3%)",
       "riesgo": "reactivacion -> oil >95 y rotacion a energia/defensa"
     },
-    "websearch_regimen": "Regimen persistente, sin evento nuevo hoy. WebSearch 2-sep-2026: conflicto US-Iran / Estrecho de Hormuz mantiene Brent ~$95 y WTI ~$91; 10Y US 4.80% (max desde ene-2025); mercado descuenta ~70% de subida de 25pb de la Fed en septiembre (Warsh hawkish). Hoy el mercado REBOTA (SPY +0.5%, IWM +1.1%, QQQ +0.1%) tras la caida del 1-sep. Gran tanda de earnings tech AH hoy (AVGO, CRM). No se cumple el gatillo de shock intradia (VIX/SPY/Mag7 en rango normal) -> shock_tipo=ninguno, sin macro plays."
+    "websearch_regimen": "Regimen persistente, sin evento nuevo hoy. WebSearch 2-sep-2026: conflicto US-Iran / Estrecho de Hormuz mantiene Brent ~$95 y WTI ~$91; 10Y US 4.80% (max desde ene-2025); mercado descuenta ~70% de subida de 25pb de la Fed en septiembre (Warsh hawkish). Hoy el mercado REBOTA (SPY +0.5%, IWM +1.1%, QQQ +0.1%) tras la caida del 1-sep. Gran tanda de earnings tech AH hoy (AVGO, CRM). No se cumple el gatillo de shock intradia (VIX/SPY/Mag7 en rango normal) -> shock_tipo=ninguno, sin macro plays.",
+    "shock_tipo_regimen": "oil_spike_geopolitico_persistente"
   },
   "operaciones_crypto": [
     {
@@ -13028,6 +13055,29 @@
           "tipo": "crypto"
         }
       ]
+    },
+    {
+      "ts": "2026-09-03T09:15:57.065626+00:00",
+      "modo": "pre-apertura",
+      "hora_et": "09:15",
+      "alertas": 3,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "max_cowork": 2,
+      "posiciones_paper": 4,
+      "posiciones_real": 1,
+      "equity_paper": 108040.19,
+      "equity_real": 4548.13,
+      "vix": 15.04,
+      "spy_premkt_chg": 0.29,
+      "macro_nivel": "alerta",
+      "macro_score": -0.8,
+      "ew_disponible": false,
+      "bloqueado": true,
+      "motivo": "pre-apertura + slots 2/2 llenos",
+      "nota": "AMBA(+1.35%) y GWRE(+1.49%) con earnings HOY AH -> cierre obligatorio <=14:30 ET. Stops bracket verificados vivos (status=held) - falso positivo del post-market corregido. AVGO beat-and-fade -3.0% premkt es aviso para GWRE esta noche. Fuente EW caida."
     }
   ],
   "momentum_15m": {
