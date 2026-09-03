@@ -2649,53 +2649,54 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-03T14:14",
-      "nivel": "normal",
-      "shocks": [],
+      "timestamp": "2026-09-03T15:18",
+      "nivel": "alerta",
+      "shocks": [
+        "mag7_move_TSLA_+8.1pct_cybercab_no_earnings"
+      ],
       "bloquear_entradas": false,
-      "macro_score": 0.9,
-      "nota": "Risk-on amplio: SPY+1.13 QQQ+1.33 VIX 14.56(-4.2%) tras Waller senalando hold en septiembre; yields 10Y 4.76 (-0.83%). TSLA +7.1% por evento Cybercab (catalizador, no earnings) - riesgo sell-the-news esta noche. Oro +3.88% a $4536 mantiene la divergencia geopolitica en commodities (WTI $91.4, Brent $95.6). Nikkei -2.85% sigue siendo el unico foco de debilidad. Sectores: disc+1.76 fin+1.40 tech+1.39; energy -0.28 y materials -0.50 rezagados."
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0,
+      "nota": "Nivel alerta disparado por TSLA +8.1% 24h, pero causa es hype Cybercab (evento idiosincratico), no sorpresa de earnings -> falso positivo. Mercado risk-on: SPY +1.09%, VIX 14.4, Waller insinua pausa Fed en septiembre."
     },
-    "macro_score": 0.3,
+    "macro_score": 0.8,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros alcistas (+1.11%)",
-      "TLT +0.52% flight to safety",
-      "Yield 10Y alto (4.74%)",
-      "Dolar debil (-0.66%)",
-      "Oro +4.0% senal de miedo",
-      "Tech fuerte (+1.1%)"
+      "Futuros alcistas (+1.20%)",
+      "Yield 10Y alto (4.76%) - presion valuaciones growth",
+      "Dolar debil (-0.62%) - tailwind multinacionales",
+      "Oro disparado (+3.59%) - divergencia con risk-on, vigilar",
+      "Tech +1.22% y cons_disc lider (+1.65%) - favorece EW tech",
+      "Nikkei -2.85% unica debilidad relevante"
     ],
     "futuros": {
-      "ES": 1.05,
-      "NQ": 1.17,
-      "YM": 1.23,
-      "RTY": 0.33
+      "ES": 1.12,
+      "NQ": 1.27
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-03T12:16",
+    "ts_actualizado": "2026-09-03T15:18",
     "sectores_hoy": {
-      "lider": "consumer_disc",
-      "cambio_lider": 1.77,
-      "tech_chg": 1.15,
+      "lider": "cons_disc",
+      "cambio_lider": 1.65,
+      "tech_chg": 1.22,
       "all": {
-        "tech": 1.15,
-        "financials": 1.23,
-        "energy": -0.03,
-        "healthcare": -0.15,
-        "industrials": 0.55,
-        "consumer_disc": 1.77,
-        "utilities": 0.94,
-        "materials": -0.58,
-        "realestate": 0.83
+        "tech": 1.22,
+        "fin": 1.51,
+        "energy": -0.35,
+        "health": 0.14,
+        "indus": 0.82,
+        "cons_disc": 1.65,
+        "utils": 0.8,
+        "materials": -0.54,
+        "reit": 1.12
       },
-      "ts": "12:16"
+      "ts": "15:18"
     },
-    "macro_bonus_ew": 0.09,
+    "macro_bonus_ew": 0.24,
     "bonos": {
-      "tlt_chg": 0.52,
-      "yield_10y": 4.741999626159668
+      "tlt_chg": 0.21,
+      "yield_10y": 4.76
     },
     "eventos_recientes": [
       {
@@ -9002,6 +9003,30 @@
       "severidad": "ALTA",
       "alerta": "SCRAPER EARNINGSWHISPERS ROTO: old.earningswhispers.com devuelve timeout o HTML sin #whisperbox parseable. 0 de 31 tickers extraidos. PASO 3 del sentinel y el scan pre-market EW estan ciegos.",
       "accion_requerida": "Revisar selectores / usar fuente alternativa (Benzinga, Zacks, Nasdaq earnings calendar)"
+    },
+    {
+      "fecha": "2026-09-03",
+      "ts": "2026-09-03T15:18:44.822331+00:00",
+      "severidad": "CRITICA",
+      "componente": "ew_scraper",
+      "titulo": "Pipeline EarningsWhispers caido - sin whisper numbers",
+      "detalle": "old.earningswhispers.com/stocks/<ticker> devuelve 302 -> www.earningswhispers.com/doh?statusCode=404. get_ew_headless() retorna None en el 100% de los casos (30/30 tickers). El fallback a www. no sirve: esa pagina carga whisper/consensus por JS, no server-side, asi que whisperbox/epsconsensus/tweeturl no existen en el HTML.",
+      "endpoints_alternativos_verificados": {
+        "https://www.earningswhispers.com/api/caldata/YYYYMMDD": "OK - calendario por dia: ticker, releaseTime (1=BMO,2=AMC,3=AH), q1EstEPS (consensus), q1RevEst, y si ya reporto: eps, surprise, direction. NO incluye whisper.",
+        "https://www.earningswhispers.com/api/todaysresults": "OK - resultados ya publicados con summary en prosa que SI contiene el whisper number."
+      },
+      "impacto": "La asimetria whisper-vs-consensus es el nucleo del scoring EW. Sin ella el sistema no puede puntuar candidatos ANTES del reporte, solo despues. Estrategia pre-earnings inoperativa hasta resolver.",
+      "accion_requerida": "Reescribir get_ew_headless() sobre /api/caldata/. Para el whisper forward hace falta otra fuente (o cuenta EW)."
+    },
+    {
+      "fecha": "2026-09-03",
+      "ts": "2026-09-03T15:18:44.822331+00:00",
+      "severidad": "ALTA",
+      "componente": "paso_6_6b_macro",
+      "titulo": "yfinance fast_info devuelve 0 - macro_score siempre 0 (fallo silencioso)",
+      "detalle": "yf.Ticker(x).fast_info.get(\"last_price\") y \"regular_market_previous_close\" devuelven 0 para TODOS los simbolos. Los PASOS 6 y 6B se apoyan en fast_info via chg()/fast_chg(), asi que futuros, bonos, DXY, oro, petroleo, internacional y sectores se computaban como +0.00% y macro_score salia 0.0 sin lanzar ninguna excepcion.",
+      "fix": "Sustituir fast_info por .history(period=\"5d\") y comparar Close[-1] vs Close[-2]. Verificado funcionando en este ciclo.",
+      "impacto": "Todo ajuste de umbral y sizing por macro llevaba desactivado un tiempo indeterminado, con el sistema reportando \"macro normal\" por defecto."
     }
   ],
   "mejoras_sistema": [
@@ -13378,6 +13403,15 @@
       "pnl_cierres_hoy": "AMBA 66.71->66.09 = -0.93% (-$50) | GWRE 191.17->200.84 = +5.06% (+$271) | neto +$221",
       "ew_scraper": "ROTO CONFIRMADO - old.earningswhispers.com redirige a home (mismo len 96276 para todo ticker); www.* es SPA cliente sin id=whisperbox; endpoints /api/* devuelven HTML. Solo recuperable via meta og:description (fecha earnings + PEAD, SIN whisper ni consensus). Bloquea el pipeline EW completo.",
       "incidencia_prioridad": "ALTA - senal primaria del sistema sin fuente desde al menos 2026-09-03 11:15"
+    },
+    {
+      "ts": "2026-09-03T15:18:44.822331+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 14.4,
+      "nota": "EW scraper CAIDO (old.earningswhispers.com/stocks/* -> 302/404). 0 whispers obtenidos en 30 tickers. yfinance fast_info devuelve 0 -> PASO 6/6B calculaba macro_score=0 falsamente. Sin entradas: todos los AH de hoy ya descartados por score (0.0-5.0 < 7.5); calendario BMO manana vacio de nombres liquidos."
     }
   ],
   "momentum_15m": {
