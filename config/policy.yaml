@@ -79,13 +79,13 @@ quiver_gate:
 risk:
   daily_max_spend_usd: 0                 # 0 = disabled; daily_max_spend_pct_buying_power is the real limiter
   daily_max_spend_pct_buying_power: 0.75 # OPTIMIZED: allow up to 75% of buying power per day (was 1.0)
-  daily_max_new_positions: 2             # max 2 nuevas posiciones por día (era 0=ilimitado). Previene sobre-trading.
-  max_total_open_positions: 6           # SIMPLIFICADO 2026-04-23: max 6 posiciones. Menos posiciones = más control = menos errores. Era 15.
+  daily_max_new_positions: 3             # UPGRADED 2026-09-03: max 3 nuevas posiciones/día — más oportunidades capturadas
+  max_total_open_positions: 4           # UPGRADED 2026-09-03: max 4 posiciones concentradas. Más capital por posición, más convicción.
   max_position_size_usd: 0              # 0 = disabled; max_symbol_exposure_pct_equity caps per-position
   min_position_size_usd: 100
   max_exposure_pct_equity: 0.75         # OPTIMIZED: cap total exposure at 75% of equity (was unlimited)
-  max_symbol_exposure_pct_equity: 0.05  # OPTIMIZED: cap individual positions at 5% of equity (was 12%)
-  max_position_pct: 0.05                # OPTIMIZED: alias — was 0.12, now 0.05 (matches max_symbol_exposure_pct_equity)
+  max_symbol_exposure_pct_equity: 0.10  # UPGRADED 2026-09-03: 10% of equity per position (was 5%) — more capital per conviction trade
+  max_position_pct: 0.10                # UPGRADED 2026-09-03: alias — matches max_symbol_exposure_pct_equity
   cash_buffer_pct: 0.05                 # OPTIMIZED: reserve 5% cash buffer (was 0%)
   symbol_cooldown_days: 5
   if_position_open_skip: true
@@ -101,7 +101,7 @@ risk:
 
 execution:
   use_bracket: true
-  take_profit_atr_mult: 2.5          # tightened from 3.0: TP closer to price → more fills before reversal
+  take_profit_atr_mult: 3.5          # UPGRADED 2026-09-03: let winners run — 3.5x ATR TP (was 2.5)
   trailing_stop_atr_mult: 1.5        # trail inicial 1.5×ATR (antes de entrar en ganancia)
   trailing_tighten_at_R: 0.2         # empezar a apretar trail desde 0.2R de ganancia
   trailing_stop_profit_atr_mult: 1.0 # 1×ATR una vez en ganancia (tier 1: 0.2R–2R)
@@ -137,8 +137,8 @@ live_account:
   # Position sizing per order:  min(max_cash_pct × cash, max_position_size_usd)
   # Daily budget across orders:  daily_max_cash_pct × cash  (0 = unlimited)
   # Hard count limit per day:    daily_max_new_positions     (0 = no count limit)
-  max_cash_pct: 0.20           # max fraction of live cash per individual position (20 %)
-  max_position_size_usd: 500   # hard cap per position
+  max_cash_pct: 0.25           # UPGRADED 2026-09-03: 25% per position (was 20%) — deploy capital actively
+  max_position_size_usd: 800   # UPGRADED 2026-09-03: $800 hard cap (was $500) — meaningful real-money positions
   min_position_size_usd: 25    # minimum viable position
   daily_max_cash_pct: 0.50     # max fraction of live cash across all positions today (50 %)
   daily_max_new_positions: 2                   # W20: re-enabled 2026-05-17
