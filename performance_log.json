@@ -493,6 +493,41 @@
       "tarea_afectada": "intraday-monitor",
       "severidad": "alta",
       "aplicada": false
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-13:15ET",
+      "severidad": "alta",
+      "leccion": "BEAT-AND-FADE x3 EN UN SOLO DIA — patron de regimen, no ruido. VSXY reporto BMO EPS $0.95 vs $0.77 est (+22.69% sorpresa, beat_rate 4/4, avg surprise historico +44%) y cotiza -13.80%. CIEN +22.14% sorpresa -> -8.61%. AVGO Q3 upbeat con 8 subidas de PT -> -3.39%. Los tres batieron y los tres se vendieron, en un dia en que SPY +0.95%, QQQ +1.06% y VIX 14.59 (-4%): NO es debilidad de mercado, es rechazo especifico al catalizador de resultados. IMPLICACION OPERATIVA: la logica de PASO 4C (post_earnings_continuation, generar LONG sobre beats AH con score 6.5+beat/10) esta invertida respecto a la evidencia de este regimen. Recomendacion: suspender la generacion automatica de continuation plays hasta acumular >=5 observaciones, o exigir confirmacion de precio (gap sostenido >+2% a 10:00 ET del dia siguiente) antes de convertir un beat en candidato.",
+      "evidencia": {
+        "VSXY": {
+          "surp_pct": 22.69,
+          "reaccion_pct": -13.8
+        },
+        "CIEN": {
+          "surp_pct": 22.14,
+          "reaccion_pct": -8.61
+        },
+        "AVGO": {
+          "surp_pct": null,
+          "reaccion_pct": -3.39
+        }
+      },
+      "contexto_mercado": {
+        "SPY": 0.95,
+        "QQQ": 1.06,
+        "VIX": 14.59,
+        "oro_pct": 3.81,
+        "WTI": 91.69,
+        "Brent": 95.83,
+        "Nikkei": -2.85
+      }
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-13:15ET",
+      "severidad": "media",
+      "leccion": "VALIDACION DE LA REGLA PRE-CLOSE: cerrar antes de earnings AH capturo el drift sin asumir el gap. GWRE +5.06% en 22h de hold limpio (entrada 09-02 14:28 ET, salida 09-03 12:34 ET), AMBA -0.93%. Con tres beat-and-fade confirmados el mismo dia, mantener overnight habria tenido esperanza negativa. La regla \"salida obligatoria <=14:30 ET el dia de earnings\" es el componente con mejor ratio del sistema esta semana."
     }
   ],
   "operaciones": [
@@ -1081,7 +1116,7 @@
       "ticker": "SAIC",
       "score": 8.3,
       "score_ajustado": 6.3,
-      "estado": "descartado_beat_and_fade",
+      "estado": "expirado",
       "accion_recomendada": "no_entrar",
       "asimetria_pct": 17.6,
       "whisper": 2.56,
@@ -1113,7 +1148,8 @@
         "vwap_dev_pct": -1.68,
         "chg_vs_prev_close_pct": 4.99,
         "retroceso_desde_high_pct": -7.14
-      }
+      },
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "CRDO",
@@ -1150,7 +1186,7 @@
       "ticker": "DELL",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 1.41,
       "whisper": 5.05,
@@ -1175,7 +1211,8 @@
       "precio": null,
       "mom_5d_pct": null,
       "mom_20d_pct": null,
-      "atr_pct": null
+      "atr_pct": null,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "PANW",
@@ -1212,7 +1249,7 @@
       "ticker": "MDB",
       "score": 4.5,
       "score_ajustado": 4.5,
-      "estado": "descartado_momentum",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 3.73,
       "whisper": 1.67,
@@ -1237,13 +1274,14 @@
       "precio": 453.3699951171875,
       "mom_5d_pct": 12.585361535802091,
       "mom_20d_pct": 26.65027616033847,
-      "atr_pct": 4.841488297833426
+      "atr_pct": 4.841488297833426,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "GTLB",
       "score": 6.0,
       "score_ajustado": 6.0,
-      "estado": "descartado_momentum",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 22.22,
       "whisper": 0.22,
@@ -1268,13 +1306,14 @@
       "precio": 46.540000915527344,
       "mom_5d_pct": 10.73043603906076,
       "mom_20d_pct": 30.785449242388346,
-      "atr_pct": 4.173214090459587
+      "atr_pct": 4.173214090459587,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "MDT",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": 1.45,
       "whisper": 1.4,
@@ -1299,7 +1338,8 @@
       "precio": null,
       "mom_5d_pct": null,
       "mom_20d_pct": null,
-      "atr_pct": null
+      "atr_pct": null,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "AVGO",
@@ -1463,7 +1503,7 @@
       "ticker": "NIO",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "accion_recomendada": "ninguna",
       "asimetria_pct": -28.57,
       "whisper": -0.09,
@@ -1488,7 +1528,8 @@
       "precio": null,
       "mom_5d_pct": null,
       "mom_20d_pct": null,
-      "atr_pct": null
+      "atr_pct": null,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "PATH",
@@ -1532,7 +1573,7 @@
       "ticker": "AI",
       "score": 2.0,
       "score_ajustado": 2.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": -4.0,
       "whisper": -0.26,
       "consensus": -0.25,
@@ -1553,13 +1594,14 @@
       "fuente": "EW JSON API (caldata+getstocksdata)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "NTAP",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": 1.89,
       "whisper": 2.16,
       "consensus": 2.12,
@@ -1580,7 +1622,8 @@
       "fuente": "EW JSON API (caldata+getstocksdata)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "FIVE",
@@ -1633,7 +1676,7 @@
       "ticker": "OLLI",
       "score": 3.0,
       "score_ajustado": 3.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": 1.75,
       "whisper": 1.16,
       "consensus": 1.14,
@@ -1654,7 +1697,8 @@
       "fuente": "EW JSON API (caldata+getstocksdata)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Retail-Wholesale",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "PVH",
@@ -1803,7 +1847,7 @@
       "ticker": "CXM",
       "score": 5.5,
       "score_ajustado": 5.5,
-      "estado": "descartado_momentum",
+      "estado": "expirado",
       "asimetria_pct": 10.0,
       "whisper": 0.11,
       "consensus": 0.1,
@@ -1824,7 +1868,8 @@
       "fuente": "EW JSON API (caldata+getstocksdata)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "TTC",
@@ -1868,7 +1913,7 @@
       "ticker": "CHPT",
       "score": 2.0,
       "score_ajustado": 2.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": -11.25,
       "whisper": -0.89,
       "consensus": -0.8,
@@ -1889,7 +1934,8 @@
       "fuente": "EW JSON API (caldata+getstocksdata)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "AGX",
@@ -1970,7 +2016,7 @@
       "ticker": "YEXT",
       "score": 2.0,
       "score_ajustado": 2.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": 0.0,
       "whisper": 0.17,
       "consensus": 0.17,
@@ -1988,13 +2034,14 @@
       "notas": "Score 2.0 — descartado. | Sector Technology priority -> 0 (2026-09-01)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Technology",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "SPWH",
       "score": 1.0,
       "score_ajustado": 1.0,
-      "estado": "descartado_score",
+      "estado": "expirado",
       "asimetria_pct": -27.27,
       "whisper": -0.14,
       "consensus": -0.11,
@@ -2012,7 +2059,8 @@
       "notas": "Score 1.0 — descartado. | Sector Retail-Wholesale priority -> 0 (2026-09-01)",
       "ts_actualizado": "2026-09-01T13:15:46.454641+00:00",
       "sector": "Retail-Wholesale",
-      "score_macro_bonus": 0
+      "score_macro_bonus": 0,
+      "expirado_por": "sentinel-2026-09-03T13:15ET"
     },
     {
       "ticker": "HPE",
@@ -2601,15 +2649,12 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-03T12:16",
-      "nivel": "alerta",
-      "shocks": [
-        "geopolitico_iran_hormuz_oil_gold"
-      ],
+      "timestamp": "2026-09-03T13:15",
+      "nivel": "normal",
+      "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0,
-      "nota": "Shock geopolitico Iran/Hormuz CONTINUADO (no nuevo). Mercado lo absorbe: SPY +0.95%, VIX 14.65 (-3.6%). Oro +3.97% ($4540) y Brent $95-97 (+10% semanal) reflejan la prima geopolitica, pero renta variable en risk-on por Waller (Fed inclinado a mantener tipos). NO se eleva a shock: no procede MACRO_PLAYBOOK."
+      "macro_score": 0.4,
+      "nota": "Risk-on en equity (SPY+0.95 QQQ+1.06 VIX14.6) con prima geopolitica confinada a commodities (oro+3.81 a $4532, Brent $95.8). Divergencia intacta 2o dia. Nikkei -2.85% unico foco de debilidad."
     },
     "macro_score": 0.3,
     "macro_nivel": "alerta",
@@ -8934,14 +8979,15 @@
       "fecha": "2026-09-02",
       "tipo": "SIN_STOP_OVERNIGHT_CON_EARNINGS_MANANA",
       "urgencia": "MAXIMA",
-      "resuelto": false,
+      "resuelto": true,
       "tickers": [
         "AMBA",
         "GWRE"
       ],
       "mensaje": "AMBA (80 acc @66.71) y GWRE (28 acc @191.17) quedan overnight SIN orden de stop en Alpaca — solo tienen orden LIMIT de take-profit (76.22 / 214.46). Ambas reportan earnings AFTER-HOURS manana 3-sep. Riesgo teorico a stop ATRx1.5: $343 (AMBA) + $304 (GWRE) = $647.",
       "accion_requerida": "1) Colocar stop GTC manualmente: AMBA sell stop 62.42 / GWRE sell stop 180.32. 2) REGLA R0: cerrar ambas posiciones antes de las 15:30 ET del 2026-09-03, antes del print.",
-      "nota": "Cowork no ejecuta ordenes; requiere accion del usuario o de la tarea intraday/pre-close."
+      "nota": "Cowork no ejecuta ordenes; requiere accion del usuario o de la tarea intraday/pre-close.",
+      "resolucion": "Cerradas 2026-09-03 12:34 ET por pre-close-manager antes de earnings AH. AMBA -0.93%, GWRE +5.06%."
     },
     {
       "fecha": "2026-09-03",
@@ -13292,6 +13338,28 @@
       "ew_disponible": false,
       "telegram_enviado": false,
       "notas": "AMBA y GWRE con stop bracket activo y earnings AH hoy -> cierre R0 delegado a pre-close-manager (<15:30 ET). EW caido 3er ciclo. Sin entradas: limite Cowork 2/2 y umbral efectivo 7.5."
+    },
+    {
+      "ts": "2026-09-03T17:15:23.575892+00:00",
+      "hora_et": "13:15",
+      "modo": "intradia READ_ONLY — agente no ejecuta ordenes (politica de seguridad); reporte solo",
+      "alertas": 3,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "max_cowork": 2,
+      "posiciones_paper_equity": 0,
+      "equity_paper": 108109.74,
+      "equity_real": 4548.15,
+      "vix": 14.59,
+      "spy_chg": 0.95,
+      "qqq_chg": 1.06,
+      "macro_score": 0.4,
+      "nivel": "normal",
+      "ew_disponible": false,
+      "telegram_enviado": false,
+      "notas": "AMBA y GWRE CERRADAS 12:34 ET por pre-close-manager (cid preearnings_close_*) antes de earnings AH. AMBA 80sh 66.71->66.09 = -0.93% (-$49.6); GWRE 28sh 191.17->200.84 = +5.06% (+$270.8). Neto +$221; equity paper +$212.69 en el dia. Slots Cowork 0/2 libres pero sin ejecucion (read-only). EW caido 4o ciclo (shell SPA 96.276 bytes en las 3 URLs). Sustituto yfinance.earnings_dates operativo."
     }
   ],
   "momentum_15m": {
