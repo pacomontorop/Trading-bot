@@ -484,6 +484,15 @@
       "severidad": "media",
       "leccion": "DIVERGENCIA COMMODITIES-EQUITY: guerra EEUU-Iran activa con dos petroleros alcanzados en Ormuz, Brent $95-97 (+10% en la semana) y oro +3.97% a $4540 — y sin embargo SPY +0.95%, QQQ +1.11%, VIX 14.65 (-3.6%). La prima de riesgo geopolitico esta enteramente en commodities. Elevar macro_nivel a \"shock\" por los titulares habria disparado el MACRO_PLAYBOOK (comprar XOM/CVX/LMT, cortar aerolineas) contra un mercado en risk-on.",
       "accion": "Mantenido macro_nivel=alerta, no shock. Regla propuesta: el MACRO_PLAYBOOK exige confirmacion en el precio de la RENTA VARIABLE (SPY<-1.2%/30m o VIX+8%/30m), no solo titulares geopoliticos."
+    },
+    {
+      "fecha": "2026-09-03",
+      "titulo": "BUG earnings-date matching: yfinance calendar devuelve datetime.date, no string ISO",
+      "descripcion": "En intraday-monitor PASO 1B el check 'today_str in str(cal)' nunca acierta porque el repr de la lista es 'datetime.date(2026, 9, 3)'. Resultado: earn_hoy=False para AMBA y GWRE cuando ambas reportaban AH esa misma noche. El cierre se salvó gracias a PASO 1.8, que sí cruza con candidatos_validados['earnings_fecha'].",
+      "accion_correctiva": "Sustituir el substring match por comparacion explicita: eds=cal.get('Earnings Date'); eh = bool(eds) and str(eds[0])[:10]==hoy. Aplicar en intraday-monitor PASO 1B y en cualquier otra tarea que use yfinance calendar.",
+      "tarea_afectada": "intraday-monitor",
+      "severidad": "alta",
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -2419,7 +2428,7 @@
     },
     {
       "ticker": "AMBA",
-      "estado": "abierta",
+      "estado": "cerrado",
       "tipo": "earnings_ew",
       "side": "buy",
       "score": 6.0,
@@ -2449,11 +2458,15 @@
       "qty": 80,
       "stop_real_en_alpaca": false,
       "R_actual": 0.11,
-      "stop_verificado_2026-09-03_premarket": true
+      "stop_verificado_2026-09-03_premarket": true,
+      "fecha_cierre": "2026-09-03",
+      "motivo_cierre": "pre_earnings_AH_regla_R0",
+      "pnl_cierre": -49.6,
+      "pnl_pct_cierre": -0.93
     },
     {
       "ticker": "GWRE",
-      "estado": "abierta",
+      "estado": "cerrado",
       "tipo": "earnings_ew",
       "side": "buy",
       "score": 5.5,
@@ -2483,7 +2496,11 @@
       "qty": 28,
       "stop_real_en_alpaca": false,
       "R_actual": 0.15,
-      "stop_verificado_2026-09-03_premarket": true
+      "stop_verificado_2026-09-03_premarket": true,
+      "fecha_cierre": "2026-09-03",
+      "motivo_cierre": "pre_earnings_AH_regla_R0",
+      "pnl_cierre": 271.6,
+      "pnl_pct_cierre": 5.07
     },
     {
       "ticker": "LULU",
@@ -7715,6 +7732,104 @@
       "anomalias": [
         "performance_log local NO montado en esta sesion (/sessions/.../Scheduled ausente) -> lectura via GitHub, escritura via GitHub API",
         "yfinance no preinstalado en el sandbox; instalado en /tmp/pylibs (disco /sessions al 100%)"
+      ]
+    },
+    {
+      "timestamp": "2026-09-03T16:36:19.693783+00:00",
+      "hora_et": "12:36",
+      "posiciones_abiertas_inicio": 2,
+      "posiciones_abiertas_fin": 0,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": "0.000004874",
+          "entry": 64959.1,
+          "market_value": 0.393981,
+          "pnl_pct": 24.44,
+          "stop": 0,
+          "stop_source": "crypto_dust_no_aplica"
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": "0.000025",
+          "entry": 77.22,
+          "market_value": 0.002603,
+          "pnl_pct": 34.8,
+          "stop": 0,
+          "stop_source": "crypto_dust_no_aplica"
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [
+        {
+          "symbol": "GWRE",
+          "old_stop": 179.3,
+          "new_stop": 191.96,
+          "tipo": "EW_BREAK_EVEN",
+          "R": 0.82
+        }
+      ],
+      "stops_fallidos": [],
+      "parciales_ejecutados": [],
+      "cierres_preventivos_earnings_ah": [
+        {
+          "symbol": "AMBA",
+          "qty": 80,
+          "side": "sell",
+          "pnl_al_cierre": -49.6,
+          "pnl_pct": -0.93,
+          "motivo": "earnings_ah_score_bajo",
+          "score": 6.0
+        },
+        {
+          "symbol": "GWRE",
+          "qty": 28,
+          "side": "sell",
+          "pnl_al_cierre": 271.6,
+          "pnl_pct": 5.07,
+          "motivo": "earnings_ah_score_bajo",
+          "score": 5.5
+        }
+      ],
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "ordenes_canceladas": [],
+      "sells_hoy": [
+        {
+          "symbol": "GWRE",
+          "side": "sell",
+          "qty": "28",
+          "type": "market",
+          "status": "filled",
+          "filled_at": "2026-09-03T16:34:47.113421Z",
+          "filled_avg_price": "200.84"
+        },
+        {
+          "symbol": "AMBA",
+          "side": "sell",
+          "qty": "80",
+          "type": "market",
+          "status": "filled",
+          "filled_at": "2026-09-03T16:34:42.261349Z",
+          "filled_avg_price": "66.09"
+        }
+      ],
+      "candidatos_intraday_escaneados": 14,
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "regimen_mercado": {
+        "spy_intraday_pct": 0.6,
+        "vix": 20.0,
+        "modo_dip": false
+      },
+      "equity": 108109.74,
+      "buying_power": 432437.36,
+      "anomalias": [
+        "BUG DETECTADO: el chequeo de earnings por substring (today_str in str(cal)) falla porque yfinance devuelve datetime.date objects (repr 'datetime.date(2026, 9, 3)'), no ISO strings. PASO 1B habría dado earn_hoy=False para AMBA y GWRE pese a tener earnings AH HOY. FIX aplicado en esta sesión: comparar str(cal['Earnings Date'][0])[:10] == hoy.",
+        "Ambas posiciones (AMBA score 6.0, GWRE score 5.5) tenían alerta_earnings_overnight en el log indicando cierre obligatorio hoy <=14:30 ET; se cerraron a 12:34 ET vía PASO 1.8."
       ]
     }
   ],
