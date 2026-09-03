@@ -469,6 +469,21 @@
       "origen": "sentinel-11:15ET",
       "leccion": "BEAT-AND-FADE CONFIRMADO x2: CIEN reporto Q3 adj EPS $2.11 vs $1.73 est (+22%), ventas $1.671B vs $1.633B, y SUBIO guia FY26 a $6.37-6.47B — y cotiza -10.00%. AVGO tras Q3 \"upbeat\" y 8 subidas de PT de analistas cotiza -5.45%. Ambos fueron correctamente DESCARTADOS por score (CIEN 5.0, AVGO 5.6) < umbral 7.5. El filtro de score evito dos perdidas grandes. Refuerza W16: el beat de EPS/whisper NO es suficiente; el mercado ya descuenta.",
       "accion": "Mantener umbral score_min_paper>=7.5. No relajar por \"beat obvio\"."
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-12:25ET",
+      "severidad": "alta",
+      "leccion": "FUENTE EW CAIDA 3er ciclo consecutivo: old./www.earningswhispers.com y api/getstocksdata devuelven el mismo shell SPA de 96.276 bytes para NVDA, MSFT y cualquier ticker. La caida no es transitoria. HALLAZGO: yfinance Ticker.earnings_dates SI funciona como sustituto parcial — devuelve fecha, hora (16:00=AH / 07:00=BMO) y EPS Estimate (consenso) por ticker. NO devuelve whisper, luego la asimetria whisper-consenso (BLOQUE 1 del scoring, hasta 3.0 pts) no es calculable con esta fuente.",
+      "accion": "Scan EW headless omitido de nuevo. Propuesta: degradar el scoring a modo \"sin whisper\" (BLOQUE 1 desde beat_rate + revisiones de estimacion + guidance en lugar de asimetria) mientras EW no se restablezca, en vez de dejar el pipeline a cero. Escalar a revision semanal.",
+      "tarea_afectada": "sentinel PASO 3 / pre-market scan"
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-12:25ET",
+      "severidad": "media",
+      "leccion": "DIVERGENCIA COMMODITIES-EQUITY: guerra EEUU-Iran activa con dos petroleros alcanzados en Ormuz, Brent $95-97 (+10% en la semana) y oro +3.97% a $4540 — y sin embargo SPY +0.95%, QQQ +1.11%, VIX 14.65 (-3.6%). La prima de riesgo geopolitico esta enteramente en commodities. Elevar macro_nivel a \"shock\" por los titulares habria disparado el MACRO_PLAYBOOK (comprar XOM/CVX/LMT, cortar aerolineas) contra un mercado en risk-on.",
+      "accion": "Mantenido macro_nivel=alerta, no shock. Regla propuesta: el MACRO_PLAYBOOK exige confirmacion en el precio de la RENTA VARIABLE (SPY<-1.2%/30m o VIX+8%/30m), no solo titulares geopoliticos."
     }
   ],
   "operaciones": [
@@ -2496,7 +2511,7 @@
     "fecha_actualizacion": "2026-09-02",
     "semana": "2026-W36",
     "regimen": "GLOBAL_BOND_SHOCK + US_IRAN_ESCALATION + AI_CAPEX_BOOM",
-    "vix": 15.04,
+    "vix": 14.649999618530273,
     "yield_spread_10y2y": null,
     "narrativa_dominante": "ACTUALIZACION 2026-09-02: TRES FUERZAS SIMULTANEAS. (1) GEOPOLITICA EN ESCALADA: EEUU ejecuta su segunda ronda de ataques sobre Iran en tres dias; Teheran responde golpeando bases americanas en la region y advierte de represalia mayor. Trump rebaja las opciones de acuerdo. WTI ~$90.4, maximo de cinco semanas; presion sobre precios en surtidor. Chevron compromete $7.000M en Venezuela y EEUU empuja a duplicar produccion venezolana -> oferta compensatoria a medio plazo, pero la prima de riesgo a corto es alcista para energia. (2) BOND ROUT CONTINUA: el 30Y vuelve a niveles previos al movimiento de Bessent, el diferencial de tipos US-China roza maximo historico, el petroleo a $90 realimenta el miedo inflacionista. Aun asi, lejos del desplome de 2022. (3) AI CAPEX INTACTO Y ACELERANDO: BROADCOM publica AH hoy revenue $29.600M (+86% YoY) con ingresos de semiconductores AI de $16.700M (+221% YoY, +54% QoQ) y EPS non-GAAP $3.32 (+96%); Dell subio ayer su guia anual en $25.000M por demanda de servidores AI; NVDA cerca de comprar Hugging Face por $14.000M; PwC proyecta $32 billones de gasto en centros de datos hasta 2050. La dicotomia del regimen: la duracion se castiga por tipos, pero el capex de AI es el unico motor de beneficios que no se frena. IMPLICACION OPERATIVA: priorizar energia y hardware/infra AI con beat demostrable; evitar software de alta duracion sin guia excelente y consumo discrecional. Catalizador clave: informe de empleo VIERNES 4-sep. VIX ~16.3 (bajo, sin panico pese al ruido geopolitico).",
     "fuentes_consultadas": [
@@ -2569,44 +2584,56 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-03T11:15",
+      "timestamp": "2026-09-03T12:16",
       "nivel": "alerta",
       "shocks": [
-        "geopolitico_iran_oil_gold"
+        "geopolitico_iran_hormuz_oil_gold"
       ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0
+      "score_min_real_efectivo": 9.0,
+      "nota": "Shock geopolitico Iran/Hormuz CONTINUADO (no nuevo). Mercado lo absorbe: SPY +0.95%, VIX 14.65 (-3.6%). Oro +3.97% ($4540) y Brent $95-97 (+10% semanal) reflejan la prima geopolitica, pero renta variable en risk-on por Waller (Fed inclinado a mantener tipos). NO se eleva a shock: no procede MACRO_PLAYBOOK."
     },
     "macro_score": 0.3,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros alcistas (ES +0.58%, NQ +0.67%)",
-      "VIX 14.94 (-1.71%) — calma en equities",
-      "ORO +3.92% a $4,537 record — Trump confirma \"very heavy attack\" contra Iran",
-      "Petroleo WTI $91.99 (+1.08%) — tension Estrecho de Hormuz activa",
-      "Yield 10Y 4.76% (>4.5%) — presion valuaciones growth",
-      "TLT +0.48% — leve flight to safety",
-      "Nikkei -2.85% overnight",
-      "Sector lider: XLY +1.45%; XLK +0.85%"
+      "Futuros alcistas (+1.11%)",
+      "TLT +0.52% flight to safety",
+      "Yield 10Y alto (4.74%)",
+      "Dolar debil (-0.66%)",
+      "Oro +4.0% senal de miedo",
+      "Tech fuerte (+1.1%)"
     ],
     "futuros": {
-      "ES": 0.58,
-      "NQ": 0.67
+      "ES": 1.05,
+      "NQ": 1.17,
+      "YM": 1.23,
+      "RTY": 0.33
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-03T11:15",
+    "ts_actualizado": "2026-09-03T12:16",
     "sectores_hoy": {
       "lider": "consumer_disc",
-      "cambio_lider": 1.45,
-      "tech_chg": 0.85,
-      "ts": "11:15"
+      "cambio_lider": 1.77,
+      "tech_chg": 1.15,
+      "all": {
+        "tech": 1.15,
+        "financials": 1.23,
+        "energy": -0.03,
+        "healthcare": -0.15,
+        "industrials": 0.55,
+        "consumer_disc": 1.77,
+        "utilities": 0.94,
+        "materials": -0.58,
+        "realestate": 0.83
+      },
+      "ts": "12:16"
     },
     "macro_bonus_ew": 0.09,
     "bonos": {
-      "tlt_chg": 0.48,
-      "yield_10y": 4.76
+      "tlt_chg": 0.52,
+      "yield_10y": 4.741999626159668
     },
     "eventos_recientes": [
       {
@@ -2889,8 +2916,8 @@
     "vix_updated": "2026-08-25T20:30:03.722089Z",
     "ts_health_check": "2026-08-31T06:10",
     "spy_day": -1.29,
-    "narrativa_sentinel": "25-ago 14:15 ET: sin shock. Hormuz desminado por la Navy -> WTI -3.3% a $82, prima geopolitica descomprimiendose. Riesgo binario dominante = NVDA earnings manana AH (26-ago); NVDA llega en su peor racha de perdidas desde 2022 y el mercado esta posicionado a la espera. Fear&Greed neutral. Sin cierre ni apertura de posiciones este ciclo.",
-    "spy_chg": 0.45,
+    "narrativa_sentinel": "03-sep 12:2x ET: risk-on en renta variable (SPY +0.95%, QQQ +1.11%, TSLA +7.4%) pese a guerra EEUU-Iran activa. Waller (Fed) inclinado a mantener tipos -> 2Y de 4.40% a 4.30%, TLT +0.52%. Oro +3.97% a $4540 y crudo +10% semanal: la prima geopolitica esta en commodities, no en equity. VIX 14.65. Nikkei -2.9% unico foco de debilidad.",
+    "spy_chg": 0.95,
     "nota_web": "Core PCE julio 3.3% (cons 3.2%) - sorpresa hawkish leve; odds subida tipos sept 40.4%. Hormuz sigue con trafico reducido (oil elevado, sin shock nuevo). NVDA reporta hoy AH - evento dominante del mercado.",
     "preparacion_semana": "semana del 2026-08-10",
     "top_candidatos_lunes": [
@@ -2957,7 +2984,7 @@
       "wti": 88.38999938964844,
       "chg_pct": 3.066694482166869
     },
-    "gold": 4440.4,
+    "gold": 4539.7998046875,
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
@@ -2973,38 +3000,36 @@
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike",
-    "vix_chg": -4.8,
-    "oil_wti": 82.19,
-    "oil_brent": 87.37000274658203,
+    "vix_chg": -3.62,
+    "oil_wti": 91.12999725341797,
+    "oil_brent": 95.41999816894531,
     "oro": 4702.6,
     "fear_greed": "55 greed",
-    "qqq_chg": 1.27,
-    "oro_chg": 1.33,
-    "dxy_chg": -0.07,
+    "qqq_chg": 1.11,
+    "oro_chg": 3.97,
+    "dxy_chg": -0.66,
     "intl": {
-      "Nikkei": 0.6160773738042614,
-      "DAX": 0.3092118148857384,
-      "FTSE": -0.786530491399093,
-      "HSI": 0.5561151652509099,
+      "Nikkei": -2.85,
+      "DAX": 0.63,
+      "FTSE": 0.7,
+      "HSI": -0.07,
       "Shanghai": NaN
     },
     "sectores": {
-      "XLK": 2.38,
-      "XLF": -0.78,
-      "XLE": -0.99,
-      "XLV": -1.06,
-      "XLI": -1.08,
-      "XLY": -0.71,
-      "XLU": -1.22,
-      "XLB": -1.05,
-      "XLRE": -0.59,
-      "XLC": -0.47,
-      "XLP": -1.12
+      "tech": 1.15,
+      "financials": 1.23,
+      "energy": -0.03,
+      "healthcare": -0.15,
+      "industrials": 0.55,
+      "consumer_disc": 1.77,
+      "utilities": 0.94,
+      "materials": -0.58,
+      "realestate": 0.83
     },
     "nota_oro_2026-08-19": "CORRECCION al ciclo de las 11:2x ET: el +4% de GC=F NO era artefacto de datos. La busqueda web confirma oro spot $4,492/oz (+3.66% en el dia, +12.1% en el mes, +34.3% interanual). Es un movimiento real de debasement/dolar-debil (DXY -0.87%, TLT +1.55%), no de miedo a la renta variable (VIX 15.03 -5.11%, SPY +0.30%). Se computa -0.5 en el macro_score.",
     "nota_fomc_2026-08-19": "Minutas FOMC de la reunion 28-29 jul publicadas hoy 14:00 ET. Tipos en 3.50-3.75% con 3 disidentes a favor de SUBIR. Reaccion: yields retroceden desde los maximos de 2 decadas de ayer (30Y toco 5.2%, maximo desde 2007), TLT +1.55%, dolar en minimos. Probabilidad de 'hold' en septiembre ~65%. Sin shock: SPY +0.30% con amplitud (IWM +0.40%), VIX 15.03.",
     "vix_fuente": "cierre 28-ago (VIXY -3.05% semana)",
-    "oil_chg": -3.32,
+    "oil_chg": 0.13,
     "niveles": {
       "vix": 15.51,
       "spy": 765.15,
@@ -3244,8 +3269,48 @@
       "estado_hoy": "sin escalada nueva; prima geopolitica relajandose (LMT -2.2%, DAL +2.3%)",
       "riesgo": "reactivacion -> oil >95 y rotacion a energia/defensa"
     },
-    "websearch_regimen": "Regimen persistente, sin evento nuevo hoy. WebSearch 2-sep-2026: conflicto US-Iran / Estrecho de Hormuz mantiene Brent ~$95 y WTI ~$91; 10Y US 4.80% (max desde ene-2025); mercado descuenta ~70% de subida de 25pb de la Fed en septiembre (Warsh hawkish). Hoy el mercado REBOTA (SPY +0.5%, IWM +1.1%, QQQ +0.1%) tras la caida del 1-sep. Gran tanda de earnings tech AH hoy (AVGO, CRM). No se cumple el gatillo de shock intradia (VIX/SPY/Mag7 en rango normal) -> shock_tipo=ninguno, sin macro plays.",
-    "shock_tipo_regimen": "oil_spike_geopolitico_persistente"
+    "websearch_regimen": "Iran/Hormuz: dos petroleros alcanzados, hostilidades reanudadas; Trump describe ataque \"muy fuerte\" pero \"no durara mucho\" -> el mercado descuenta escalada corta.",
+    "shock_tipo_regimen": "oil_spike_geopolitico_persistente",
+    "earnings_ah_hoy_via_yfinance": {
+      "ts": "2026-09-03T12:16",
+      "fuente": "yfinance earnings_dates (EW caido)",
+      "nota": "Sin whisper disponible -> sin asimetria -> NO generar candidato solo por el beat. Aplicar regla AVGO/CIEN 03-sep: exigir gap premarket >0 ADEMAS del beat antes de crear post_earnings_continuation.",
+      "tickers": [
+        {
+          "ticker": "ZS",
+          "timing": "after-hours",
+          "eps_estimate": 1.09
+        },
+        {
+          "ticker": "LULU",
+          "timing": "after-hours",
+          "eps_estimate": 2.85
+        },
+        {
+          "ticker": "DOCU",
+          "timing": "after-hours",
+          "eps_estimate": 1.09
+        },
+        {
+          "ticker": "PATH",
+          "timing": "after-hours",
+          "eps_estimate": 0.15
+        },
+        {
+          "ticker": "AMBA",
+          "timing": "after-hours",
+          "eps_estimate": 0.17,
+          "nota": "posicion Cowork abierta — cerrar antes 15:30 ET"
+        },
+        {
+          "ticker": "GWRE",
+          "timing": "after-hours",
+          "eps_estimate": 0.94,
+          "nota": "posicion Cowork abierta — cerrar antes 15:30 ET"
+        }
+      ],
+      "bmo_manana": []
+    }
   },
   "operaciones_crypto": [
     {
@@ -13094,6 +13159,24 @@
       "vix": 14.9,
       "modo": "READ_ONLY — agente no ejecuta ordenes (politica de seguridad); reporte solo",
       "ew_scraper": "ROTO — old.earningswhispers.com timeout/sin whisper en 0/31 tickers"
+    },
+    {
+      "ts": "2026-09-03T16:16:54.700118+00:00",
+      "hora_et": "12:16",
+      "modo": "intradia — sin ejecucion (cowork 2/2 + rol monitor_y_escalador)",
+      "alertas": 4,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "max_cowork": 2,
+      "vix": 14.649999618530273,
+      "spy_chg": 0.95,
+      "macro_score": 0.3,
+      "nivel": "alerta",
+      "ew_disponible": false,
+      "telegram_enviado": false,
+      "notas": "AMBA y GWRE con stop bracket activo y earnings AH hoy -> cierre R0 delegado a pre-close-manager (<15:30 ET). EW caido 3er ciclo. Sin entradas: limite Cowork 2/2 y umbral efectivo 7.5."
     }
   ],
   "momentum_15m": {
@@ -13555,14 +13638,14 @@
       "ts": "14:28"
     },
     "AMBA": {
-      "precio": 66.98,
-      "mom_15m": -0.253,
-      "mom_30m": 0.525,
-      "vol_ratio": 3.44,
-      "vwap_dev": 0.295,
-      "rsi": 57.8,
-      "senal": "debil_bajista",
-      "ts": "15:25"
+      "precio": 65.89,
+      "mom_15m": 0.076,
+      "mom_30m": -0.121,
+      "vol_ratio": 1.18,
+      "vwap_dev": -0.29,
+      "rsi": 32.3,
+      "señal": "LATERAL",
+      "ts": "12:16"
     },
     "GIII": {
       "precio": 28.71,
@@ -13657,24 +13740,24 @@
       "ts": "14:28"
     },
     "GWRE": {
-      "precio": 192.12,
-      "mom_15m": 0.198,
-      "mom_30m": 1.164,
-      "vol_ratio": 0.0,
-      "vwap_dev": 0.818,
-      "rsi": 56.1,
-      "senal": "debil_alcista",
-      "ts": "15:25"
+      "precio": 200.49,
+      "mom_15m": 0.285,
+      "mom_30m": -0.092,
+      "vol_ratio": 0.32,
+      "vwap_dev": 0.338,
+      "rsi": 66.5,
+      "señal": "debil_alcista",
+      "ts": "12:16"
     },
     "VSXY": {
-      "precio": 84.4,
-      "mom_15m": -0.142,
-      "mom_30m": 0.059,
-      "vol_ratio": 0.47,
-      "vwap_dev": -0.419,
-      "rsi": 36.2,
-      "señal": "LATERAL",
-      "ts": "14:28"
+      "precio": 72.6,
+      "mom_15m": -0.738,
+      "mom_30m": -3.006,
+      "vol_ratio": 0.1,
+      "vwap_dev": -2.548,
+      "rsi": 35.8,
+      "señal": "debil_bajista",
+      "ts": "12:16"
     },
     "CPB": {
       "precio": 24.1,
@@ -13707,14 +13790,14 @@
       "ts": "14:28"
     },
     "PL": {
-      "precio": 19.83,
-      "mom_15m": 0.431,
-      "mom_30m": 0.405,
-      "vol_ratio": 0.69,
-      "vwap_dev": 0.709,
-      "rsi": 79.7,
-      "señal": "debil_alcista",
-      "ts": "14:28"
+      "precio": 18.08,
+      "mom_15m": -1.417,
+      "mom_30m": -1.551,
+      "vol_ratio": 0.26,
+      "vwap_dev": -1.706,
+      "rsi": 29.9,
+      "señal": "debil_bajista",
+      "ts": "12:16"
     },
     "AI": {
       "px": 10.36,
@@ -19127,7 +19210,7 @@
       "accion": "Sustituir get_ew_headless() por cliente JSON en el SKILL. Este ciclo se uso el workaround y los datos cuadran con el CV previo."
     }
   ],
-  "ultima_actualizacion": "2026-09-02T20:30:03.156948+00:00",
+  "ultima_actualizacion": "2026-09-03T12:16 ET",
   "ew_calendario_proximo": {
     "generado": "2026-08-29",
     "semana": "2026-W36",
