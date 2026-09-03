@@ -463,6 +463,12 @@
       "severidad": "media",
       "leccion": "SNOW cerrada el 02-sep 12:33 ET por regla pre-earnings; abrio +23.3% premkt el 03-sep tras reportar. La regla evita el riesgo de gap adverso pero renuncia a la cola derecha. Documentar como coste conocido de la politica, no como error: sin la regla, un gap -23% habria sido igualmente posible.",
       "accion": "Registrado para revision de politica en el resumen semanal."
+    },
+    {
+      "fecha": "2026-09-03",
+      "origen": "sentinel-11:15ET",
+      "leccion": "BEAT-AND-FADE CONFIRMADO x2: CIEN reporto Q3 adj EPS $2.11 vs $1.73 est (+22%), ventas $1.671B vs $1.633B, y SUBIO guia FY26 a $6.37-6.47B — y cotiza -10.00%. AVGO tras Q3 \"upbeat\" y 8 subidas de PT de analistas cotiza -5.45%. Ambos fueron correctamente DESCARTADOS por score (CIEN 5.0, AVGO 5.6) < umbral 7.5. El filtro de score evito dos perdidas grandes. Refuerza W16: el beat de EPS/whisper NO es suficiente; el mercado ya descuenta.",
+      "accion": "Mantener umbral score_min_paper>=7.5. No relajar por \"beat obvio\"."
     }
   ],
   "operaciones": [
@@ -2563,58 +2569,44 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-03T09:15",
+      "timestamp": "2026-09-03T11:15",
       "nivel": "alerta",
       "shocks": [
-        "geopolitico_ormuz_persistente"
+        "geopolitico_iran_oil_gold"
       ],
-      "bloquear_entradas": true,
-      "motivo_bloqueo": "pre-apertura (09:11 ET) + 2/2 slots Cowork ocupados",
+      "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0
+      "score_min_real_efectivo": 9.0
     },
-    "macro_score": -0.8,
+    "macro_score": 0.3,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Regimen geopolitico ACTIVO: crisis Estrecho de Ormuz / conflicto EEUU-Iran. Brent ~$96, WTI $91.9.",
-      "Oro +3.93% (Sep-2) - prima de riesgo geopolitico + dolar debil (UUP -0.53% premkt).",
-      "Yield 10Y 4.73% (-1.29%), TLT +0.44% premkt - leve flight-to-safety.",
-      "Futuros mixtos/planos: ES +0.26%, NQ +0.08%; SPY premkt +0.29%, QQQ +0.15%.",
-      "VIX 15.04 - mercado NO en panico pese al conflicto: shock ya descontado, no spike nuevo.",
-      "Sectores premkt: XLI +0.64%, XLE +0.58% lideran; XLK -0.06% rezagado -> tech sin liderazgo.",
-      "AVGO batio EPS +5.06% vs consenso (Sep-2 AH) y cotiza -3.0% premkt -> BEAT-AND-FADE. Aviso para cohorte software/semis que reporta hoy.",
-      "SNOW +23.3% premkt tras earnings Sep-2 AH (cerrada por regla pre-earnings el 09-02 a 12:33 ET)."
+      "Futuros alcistas (ES +0.58%, NQ +0.67%)",
+      "VIX 14.94 (-1.71%) — calma en equities",
+      "ORO +3.92% a $4,537 record — Trump confirma \"very heavy attack\" contra Iran",
+      "Petroleo WTI $91.99 (+1.08%) — tension Estrecho de Hormuz activa",
+      "Yield 10Y 4.76% (>4.5%) — presion valuaciones growth",
+      "TLT +0.48% — leve flight to safety",
+      "Nikkei -2.85% overnight",
+      "Sector lider: XLY +1.45%; XLK +0.85%"
     ],
     "futuros": {
-      "ES": 0.26,
-      "NQ": 0.08,
-      "YM": 0.54,
-      "RTY": 0.57
+      "ES": 0.58,
+      "NQ": 0.67
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-03T09:15",
+    "ts_actualizado": "2026-09-03T11:15",
     "sectores_hoy": {
-      "lider": "xlb",
-      "cambio_lider": 1.78,
-      "tech_chg": -0.08,
-      "all": {
-        "xlk": -0.08,
-        "xlf": 0.9,
-        "xle": 0.86,
-        "xlv": 0.89,
-        "xli": 0.07,
-        "xly": 0.07,
-        "xlu": 0.08,
-        "xlb": 1.78,
-        "xlre": -0.79
-      },
-      "ts": "15:25"
+      "lider": "consumer_disc",
+      "cambio_lider": 1.45,
+      "tech_chg": 0.85,
+      "ts": "11:15"
     },
-    "macro_bonus_ew": -0.24,
+    "macro_bonus_ew": 0.09,
     "bonos": {
-      "tlt_chg": 0.44,
-      "yield_10y": 4.73
+      "tlt_chg": 0.48,
+      "yield_10y": 4.76
     },
     "eventos_recientes": [
       {
@@ -8770,6 +8762,20 @@
       "mensaje": "AMBA (80 acc @66.71) y GWRE (28 acc @191.17) quedan overnight SIN orden de stop en Alpaca — solo tienen orden LIMIT de take-profit (76.22 / 214.46). Ambas reportan earnings AFTER-HOURS manana 3-sep. Riesgo teorico a stop ATRx1.5: $343 (AMBA) + $304 (GWRE) = $647.",
       "accion_requerida": "1) Colocar stop GTC manualmente: AMBA sell stop 62.42 / GWRE sell stop 180.32. 2) REGLA R0: cerrar ambas posiciones antes de las 15:30 ET del 2026-09-03, antes del print.",
       "nota": "Cowork no ejecuta ordenes; requiere accion del usuario o de la tarea intraday/pre-close."
+    },
+    {
+      "fecha": "2026-09-03",
+      "ts": "11:15 ET",
+      "severidad": "ALTA",
+      "alerta": "AMBA (paper, COWORK, 80sh @ ~$66.39, P&L -0.48%, bracket stop $61.86 held) tiene EARNINGS HOY AFTER-HOURS. Debe cerrarse antes del cierre 16:00 ET para evitar gap overnight.",
+      "accion_requerida": "Cierre manual o via pre-close task 14:30-14:45 ET"
+    },
+    {
+      "fecha": "2026-09-03",
+      "ts": "11:15 ET",
+      "severidad": "ALTA",
+      "alerta": "SCRAPER EARNINGSWHISPERS ROTO: old.earningswhispers.com devuelve timeout o HTML sin #whisperbox parseable. 0 de 31 tickers extraidos. PASO 3 del sentinel y el scan pre-market EW estan ciegos.",
+      "accion_requerida": "Revisar selectores / usar fuente alternativa (Benzinga, Zacks, Nasdaq earnings calendar)"
     }
   ],
   "mejoras_sistema": [
@@ -13078,6 +13084,16 @@
       "bloqueado": true,
       "motivo": "pre-apertura + slots 2/2 llenos",
       "nota": "AMBA(+1.35%) y GWRE(+1.49%) con earnings HOY AH -> cierre obligatorio <=14:30 ET. Stops bracket verificados vivos (status=held) - falso positivo del post-market corregido. AVGO beat-and-fade -3.0% premkt es aviso para GWRE esta noche. Fuente EW caida."
+    },
+    {
+      "ts": "2026-09-03T11:15:32.929695+00:00",
+      "alertas": 4,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 14.9,
+      "modo": "READ_ONLY — agente no ejecuta ordenes (politica de seguridad); reporte solo",
+      "ew_scraper": "ROTO — old.earningswhispers.com timeout/sin whisper en 0/31 tickers"
     }
   ],
   "momentum_15m": {
