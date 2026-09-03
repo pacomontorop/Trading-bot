@@ -116,8 +116,8 @@ execution:
 
 safeguards:
   enabled: true
-  ttl_days: 90                               # extended: expires ~2026-06-17
-  started_at_utc: "2026-05-17T00:00:00Z"
+  ttl_days: 365                              # renewed 2026-09-03: expires 2027-09-03
+  started_at_utc: "2026-09-03T00:00:00Z"
   break_even_R: 0.2                          # tightened from 0.3: move to break-even at 0.2R gain
   break_even_buffer_pct: 0.002              # increased from 0.001: entry + 0.2% buffer (vs 0.1%)
   trailing_enable: true
@@ -153,4 +153,3 @@ earnings:
   close_before_ah_earnings: true           # cerrar posición si ticker tiene earnings AH ese día (antes 15:45 ET)
   close_before_pre_market_earnings: false  # NO cerrar antes de earnings pre-market (esos son plays intencionales)
   # Implementar en: core/scheduler.py — añadir check de calendario yfinance antes de tick_protect y place_long_order
-
