@@ -3274,51 +3274,58 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-04T12:27",
+      "timestamp": "2026-09-04T13:16",
       "nivel": "alerta",
-      "shocks": [],
+      "shocks": [
+        "mag7_move_TSLA_-6.5pct_idiosincratico"
+      ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0
+      "score_min_real_efectivo": 9.0,
+      "nota": "VIX 14.07 (+0.6%/30m), SPY -0.36% dia / -0.11%/30m => sin shock cuantitativo. TSLA aislado."
     },
-    "macro_score": -0.6,
+    "macro_score": -0.5,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Empleo agosto 162k vs 55k esperado — probabilidad de SUBIDA de tipos en la reunion de septiembre ~60% (CME)",
-      "Yield 10Y 4.77% (>4.5%) — presion sobre valoraciones growth",
-      "WTI $90.9 tras +9% semanal por hostilidades EEUU-Iran y disrupcion del Estrecho de Ormuz (regimen persistente, no shock agudo hoy)",
-      "VIX 14.1 y bajando (-1.0% en 30min) — sin estres; SPY -0.33%, QQQ +0.11%",
-      "TSLA -6.3% (idiosincratico: margenes/capex, no earnings) arrastra XLY -1.48%",
-      "Rotacion: XLK +0.64%, XLI +0.38% vs XLV -0.78%, XLE -0.75%, XLF -0.63%"
+      "Futuros ligeramente bajistas (-0.12%)",
+      "Yield 10Y 4.76% — presion sobre valuaciones growth",
+      "Tech lidera (+0.66%) — favorable a candidatos EW tech",
+      "WTI $91.3 (+9% semanal) — regimen US-Iran/Hormuz vigente, sin escalada nueva hoy",
+      "Payrolls agosto 162k vs 55k esperado — repricing hawkish Fed, 2Y en maximos desde ene-2025",
+      "TSLA -6.5% idiosincratico (evento Cybercab decepciona) — no contagio macro; SMH +2.4%"
     ],
     "futuros": {
-      "ES": -0.44,
-      "NQ": -0.06
+      "ES": -0.351,
+      "NQ": 0.108,
+      "YM": -0.517,
+      "RTY": 0.128
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-04T12:27",
+    "ts_actualizado": "2026-09-04T13:16",
     "sectores_hoy": {
       "lider": "tech",
-      "cambio_lider": 0.58,
-      "tech_chg": 0.58,
+      "cambio_lider": 0.661,
+      "debil": "consumer_disc",
+      "tech_chg": 0.661,
       "all": {
-        "XLK": 0.58,
-        "XLF": -1.05,
-        "XLE": -0.84,
-        "XLV": -0.98,
-        "XLI": 0.21,
-        "XLY": -1.69,
-        "XLU": 0.36,
-        "XLP": -0.35,
-        "XLB": -0.24
+        "tech": 0.661,
+        "financials": -0.606,
+        "energy": -0.727,
+        "healthcare": -0.99,
+        "industrials": 0.309,
+        "consumer_disc": -1.468,
+        "utilities": 0.046,
+        "materials": -0.086,
+        "realestate": -0.215
       },
-      "ts": "11:20"
+      "ts": "13:16"
     },
-    "macro_bonus_ew": -0.18,
+    "macro_bonus_ew": -0.15,
     "bonos": {
-      "tlt_chg": 0.37,
-      "yield_10y": 4.77
+      "tlt_chg": 0.378,
+      "yield_10y": 4.76,
+      "yield_30y": 5.23
     },
     "eventos_recientes": [
       {
@@ -3669,8 +3676,10 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 90.91,
-      "gold": 4484.7
+      "wti": 91.29,
+      "wti_chg": -0.011,
+      "oro_chg": -0.303,
+      "dxy_chg": 0.143
     },
     "internacional": {
       "Nikkei": 1.26,
@@ -9686,6 +9695,13 @@
       "detalle": "yf.Ticker(x).fast_info.get(\"last_price\") y \"regular_market_previous_close\" devuelven 0 para TODOS los simbolos. Los PASOS 6 y 6B se apoyan en fast_info via chg()/fast_chg(), asi que futuros, bonos, DXY, oro, petroleo, internacional y sectores se computaban como +0.00% y macro_score salia 0.0 sin lanzar ninguna excepcion.",
       "fix": "Sustituir fast_info por .history(period=\"5d\") y comparar Close[-1] vs Close[-2]. Verificado funcionando en este ciclo.",
       "impacto": "Todo ajuste de umbral y sizing por macro llevaba desactivado un tiempo indeterminado, con el sistema reportando \"macro normal\" por defecto."
+    },
+    {
+      "fecha": "2026-09-04",
+      "ts": "13:16 ET",
+      "severidad": "media",
+      "tipo": "fuente_datos_degradada",
+      "detalle": "EarningsWhispers (old./www.) devuelve ReadTimeout sistematico desde el sandbox: 0/15 tickers parseados en el scan del sentinel. Warm-up de homepage si responde (200). Revisar antes del pre-market scan del lunes 10:15 ET — si persiste, los candidatos de la semana 09-08/09-10 no tendran whisper/consensus frescos."
     }
   ],
   "mejoras_sistema": [
@@ -14162,6 +14178,17 @@
       "cowork_abiertas": 0,
       "vix": 14.1,
       "nota": "EW scraper roto -> reparado via API JSON. 0 earnings operables hoy/manana. Sin ejecuciones."
+    },
+    {
+      "ts": "2026-09-04T13:16:30.226207+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 14.07,
+      "macro_nivel": "alerta",
+      "macro_score": -0.5,
+      "nota": "Viernes 13:1x ET. Cartera plana (solo polvo cripto <$1). Sin earnings HOY/MANANA => scan EW sin candidatos ejecutables. EarningsWhispers con timeouts (0/15 parseados). Sin Telegram por politica (no trade/cierre/shock/EOD)."
     }
   ],
   "momentum_15m": {
@@ -14777,28 +14804,34 @@
       "ts": "13:16"
     },
     "BRZE": {
-      "precio": 32.44,
-      "mom_15m": 1.39,
-      "vol_ratio": 0.9,
-      "señal": "debil_alcista",
-      "ts": "11:20"
+      "precio": 32.26,
+      "mom_15m": -0.062,
+      "mom_30m": -0.263,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.532,
+      "rsi": 33.3,
+      "senal": "LATERAL",
+      "ts": "13:15"
     },
     "TTAN": {
-      "precio": 88.83,
-      "mom_15m": -0.04,
-      "vol_ratio": 0.8,
-      "señal": "LATERAL",
-      "ts": "11:20"
+      "precio": 89.06,
+      "mom_15m": 0.073,
+      "mom_30m": -0.14,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.12,
+      "rsi": 43.0,
+      "senal": "LATERAL",
+      "ts": "13:15"
     },
     "CASY": {
-      "precio": 754.62,
-      "mom_15m": -0.121,
-      "mom_30m": 0.179,
-      "vol_ratio": 0.6,
-      "vwap_dev": 0.231,
-      "rsi": 64.0,
+      "precio": 756.85,
+      "mom_15m": 0.066,
+      "mom_30m": -0.123,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.091,
+      "rsi": 56.7,
       "senal": "LATERAL",
-      "ts": "12:27"
+      "ts": "13:15"
     },
     "GME": {
       "precio": 19.18,
@@ -14811,24 +14844,24 @@
       "ts": "12:27"
     },
     "CHWY": {
-      "precio": 24.14,
-      "mom_15m": 0.249,
-      "mom_30m": 0.187,
-      "vol_ratio": 0.7,
-      "vwap_dev": 0.233,
-      "rsi": 68.8,
-      "senal": "debil_alcista",
-      "ts": "12:27"
+      "precio": 24.02,
+      "mom_15m": 0.103,
+      "mom_30m": -0.125,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.276,
+      "rsi": 39.5,
+      "senal": "LATERAL",
+      "ts": "13:15"
     },
     "SIG": {
-      "precio": 85.29,
-      "mom_15m": 0.088,
-      "mom_30m": 0.442,
-      "vol_ratio": 0.54,
-      "vwap_dev": 0.815,
-      "rsi": 78.0,
+      "precio": 84.86,
+      "mom_15m": -0.006,
+      "mom_30m": -0.082,
+      "vol_ratio": 1.1,
+      "vwap_dev": -0.316,
+      "rsi": 38.8,
       "senal": "LATERAL",
-      "ts": "12:27"
+      "ts": "13:15"
     },
     "ADBE": {
       "precio": 267.97,
@@ -14841,14 +14874,14 @@
       "ts": "12:27"
     },
     "ORCL": {
-      "precio": 157.82,
-      "mom_15m": 0.143,
-      "mom_30m": 0.159,
-      "vol_ratio": 0.34,
-      "vwap_dev": -0.045,
-      "rsi": 38.0,
-      "senal": "LATERAL",
-      "ts": "12:27"
+      "precio": 157.74,
+      "mom_15m": 0.179,
+      "mom_30m": -0.272,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.072,
+      "rsi": 52.6,
+      "senal": "debil_alcista",
+      "ts": "13:15"
     },
     "RH": {
       "precio": 148.23,
@@ -14889,13 +14922,14 @@
       "ts": "10:17"
     },
     "ABM": {
-      "precio": 47.02,
-      "mom_15m": 0.28,
-      "mom_30m": 0.48,
-      "vwap_dev": -0.27,
-      "rsi": 47.0,
-      "señal": "debil_alcista",
-      "ts": "10:17"
+      "precio": 46.95,
+      "mom_15m": -0.221,
+      "mom_30m": -0.244,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.284,
+      "rsi": 38.6,
+      "senal": "debil_bajista",
+      "ts": "13:15"
     },
     "TSLA": {
       "precio": 354.82,
@@ -14905,6 +14939,76 @@
       "rsi": 11.0,
       "señal": "debil_bajista",
       "ts": "10:17"
+    },
+    "NAVN": {
+      "precio": 27.89,
+      "mom_15m": 0.288,
+      "mom_30m": 0.108,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.256,
+      "rsi": 66.7,
+      "senal": "debil_alcista",
+      "ts": "13:15"
+    },
+    "M": {
+      "precio": 22.9,
+      "mom_15m": 0.285,
+      "mom_30m": 0.263,
+      "vol_ratio": 0.0,
+      "vwap_dev": 0.199,
+      "rsi": 58.6,
+      "senal": "debil_alcista",
+      "ts": "13:15"
+    },
+    "AEO": {
+      "precio": 17.11,
+      "mom_15m": 0.058,
+      "mom_30m": -0.204,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.116,
+      "rsi": 55.5,
+      "senal": "LATERAL",
+      "ts": "13:15"
+    },
+    "SAIL": {
+      "precio": 19.17,
+      "mom_15m": 0.0,
+      "mom_30m": -0.853,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.596,
+      "rsi": 21.9,
+      "senal": "LATERAL",
+      "ts": "13:15"
+    },
+    "COO": {
+      "precio": 69.97,
+      "mom_15m": 0.258,
+      "mom_30m": 0.244,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.179,
+      "rsi": 34.2,
+      "senal": "debil_alcista",
+      "ts": "13:15"
+    },
+    "CPRT": {
+      "precio": 33.78,
+      "mom_15m": 0.015,
+      "mom_30m": -0.163,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.122,
+      "rsi": 52.7,
+      "senal": "LATERAL",
+      "ts": "13:15"
+    },
+    "DSGX": {
+      "precio": 78.35,
+      "mom_15m": -0.324,
+      "mom_30m": -0.527,
+      "vol_ratio": 0.0,
+      "vwap_dev": -0.612,
+      "rsi": 29.8,
+      "senal": "debil_bajista",
+      "ts": "13:15"
     }
   },
   "sentinel_signals": [
