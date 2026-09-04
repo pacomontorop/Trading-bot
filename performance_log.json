@@ -558,6 +558,36 @@
       "regla": "Antes de crear cualquier post_earnings_continuation exigir las 3 confirmaciones: (1) ingresos baten o al menos cumplen, (2) guidance mantenida o subida, (3) beat sin partidas extraordinarias. Si falta cualquiera -> descartar aunque el EPS bata. Y siempre validar contra la reaccion real de precio en after-hours/premarket ANTES de puntuar, no solo contra el EPS.",
       "aplicabilidad": "PASO 4C post-earnings beat detection del sentinel y post-market-review",
       "coste_evitado": "LULU ya estaba descartado_score=3.0 por post-market-review -> el filtro funciono. Esta leccion lo codifica de forma explicita."
+    },
+    {
+      "fecha": "2026-09-04",
+      "id": "L42-EW-CAIDA-4o-CICLO",
+      "origen": "pre-market-earnings-scan",
+      "severidad": "alta",
+      "titulo": "EarningsWhispers lleva 4 ciclos caido: el BLOQUE A (3.0 pts, 30% del score) no tiene datos",
+      "evidencia": "old.earningswhispers.com/stocks?d=20260904, /stocks/NVDA y /stocks/KNOP devuelven los tres exactamente 96.276 bytes (shell SPA). www.earningswhispers.com/calendar devuelve 107.972 bytes, tambien shell. Sin datos por ticker por via headless.",
+      "regla": "Mientras EW este caido, la asimetria del whisper es 0.0 para todos los tickers y el score maximo alcanzable cae de 10.0 a ~7.0. Un umbral de 7.5 se vuelve practicamente inalcanzable — que es el comportamiento SEGURO y debe mantenerse. NO bajar el umbral para compensar la falta de datos: eso convertiria el pipeline en un comprador de earnings a ciegas justo en regimen beat-and-fade.",
+      "accion": "Buscar fuente alternativa de whisper (Estimize, Benzinga, api de Nasdaq) antes del 08-sep, o marcar el pipeline EW como degradado."
+    },
+    {
+      "fecha": "2026-09-04",
+      "id": "L43-BUGS-EJECUCION-SKILL",
+      "origen": "pre-market-earnings-scan",
+      "severidad": "critica",
+      "titulo": "El skill pre-market-earnings-scan tiene 3 bugs que pueden enviar una orden por el ticker equivocado",
+      "evidencia": "(1) PASO 3 hace enriched.append({... 'live_news_bonus': live_news_bonus ...}) pero esa variable no se define hasta PASO 3.5, que se ejecuta DESPUES -> NameError en el primer append, el pipeline muere antes de generar candidatos. (2) PASO 4 nunca hace candidatos_finales.append(...): la lista queda vacia siempre, asi que PASO 7 no escribe nada. (3) PASOS 5 y 6 (sizing y envio de orden) NO estan dentro de ningun bucle: operan sobre las variables sueltas 'ticker'/'score'/'target' que quedaron del ultimo giro del bucle del PASO 3. Si el flujo llegara ahi, dimensionaria y enviaria UNA orden sobre un ticker residual, no sobre el candidato ganador.",
+      "riesgo": "Bug (3) es de dinero real: la cuenta REAL esta activa con umbral 9.0 y envio automatico.",
+      "accion": "Envolver PASOS 5-6 en 'for cand in candidatos_finales:', poblar candidatos_finales en PASO 4, y mover el calculo de noticias en vivo ANTES del append del PASO 3. No re-armar la ejecucion automatica hasta corregirlo.",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-04",
+      "id": "L44-NFP-HAWKISH",
+      "origen": "pre-market-earnings-scan",
+      "severidad": "media",
+      "titulo": "NFP agosto 162K vs 53K esperado: giro hawkish, probabilidad de subida 15-16 sep ~65%",
+      "evidencia": "Mayor alza mensual desde marzo, paro 4.1% estable. Yields y dolar al alza; SPY solo -0.28% y VIX 14.05. La renta variable no ha repreciado el riesgo de tipos.",
+      "regla": "Cualquier hold de earnings del 8-10 sep (ORCL, ADBE incluidos) queda expuesto a la reunion de la Fed del 15-16. Considerar el evento Fed como riesgo de salida en el sizing de la proxima semana."
     }
   ],
   "operaciones": [
@@ -3689,6 +3719,15 @@
     "cambios_prioridad_hoy": {
       "ai_infrastructure_hardware": "+2 -> +1 (AVGO fallo el whisper y guio revenue bajo; el capex es real pero ya esta en precio)",
       "software_alta_duracion": "0 -> -1 (CIEN, VSXY: beat sin recompensa; duracion penalizada por tipos)"
+    },
+    "actualizacion_intradia_2026-09-04": {
+      "hora_et": "10:30",
+      "vix": 14.05,
+      "spy_d1_pct": -0.28,
+      "nfp_agosto": "162K real vs 53K consenso (paro 4.1%)",
+      "fed_sep_15_16_prob_subida": "~65% (desde ~55% pre-dato)",
+      "regimen": "AI_CAPEX_BOOM + BEAT_AND_FADE_REGIME + GIRO_HAWKISH_POST_NFP",
+      "exposicion": "CERO en equities (paper y real). Sin earnings operables hasta el 08-sep."
     }
   },
   "operaciones_crypto": [
@@ -18440,6 +18479,124 @@
         "NO se enviaron ordenes: ademas de que ningun candidato alcanzo el gate, este asistente no ejecuta operaciones bursatiles ni en cuenta real ni en paper. El scan es informativo.",
         "TELEGRAM CAIDO: el bot token 7820557997:... devuelve HTTP 401 Unauthorized en sendMessage. Ninguna notificacion del scan del 31-ago se entrego. Regenerar el token con @BotFather y actualizar TODOS los skills que lo usan (pre-market-earnings-scan, post-market-review, sentinel, crypto-scans)."
       ]
+    },
+    {
+      "fecha": "2026-09-04",
+      "hora_et": "10:30",
+      "tarea": "pre-market-earnings-scan",
+      "resultado": "SIN SEÑALES — 0 candidatos, 0 ordenes",
+      "universo": {
+        "hoy_2026-09-04": [],
+        "manana_2026-09-05": "sabado",
+        "d2_2026-09-06": "domingo",
+        "nota": "Ventana de escaneo (D, D+1, D+2) cae en viernes+fin de semana. Universo vacio por construccion.",
+        "verificacion_cruzada": "yfinance sobre 95 tickers: 0 earnings 04-06 sep. Coincide con ew_calendario_proximo del 03-sep (solo KNOP, ya descartado). Nota: yfinance situa el proximo report de KNOP en 2026-12-03."
+      },
+      "proximos_earnings": {
+        "2026-09-07": "MERCADO CERRADO (Labor Day)",
+        "2026-09-08": [
+          "ABM(BMO)",
+          "UNFI(BMO)",
+          "AVO(AH)",
+          "BRZE(AH)",
+          "CASY(AH)",
+          "GME(AH)"
+        ],
+        "2026-09-10": [
+          "ORCL",
+          "ADBE"
+        ]
+      },
+      "macro": {
+        "vix": 14.05,
+        "vix_chg_pct": -1.89,
+        "spy_d1_pct": -0.28,
+        "spy_5d_pct": 0.22,
+        "qqq_d1_pct": 0.27,
+        "brent_proxy_CL": 89.21,
+        "CL_5d_pct": 6.97,
+        "oro": 4479.2,
+        "macro_score": 0.6,
+        "macro_bonus": 0.18,
+        "vix_block": false
+      },
+      "evento_dominante": {
+        "nombre": "Informe de empleo agosto (NFP) 08:30 ET",
+        "resultado": "162K vs 53K esperado — mayor alza desde marzo; paro estable en 4.1%",
+        "reaccion": "Probabilidad de SUBIDA de tipos en la reunion del 15-16 sep sube a ~65% (desde ~55%). Yields al alza, dolar al alza. SPY solo -0.28%: la renta variable absorbe el dato hawkish.",
+        "implicacion": "Sorpresa hawkish. Riesgo de evento Fed 15-16 sep se solapa con cualquier hold de earnings 08-10 sep."
+      },
+      "cuentas": {
+        "paper": {
+          "equity": 108109.46,
+          "cash": 108109.07,
+          "posiciones_equity": 0,
+          "cripto_polvo": [
+            "BTCUSD",
+            "SOLUSD"
+          ]
+        },
+        "real": {
+          "equity": 4548.14,
+          "cash": 4547.48,
+          "posiciones_equity": 0,
+          "cripto_polvo": [
+            "BTCUSD"
+          ]
+        },
+        "capacidad": "2/2 slots libres en ambas cuentas"
+      },
+      "watchlist_08_sep_prefiltrada": [
+        {
+          "t": "ABM",
+          "tim": "BMO",
+          "beat_rate": "25%",
+          "px_vs_ma10": "SI",
+          "d5": -0.13,
+          "veredicto": "VETO — beat_rate 25% < 60%"
+        },
+        {
+          "t": "UNFI",
+          "tim": "BMO",
+          "beat_rate": "75%",
+          "px_vs_ma10": "NO",
+          "d5": -4.5,
+          "veredicto": "VETO — momentum (px<MA10), filtro DURO por L-CIEN"
+        },
+        {
+          "t": "AVO",
+          "tim": "AH",
+          "beat_rate": "75%",
+          "px_vs_ma10": "NO",
+          "d5": -1.41,
+          "veredicto": "VETO — momentum + micro-cap $1.1B"
+        },
+        {
+          "t": "BRZE",
+          "tim": "AH",
+          "beat_rate": "25%",
+          "px_vs_ma10": "NO",
+          "d5": -6.52,
+          "veredicto": "VETO — beat_rate 25% + momentum"
+        },
+        {
+          "t": "CASY",
+          "tim": "AH",
+          "beat_rate": "100%",
+          "px_vs_ma10": "NO",
+          "d5": -0.5,
+          "veredicto": "VETO por momentum, pero el mejor perfil fundamental. Revisar el 08-sep si recupera MA10"
+        },
+        {
+          "t": "GME",
+          "tim": "AH",
+          "beat_rate": "100%",
+          "px_vs_ma10": "SI",
+          "d5": 7.89,
+          "veredicto": "UNICO que pasa beat_rate+momentum. NO recomendado: meme-stock, gap risk extremo, -13% vs MA200, sin whisper, y exigiria hold de 4 dias sobre festivo"
+        }
+      ],
+      "nota_labor_day": "CASO BORDE: hoy (vie 4-sep) es la sesion D-1 de los reporters del martes 8-sep, porque el lunes 7 es festivo. Entrar hoy implica un hold de 4 dias naturales con riesgo de gap de fin de semana largo y CERO drift que capturar. La regla D-1 asume sesion contigua; no aplica sobre puente."
     }
   ],
   "acciones_pendientes_manana": [
@@ -20023,7 +20180,7 @@
       "detectado_por": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-04T10:17 ET",
+  "ultima_actualizacion": "2026-09-04T10:30 ET",
   "ew_calendario_proximo": {
     "consultado": "2026-09-03",
     "fuente": "earningswhispers.com/calendar via Chrome MCP (sesion activa)",
