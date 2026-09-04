@@ -52,7 +52,7 @@
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
     "ultima_actualizacion": "2026-09-04",
-    "motivo_actualizacion": "2026-09-04: Nueva estrategia unificada. Real account score bajado a 7.5 (era 9.0 — nunca ejecutaba). BE lock a 0.3R. Hasta 4 posiciones paper. Foco en pre-earnings drift + momentum con protección automática.",
+    "motivo_actualizacion": "2026-09-04: (a) endpoints EW JSON verificados y sustituyen al scraper HTML muerto; (b) penalizacion -1.5 a earnings-drift en mcap>=$10B por expectativa negativa medida (n=8, media -5.00%, mejor +3.74%).",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -157,7 +157,12 @@
       "stop_limit",
       "trailing_stop"
     ],
-    "supply_chain_requiere_whisper_beat": true
+    "supply_chain_requiere_whisper_beat": true,
+    "penalizacion_score_largecap_earnings": -1.5,
+    "umbral_largecap_usd": 10000000000,
+    "ew_endpoint_calendario": "https://www.earningswhispers.com/api/caldata/{YYYYMMDD}",
+    "ew_endpoint_ticker": "https://www.earningswhispers.com/api/getstocksdata/{TICKER}",
+    "ew_scraper_html_deprecado": true
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -210,152 +215,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "AFRM: beat cons=+5.4% confirmado AH=+8.2% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=4.62 vs cons=0.35. Whisper=NO disponible (email EW no emitido).",
-      "accion_futura": "AFRM: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "WDAY: SELL-THE-NEWS — beat cons=+5.4% pero reaccion=-5.7% (2026-08-27)",
-      "descripcion": "EPS=2.75 vs cons=2.61. Guidance=inline. Guia: Q3 subscription rev solo en linea; buyback $4B. El mercado vendio pese al beat.",
-      "accion_futura": "WDAY: verificar pre-drift y CALIDAD de la guia antes de earnings. Guidance del trimestre siguiente pesa mas que el beat del trimestre reportado.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "BEAT_RESULTADO",
-      "titulo": "ESTC: BEAT +11.1% vs whisper (2026-08-27) OK",
-      "descripcion": "EPS=0.7 vs whisper=0.63 vs cons=0.58. AH +23.1%.",
-      "accion_futura": "Confirma pipeline EW. Mantener parametros.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "ESTC: beat cons=+20.7% confirmado AH=+23.1% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.7 vs cons=0.58. Whisper=disponible.",
-      "accion_futura": "ESTC: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "RBRK: beat cons=+5.5% confirmado AH=+5.3% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.2 vs cons=0.04. Whisper=NO disponible (email EW no emitido).",
-      "accion_futura": "RBRK: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "DLTR: SELL-THE-NEWS — beat cons=+136.8% pero reaccion=-3.0% (2026-08-27)",
-      "descripcion": "EPS=2.7 vs cons=1.14. Guidance=cut. Guia: Q3 EPS $0.80-0.95 vs cons $1.40 (RECORTE); FY26 EPS subida a $7.70-8.05. El mercado vendio pese al beat.",
-      "accion_futura": "DLTR: verificar pre-drift y CALIDAD de la guia antes de earnings. Guidance del trimestre siguiente pesa mas que el beat del trimestre reportado.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "DG: beat cons=+24.0% confirmado AH=+5.0% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=2.48 vs cons=2.0. Whisper=NO disponible (email EW no emitido).",
-      "accion_futura": "DG: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "BBY: SELL-THE-NEWS — beat cons=+8.0% pero reaccion=-4.4% (2026-08-27)",
-      "descripcion": "EPS=1.48 vs cons=1.37. Guidance=raise. Guia: FY27 rev $42.3-42.8B; adj EPS $6.70-6.90; comps +4.1%. El mercado vendio pese al beat.",
-      "accion_futura": "BBY: verificar pre-drift y CALIDAD de la guia antes de earnings. Guidance del trimestre siguiente pesa mas que el beat del trimestre reportado.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "VEEV: beat cons=+5.9% confirmado AH=+9.4% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=2.35 vs cons=2.22. Whisper=NO disponible (email EW no emitido).",
-      "accion_futura": "VEEV: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "NTNX: beat cons=+22.4% confirmado AH=+10.1% (2026-08-27)",
-      "descripcion": "Mercado confirmo beat con reaccion AH fuerte. EPS=0.6 vs cons=0.49. Whisper=NO disponible (email EW no emitido).",
-      "accion_futura": "NTNX: AH-confirmacion valida como proxy de whisper para continuation.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "GUIDANCE_MANDA",
-      "titulo": "2026-08-27: guidance del proximo trimestre domina la reaccion, no el beat reportado",
-      "descripcion": "DLTR beat EPS +137% (refundos arancelarios) pero -3.0% por guia Q3 $0.80-0.95 vs cons $1.40. BBY beat +8% y SUBIO guia FY pero -4.4%. WDAY beat +5.4% pero -5.7% por guia de suscripcion solo en linea. MRVL beat y subio rev pero EPS guide solo en linea -> AH -2.2%. En cambio ESTC (+23.1%), ADSK (+6.2%) y AFRM (+8.2%) subieron con guias claramente por encima.",
-      "accion_futura": "Anadir al scoring un factor GUIDANCE_DELTA (guia EPS+rev vs consenso) con peso >= al beat_pct. Beat sin raise de guia = no continuation.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-08-27",
-      "tipo": "ONE_OFF_EPS_DISTORSION",
-      "titulo": "2026-08-27: filtro anti-one-off en consensus_beat_pct (AFRM, RBRK, BURL, DLTR)",
-      "descripcion": "AFRM EPS GAAP $4.62 vs cons $0.35 (+1220%) por partida no recurrente; RBRK $0.20 vs $0.04 (denominador minusculo); BURL y DLTR inflados por refundos arancelarios. Usar el beat de INGRESOS o el EPS ex-one-off como magnitud efectiva evita scores 9.5 falsos.",
-      "accion_futura": "Regla: si |cons_beat| > 50% o |eps_consensus| < 0.15, sustituir magnitud por beat de revenue.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-28",
-      "tipo": "AH_CONFIRMACION_BEAT",
-      "titulo": "GAP: beat cons +6.1% confirmado AH +9.0% y +11.5% intradia 28-ago",
-      "descripcion": "EPS $0.52 vs cons $0.49 con ventas ligeramente por debajo, pero GUIA FY26 al alza ($2.35-2.45). El mercado premio la guia, no el beat de EPS.",
-      "accion_futura": "Retail con beat modesto de EPS + guia elevada = continuation valida aunque las ventas fallen. Priorizar delta de guidance sobre delta de EPS en el scoring de retail.",
-      "impacto_score": 0.3
-    },
-    {
-      "fecha": "2026-08-28",
-      "tipo": "SELL_THE_NEWS_AH",
-      "titulo": "S (SentinelOne): SELL-THE-NEWS — beat cons +14.3% pero AH -3.0%",
-      "descripcion": "EPS $0.08 vs cons $0.07 y rev $292M (+21% YoY) por encima, pero guidance FY27 EPS $0.30-0.32 vs cons $0.35. El recorte de guia anulo el beat.",
-      "accion_futura": "Regla reforzada: beat de EPS con RECORTE de guia anual = veto de continuation, sin importar la magnitud del beat. Añadir chequeo de delta_guidance_EPS al filtro pre-continuation.",
-      "impacto_score": -0.4
-    },
-    {
-      "fecha": "2026-08-28",
-      "tipo": "GUIDANCE_MANDA",
-      "titulo": "BBW: beat EPS +7.7% pero recorte de guia FY26 y salida de directivo",
-      "descripcion": "EPS $0.70 vs cons $0.65 con ingresos -7.2% YoY. Recorte de guia a $500-525M y cese del chief growth officer.",
-      "accion_futura": "Small-cap retail con ingresos en contraccion: el beat de EPS no es señal. Exigir crecimiento de ingresos positivo como pre-requisito de continuation en consumo discrecional.",
-      "impacto_score": -0.3
-    },
-    {
-      "fecha": "2026-08-28",
-      "tipo": "PATRON_SEMANAL",
-      "titulo": "Semana 24-28 ago 2026: la GUIA domino sobre el beat en 3 de cada 4 casos",
-      "descripcion": "MRVL, WDAY, DLTR, BBY, S y BBW batieron consenso y cayeron por guia/valoracion; GAP, ADSK, DG, ESTC, AFRM y CRM subieron por guia elevada. El delta de guidance explico la direccion mejor que el delta de EPS.",
-      "accion_futura": "Elevar el peso del componente guidance en el scoring de continuation por encima del componente beat_pct para el proximo ciclo.",
-      "impacto_score": 0.2
-    },
-    {
-      "fecha": "2026-08-29",
-      "patron": "umbral_inalcanzable_recurrente",
-      "leccion": "Es la TERCERA vez (abr, 14-ago, 28-ago) que el sistema se auto-bloquea con un umbral que su propia funcion de scoring no puede alcanzar. La bot_improvement_queue tiene 11 items y 0 implementados. Detectar el problema y registrarlo NO es resolverlo: hay que cerrar el loop o el diagnostico se repite indefinidamente.",
-      "accion": "score_min_paper=5.0 aplicado hoy con evidencia."
-    },
-    {
-      "fecha": "2026-08-29",
-      "patron": "dependencia_de_una_sola_fuente",
-      "leccion": "Todo el motor de señal depende de EarningsWhispers. Cuando su scraper murio (~18-ago) el sistema no degrado: se paro en seco 10 dias. Antes de fiarse de un scraper HTML conviene buscar el endpoint JSON que alimenta la propia SPA — estaba a una lectura de /js/cal.js.",
-      "accion": "ew_pipeline documentado con 3 endpoints + fallback."
-    },
-    {
-      "fecha": "2026-08-29",
-      "patron": "asimetria_sin_denominador",
-      "leccion": "Un porcentaje de asimetria sobre un consenso de $0.05 no es una señal, es division por casi cero. Filtrar por materialidad del consenso y cobertura de analistas.",
-      "accion": "3 parametros nuevos."
-    },
     {
       "fecha": "2026-08-29",
       "patron": "coste_de_no_operar",
@@ -593,6 +452,38 @@
       "fecha": "2026-09-04",
       "origen": "sentinel",
       "leccion": "La asimetria whisper-vs-consensus en % es inutilizable cuando el consensus es cercano a cero (NAVN +50% con cons=0.04, HOFT +150% con cons=-0.02, LOVE +23% con cons=-0.39). Anadir filtro: exigir abs(consensus) >= 0.15 USD, o usar la diferencia absoluta en centavos normalizada por el movimiento historico medio post-earnings en lugar del %."
+    },
+    {
+      "fecha": "2026-09-04",
+      "titulo": "FIX — EarningsWhispers: el scraper HTML esta muerto, la API JSON funciona",
+      "descripcion": "3 dias de alertas CRITICAS por 'EW caido'. La causa no es bloqueo ni red: old.earningswhispers.com/stocks/<t> devuelve 302->404 y www..../epsdetails/<t> sirve HTML renderizado por JS. Verificado hoy desde el sandbox: https://www.earningswhispers.com/api/caldata/YYYYMMDD devuelve el calendario completo en JSON (200 OK, 13/29/22 tickers para 8/9/10-sep) y /api/getstocksdata/<TICKER> devuelve consensusEst, revenueEst, releaseTime (1=BMO, 3=AMC), sector y confirmDate. LIMITE: el campo 'whisper' vuelve null sin sesion premium — el whisper sigue requiriendo navegador logueado.",
+      "accion_correctiva": "Usar /api/caldata/<YYYYMMDD> y /api/getstocksdata/<TICKER>. Abandonar el scraping HTML de old.*.",
+      "tarea_afectada": "sentinel | pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-04",
+      "titulo": "La asimetria whisper alta NO predice batir el whisper (2 casos en 3 dias)",
+      "descripcion": "AMBA: asimetria +17.65% (whisper 0.20 vs consenso 0.17) -> reporto 0.18, fallo el whisper. AVGO: whisper 3.35 -> reporto 3.32, fallo. BLOQUE 1 del scoring da hasta +3 pts (el maximo de todos los bloques) a la asimetria >=5%. Una asimetria alta mide que la expectativa agregada ya esta ELEVADA, no que sea facil superarla.",
+      "accion_correctiva": "Degradar BLOQUE 1: asimetria >=10% deja de ser bonus maximo. Requiere n>=10 antes de invertir el signo.",
+      "tarea_afectada": "pre-market-earnings-scan | sentinel",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-04",
+      "titulo": "Large cap post-earnings: upside topado, downside abierto",
+      "descripcion": "Estudio de 38 earnings liquidos (24-ago/3-sep): large caps >=$10B n=8, media -5.00%, MEJOR resultado de los ocho +3.74%, peor -19.93%. Small caps <$2B n=15, media +0.30%, y contienen la cola ganadora completa (+44.7%, +22.2%, +18.9%). El drift largo post-earnings tiene expectativa negativa en large cap en este regimen.",
+      "accion_correctiva": "Penalizar -1.5 pts a candidatos earnings-drift con mcap>=$10B. Revisar al llegar a n=20.",
+      "tarea_afectada": "pre-market-earnings-scan | sentinel",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-04",
+      "titulo": "R0 es el componente que genera el alfa del sistema, no la entrada",
+      "descripcion": "Verificacion de hoy: GWRE cerrada por R0 a 200.84 el 3-sep cerro hoy a 162.42. La regla evito -$1.076 y convirtio -$803 en +$271. AMBA evito $256. Total $1.332 en dos posiciones que NUNCA debieron abrirse (scores 5.5 y 6.0 < umbral 7.5). El sistema gana dinero por su disciplina de SALIDA mientras su gobernanza de ENTRADA sigue rota.",
+      "accion_correctiva": "Mantener R0 inviolable. La prioridad de ingenieria es el gate de entrada del sentinel.",
+      "tarea_afectada": "pre-close-manager | sentinel",
+      "aplicada": true
     }
   ],
   "operaciones": [
@@ -1199,13 +1090,19 @@
       "motivo_cierre": "R0 pre-close manager — cierre obligatorio antes de earnings AH mismo dia",
       "earnings_fecha": "2026-09-03",
       "earnings_timing": "after-hours",
-      "eps_real_reportado": null,
+      "eps_real_reportado": 0.99,
       "batio_whisper": null,
-      "batio_consenso": null,
-      "resultado_earnings": "PENDIENTE — print AH 3-sep posterior a esta sesion (16:24 ET); verificar en pre-market 4-sep",
+      "batio_consenso": true,
+      "resultado_earnings": "BEAT consenso ($0.99 vs $0.94) pero guia ARR FY27 18% vs 19% FY26 -> desaceleracion",
       "cierre_dia_post_salida": 202.86,
       "reaccion_precio_1dia_pct": 5.24,
-      "leccion": "R0 capturo +0.81R de drift limpio en 22h. Entrada por debajo del umbral (score 5.5 < 7.5) — resultado positivo pero por azar, no por proceso. El componente que aporto el valor fue la SALIDA obligatoria, no la entrada."
+      "leccion": "R0 VALIDADA AL MAXIMO NIVEL: salida a 200.84 el 3-sep; GWRE cerro hoy a 162.42 (-19.93%). La regla evito -$1.076 sobre 28 acciones y convirtio una perdida de -$803 en un beneficio de +$271. GWRE BATIO el consenso: el detonante fue la guia ARR (18% vs 19%), no el trimestre. En multiplo premium, 1 punto de desaceleracion de ARR = -20%.",
+      "consenso_eps": 0.94,
+      "revenue_real": 411000000,
+      "revenue_yoy_pct": 15.0,
+      "reaccion_precio_post_print_pct": -19.93,
+      "precio_post_earnings": 162.42,
+      "pnl_evitado_por_R0_dolares": 1075.76
     },
     {
       "id": "COWORK-SENT-20260902-AMBA",
@@ -1231,13 +1128,20 @@
       "motivo_cierre": "R0 pre-close manager — cierre obligatorio antes de earnings AH mismo dia",
       "earnings_fecha": "2026-09-03",
       "earnings_timing": "after-hours",
-      "eps_real_reportado": null,
-      "batio_whisper": null,
-      "batio_consenso": null,
-      "resultado_earnings": "PENDIENTE — print AH 3-sep posterior a esta sesion (16:24 ET); verificar en pre-market 4-sep",
+      "eps_real_reportado": 0.18,
+      "batio_whisper": false,
+      "batio_consenso": true,
+      "resultado_earnings": "BEAT consenso ($0.18 vs $0.17) pero FALLO whisper ($0.20). Margen bruto 59.3% bajo el midpoint por costes de supply chain.",
       "cierre_dia_post_salida": 63.38,
       "reaccion_precio_1dia_pct": -5.6,
-      "leccion": "R0 salio a 66.09; el cierre fue 63.38 (-4.1% adicional tras la venta). La regla evito una perdida ~5x mayor antes incluso del print. Entrada score 6.0 < 7.5: reincidencia del bug del sentinel."
+      "leccion": "AMBA fallo el whisper pese a una asimetria whisper/consenso de +17.65%, que el scoring premiaba con el maximo de BLOQUE 1. Segundo caso en 3 dias tras AVGO. Una asimetria whisper alta mide EXPECTATIVA AGREGADA ELEVADA, no probabilidad de superarla. R0 salvo $256.",
+      "consenso_eps": 0.17,
+      "whisper_eps": 0.2,
+      "revenue_real": 108130000,
+      "revenue_yoy_pct": 13.2,
+      "reaccion_precio_post_print_pct": -4.1,
+      "precio_post_earnings": 62.89,
+      "pnl_evitado_por_R0_dolares": 256.0
     }
   ],
   "candidatos_validados": [
@@ -1876,15 +1780,115 @@
       "pnl_r": -0.13,
       "precio_salida": 66.09,
       "fecha_salida": "2026-09-03"
+    },
+    {
+      "ticker": "TEN",
+      "score": 7.4,
+      "score_tecnico_sin_whisper": 7.4,
+      "fecha_deteccion": "2026-09-04",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "pre-market",
+      "estado": "pendiente_ew",
+      "accion_recomendada": "RE-PUNTUAR con whisper el 2026-09-08 antes de cualquier ejecucion",
+      "expira": "2026-09-10T12:00:00Z",
+      "sector": "energy",
+      "score_macro_bonus": 1,
+      "mcap_B": 1.32,
+      "bucket": "SMALL",
+      "price": 43.74,
+      "atr_pct": 2.57,
+      "mom5": 2.9,
+      "mom20": 11.8,
+      "vs_ma50": 10.6,
+      "dvol_M": 9.7,
+      "notas": "PRE-SCREEN TECNICO SIN WHISPER (API EW no sirve whisper sin sesion premium). mom20 +11.8%; +10.6% vs MA50; small cap +0.5",
+      "advertencia": "Score TOPADO a 7.4 deliberadamente: por debajo del umbral de ejecucion 7.5. NO ejecutable sin re-scoring con whisper.",
+      "fuente": "EW /api/caldata + yfinance"
+    },
+    {
+      "ticker": "BRZE",
+      "score": 7.0,
+      "score_tecnico_sin_whisper": 7.0,
+      "fecha_deteccion": "2026-09-04",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "estado": "pendiente_ew",
+      "accion_recomendada": "RE-PUNTUAR con whisper el 2026-09-08 antes de cualquier ejecucion",
+      "expira": "2026-09-08T12:00:00Z",
+      "sector": "technology",
+      "score_macro_bonus": 1,
+      "mcap_B": 3.6,
+      "bucket": "MID",
+      "price": 31.96,
+      "atr_pct": 4.88,
+      "mom5": -7.4,
+      "mom20": 20.4,
+      "vs_ma50": 17.8,
+      "dvol_M": 78.3,
+      "notas": "PRE-SCREEN TECNICO SIN WHISPER (API EW no sirve whisper sin sesion premium). mom20 +20.4%; +17.8% vs MA50",
+      "advertencia": "Score TOPADO a 7.4 deliberadamente: por debajo del umbral de ejecucion 7.5. NO ejecutable sin re-scoring con whisper.",
+      "fuente": "EW /api/caldata + yfinance"
+    },
+    {
+      "ticker": "KFY",
+      "score": 5.8,
+      "score_tecnico_sin_whisper": 5.8,
+      "fecha_deteccion": "2026-09-04",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "estado": "pendiente_ew",
+      "accion_recomendada": "RE-PUNTUAR con whisper el 2026-09-08 antes de cualquier ejecucion",
+      "expira": "2026-09-09T12:00:00Z",
+      "sector": "industrials",
+      "score_macro_bonus": 0,
+      "mcap_B": 4.38,
+      "bucket": "MID",
+      "price": 85.35,
+      "atr_pct": 2.13,
+      "mom5": -1.1,
+      "mom20": 1.5,
+      "vs_ma50": 6.8,
+      "dvol_M": 28.8,
+      "notas": "PRE-SCREEN TECNICO SIN WHISPER (API EW no sirve whisper sin sesion premium). +6.8% vs MA50",
+      "advertencia": "Score TOPADO a 7.4 deliberadamente: por debajo del umbral de ejecucion 7.5. NO ejecutable sin re-scoring con whisper.",
+      "fuente": "EW /api/caldata + yfinance"
+    },
+    {
+      "ticker": "WLTH",
+      "score": 5.7,
+      "score_tecnico_sin_whisper": 5.7,
+      "fecha_deteccion": "2026-09-04",
+      "detectado_por": "post-market-review-viernes",
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "after-hours",
+      "estado": "pendiente_ew",
+      "accion_recomendada": "RE-PUNTUAR con whisper el 2026-09-08 antes de cualquier ejecucion",
+      "expira": "2026-09-09T12:00:00Z",
+      "sector": "technology",
+      "score_macro_bonus": 1,
+      "mcap_B": 1.43,
+      "bucket": "SMALL",
+      "price": 9.58,
+      "atr_pct": 3.07,
+      "mom5": 3.6,
+      "mom20": -1.2,
+      "vs_ma50": 3.1,
+      "dvol_M": 10.6,
+      "notas": "PRE-SCREEN TECNICO SIN WHISPER (API EW no sirve whisper sin sesion premium). small cap +0.5",
+      "advertencia": "Score TOPADO a 7.4 deliberadamente: por debajo del umbral de ejecucion 7.5. NO ejecutable sin re-scoring con whisper.",
+      "fuente": "EW /api/caldata + yfinance"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-03",
+    "fecha_actualizacion": "2026-09-04",
     "semana": "2026-W36",
-    "regimen": "AI_CAPEX_BOOM + BEAT_AND_FADE_REGIME + PRE_NFP",
-    "vix": 14.1,
+    "regimen": "BEAT_AND_FADE_LARGECAP + HAWKISH_LABOR + AI_CAPEX_BOOM",
+    "vix": 14.55,
     "yield_spread_10y2y": null,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-03: (1) BEAT-AND-FADE ES EL REGIMEN, NO EL RUIDO. Tres compañias batieron y las tres se vendieron el mismo dia: CIEN +22% de sorpresa y subida de guia FY26 -> -10.36%; VSXY +22.7% sorpresa -> -13.8%; AVGO Q3 con AI semis +221% YoY y 8 subidas de precio objetivo -> -3.4%. Y con SPY +1.04%, QQQ fuerte y VIX 14.32 (-5.8%): no es debilidad de mercado, es rechazo especifico al catalizador de resultados. El mercado ya descuenta el beat. (2) CORRECCION IMPORTANTE: AVGO NO batio el whisper. EPS $3.32 vs whisper $3.35 (-0.90%); solo batio el consenso $3.22. Guia Q4 revenue $34.80B vs consenso $35.16B = por debajo. La señal de supply chain que se propago el 2-sep partia de una premisa falsa y queda anulada. (3) NVIDIA COMPRA HUGGING FACE por ~$13.000M — consolidacion del stack de software AI; refuerza el capex AI como unico motor de beneficios sin freno. (4) VIX 14.32, minimo del periodo: complacencia total pese a la escalada EEUU-Iran y al bond rout; la prima de riesgo geopolitico sigue confinada a commodities (Brent ~$95-97, oro $4540), no a la renta variable. (5) CATALIZADOR MAÑANA: informe de empleo de agosto, VIERNES 4-sep 08:30 ET. Consenso 55K nominas no agricolas frente a -23K del mes previo; salario medio/hora +3.0% YoY (vs +3.2%). Con las dos revisiones a la baja acumuladas de -103K, la barra de error es enorme y el gap de apertura sera dirigido por el dato. IMPLICACION OPERATIVA: mañana NO hay calendario de resultados relevante (solo KNOP, micro-cap). Dia de gestion, no de senales: sin entradas por el pipeline EW, exposicion cero hasta despues del dato.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-04: (1) PAYROLLS HAWKISH: +162.000 empleos en agosto, por encima de TODAS las estimaciones, paro estable. US10Y 4.78% (+0.46%). Muere el argumento de recorte agresivo de la Fed. SPY -0.39%, QQQ +0.18%, VIX 14.55 (+1.6%) — sin panico, pero rotacion defensiva: XLV -1.04%, XLY -1.33%, XLF -0.79% vs XLK +0.72%. (2) MEDICION DEL REGIMEN BEAT-AND-FADE (nuevo, con datos): sobre 38 earnings liquidos del 24-ago al 3-sep, la base rate real es 47% positivas / 53% negativas, media -1.94%, mediana -0.77%. NO es un colapso generalizado como sugerian las anecdotas — es casi una moneda al aire con sesgo negativo. (3) EL HALLAZGO REAL ES EL TAMAÑO: large caps >=$10B (n=8) media -5.00%, mejor resultado de las ocho solo +3.74%, peor -19.93% (GWRE). Upside TOPADO, downside ABIERTO. Small caps <$2B (n=15) media +0.30%, 53% positivas, con la cola ganadora entera (AOUT +44.7%, NX +22.2%, PDEX +18.9%). El sistema ha estado pescando en el segmento equivocado. (4) GWRE -19.93% con EPS $0.99 vs consenso $0.94 (BATIO) pero guia ARR FY27 18% vs 19% FY26: la desaceleracion marginal de guidance mata mas que el beat salva. (5) AMBA $0.18 vs whisper $0.20 (FALLO whisper) pero vs consenso $0.17 (batio): segundo caso en 3 dias —tras AVGO $3.32 vs whisper $3.35— de asimetria whisper alta que NO se cumple. (6) CIEN batio el whisper +14.05% Y subio guia Q4 y aun asi cerro -10.36%.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 27/28-ago",
       "Bloomberg Breaking: Warsh Says Inflation Isn't Slowing",
@@ -1894,7 +1898,8 @@
       "WebSearch weekly recap",
       "Gmail post-market 2026-09-01: 11 emails (Bloomberg Markets Daily/Energy Daily/Morning Briefing, EW Summary 31-ago, EW Whisper Report 1112, InsiderFinance, TipRanks) + WebSearch VIX/CRDO/AVGO/SNOW/FIVE timing",
       "Gmail post-market 2026-09-02: 14 emails (Bloomberg x7, TipRanks x3, EW summary, InsiderFinance) + WebSearch AVGO/CIEN/VIX",
-      "Gmail post-market 2026-09-03: 13 emails (Bloomberg x7 incl. Breaking NVDA/HuggingFace y Markets Daily, TipRanks x2, EW epsguidance Summary 2-sep, InsiderFinance Evening Edge) + EarningsWhispers via Chrome (calendarios 4-sep y 8-sep, fichas CASY/BRZE/TTAN) + WebSearch (GWRE Q4 FY26, calendario NFP 4-sep) + yfinance (VIX/SPY/TNX/tickers)"
+      "Gmail post-market 2026-09-03: 13 emails (Bloomberg x7 incl. Breaking NVDA/HuggingFace y Markets Daily, TipRanks x2, EW epsguidance Summary 2-sep, InsiderFinance Evening Edge) + EarningsWhispers via Chrome (calendarios 4-sep y 8-sep, fichas CASY/BRZE/TTAN) + WebSearch (GWRE Q4 FY26, calendario NFP 4-sep) + yfinance (VIX/SPY/TNX/tickers)",
+      "Gmail post-market 2026-09-04: 31 threads (Bloomberg payrolls, EW summary 3-sep, InsiderFinance)"
     ],
     "sector_prioridades": {
       "technology": 1,
@@ -2011,17 +2016,6 @@
       "yield_30y": 5.25
     },
     "eventos_recientes": [
-      {
-        "fecha": "2026-07-31",
-        "evento": "Cierre risk-on: VIX 20.66→16.21, S&P +0.91% a 7,505, rally amplio sincronizado",
-        "impacto": "MEDIO",
-        "sectores_afectados": [
-          "technology",
-          "financials",
-          "consumer_discretionary"
-        ],
-        "fuente": "WebSearch (historicaloptiondata, market data)"
-      },
       {
         "fecha": "2026-08-04",
         "evento": "Cierres record S&P/Nasdaq/Dow; VIX 15.86; SpaceX bate ingresos en primer report post-IPO; AMD reporta AH",
@@ -2238,6 +2232,18 @@
           "ai_infrastructure_hardware"
         ],
         "fuente": "EarningsWhispers epsguidance Summary 2-sep"
+      },
+      {
+        "fecha": "2026-09-04",
+        "evento": "Payrolls agosto +162k, superando todas las estimaciones; US10Y 4.78%. Rotacion defensiva sin subida de VIX.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "consumer_discretionary",
+          "healthcare",
+          "technology"
+        ],
+        "fuente": "Bloomberg"
       }
     ],
     "macro_score_pm": -0.8,
@@ -2695,7 +2701,8 @@
       "fed_sep_15_16_prob_subida": "~65% (desde ~55% pre-dato)",
       "regimen": "AI_CAPEX_BOOM + BEAT_AND_FADE_REGIME + GIRO_HAWKISH_POST_NFP",
       "exposicion": "CERO en equities (paper y real). Sin earnings operables hasta el 08-sep."
-    }
+    },
+    "proxima_sesion": "2026-09-08 (lunes 7-sep = Labor Day, mercado CERRADO)"
   },
   "operaciones_crypto": [
     {
@@ -5294,6 +5301,20 @@
         "stop_debe_ser_tipo_stop": true
       },
       "motivo": "AMBA y GWRE quedaron overnight sin stop real con earnings AH manana; el sentinel reporto stop=true por una orden LIMIT."
+    },
+    {
+      "fecha": "2026-09-04",
+      "parametros": {
+        "penalizacion_score_largecap_earnings": -1.5,
+        "umbral_largecap_usd": 10000000000.0,
+        "ew_endpoint_calendario": "https://www.earningswhispers.com/api/caldata/{YYYYMMDD}",
+        "ew_endpoint_ticker": "https://www.earningswhispers.com/api/getstocksdata/{TICKER}"
+      },
+      "motivo": "Estudio base rate 38 earnings + reparacion verificada del pipeline EW.",
+      "valores_previos": {
+        "penalizacion_score_largecap_earnings": null,
+        "umbral_largecap_usd": null
+      }
     }
   ],
   "reglas_coordinacion_bot": {
@@ -5335,13 +5356,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-03",
+    "_ultima_actualizacion": "2026-09-04",
     "rendimiento_global": {
-      "equity_paper_actual": 108109.74,
+      "equity_paper_actual": 108117.33,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2609.74,
-      "pnl_total_paper_pct": 2.47,
-      "equity_real_actual": 4548.16,
+      "pnl_total_paper_dolares": 2617.33,
+      "pnl_total_paper_pct": 2.48,
+      "equity_real_actual": 4548.14,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.16,
       "pnl_total_real_pct": 1.07,
@@ -5959,6 +5980,16 @@
         "avg_r_acumulado": -0.11,
         "operaciones_acumuladas": 26,
         "vix": 14.32
+      },
+      {
+        "fecha": "2026-09-04",
+        "equity_paper": 108117.33,
+        "equity_real": 4548.14,
+        "pnl_dia_paper": 78.82,
+        "win_rate_acumulado": 34.6,
+        "avg_r_acumulado": -0.11,
+        "operaciones_acumuladas": 26,
+        "vix": 14.55
       }
     ],
     "objetivos": {
@@ -8154,6 +8185,21 @@
       "posiciones_cierre": 0,
       "evento_clave": "NVIDIA compra Hugging Face por ~$13.000M; y tercer beat-and-fade del dia (CIEN -10.4%, VSXY -13.8%, AVGO -3.4%) con SPY +1.04% y VIX 14.32.",
       "leccion": "AVGO no batio el whisper ($3.32 vs $3.35) y guio revenue por debajo: la señal de supply chain que dio +0.5 a diez tickers de AI networking partia de una premisa falsa. Queda anulada y la propagacion ahora exige beat del whisper + guia >= consenso."
+    },
+    {
+      "fecha": "2026-09-04",
+      "dia": "Viernes",
+      "equity_paper_cierre": 108117.33,
+      "variacion_dia": 78.82,
+      "variacion_pct": 0.07,
+      "vix": 14.55,
+      "regimen_macro": "BEAT_AND_FADE_LARGECAP + HAWKISH_LABOR + AI_CAPEX_BOOM",
+      "trades_paper": [
+        "ABM buy 161 @ $46.89 -> stop 46.95 (+$9.66, bot)",
+        "KFY buy 88 @ $85.37 (bot, abierta)"
+      ],
+      "evento_clave": "Payrolls +162k superando todas las estimaciones (US10Y 4.78%); GWRE -19.93% tras batir consenso pero guiar ARR 18% vs 19%.",
+      "leccion": "R0 evito $1.332 en GWRE+AMBA. Y la medicion del regimen corrige la anecdota: la base rate post-earnings es 47% positiva (moneda al aire), pero en large cap el mejor de 8 resultados fue +3.74% y el peor -19.93%. El problema no es que el mercado castigue los beats: es que operabamos donde el upside esta topado."
     }
   ],
   "alertas_criticas": [
@@ -8385,6 +8431,16 @@
       "severidad": "media",
       "tipo": "fuente_datos_degradada",
       "detalle": "EarningsWhispers (old./www.) devuelve ReadTimeout sistematico desde el sandbox: 0/15 tickers parseados en el scan del sentinel. Warm-up de homepage si responde (200). Revisar antes del pre-market scan del lunes 10:15 ET — si persiste, los candidatos de la semana 09-08/09-10 no tendran whisper/consensus frescos."
+    },
+    {
+      "fecha": "2026-09-04",
+      "ts": "2026-09-04T20:32:02.009976+00:00",
+      "severidad": "CRITICA",
+      "tipo": "R0_PENDIENTE_EARNINGS",
+      "titulo": "KFY (bot, 88 acc, $7.511) reporta earnings el 9-sep BMO — R0 obligatorio el 8-sep",
+      "detalle": "El bot compro KFY hoy a 85.37 y la mantiene sobre un fin de semana de 4 dias (7-sep Labor Day). KFY reporta el 2026-09-09 ANTES DE APERTURA (confirmado por EW /api/getstocksdata, confirmDate 2026-09-02). Un print BMO no se puede cerrar la manana del evento: la salida debe ocurrir el MARTES 8-sep antes del cierre. Consenso $1.35 EPS / $735M revenue. La posicion es ~7% del equity paper con stop a 82.74 (-3.1%), que un gap de earnings atraviesa sin ejecutar al precio del stop.",
+      "accion_requerida": "pre-close-manager del 2026-09-08: cerrar KFY antes de 15:30 ET. R0 aplica a earnings BMO del dia siguiente.",
+      "resuelto": false
     }
   ],
   "mejoras_sistema": [
@@ -8674,6 +8730,24 @@
       "evidencia": "EW Summary 2-sep: AVGO EPS $3.32 vs whisper $3.35 = MISS -0.90%; guia Q4 rev $34.80B vs consenso $35.16B. AVGO -3.4%/-5.5% el 3-sep; CIEN, primer downstream en reportar, -10.36%.",
       "archivo_modificado": "performance_log.supply_chain_signals + parametros_activos",
       "impacto_esperado": "Elimina 10 bonus falsos de +0.5 vivos hasta el 9-sep. Evita que un ticker de AI networking cruce el umbral 7.5 por un contagio inexistente.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-04",
+      "tipo": "bug_corregido",
+      "descripcion": "Pipeline EarningsWhispers reparado via API JSON (/api/caldata, /api/getstocksdata)",
+      "evidencia": "3 dias de alertas CRITICAS con 0/30 tickers parseados; hoy 64 tickers obtenidos para 8-10 sep desde el sandbox.",
+      "archivo_modificado": "performance_log.parametros_activos",
+      "impacto_esperado": "Devuelve la vision del calendario al sentinel y al scan; sin ella el sistema opera a ciegas.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-04",
+      "tipo": "parametro_ajustado",
+      "descripcion": "penalizacion_score_largecap_earnings=-1.5 para mcap>=$10B",
+      "evidencia": "n=8 large caps 24-ago/3-sep: media -5.00%, mejor +3.74%, peor -19.93% (GWRE).",
+      "archivo_modificado": "performance_log.parametros_activos",
+      "impacto_esperado": "Redirige el capital al segmento donde vive la cola ganadora (small/mid).",
       "implementada": true
     }
   ],
@@ -9661,6 +9735,30 @@
             "SOLUSD"
           ],
           "nota": "Solo dust cripto (BTCUSD $0.38, SOLUSD $0.00). No accionable — leccion 2026-08-11."
+        },
+        {
+          "fecha": "2026-09-04",
+          "bot_positions": 2,
+          "bot_sin_stop": 0,
+          "detalle": [
+            {
+              "symbol": "KFY",
+              "qty": 88,
+              "entry": 85.37,
+              "now": 85.35,
+              "stop": 82.74,
+              "pnl_pct": -0.02
+            },
+            {
+              "symbol": "ABM",
+              "qty": 0,
+              "entry": 46.89,
+              "salida": 46.95,
+              "pnl_abs": 9.66,
+              "nota": "abierta y cerrada hoy por trailing stop"
+            }
+          ],
+          "nota": "Bot opero ABM y KFY hoy sin registro en candidatos_validados. Ambas con stop. ABM cerrada +$9.66."
         }
       ]
     },
@@ -10506,6 +10604,14 @@
       "score_sistema": 7.6,
       "parametros_version": "2026-09-03",
       "mejora_hoy": "Anulada señal supply-chain AVGO (falso beat) + gate de propagacion whisper/guidance + umbral del sentinel persistido"
+    },
+    {
+      "fecha": "2026-09-04",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 33,
+      "candidatos_activos": 4,
+      "score_sistema": 8.2,
+      "mejora_hoy": "Pipeline EW reparado (API JSON) + penalizacion large cap -1.5"
     }
   ],
   "motor_alpha_diario": {
@@ -17611,16 +17717,22 @@
   ],
   "acciones_pendientes_manana": [
     {
-      "fecha": "2026-09-04",
-      "accion": "verificar_resultados_GWRE_AMBA",
-      "detalle": "Ambas reportaron AH el 3-sep despues del cierre de esta sesion. Rellenar eps_real_reportado / batio_whisper / batio_consenso en operaciones[] y cerrar el loop de prediccion.",
-      "prioridad": "ALTA"
+      "fecha": "2026-09-08",
+      "accion": "R0_CERRAR_KFY",
+      "prioridad": "MAXIMA",
+      "detalle": "KFY reporta 9-sep BMO. Cerrar el 8-sep antes de 15:30 ET. 88 acciones, entry 85.37."
     },
     {
-      "fecha": "2026-09-04",
-      "accion": "NO_ENTRAR_antes_0830ET",
-      "detalle": "Informe de empleo 08:30 ET. Sin earnings operables. Cualquier entrada antes del dato es apostar al gap.",
-      "prioridad": "MAXIMA"
+      "fecha": "2026-09-08",
+      "accion": "rescore_candidatos_con_whisper",
+      "prioridad": "ALTA",
+      "detalle": "Los candidatos 8-10 sep estan en pendiente_ew con score tecnico SIN whisper. Re-puntuar con whisper fresco antes de ejecutar."
+    },
+    {
+      "fecha": "2026-09-08",
+      "accion": "aplicar_penalizacion_largecap",
+      "prioridad": "ALTA",
+      "detalle": "Nuevo parametro penalizacion_score_largecap_earnings=-1.5 para tickers >=$10B. Verificar que el scan lo aplica."
     }
   ],
   "auditoria_tareas": [
@@ -18280,6 +18392,56 @@
       "tareas_con_issues": [
         "sentinel",
         "intraday-monitor"
+      ]
+    },
+    {
+      "fecha": "2026-09-04",
+      "score_sistema": 8.2,
+      "tareas": {
+        "sentinel": {
+          "ok": true,
+          "score": 8,
+          "ciclos_hoy": 4,
+          "issues": [
+            "EW scraper reportado caido 4 ciclos seguidos sin intentar la API JSON, que si funciona"
+          ]
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 9,
+          "candidatos_detectados": 0,
+          "issues": [],
+          "nota": "0 candidatos correcto: no habia earnings 4-6 sep. Verificacion cruzada con yfinance sobre 95 tickers."
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "R0 del 3-sep confirmada como la mejor decision del mes: GWRE evito -$1.076, AMBA -$256."
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Trailing de ABM funciono: 45.62->45.76->46.98, salida +$9.66."
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin candidatos que ejecutar; correctamente inactivo."
+        },
+        "gobernanza_bot": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "Bot abrio ABM y KFY sin registro en candidatos_validados ni operaciones[] (reincidencia del patron HEI del 24-ago)",
+            "KFY queda abierta sobre 4 dias con earnings el 9-sep BMO: R0 depende de una alerta manual, no de un registro"
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "gobernanza_bot"
       ]
     }
   ],
@@ -19241,7 +19403,7 @@
       "verificado_en": "2026-09-04 15:2x ET"
     }
   ],
-  "ultima_actualizacion": "2026-09-04T15:24",
+  "ultima_actualizacion": "2026-09-04T20:33",
   "ew_calendario_proximo": {
     "generado": "2026-09-04T14:19",
     "fuente": "yfinance (EW caido)",
@@ -19305,5 +19467,129 @@
     "descripcion": "S&P cerca de máximos, VIX bajo — mercado en consolidación alcista. Favorecer pre-earnings drift y breakouts técnicos. Evitar shorts.",
     "restricciones": [],
     "sesgo": "LARGO"
-  }
+  },
+  "estudios_cuantitativos": [
+    {
+      "fecha": "2026-09-04",
+      "nombre": "base_rate_reaccion_post_earnings_por_capitalizacion",
+      "ventana": "2026-08-24 a 2026-09-03",
+      "metodo": "EW /api/caldata + cierres yfinance; filtro liquidez >=$3M/dia",
+      "n_total": 37,
+      "global": {
+        "pct_positivas": 47.4,
+        "media_pct": -1.94,
+        "mediana_pct": -0.77,
+        "n_mayor_3pct": 10,
+        "n_menor_menos3pct": 16
+      },
+      "por_capitalizacion": {
+        "large_>=10B": {
+          "n": 8,
+          "media_pct": -5.0,
+          "pct_positivas": 50.0,
+          "mejor_pct": 3.74,
+          "peor_pct": -19.93
+        },
+        "mid_2_10B": {
+          "n": 14,
+          "media_pct": -2.44,
+          "pct_positivas": 42.9,
+          "mejor_pct": 10.99,
+          "peor_pct": -16.63
+        },
+        "small_<2B": {
+          "n": 15,
+          "media_pct": 0.3,
+          "pct_positivas": 53.3,
+          "mejor_pct": 44.66,
+          "peor_pct": -29.48
+        }
+      },
+      "conclusion": "El regimen no es 'todo cae'. Es que en large caps el upside esta TOPADO (+3.74% el mejor de 8) mientras el downside no lo esta (-19.93%). La expectativa del drift largo post-earnings es negativa en large cap y ligeramente positiva en small cap, donde vive toda la cola ganadora.",
+      "limitacion": "n=8 en large cap; sugerente, no concluyente. Reevaluar al acumular 20+ observaciones.",
+      "archivo": "base_rate_earnings.csv"
+    }
+  ],
+  "experimentos_activos": [
+    {
+      "fecha_inicio": "2026-09-04",
+      "nombre": "test_penalizacion_largecap_earnings",
+      "hipotesis": "Los candidatos earnings-drift con mcap>=$10B tienen expectativa negativa; penalizarlos -1.5 mejora el sistema.",
+      "coste_del_filtro": "ORCL, ADBE, CPRT, SUNB, SAIL, COO y CASY quedan excluidos de la semana 8-10 sep unicamente por esta regla.",
+      "excluidos": [
+        {
+          "ticker": "CASY",
+          "fecha": "2026-09-08",
+          "timing": "AMC",
+          "price": 756.09,
+          "mcap_B": 27.98,
+          "vs_ma50": -8.5,
+          "mom20": -9.3,
+          "sector": "consumer_discretionary"
+        },
+        {
+          "ticker": "COO",
+          "fecha": "2026-09-09",
+          "timing": "AMC",
+          "price": 69.59,
+          "mcap_B": 13.57,
+          "vs_ma50": -4.2,
+          "mom20": -6.3,
+          "sector": "healthcare"
+        },
+        {
+          "ticker": "SAIL",
+          "fecha": "2026-09-09",
+          "timing": "BMO",
+          "price": 18.82,
+          "mcap_B": 10.67,
+          "vs_ma50": 10.9,
+          "mom20": 0.9,
+          "sector": "technology"
+        },
+        {
+          "ticker": "SUNB",
+          "fecha": "2026-09-09",
+          "timing": "BMO",
+          "price": 68.59,
+          "mcap_B": 28.12,
+          "vs_ma50": -8.3,
+          "mom20": -15.4,
+          "sector": "industrials"
+        },
+        {
+          "ticker": "ORCL",
+          "fecha": "2026-09-10",
+          "timing": "AMC",
+          "price": 158.78,
+          "mcap_B": 457.36,
+          "vs_ma50": 13.6,
+          "mom20": 8.0,
+          "sector": "technology"
+        },
+        {
+          "ticker": "ADBE",
+          "fecha": "2026-09-10",
+          "timing": "AMC",
+          "price": 266.51,
+          "mcap_B": 105.94,
+          "vs_ma50": 7.1,
+          "mom20": 0.5,
+          "sector": "technology"
+        },
+        {
+          "ticker": "CPRT",
+          "fecha": "2026-09-10",
+          "timing": "AMC",
+          "price": 33.72,
+          "mcap_B": 31.22,
+          "vs_ma50": 12.1,
+          "mom20": 13.7,
+          "sector": "industrials"
+        }
+      ],
+      "verificacion": "En el post-market del 2026-09-11: medir la reaccion post-earnings real de estos 7. Si la media es POSITIVA y >+2%, la regla esta destruyendo alfa -> revertir a -0.75. Si es negativa, confirmar.",
+      "estado": "abierto"
+    }
+  ]
 }
