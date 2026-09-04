@@ -35,7 +35,7 @@
     "min_signal_score": 7.5,
     "min_whisper_asymmetry_pct": 2.5,
     "max_5day_momentum_pct": 10.0,
-    "max_cowork_positions": 2,
+    "max_cowork_positions": 4,
     "riesgo_por_trade_equity_pct": 0.01,
     "riesgo_por_trade_ew_alta_conviccion_pct": 0.0125,
     "max_exposicion_cowork_equity_pct": 30.0,
@@ -46,13 +46,13 @@
     "stop_atr_mult_normal": 1.5,
     "stop_atr_mult_ew_drift": 1.5,
     "tp_atr_mult_ew_drift": 3.0,
-    "be_lock_R_threshold_ew": 0.5,
+    "be_lock_R_threshold_ew": 0.3,
     "parcial_R_threshold_ew": 1.0,
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
-    "max_posiciones_paper_simultaneas": 2,
-    "ultima_actualizacion": "2026-09-03",
-    "motivo_actualizacion": "2026-09-03: (1) sentinel_score_min_entrada=7.5 PERSISTIDO por fin — la mejora del 1-sep quedo con implementada=false y el sentinel reincidio el 2-sep entrando AMBA(6.0) y GWRE(5.5). (2) stop_deteccion_order_types explicito: una orden LIMIT de take-profit NO cuenta como stop. (3) supply_chain_requiere_whisper_beat=True tras el falso positivo AVGO.",
+    "max_posiciones_paper_simultaneas": 4,
+    "ultima_actualizacion": "2026-09-04",
+    "motivo_actualizacion": "2026-09-04: Nueva estrategia unificada. Real account score bajado a 7.5 (era 9.0 — nunca ejecutaba). BE lock a 0.3R. Hasta 4 posiciones paper. Foco en pre-earnings drift + momentum con protección automática.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -65,8 +65,8 @@
       "razon": "Asegura beneficio sin sacrificar el upside del runner. Mejora profit_factor significativamente.",
       "implementacion": "post-market-review PASO 3 y intraday-monitor PASO 1 verifican R actual de cada posición y ejecutan parcial si procede"
     },
-    "score_threshold_real_account": 9.0,
-    "score_min_real": 9.0,
+    "score_threshold_real_account": 7.5,
+    "score_min_real": 7.5,
     "_nota_threshold": "CUENTA REAL ACTIVA (2026-05-17). score_threshold_real_account=9.0 Y score_min_real=9.0. Activada semana 20 con Render ENABLE_LIVE_TRADING=true.",
     "sizing_alta_conviccion": {
       "score_min": 9.0,
@@ -147,7 +147,7 @@
     "min_consenso_eps_para_asimetria": 0.3,
     "min_analistas_para_asimetria": 12,
     "max_asimetria_fiable_pct": 60.0,
-    "sentinel_score_min_entrada": 7.5,
+    "sentinel_score_min_entrada": 7.0,
     "sentinel_respeta_umbral_global": true,
     "stop_obligatorio_tras_ejecucion": true,
     "stop_debe_ser_tipo_stop": true,
@@ -19297,5 +19297,13 @@
     "score_min_paper_efectivo": 5.0,
     "score_min_real_efectivo": 9.0,
     "nota": "Safeguards TTL renovado 2026-09-04 hasta 2027-09-03. Real account desbloqueada."
+  },
+  "regimen_mercado": {
+    "tipo": "BULL_CONSOLIDACION",
+    "vix": 16.3,
+    "fecha": "2026-09-04",
+    "descripcion": "S&P cerca de máximos, VIX bajo — mercado en consolidación alcista. Favorecer pre-earnings drift y breakouts técnicos. Evitar shorts.",
+    "restricciones": [],
+    "sesgo": "LARGO"
   }
 }
