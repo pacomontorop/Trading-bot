@@ -549,6 +549,15 @@
       "accion_correctiva": "No confundir el resultado positivo con validacion de la entrada. Umbral 7.5 intacto.",
       "tarea_afectada": "sentinel",
       "aplicada": true
+    },
+    {
+      "fecha": "2026-09-04",
+      "id": "L41-BEAT-EPS-NO-ES-SENAL",
+      "titulo": "Un beat de EPS de titular NO es senal de continuacion: verificar ingresos, guidance y partidas no recurrentes",
+      "evidencia": "2026-09-03 AH, 3 beats de EPS -> 2 se desplomaron en la apertura siguiente. LULU: EPS 2.92 vs 1.79 est (+63% titular) pero $0.86/accion era devolucion de aranceles no recurrente (EPS subyacente ~2.06); ingresos -4% a $2.42B (miss vs $2.46B); comparables -10%; guidance FY recortada por 2a vez (ingresos $11.0-11.15B -> $10.35-10.50B; EPS $10.95-11.15 -> $9.48-9.73). Premarket 97.15 vs cierre 121.77 = -20.2%. ZS: EPS 1.19 vs 1.09 beat pero guidance ARR FY27 desacelera a 16-17% -> premarket -5.2%. DOCU: beat 1.16 vs 1.09 y guidance limpia -> premarket +1.4%, unico con seguimiento positivo.",
+      "regla": "Antes de crear cualquier post_earnings_continuation exigir las 3 confirmaciones: (1) ingresos baten o al menos cumplen, (2) guidance mantenida o subida, (3) beat sin partidas extraordinarias. Si falta cualquiera -> descartar aunque el EPS bata. Y siempre validar contra la reaccion real de precio en after-hours/premarket ANTES de puntuar, no solo contra el EPS.",
+      "aplicabilidad": "PASO 4C post-earnings beat detection del sentinel y post-market-review",
+      "coste_evitado": "LULU ya estaba descartado_score=3.0 por post-market-review -> el filtro funciono. Esta leccion lo codifica de forma explicita."
     }
   ],
   "operaciones": [
@@ -2734,6 +2743,142 @@
       "fecha_deteccion": "2026-09-03",
       "argumento": "Asimetria +8.6% (3.0 pts) y batio el trimestre anterior. CONTRA: -7.5% en 5 sesiones y precio por debajo de MA10 — el mismo perfil de momentum que veto CIEN. AH (-1).",
       "notas": "Whisper/consenso REALES via ficha EW /stocks/TICKER (Chrome MCP). Sin datos de Score/Sentiment/Grade (widgets graficos no extraibles por texto)."
+    },
+    {
+      "ticker": "CASY",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 6.81,
+      "asimetria_pct": null,
+      "expira": "2026-09-08T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-08 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-08 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "GME",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 0.16,
+      "asimetria_pct": null,
+      "expira": "2026-09-08T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-08 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-08 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "CHWY",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "eps_estimate": 0.33,
+      "asimetria_pct": null,
+      "expira": "2026-09-09T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-09 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-09 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "SIG",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "eps_estimate": 1.74,
+      "asimetria_pct": null,
+      "expira": "2026-09-09T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-09 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-09 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "ADBE",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 6.08,
+      "asimetria_pct": null,
+      "expira": "2026-09-10T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-10 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-10 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "ORCL",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 1.74,
+      "asimetria_pct": null,
+      "expira": "2026-09-10T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-10 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-10 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "RH",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "after-hours",
+      "eps_estimate": 3.22,
+      "asimetria_pct": null,
+      "expira": "2026-09-10T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-10 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-10 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
+    },
+    {
+      "ticker": "KR",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "score_macro_bonus": 0.09,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "earnings_fecha": "2026-09-11",
+      "earnings_timing": "pre-market",
+      "eps_estimate": 1.0,
+      "asimetria_pct": null,
+      "expira": "2026-09-11T20:00:00Z",
+      "notas": "Calendario confirmado via yfinance. SIN score: EW caido desde 2026-09-03, no hay whisper ni consensus -> asimetria incalculable. Requiere scoring completo en pre-market scan del 2026-09-11 con fuente alternativa.",
+      "detectado_por": "sentinel-preapertura-2026-09-04",
+      "ventana_entrada": "2026-09-11 10:15 ET (pre-market scan)",
+      "fuente_datos": "yfinance.earnings_dates (fallback; EW no disponible)"
     }
   ],
   "macro_context": {
@@ -2818,54 +2963,55 @@
     ],
     "notas_adicionales": "Labor Day 2026 cae el LUNES 7-SEP, no el 1-sep. La semana W36 (31-ago a 4-sep) tiene 5 sesiones completas. Un buscador web devolvio erroneamente el 1-sep como festivo; verificado contra el calendario de earnings de EW que muestra reportes BMO/AMC los dias 1, 2, 3 y 4.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-03T15:18",
-      "nivel": "alerta",
-      "shocks": [
-        "mag7_move_TSLA_+8.1pct_cybercab_no_earnings"
-      ],
+      "timestamp": "2026-09-04T09:19",
+      "nivel": "normal",
+      "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 99.0,
-      "nota": "Nivel alerta disparado por TSLA +8.1% 24h, pero causa es hype Cybercab (evento idiosincratico), no sorpresa de earnings -> falso positivo. Mercado risk-on: SPY +1.09%, VIX 14.4, Waller insinua pausa Fed en septiembre."
+      "nota": "Pre-apertura 09:10 ET. Sin shock. Riesgo geopolitico de fondo (Iran/Hormuz) NO clasificado como shock: WTI RETROCEDE -1.31%, VIX 14.2, oro -1.45%. Reevaluar si WTI >$95 o VIX >20."
     },
-    "macro_score": 0.8,
-    "macro_nivel": "alerta",
+    "macro_score": 0.3,
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros alcistas (+1.20%)",
-      "Yield 10Y alto (4.76%) - presion valuaciones growth",
-      "Dolar debil (-0.62%) - tailwind multinacionales",
-      "Oro disparado (+3.59%) - divergencia con risk-on, vigilar",
-      "Tech +1.22% y cons_disc lider (+1.65%) - favorece EW tech",
-      "Nikkei -2.85% unica debilidad relevante"
+      "Futuros planos pre-apertura: ES -0.21% NQ +0.09% YM -0.31% RTY -0.50% (digiriendo nominas)",
+      "Nominas agosto +162k baten consenso; paro 4.1% sin cambios. Waller (Fed) a favor de mantener tipos este mes",
+      "VIX 14.19 — complacencia, muy por debajo del umbral de bloqueo 28",
+      "Yield 10Y 4.79% (>4.5%) — viento en contra para valoraciones growth (-0.3)",
+      "Dolar debil -0.57% (+0.3); oro -1.45% (sin miedo); WTI $90.10 -1.31% retrocediendo desde maximos",
+      "RIESGO DE FONDO: guerra US-Iran activa, transitos por Hormuz caidos de 23 a 10/dia. Brent ~$95. Sin desescalada durable",
+      "Asia fuerte overnight: Nikkei +1.26% HSI +1.74%; sectores lideres fin +1.56% cons_disc +1.39% tech +1.29% = risk-on",
+      "FESTIVO: mercado CERRADO lunes 2026-09-07 (Labor Day). Proxima sesion tras hoy = martes 2026-09-08"
     ],
     "futuros": {
-      "ES": 1.12,
-      "NQ": 1.27
+      "ES": -0.21,
+      "NQ": 0.09,
+      "YM": -0.31,
+      "RTY": -0.5
     },
     "yield_10y": 4.67,
     "oil_price": 0.0,
-    "ts_actualizado": "2026-09-03T15:18",
+    "ts_actualizado": "2026-09-04T09:19",
     "sectores_hoy": {
-      "lider": "cons_disc",
-      "cambio_lider": 1.65,
-      "tech_chg": 1.22,
+      "lider": "financials",
+      "cambio_lider": 1.56,
+      "tech_chg": 1.29,
       "all": {
-        "tech": 1.22,
-        "fin": 1.51,
-        "energy": -0.35,
-        "health": 0.14,
-        "indus": 0.82,
-        "cons_disc": 1.65,
-        "utils": 0.8,
-        "materials": -0.54,
-        "reit": 1.12
+        "tech": 1.29,
+        "financials": 1.56,
+        "energy": -0.74,
+        "healthcare": 0.18,
+        "industrials": 1.03,
+        "consumer_disc": 1.39,
+        "utilities": 0.84
       },
-      "ts": "15:18"
+      "ts": "09:19"
     },
-    "macro_bonus_ew": 0.24,
+    "macro_bonus_ew": 0.09,
     "bonos": {
-      "tlt_chg": 0.21,
-      "yield_10y": 4.76
+      "tlt_chg": 0.15,
+      "yield_10y": 4.79,
+      "yield_30y": 5.25
     },
     "eventos_recientes": [
       {
@@ -3216,15 +3362,17 @@
     "nota_fed_2026-08-17": "Fed funds 3.50-3.75%. Mercado descuenta 2 SUBIDAS de 25bp (sep y dic). Proximo FOMC 15-16 sep. Sin evento Fed hoy.",
     "nota_geopolitica_2026-08-17": "Irán descarta prórroga del MoU y amenaza con escalar en Hormuz. Brent ~$90 (máx 6 meses). Régimen: energía/defensa favorecidos, aerolíneas y consumo discrecional en riesgo. NO es shock intradía (SPY -0.4%, VIX 15.2) sino tema macro persistente.",
     "commodities": {
-      "wti": 91.88,
-      "brent_aprox": 96.0,
-      "gold_chg": 3.93
+      "wti": 90.1,
+      "wti_chg": -1.31,
+      "gold": 4426.4,
+      "gold_chg": -1.45,
+      "dxy_proxy_chg": -0.57
     },
     "internacional": {
-      "Nikkei": 0.62,
-      "DAX": 0.31,
-      "FTSE": -0.79,
-      "HSI": 0.56
+      "Nikkei": 1.26,
+      "DAX": 0.43,
+      "FTSE": -0.27,
+      "HSI": 1.74
     },
     "conflicto_datos_pendiente": "[2026-08-17] Probabilidad de SUBIDA Fed septiembre: sentinel 11:18 ET registro 65-82% (CME); Bloomberg/Goldman de hoy dice 'muy improbable'; log del 12-ago decia 42%. Discrepancia sin resolver -> resolver con las minutas del 19-ago antes de usar este dato en scoring macro.",
     "shock_tipo": "oil_spike",
@@ -13642,6 +13790,34 @@
       "cowork_abiertas": 0,
       "vix": 14.4,
       "nota": "EW scraper CAIDO (old.earningswhispers.com/stocks/* -> 302/404). 0 whispers obtenidos en 30 tickers. yfinance fast_info devuelve 0 -> PASO 6/6B calculaba macro_score=0 falsamente. Sin entradas: todos los AH de hoy ya descartados por score (0.0-5.0 < 7.5); calendario BMO manana vacio de nombres liquidos."
+    },
+    {
+      "ts": "2026-09-04T13:19:01.519537+00:00",
+      "hora_et": "09:19",
+      "modo": "PRE-APERTURA READ_ONLY — sin ejecucion de ordenes (mercado cerrado + politica de seguridad)",
+      "alertas": 2,
+      "acciones": 0,
+      "ejecuciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "max_cowork": 2,
+      "vix": 14.19,
+      "macro_score": 0.3,
+      "nivel": "normal",
+      "equity_paper": 108109.46,
+      "equity_real": 4548.14,
+      "ew_disponible": false,
+      "candidatos_preview_anadidos": [
+        "CASY(09-08,AF)",
+        "GME(09-08,AF)",
+        "CHWY(09-09,PR)",
+        "SIG(09-09,PR)",
+        "ADBE(09-10,AF)",
+        "ORCL(09-10,AF)",
+        "RH(09-10,AF)",
+        "KR(09-11,PR)"
+      ],
+      "notas": "Cartera PLANA en ambas cuentas (solo polvo crypto <$1, sin stop necesario). EW caido 2o dia (ReadTimeout). Calendario 9/8-9/11 cargado via yfinance: CASY(09-08,AF), GME(09-08,AF), CHWY(09-09,PR), SIG(09-09,PR), ADBE(09-10,AF), ORCL(09-10,AF), RH(09-10,AF), KR(09-11,PR). Festivo Labor Day lunes 9/7. Sin candidatos hoy: los 3 AH del 9/3 (LULU/ZS/DOCU) no generan continuation valida — LULU -20.2% premarket pese a beat de titular (guidance recortada 2a vez + $0.86 no recurrente), ZS -5.2% (guidance ARR FY27 16-17%), DOCU solo +1.4% (score ~7.1 < 7.5 minimo)."
     }
   ],
   "momentum_15m": {
@@ -19688,9 +19864,20 @@
       "estado": "abierta",
       "descripcion": "EW rediseno a SPA. get_ew_headless() devuelve None en 100% de tickers. Sin whisper/consensus no hay asimetria -> score EW imposible. Verificado en ZS, LULU, DOCU, PATH, IOT, ASAN con ambos dominios y 3 URLs fallback.",
       "workaround_disponible": "meta og:description da fecha de earnings y PEAD; el calendario sigue en /calendar/YYYYMMDD/1. Alternativas a evaluar: Nasdaq/Zacks/Benzinga consensus + yfinance beat_rate, o renderizado headless con navegador."
+    },
+    {
+      "fecha": "2026-09-04",
+      "hora_et": "09:19",
+      "id": "INC-EW-DOWN-D2",
+      "prioridad": "ALTA",
+      "titulo": "EarningsWhispers inaccesible — 2o dia consecutivo, senal primaria sin fuente",
+      "detalle": "old.earningswhispers.com agota el tiempo de lectura (ReadTimeout 12s) desde el entorno de ejecucion; ni siquiera devuelve ya el shell SPA de ayer. 0/60 tickers con whisper. El pipeline EW (asimetria whisper vs consensus) lleva sin datos desde 2026-09-03 11:15 ET.",
+      "impacto": "Ningun candidato puede puntuarse con la metodologia EW. Los 8 candidatos del calendario 9/8-9/11 quedan en sentinel_preview con score 0.0.",
+      "mitigacion_activa": "yfinance.earnings_dates cubre fechas/horario/EPS estimate (operativo). Macro y momentum via yfinance.history (operativo; fast_info sigue devolviendo None -> usar history).",
+      "accion_requerida": "Sustituir fuente de whisper. Candidatos: (a) Benzinga/Estimize API, (b) consenso analistas via yfinance + revisiones 30d como proxy de asimetria, (c) reintentar EW desde otro entorno de red."
     }
   ],
-  "ultima_actualizacion": "2026-09-03T20:31:22.486402+00:00",
+  "ultima_actualizacion": "2026-09-04T09:19 ET",
   "ew_calendario_proximo": {
     "consultado": "2026-09-03",
     "fuente": "earningswhispers.com/calendar via Chrome MCP (sesion activa)",
