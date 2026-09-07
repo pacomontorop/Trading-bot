@@ -51,8 +51,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-05",
-    "motivo_actualizacion": "2026-09-05 (weekly W36): añadidos enforce_min_score_all_sources=true y sentinel_hard_min_score=7.5 tras detectar que 4/4 entradas de la semana se ejecutaron por debajo del umbral vigente. min_signal_score NO se sube para no reintroducir el bloqueo de la cuenta real corregido el 4-sep.",
+    "ultima_actualizacion": "2026-09-07",
+    "motivo_actualizacion": "2026-09-07 (post-market): 3 hard gates nuevos tras detectar que DELL (d5 +14.9% vs max_5day_momentum_pct=10.0), SOXL y TQQQ (ETFs 3x) estaban en estado 'ejecutar_martes' pese a violar parametros del propio sistema. El sentinel los anoto en un campo de texto pero NO cambio el estado -> market-open-execution los habria ejecutado.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -164,7 +164,10 @@
     "ew_endpoint_ticker": "https://www.earningswhispers.com/api/getstocksdata/{TICKER}",
     "ew_scraper_html_deprecado": true,
     "enforce_min_score_all_sources": true,
-    "sentinel_hard_min_score": 7.5
+    "sentinel_hard_min_score": 7.5,
+    "bloqueo_etf_apalancado": true,
+    "stop_min_atr_mult": 1.5,
+    "enforce_hard_gate_estado": true
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -217,21 +220,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-08-29",
-      "patron": "coste_de_no_operar",
-      "leccion": "La semana costo -$106 en paper, pero el coste real es de oportunidad: CRM +22% en la semana tras beat, y fue uno de los 3 candidatos (CRM/CRWD/OKTA) descartados el 27-ago por el gate de run-up. Un sistema que no opera no es un sistema seguro, es un sistema sin datos con el que no puede mejorar.",
-      "accion": "Registrado en historial_oportunidades_perdidas."
-    },
-    {
-      "fecha": "2026-09-01",
-      "titulo": "REGLA VALIDADA — filtro beat_and_fade: SAIC batio whisper +17.6% + subio guia FY y cerro -1.19%",
-      "descripcion": "SAIC reporto 31-ago EPS $3.01 vs whisper $2.56 vs consenso $2.25 (+17.58%) y elevo la guia FY26 de $9.90-10.10 a $10.65-10.75. Score del sistema 8.3 pero fue marcado descartado_beat_and_fade. Resultado real 1-sep: -1.19%. El descarte fue CORRECTO.",
-      "accion_correctiva": "Mantener el filtro beat_and_fade tal cual. Confirma la leccion W35 ('la guia domino sobre el beat en 3 de 4 casos') y la extiende: ni siquiera beat+raise garantiza reaccion positiva cuando el regimen macro comprime multiplos.",
-      "tarea_afectada": "pre-market-earnings-scan",
-      "aplicada": true,
-      "tipo": "regla_validada"
-    },
     {
       "fecha": "2026-09-01",
       "titulo": "BLOQUEO CORRECTO — CRDO (whisper asymmetry +12.1%) cayo -8.48% el dia del print",
@@ -518,6 +506,24 @@
       "titulo": "Split screen AI-hardware vs consumidor",
       "descripcion": "Semana pasada: DELL/AVGO/CRDO/PANW/SNOW records con backlog AI; LULU -17%, CPB recorta dividendo. Cuello de botella = memoria/componentes, margenes comprimidos por precio de memoria.",
       "accion_futura": "Sesgo largo en cadena AI; extrema cautela en consumo discrecional puro esta semana (CHWY, AEO, M, DBI, LOVE)."
+    },
+    {
+      "fecha": "2026-09-07",
+      "titulo": "BUG CRITICO — detectar una violacion no basta: hay que cambiar el ESTADO del candidato",
+      "descripcion": "El sentinel del 7-sep detecto correctamente que DELL violaba max_5day_momentum_pct y que SOXL era un 3x con stop menor que 1 ATR, pero escribio el hallazgo en un campo de texto ('alerta_sentinel_20260907') dejando estado='ejecutar_martes'. market-open-execution lee el campo 'estado'. Resultado: 2 entradas prohibidas por los propios parametros se habrian ejecutado el martes por $16.500 de notional combinado.",
+      "accion_correctiva": "Toda tarea que detecte violacion de hard gate debe escribir estado='descartado_<motivo>' ademas de la nota. Parametro enforce_hard_gate_estado=true anadido. Verificar en pre-market-scan y sentinel.",
+      "tarea_afectada": "sentinel + market-open-execution + pre-market-earnings-scan",
+      "aplicada": true,
+      "auto_generado": false
+    },
+    {
+      "fecha": "2026-09-07",
+      "titulo": "EW premium bloqueado en Chrome: sin beat rate ni reaccion historica, ningun score supera 5-6",
+      "descripcion": "Las paginas /hist/TICKER de EarningsWhispers redirigen a la pagina de suscripcion desde Chrome. Solo se obtienen whisper vs consenso desde /stocks/TICKER. Sin B2 (beat rate) y B3 (reaccion historica) el score maximo alcanzable es ~6.5/10, por debajo del min 7.5. Esto no es un fallo del scoring: es una restriccion de datos.",
+      "accion_correctiva": "La sesion premium de EW esta en Edge, no en Chrome. Opciones: (a) usar el MCP de Edge, (b) suscribirse desde Chrome, (c) aceptar que sin B2/B3 el sistema opera solo con senales de drift POST-earnings (entrar el dia despues del resultado real, donde el beat/miss ya es un hecho observable y no una estimacion).",
+      "tarea_afectada": "post-market-review + pre-market-earnings-scan",
+      "aplicada": false,
+      "auto_generado": false
     }
   ],
   "operaciones": [
@@ -1228,7 +1234,7 @@
   "candidatos_validados": [
     {
       "symbol": "DELL",
-      "estado": "ejecutar_martes",
+      "estado": "descartado_momentum",
       "prioridad": 1,
       "score": 9.2,
       "razon": "Q2 EPS $7.04 vs $4.98 (+41% beat). FY27 guide $25.50. Post-earnings momentum. Entrar primeros 10min apertura.",
@@ -1238,7 +1244,10 @@
       "sizing_paper_shares": 20,
       "sizing_real_shares": 1,
       "created_at": "2026-09-07T11:32:26.243043+00:00",
-      "alerta_sentinel_20260907": "DELL +14.9% en 5 sesiones y +19.3% sobre MA50 -> INCUMPLE parametro max_5day_momentum_pct=10.0. Entrada en apertura del martes viola el filtro propio del sistema. Revisar antes de ejecutar."
+      "alerta_sentinel_20260907": "DELL +14.9% en 5 sesiones y +19.3% sobre MA50 -> INCUMPLE parametro max_5day_momentum_pct=10.0. Entrada en apertura del martes viola el filtro propio del sistema. Revisar antes de ejecutar.",
+      "motivo_descarte": "HARD GATE max_5day_momentum_pct=10.0: DELL d5=+14.88% y +19.33% sobre MA50. El propio parametro del sistema lo prohibe. ATR 5.7% ($29.98) con stop propuesto 5% = 0.87 ATR -> stop dentro del ruido diario. Reevaluar solo en pullback a MA10 (~$469).",
+      "revisado_post_market": "2026-09-07",
+      "reentrada_si": "precio <= 470 (MA10) con d5 < +10% -> re-scorear"
     },
     {
       "symbol": "KFY",
@@ -1255,7 +1264,9 @@
       "earnings_confirmado": "2026-09-09 BMO (fuente EW caldata, confirmado 1 analista)",
       "alerta_sentinel_20260907": "Earnings KFY = miercoles 9-sep PRE-MARKET. Regla del sistema: cerrar posicion el martes 8-sep antes del cierre (gap overnight). El plan de anadir 6sh REALES el martes contradice esa regla — entraria un dia antes del gap.",
       "earnings_confirmado_caldata": "2026-09-09 BMO (est EPS 1.35) — verificado 09-07 via /api/caldata",
-      "riesgo_overnight": "Reportar BMO miercoles 09-09 => posicion paper 88sh DEBE cerrarse martes 09-08 antes del close (regla earnings pre-market manana). Stop activo 82.74."
+      "riesgo_overnight": "Reportar BMO miercoles 09-09 => posicion paper 88sh DEBE cerrarse martes 09-08 antes del close (regla earnings pre-market manana). Stop activo 82.74.",
+      "alerta_R0": "CERRAR 8-sep antes de 15:45 ET. Earnings 9-sep BMO. Score entrada 5.8 no cumple excepcion >=9.0.",
+      "plan_real_6sh": "CANCELADO: anadir 6sh reales el martes entraria justo antes del gap de earnings. Contradice R0."
     },
     {
       "symbol": "MDB",
@@ -1271,7 +1282,7 @@
     },
     {
       "symbol": "SOXL",
-      "estado": "ejecutar_martes",
+      "estado": "descartado",
       "prioridad": 1,
       "score": 8.5,
       "tipo": "leveraged_etf_3x",
@@ -1283,11 +1294,13 @@
       "sizing_real_shares": 0,
       "paper_notional": 5864,
       "created_at": "2026-09-07T11:38:08.323412+00:00",
-      "alerta_sentinel_20260907": "SOXL cierra 117.28: +9.9% el viernes pero -19.2% POR DEBAJO de MA50 (145.21). ETF 3x con decay. Notional paper 5.864$ (~5.4% equity) en producto apalancado: riesgo real ~16% del notional con stop 8%."
+      "alerta_sentinel_20260907": "SOXL cierra 117.28: +9.9% el viernes pero -19.2% POR DEBAJO de MA50 (145.21). ETF 3x con decay. Notional paper 5.864$ (~5.4% equity) en producto apalancado: riesgo real ~16% del notional con stop 8%.",
+      "motivo_descarte": "ETF apalancado 3x: ATR 9.43% vs stop propuesto 8% = 0.85 ATR -> stop-out por ruido casi seguro. Ademas -19.23% bajo MA50 (decay estructural del 3x) y notional $5.864 = 5.4% del equity. Sin catalizador de earnings propio. Nueva regla: bloqueo_etf_apalancado=true.",
+      "revisado_post_market": "2026-09-07"
     },
     {
       "symbol": "TQQQ",
-      "estado": "vigilar",
+      "estado": "descartado",
       "prioridad": 2,
       "score": 7.5,
       "tipo": "leveraged_etf_3x",
@@ -1296,25 +1309,141 @@
       "stop_pct": 0.08,
       "tp_pct": 0.1,
       "sizing_paper_shares": 40,
-      "created_at": "2026-09-07T11:38:08.323412+00:00"
+      "created_at": "2026-09-07T11:38:08.323412+00:00",
+      "motivo_descarte": "ETF apalancado 3x sin catalizador de earnings. Nueva regla bloqueo_etf_apalancado=true. Tecnicamente neutro (MA20 -0.04%), score 7.5 sostenido solo por narrativa 'tech bull post-DELL'.",
+      "revisado_post_market": "2026-09-07"
+    },
+    {
+      "ticker": "BRZE",
+      "symbol": "BRZE",
+      "score": 5.0,
+      "score_ajustado": 5.0,
+      "fecha_deteccion": "2026-09-07",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "sector": "technology",
+      "argumento": "Whisper $0.18 vs consenso $0.16 = asimetria +12.5% (B1=3pts, la mayor del dia). Pero: sin beat rate ni reaccion historica (EW premium bloqueado, B2/B3=0), earnings AH (-1pt) y momentum roto (-3.9% viernes, -7.4% en 5d). NO entrada martes (regla R0). Vigilar el MIERCOLES 9-sep en apertura si bate: drift post-earnings con ATR 4.9%.",
+      "estado": "vigilar_drift_miercoles",
+      "expira": "2026-09-09T22:00:00Z",
+      "score_macro_bonus": 0,
+      "conviction_tier": "no_entry",
+      "fuente_datos": "EarningsWhispers calendario+overview (whisper vs consensus); premium/hist bloqueado",
+      "whisper": 0.18,
+      "consenso": 0.16,
+      "asimetria_pct": 12.5,
+      "precio_ref": 31.96,
+      "atr_pct": 4.88,
+      "accion_recomendada": "NO_ENTRAR_martes. Reevaluar 9-sep 09:40 ET si beat + precio >+0.5% sobre apertura.",
+      "stop_tipo": "ATR x2.5 en ventana 09:30-10:30 ET (lección JNJ)"
+    },
+    {
+      "ticker": "TTAN",
+      "symbol": "TTAN",
+      "score": 4.5,
+      "score_ajustado": 4.5,
+      "fecha_deteccion": "2026-09-07",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "sector": "technology",
+      "argumento": "Whisper $0.38 vs consenso $0.35 = asimetria +8.6% (B1=3pts). Contra: AH (-1pt), tendencia rota (-5.6% viernes, -12.0% en 5d, -5.5% bajo MA20), sin datos de beat rate. ATR 5.2%. Mismo tratamiento que BRZE: drift miercoles.",
+      "estado": "vigilar_drift_miercoles",
+      "expira": "2026-09-09T22:00:00Z",
+      "score_macro_bonus": 0,
+      "conviction_tier": "no_entry",
+      "fuente_datos": "EarningsWhispers calendario+overview (whisper vs consensus); premium/hist bloqueado",
+      "whisper": 0.38,
+      "consenso": 0.35,
+      "asimetria_pct": 8.57,
+      "precio_ref": 87.92,
+      "atr_pct": 5.21,
+      "accion_recomendada": "NO_ENTRAR_martes. Reevaluar 9-sep si beat y recupera MA20."
+    },
+    {
+      "ticker": "ABM",
+      "symbol": "ABM",
+      "score": 2.5,
+      "score_ajustado": 2.5,
+      "fecha_deteccion": "2026-09-07",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "pre-market",
+      "sector": "industrials",
+      "argumento": "Whisper $1.04 vs consenso $1.01 = +2.97% (B1=1pt). Unico BMO con asimetria positiva del martes. Industrials +1 macro. Pero precio plano (d5 -0.3%, MA50 +0.2%), volatilidad implicita 1.1% (mercado no espera movimiento) y sin beat rate. Score 2.5 muy por debajo de min 7.5.",
+      "estado": "descartado",
+      "expira": "2026-09-09T22:00:00Z",
+      "score_macro_bonus": 1,
+      "conviction_tier": "no_entry",
+      "fuente_datos": "EarningsWhispers calendario+overview (whisper vs consensus); premium/hist bloqueado",
+      "whisper": 1.04,
+      "consenso": 1.01,
+      "asimetria_pct": 2.97,
+      "precio_ref": 47.05,
+      "motivo_descarte": "score 2.5 << 7.5; volatilidad implicita 1.1% = sin catalizador de movimiento"
+    },
+    {
+      "ticker": "CASY",
+      "symbol": "CASY",
+      "score": 1.0,
+      "score_ajustado": 1.0,
+      "fecha_deteccion": "2026-09-07",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "sector": "consumer_staples",
+      "argumento": "Whisper $6.80 vs consenso $6.60 = +3.03% (B1=2pts). Pero consumer_staples es -1 en el regimen actual, AH -1pt, y tecnicamente roto (-6.9% bajo MA20, -8.5% bajo MA50, -9.5% en 10d). Descartado.",
+      "estado": "descartado",
+      "expira": "2026-09-09T22:00:00Z",
+      "score_macro_bonus": -1,
+      "conviction_tier": "no_entry",
+      "fuente_datos": "EarningsWhispers calendario+overview (whisper vs consensus); premium/hist bloqueado",
+      "whisper": 6.8,
+      "consenso": 6.6,
+      "asimetria_pct": 3.03,
+      "precio_ref": 756.09,
+      "motivo_descarte": "sector -1 + AH + tendencia bajista"
+    },
+    {
+      "ticker": "UNFI",
+      "symbol": "UNFI",
+      "score": 0.0,
+      "score_ajustado": 0.0,
+      "fecha_deteccion": "2026-09-07",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "pre-market",
+      "sector": "consumer_staples",
+      "argumento": "Whisper $0.60 vs consenso $0.62 = asimetria NEGATIVA -3.2%: EW espera MISS. Ultimo trimestre ya fallo (reaccion -18.9%). Volumen 2.08x la media de 20d = posicionamiento previo, direccion desfavorable. DESCARTE DURO.",
+      "estado": "descartado",
+      "expira": "2026-09-09T22:00:00Z",
+      "score_macro_bonus": -1,
+      "conviction_tier": "no_entry",
+      "fuente_datos": "EarningsWhispers calendario+overview (whisper vs consensus); premium/hist bloqueado",
+      "whisper": 0.6,
+      "consenso": 0.62,
+      "asimetria_pct": -3.23,
+      "precio_ref": 43.93,
+      "motivo_descarte": "whisper POR DEBAJO del consenso — el sistema nunca compra asimetria negativa"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-05",
+    "fecha_actualizacion": "2026-09-07",
     "semana": "2026-W37",
     "regimen": "STAGFLATION_SHOCK + HAWKISH_REPRICING",
     "regimen_anterior": "BEAT_AND_FADE_LARGECAP + HAWKISH_LABOR + AI_CAPEX_BOOM",
-    "vix": 14.32,
+    "vix": 15.3,
     "yield_spread_10y2y": 0.41,
     "us10y": 4.77,
     "us2y": 4.34,
-    "narrativa_dominante": "CAMBIO DE REGIMEN CONFIRMADO EL 4-SEP. (1) EMPLEO: +162.000 nominas en agosto vs 53.000 esperadas — bate TODAS las estimaciones. Los futuros de fondos federales pasan a descontar un 58% de probabilidad de SUBIDA de tipos en el FOMC del 16-sep. Ya no se discute cuando recorta la Fed, sino si sube. (2) INFLACION DE OFERTA: crisis de combustible sin resolver — Hormuz + Rusia — con el diesel minorista en EEUU en MAXIMO HISTORICO, arrastrando costes de alimentacion y logistica. Es inflacion de shock de oferta: no responde a tipos, pero fuerza a la Fed a actuar igual. (3) BONOS: US10Y 4,77%, curva 10a-2a +0,41 (plana). El fondo soberano noruego, el mayor del mundo, propone recortar deuda publica (-75.000 M$ en Treasuries) por preocupacion sobre el endeudamiento estatal. Presion de oferta estructural sobre el largo plazo. (4) ROTACION FUERA DE MEGACAP AI: un fondo de Pimco que bate al 97% de sus comparables recorta las Siete Magnificas apostando por Asia. (5) LA ASIMETRIA CLAVE: VIX en 14,32 con un 58% de probabilidad de subida de tipos y un IPC el viernes. El mercado NO esta cotizando el riesgo. Complacencia con catalizador conocido a fecha fija.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-07 (Labor Day, mercados US cerrados). (1) ESCALADA IRAN-EEUU: ataques cruzados a petroleros durante el fin de semana; WTI $91.52. Goldman avisa de riesgo de $120/barril si se intensifican los ataques al trafico maritimo. CONTRAPESO: Iran dice que un acuerdo con Oman sobre Hormuz esta 'a dias' y los metaneros qataries vuelven vacios al Golfo Persico (senal de reanudacion de exportaciones). Riesgo bidireccional en energia. (2) BONOS: rendimientos siguen subiendo por temores de inflacion; US10Y 4.78%. La renta variable aguanta (ES 7.718, NQ 29.609) pero la correlacion bonos-acciones sigue siendo el riesgo principal. (3) FED: tras payrolls +162k del 4-sep, los futuros descuentan ~58% de SUBIDA en el FOMC del 16-sep. PPI el 10-sep y CPI el 11-sep son los dos eventos que definen la semana. (4) EUROPA: AfD gana Sajonia-Anhalt con 44% record; presion politica sobre Merz, prima de riesgo politica europea al alza. (5) CRIPTO: hackeo de $320M reportado en red Bitcoin — riesgo idiosincratico sobre las posiciones cripto del bot. (6) APPLE: evento de producto el 9-sep (iPhone plegable) — catalizador de sector consumer tech. VIX 15.3 (modo NORMAL, sin bloqueo).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
       "Bloomberg Breaking: US Adds 162,000 Jobs",
       "FRED T10Y2Y/VIXCLS/DGS10/DGS2",
-      "WebSearch cierre semanal S&P 500 y calendario economico"
+      "WebSearch cierre semanal S&P 500 y calendario economico",
+      "Gmail post-market 2026-09-07: 9 emails (Bloomberg x6, TipRanks x2) + EW calendario 8-sep + WebSearch calendario macro"
     ],
     "sector_prioridades": {
       "energy": 2,
@@ -1331,13 +1460,15 @@
     },
     "sectores_a_vigilar_esta_semana": [
       "energy",
-      "financials",
-      "industrials"
+      "materials",
+      "industrials",
+      "healthcare",
+      "financials"
     ],
     "sectores_a_evitar_esta_semana": [
-      "real_estate",
+      "consumer_discretionary",
       "consumer_staples",
-      "consumer_discretionary"
+      "real_estate"
     ],
     "cambios_vs_semana_anterior": [
       "technology +2 -> 0: Pimco recorta Mag7; AVGO fallo whisper; GWRE -19,93% pese a batir; US10Y 4,77% comprime multiplos de larga duracion.",
@@ -1372,7 +1503,9 @@
       }
     ],
     "dias_riesgo_macro": [
-      "2026-09-11"
+      "2026-09-10 PPI",
+      "2026-09-11 CPI",
+      "2026-09-16 FOMC (58% prob. SUBIDA)"
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
@@ -1494,7 +1627,21 @@
         "semis": 2.61
       },
       "ts": "2026-09-07T15:19"
-    }
+    },
+    "eventos_recientes": [
+      {
+        "fecha": "2026-09-07",
+        "evento": "Ataques cruzados EEUU-Iran a petroleros; Goldman flag $120 crudo. Contrapeso: acuerdo Hormuz-Oman 'a dias'. WTI $91.52.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "energy",
+          "industrials",
+          "consumer_discretionary",
+          "transportation"
+        ],
+        "fuente": "Bloomberg Morning Briefing Americas 2026-09-07"
+      }
+    ]
   },
   "operaciones_crypto": [
     {
@@ -4165,6 +4312,15 @@
       "motivo": "Suelo duro especifico para la fuente que produjo el 100% de las entradas de la semana.",
       "evidencia": "Mismas 4 operaciones. KFY (5.8) sigue abierta bajo la misma via.",
       "origen": "weekly-review-W36"
+    },
+    {
+      "fecha": "2026-09-07",
+      "parametros": {
+        "bloqueo_etf_apalancado": true,
+        "stop_min_atr_mult": 1.5,
+        "enforce_hard_gate_estado": true
+      },
+      "motivo": "DELL/SOXL/TQQQ marcados 'ejecutar_martes' pese a violar max_5day_momentum_pct y ratio stop/ATR. La deteccion no cambiaba el estado."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -4206,12 +4362,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-05",
+    "_ultima_actualizacion": "2026-09-07",
     "rendimiento_global": {
-      "equity_paper_actual": 108117.31,
+      "equity_paper_actual": 108094.82,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2617.33,
-      "pnl_total_paper_pct": 2.48,
+      "pnl_total_paper_dolares": 2594.82,
+      "pnl_total_paper_pct": 2.46,
       "equity_real_actual": 4548.14,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.16,
@@ -4234,7 +4390,7 @@
       "win_rate_pct": 37.0,
       "avg_r_logrado": -0.1,
       "profit_factor": 3.27,
-      "avg_pnl_por_operacion_dolares": 79.93,
+      "avg_pnl_por_operacion_dolares": 77.33,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1264.65,
       "mayor_perdida_dolares": -253.44,
@@ -4860,6 +5016,16 @@
         "avg_r_acumulado": -0.11,
         "operaciones_acumuladas": 26,
         "vix": 14.55
+      },
+      {
+        "fecha": "2026-09-07",
+        "equity_paper": 108094.82,
+        "equity_real": 4548.14,
+        "pnl_dia_paper": 50.92,
+        "win_rate_acumulado": 37.0,
+        "avg_r_acumulado": -0.1,
+        "operaciones_acumuladas": 27,
+        "vix": 15.3
       }
     ],
     "objetivos": {
@@ -7145,6 +7311,22 @@
       ],
       "evento_clave": "Payrolls +162k superando todas las estimaciones (US10Y 4.78%); GWRE -19.93% tras batir consenso pero guiar ARR 18% vs 19%.",
       "leccion": "R0 evito $1.332 en GWRE+AMBA. Y la medicion del regimen corrige la anecdota: la base rate post-earnings es 47% positiva (moneda al aire), pero en large cap el mejor de 8 resultados fue +3.74% y el peor -19.93%. El problema no es que el mercado castigue los beats: es que operabamos donde el upside esta topado."
+    },
+    {
+      "fecha": "2026-09-07",
+      "dia": "Lunes",
+      "equity_paper_cierre": 108094.82,
+      "variacion_dia": 50.92,
+      "variacion_pct": 0.047,
+      "vix": 15.3,
+      "regimen_macro": "STAGFLATION_SHOCK + HAWKISH_REPRICING",
+      "mercado": "CERRADO — Labor Day (solo cripto 24/7)",
+      "trades_paper": [
+        "ETH/USD buy 0.401367 @ 2493.56 (bot)",
+        "SOL/USD buy 14.304787 @ 104.97 (bot)"
+      ],
+      "evento_clave": "EEUU e Iran se atacan petroleros mutuamente; WTI $91.52 y Goldman avisa de riesgo de $120 — pero Iran dice que el acuerdo de Hormuz con Oman esta 'a dias'.",
+      "leccion": "Detectar una violacion de regla no sirve de nada si no cambia el ESTADO del candidato: DELL y SOXL seguian marcados 'ejecutar_martes' con la alerta escrita al lado."
     }
   ],
   "alertas_criticas": [
@@ -7706,6 +7888,33 @@
       "archivo_modificado": "performance_log.parametros_activos",
       "impacto_esperado": "Redirige el capital al segmento donde vive la cola ganadora (small/mid).",
       "implementada": true
+    },
+    {
+      "fecha": "2026-09-07",
+      "tipo": "regla_anadida",
+      "implementada": true,
+      "descripcion": "bloqueo_etf_apalancado=true — prohibidos ETFs apalancados 2x/3x (SOXL, TQQQ, TQQQ-like) como candidatos.",
+      "evidencia": "SOXL con score 8.5 en 'ejecutar_martes': ATR 9.43% vs stop propuesto 8% = 0.85 ATR (stop-out por ruido casi garantizado) y -19.2% bajo MA50 por decay del 3x. Notional 5.4% del equity.",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Elimina una clase entera de entradas con ratio riesgo/ruido imposible. Evita ~-8% en un trade de 5.4% del equity."
+    },
+    {
+      "fecha": "2026-09-07",
+      "tipo": "regla_anadida",
+      "implementada": true,
+      "descripcion": "stop_min_atr_mult=1.5 — todo candidato cuyo stop_pct sea < 1.5 x ATR% se rechaza o se ensancha el stop.",
+      "evidencia": "DELL stop 5% vs ATR 5.72% = 0.87 ATR. SOXL stop 8% vs ATR 9.43% = 0.85 ATR. Ambos stops dentro del ruido diario.",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Reduce stop-outs prematuros; convierte el stop en proteccion real y no en un peaje."
+    },
+    {
+      "fecha": "2026-09-07",
+      "tipo": "bug_corregido",
+      "implementada": true,
+      "descripcion": "enforce_hard_gate_estado=true — una alerta del sentinel que detecte violacion de un parametro duro DEBE cambiar el estado del candidato a 'descartado', no solo anadir una nota.",
+      "evidencia": "2026-09-07: DELL/SOXL/TQQQ conservaban estado 'ejecutar_martes'/'vigilar' con la alerta escrita solo en el campo 'alerta_sentinel_20260907'. market-open-execution lee 'estado', no lee las notas.",
+      "archivo_modificado": "performance_log/parametros_activos + candidatos_validados (3 estados corregidos hoy)",
+      "impacto_esperado": "Cierra la brecha entre deteccion y ejecucion. Era el fallo de mayor coste potencial del sistema."
     }
   ],
   "industry_intelligence": {
@@ -9730,6 +9939,14 @@
       "candidatos_activos": 4,
       "score_sistema": 8.2,
       "mejora_hoy": "Pipeline EW reparado (API JSON) + penalizacion large cap -1.5"
+    },
+    {
+      "fecha": "2026-09-07",
+      "lecciones_acumuladas": 35,
+      "mejoras_acumuladas": 36,
+      "candidatos_activos": 3,
+      "parametros_version": "2026-09-07",
+      "mejora_hoy": "3 hard gates: bloqueo_etf_apalancado, stop_min_atr_mult=1.5, enforce_hard_gate_estado"
     }
   ],
   "motor_alpha_diario": {
@@ -16919,63 +17136,38 @@
     {
       "fecha": "2026-09-08",
       "accion": "R0_CERRAR_KFY",
-      "prioridad": "MAXIMA",
-      "detalle": "KFY reporta 9-sep BMO. Cerrar el 8-sep antes de 15:30 ET. 88 acciones, entry 85.37."
-    },
-    {
-      "fecha": "2026-09-08",
-      "accion": "rescore_candidatos_con_whisper",
-      "prioridad": "ALTA",
-      "detalle": "Los candidatos 8-10 sep estan en pendiente_ew con score tecnico SIN whisper. Re-puntuar con whisper fresco antes de ejecutar."
-    },
-    {
-      "fecha": "2026-09-08",
-      "accion": "aplicar_penalizacion_largecap",
-      "prioridad": "ALTA",
-      "detalle": "Nuevo parametro penalizacion_score_largecap_earnings=-1.5 para tickers >=$10B. Verificar que el scan lo aplica."
-    },
-    {
-      "fecha": "2026-09-08",
-      "accion": "cerrar_KFY_antes_del_cierre",
       "prioridad": "CRITICA",
-      "detalle": "KFY (88 sh, entrada 85.37, stop_limit 82.74 activo) reporta earnings BMO el 2026-09-09. Regla no_holdings_earnings_overnight: cerrar antes de las 15:45 ET del 8-sep. Score de entrada 5.8 no cumple la excepcion (>=9.0). El stop_limit NO protege contra gap post-earnings."
+      "detalle": "KFY 88sh @ 85.37 (paper). Earnings 9-sep BMO. Cerrar el 8-sep antes de las 15:45 ET. Score de entrada 5.8 no cumple la excepcion >=9.0. El stop_limit 82.74 NO protege contra gap."
+    },
+    {
+      "fecha": "2026-09-08",
+      "accion": "CANCELAR_plan_KFY_real_6sh",
+      "prioridad": "ALTA",
+      "detalle": "El plan de anadir 6 acciones REALES de KFY el martes entraria un dia antes del gap de earnings. Contradice R0 directamente. NO EJECUTAR."
+    },
+    {
+      "fecha": "2026-09-08",
+      "accion": "NO_ABRIR_nuevas_posiciones_equity",
+      "prioridad": "ALTA",
+      "detalle": "Ningun candidato del 8-sep alcanza 7.5 (max: BRZE 5.0). DELL/SOXL/TQQQ bloqueados por hard gates. Martes = dia de gestion pura."
     },
     {
       "fecha": "2026-09-09",
-      "accion": "reevaluar_M_para_entrada",
+      "accion": "evaluar_drift_BRZE_TTAN",
       "prioridad": "MEDIA",
-      "detalle": "Macy's reporta BMO el 10-sep. Score hoy 6.8. Reevaluar el 9-sep con flujo de opciones actualizado: si el ratio call/(call+put) sube por encima de 0.55 el BLOQUE H pasa de -1.0 a 0/+0.5 y el score alcanzaria 7.8-8.3."
+      "detalle": "BRZE (whisper +12.5%) y TTAN (+8.6%) reportan AH el 8-sep. Si baten y el precio se sostiene >+0.5% sobre la apertura a los 15 min del 9-sep -> entrada de drift con stop ATRx2.5."
     },
     {
-      "_src": "sentinel-holiday-20260907",
-      "fecha_objetivo": "2026-09-08",
-      "prioridad": "alta",
-      "accion": "KFY (88sh paper, stop 82.74): earnings 09-sep PRE-MARKET. Cerrar el martes 08-sep antes del cierre (regla earnings pre-market dia siguiente). No mantener overnight del 8 al 9."
+      "fecha": "2026-09-10",
+      "accion": "riesgo_macro_PPI",
+      "prioridad": "ALTA",
+      "detalle": "PPI 10-sep 08:30 ET y CPI 11-sep. Futuros descuentan 58% de SUBIDA en el FOMC del 16-sep. Reducir exposicion nueva antes de ambos datos."
     },
     {
-      "_src": "sentinel-holiday-20260907",
-      "fecha_objetivo": "2026-09-08",
-      "prioridad": "media",
-      "accion": "GME earnings 08-sep AH: guidance preanunciada 31-ago -> tratar como mercado descontado. NO entrar por asimetria; solo considerar post-earnings continuation si hay gap con volumen."
-    },
-    {
-      "_src": "sentinel-holiday-20260907",
-      "fecha_objetivo": "2026-09-08",
-      "prioridad": "media",
-      "accion": "EW whisper scraper sigue KO. Pre-market scan 08-sep debe usar via tecnica/fundamental (yfinance + consenso caldata cacheado en ew_calendario_proximo) y NO asumir asimetria=0 como score 0."
-    },
-    {
-      "fecha_objetivo": "2026-09-08",
-      "ticker": "KFY",
-      "prioridad": "CRITICA",
-      "accion": "CERRAR posicion paper 88sh antes del cierre del martes 08-sep",
-      "motivo": "Earnings CONFIRMADOS miercoles 09-sep PRE-MARKET (BMO). Regla sentinel: cerrar antes de gap overnight de earnings.",
-      "ventana": "15:00-15:45 ET del 2026-09-08",
-      "valor_posicion_usd": 7511,
-      "stop_actual": 82.74,
-      "nota_real": "CV pedia entrar 6sh REAL martes si <$87.50 -> DESACONSEJADO: entrada 1 dia antes de earnings BMO = riesgo gap puro.",
-      "creado_por": "sentinel-holiday-scan",
-      "ts": "2026-09-07T15:19"
+      "fecha": "2026-09-08",
+      "accion": "revisar_cripto_por_hackeo",
+      "prioridad": "MEDIA",
+      "detalle": "Hackeo de $320M reportado en red Bitcoin (Bloomberg 7-sep). Posiciones bot: BTC/ETH/SOL, todas con stop -2.6/-5%. Vigilar apertura; los stops son la proteccion."
     }
   ],
   "auditoria_tareas": [
@@ -17685,6 +17877,54 @@
       },
       "tareas_con_issues": [
         "gobernanza_bot"
+      ]
+    },
+    {
+      "fecha": "2026-09-07",
+      "score_sistema": 8.8,
+      "tareas": {
+        "sentinel": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "Detecto las 3 violaciones (DELL momentum, SOXL 3x, KFY R0 vs plan real) pero no cambio el estado -> ejecucion habria procedido",
+            "Asigno score 9.2 a DELL y 8.5 a SOXL sin aplicar los hard gates del sistema en el momento de puntuar"
+          ]
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Mercado cerrado (Labor Day). No aplicable."
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Mercado cerrado. No aplicable."
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Mercado cerrado. R0 de KFY vence manana 8-sep."
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "4/4 posiciones paper con stop GTC activo y verificado."
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 9,
+          "issues": [
+            "EW premium inaccesible desde Chrome"
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "sentinel"
       ]
     }
   ],
@@ -18664,7 +18904,7 @@
       "detectado_por": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-07T15:19",
+  "ultima_actualizacion": "2026-09-07",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
