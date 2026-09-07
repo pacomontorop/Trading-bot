@@ -6046,6 +6046,81 @@
         "BUG DETECTADO: el chequeo de earnings por substring (today_str in str(cal)) falla porque yfinance devuelve datetime.date objects (repr 'datetime.date(2026, 9, 3)'), no ISO strings. PASO 1B habría dado earn_hoy=False para AMBA y GWRE pese a tener earnings AH HOY. FIX aplicado en esta sesión: comparar str(cal['Earnings Date'][0])[:10] == hoy.",
         "Ambas posiciones (AMBA score 6.0, GWRE score 5.5) tenían alerta_earnings_overnight en el log indicando cierre obligatorio hoy <=14:30 ET; se cerraron a 12:34 ET vía PASO 1.8."
       ]
+    },
+    {
+      "timestamp": "2026-09-07T16:32:58.470811+00:00",
+      "hora_et": "2026-09-07 12:32 ET",
+      "mercado_abierto": false,
+      "nota": "Labor Day 2026-09-07: mercado de acciones CERRADO. Sin ejecucion intraday posible (equities). Crypto 24/7 revisado.",
+      "equity": 108078.17,
+      "buying_power": 413385.6,
+      "posiciones_abiertas": 4,
+      "posiciones_detalle": [
+        {
+          "symbol": "BTCUSD",
+          "shares": 0.000188716,
+          "entry": 79470.5637,
+          "current": 78820.242,
+          "pnl_pct": -0.82,
+          "pnl_usd": -0.12,
+          "stop": 77423.46,
+          "stop_source": "stop_top_level",
+          "riesgo_a_stop_pct": 2.58
+        },
+        {
+          "symbol": "ETHUSD",
+          "shares": 0.400363582,
+          "entry": 2493.56,
+          "current": 2471.9,
+          "pnl_pct": -0.87,
+          "pnl_usd": -8.67,
+          "stop": 2368.88,
+          "stop_source": "stop_top_level",
+          "riesgo_a_stop_pct": 5.0
+        },
+        {
+          "symbol": "KFY",
+          "shares": 88.0,
+          "entry": 85.37,
+          "current": 85.35,
+          "pnl_pct": -0.02,
+          "pnl_usd": -1.76,
+          "stop": 82.74,
+          "stop_source": "stop_top_level",
+          "riesgo_a_stop_pct": 3.08
+        },
+        {
+          "symbol": "SOLUSD",
+          "shares": 14.269050032,
+          "entry": 104.97,
+          "current": 103.3,
+          "pnl_pct": -1.59,
+          "pnl_usd": -23.83,
+          "stop": 99.72,
+          "stop_source": "stop_top_level",
+          "riesgo_a_stop_pct": 5.0
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "motivo_sin_ajuste_stops": "Todas las posiciones con P&L negativo (-0.02% a -1.59%). Regla: no mover stops con P&L<0. Todas protegidas con stop activo.",
+      "ordenes_ejecutadas_hoy": [],
+      "ordenes_pendientes": [],
+      "candidatos_intraday_aprobados": [],
+      "ejecutados_intraday": [],
+      "fallidos_intraday": [],
+      "post_apertura_ejecutados": [],
+      "post_apertura_descartados": [],
+      "urgency_check": {
+        "KFY": "earnings 2026-09-09 BMO -> CERRAR el 2026-09-08 antes de 15:45 ET (accion pendiente ya registrada, prioridad CRITICA)"
+      },
+      "pendiente_manana_2026-09-08": [
+        "R0: cerrar KFY (88sh) antes 15:45 ET - earnings 9-sep BMO",
+        "Ejecutar DELL (score 9.2) y SOXL (score 8.5) en apertura tras re-score con whisper fresco",
+        "TQQQ: entrar solo si >$73",
+        "MDB: descartado (nota MA50 incorrecta)"
+      ]
     }
   ],
   "pre_close_log": [
@@ -18284,7 +18359,7 @@
       "detectado_por": "sentinel-holiday-run"
     }
   ],
-  "ultima_actualizacion": "2026-09-07T15:19:48Z",
+  "ultima_actualizacion": "2026-09-07T16:32:58.470837+00:00",
   "ew_calendario_proximo": {
     "fuente": "earningswhispers /api/caldata (verificado 2026-09-07)",
     "ts": "2026-09-07T11:19",
