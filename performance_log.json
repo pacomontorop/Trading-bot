@@ -1376,13 +1376,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-07T11:19",
-      "nivel": "normal_sesgo_negativo",
+      "timestamp": "2026-09-07T13:11",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "mercado": "cerrado_festivo",
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0
+      "score_min_real_efectivo": 7.5,
+      "nota": "mercado cerrado, datos de cierre 04-sep/05-sep"
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1430,6 +1430,49 @@
     "commodities": {
       "wti": 91.48,
       "oro": 4476.6
+    },
+    "snapshot_holiday_20260907": {
+      "VIX": [
+        15.3,
+        5.3
+      ],
+      "SPY": [
+        770.19,
+        -0.39
+      ],
+      "QQQ": [
+        718.96,
+        0.18
+      ],
+      "TLT": [
+        82.21,
+        0.17
+      ],
+      "yield_10y": [
+        4.78,
+        0.46
+      ],
+      "gold": [
+        4476.6,
+        1.06
+      ],
+      "wti": [
+        91.48,
+        0.0
+      ],
+      "XLK": [
+        187.28,
+        0.7
+      ],
+      "XLE": [
+        64.06,
+        -0.87
+      ],
+      "XLF": [
+        58.1,
+        -0.79
+      ],
+      "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     }
   },
   "operaciones_crypto": [
@@ -12114,6 +12157,17 @@
       "cowork_abiertas": 1,
       "vix": 15.25,
       "nota": "Festivo no contemplado por guard IS_WEEKEND/IS_PREOPEN del skill. Ejecutado scan informativo read-only, sin ordenes."
+    },
+    {
+      "ts": "2026-09-07T17:14:10.293380+00:00",
+      "modo": "holiday_standby (3er ciclo Labor Day)",
+      "mercado": "CERRADO — Labor Day 2026-09-07; next_open 2026-09-08 09:30 ET",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "vix": 15.3,
+      "nota": "Read-only. Todas las posiciones con stop verificado. EW whisper sigue caido (old.* sirve shell generico 96276 chars para todos los tickers; /api/caldata devuelve 204 y /api/whisper no existe). Scan tecnico-fundamental sobre calendario 08-09 sep. GME: guidance Q2 preanunciada 31-ago (rev 780-800M, NI 290-310M) -> sorpresa mayormente descontada, edge bajo pese a r5 +7.2%. KFY (posicion abierta 88sh) reporta 09-sep pre-market -> cerrar martes antes del cierre."
     }
   ],
   "momentum_15m": {
@@ -15937,6 +15991,172 @@
       "candidatos_scoreados": 4,
       "ejecuciones": 0,
       "motivo_no_ejecucion": "Mercado cerrado (Labor Day) + mejor score 6.8 (M) < min_signal_score 7.5"
+    },
+    {
+      "ts": "2026-09-07T13:11",
+      "tipo": "holiday_tecnico",
+      "tickers": {
+        "ABM": {
+          "px": 47.05,
+          "r5": -0.32,
+          "r20": -3.07,
+          "volr": 1.05,
+          "dvol": 16.1,
+          "br": 0.25
+        },
+        "UNFI": {
+          "px": 43.93,
+          "r5": -4.08,
+          "r20": -6.65,
+          "volr": 1.5,
+          "dvol": 23.1,
+          "br": 0.75
+        },
+        "CASY": {
+          "px": 756.09,
+          "r5": 0.08,
+          "r20": -9.34,
+          "volr": 1.25,
+          "dvol": 244.9,
+          "br": 1.0
+        },
+        "BRZE": {
+          "px": 31.96,
+          "r5": -7.44,
+          "r20": 20.42,
+          "volr": 0.84,
+          "dvol": 80.4,
+          "br": 0.25
+        },
+        "TTAN": {
+          "px": 87.92,
+          "r5": -11.97,
+          "r20": 2.44,
+          "volr": 0.88,
+          "dvol": 99.8,
+          "br": 1.0
+        },
+        "AVO": {
+          "px": 12.68,
+          "r5": -0.7,
+          "r20": -3.94,
+          "volr": 0.81,
+          "dvol": 6.5,
+          "br": 0.75
+        },
+        "GME": {
+          "px": 19.16,
+          "r5": 7.22,
+          "r20": 0.0,
+          "volr": 1.06,
+          "dvol": 118.8,
+          "br": 1.0
+        },
+        "INNV": {
+          "px": 10.75,
+          "r5": -1.01,
+          "r20": -3.85,
+          "volr": 0.96,
+          "dvol": 2.0,
+          "br": 1.0
+        },
+        "CHWY": {
+          "px": 23.66,
+          "r5": 1.72,
+          "r20": 0.55,
+          "volr": 1.16,
+          "dvol": 155.0,
+          "br": 0.25
+        },
+        "SIG": {
+          "px": 85.3,
+          "r5": 3.14,
+          "r20": -11.98,
+          "volr": 1.17,
+          "dvol": 55.3,
+          "br": 1.0
+        },
+        "ASO": {
+          "px": 44.94,
+          "r5": 3.31,
+          "r20": -6.63,
+          "volr": 1.05,
+          "dvol": 78.4,
+          "br": 0.5
+        },
+        "CNM": {
+          "px": 44.32,
+          "r5": 3.02,
+          "r20": -4.79,
+          "volr": 1.08,
+          "dvol": 84.1,
+          "br": 0.5
+        },
+        "AEO": {
+          "px": 17.39,
+          "r5": 3.08,
+          "r20": -3.23,
+          "volr": 1.08,
+          "dvol": 83.1,
+          "br": 0.75
+        },
+        "AVAV": {
+          "px": 144.65,
+          "r5": -2.22,
+          "r20": -22.54,
+          "volr": 1.16,
+          "dvol": 180.1,
+          "br": 0.25
+        },
+        "COO": {
+          "px": 69.59,
+          "r5": -2.22,
+          "r20": -6.25,
+          "volr": 1.07,
+          "dvol": 114.6,
+          "br": 1.0
+        },
+        "ODD": {
+          "px": 13.75,
+          "r5": -4.18,
+          "r20": -2.62,
+          "volr": 1.0,
+          "dvol": 11.1,
+          "br": 0.75
+        },
+        "SAIL": {
+          "px": 18.82,
+          "r5": -5.09,
+          "r20": 0.86,
+          "volr": 0.91,
+          "dvol": 59.7,
+          "br": 0.75
+        },
+        "CAL": {
+          "px": 12.43,
+          "r5": -0.4,
+          "r20": -14.28,
+          "volr": 1.13,
+          "dvol": 5.7,
+          "br": 0.5
+        },
+        "JILL": {
+          "px": 19.98,
+          "r5": 0.91,
+          "r20": 5.6,
+          "volr": 1.22,
+          "dvol": 1.3,
+          "br": 1.0
+        },
+        "KFY": {
+          "px": 85.35,
+          "r5": -1.08,
+          "r20": 1.52,
+          "volr": 1.31,
+          "dvol": 29.1,
+          "br": 1.0
+        }
+      }
     }
   ],
   "pre_market_scan_log": [
@@ -16681,6 +16901,24 @@
       "accion": "reevaluar_M_para_entrada",
       "prioridad": "MEDIA",
       "detalle": "Macy's reporta BMO el 10-sep. Score hoy 6.8. Reevaluar el 9-sep con flujo de opciones actualizado: si el ratio call/(call+put) sube por encima de 0.55 el BLOQUE H pasa de -1.0 a 0/+0.5 y el score alcanzaria 7.8-8.3."
+    },
+    {
+      "_src": "sentinel-holiday-20260907",
+      "fecha_objetivo": "2026-09-08",
+      "prioridad": "alta",
+      "accion": "KFY (88sh paper, stop 82.74): earnings 09-sep PRE-MARKET. Cerrar el martes 08-sep antes del cierre (regla earnings pre-market dia siguiente). No mantener overnight del 8 al 9."
+    },
+    {
+      "_src": "sentinel-holiday-20260907",
+      "fecha_objetivo": "2026-09-08",
+      "prioridad": "media",
+      "accion": "GME earnings 08-sep AH: guidance preanunciada 31-ago -> tratar como mercado descontado. NO entrar por asimetria; solo considerar post-earnings continuation si hay gap con volumen."
+    },
+    {
+      "_src": "sentinel-holiday-20260907",
+      "fecha_objetivo": "2026-09-08",
+      "prioridad": "media",
+      "accion": "EW whisper scraper sigue KO. Pre-market scan 08-sep debe usar via tecnica/fundamental (yfinance + consenso caldata cacheado en ew_calendario_proximo) y NO asumir asimetria=0 como score 0."
     }
   ],
   "auditoria_tareas": [
@@ -18359,7 +18597,7 @@
       "detectado_por": "sentinel-holiday-run"
     }
   ],
-  "ultima_actualizacion": "2026-09-07T16:32:58.470837+00:00",
+  "ultima_actualizacion": "2026-09-07T13:11",
   "ew_calendario_proximo": {
     "fuente": "earningswhispers /api/caldata (verificado 2026-09-07)",
     "ts": "2026-09-07T11:19",
