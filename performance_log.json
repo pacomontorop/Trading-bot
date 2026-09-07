@@ -1262,6 +1262,34 @@
       "stop_pct": 0.05,
       "tp_pct": 0.09,
       "created_at": "2026-09-07T11:32:26.243043+00:00"
+    },
+    {
+      "symbol": "SOXL",
+      "estado": "ejecutar_martes",
+      "prioridad": 1,
+      "score": 8.5,
+      "tipo": "leveraged_etf_3x",
+      "razon": "SOXL 3x semiconductores. DELL Q2 +41% EPS → sector semis muy alcista. Above MA5. Momentum claro.",
+      "precio_referencia": 117.28,
+      "stop_pct": 0.08,
+      "tp_pct": 0.12,
+      "sizing_paper_shares": 50,
+      "sizing_real_shares": 0,
+      "paper_notional": 5864,
+      "created_at": "2026-09-07T11:38:08.323412+00:00"
+    },
+    {
+      "symbol": "TQQQ",
+      "estado": "vigilar",
+      "prioridad": 2,
+      "score": 7.5,
+      "tipo": "leveraged_etf_3x",
+      "razon": "TQQQ 3x NASDAQ. Tech bull post-DELL. Entrar si TQQQ >$73 martes.",
+      "precio_referencia": 72.37,
+      "stop_pct": 0.08,
+      "tp_pct": 0.1,
+      "sizing_paper_shares": 40,
+      "created_at": "2026-09-07T11:38:08.323412+00:00"
     }
   ],
   "macro_context": {
@@ -18152,5 +18180,26 @@
       "target": 110000,
       "gap": 1889
     }
-  ]
+  ],
+  "universe_expansion": {
+    "opciones_papel_nivel": 3,
+    "opciones_real_nivel": 1,
+    "shorting_paper": true,
+    "leveraged_etfs": [
+      "SOXL",
+      "TQQQ",
+      "UPRO",
+      "SQQQ",
+      "SOXS"
+    ],
+    "opciones_activas": true,
+    "estrategias_nuevas": [
+      "options_earnings_calls: comprar ATM call 2 dias antes earnings score>=9",
+      "leveraged_etf_sector: SOXL tras beat semis, TQQQ tras beat tech",
+      "short_selling_paper: short tras earnings miss score<=4",
+      "sec_edgar_insider: Form4 compras directivas como señal adicional"
+    ],
+    "sec_edgar_url": "https://efts.sec.gov/LATEST/search-index",
+    "actualizado": "2026-09-07T11:38:08.323412+00:00"
+  }
 }
