@@ -14162,7 +14162,32 @@
         "motivo": "Asimetria 50% es artefacto matematico: whisper -0.01 vs consensus -0.02 (ambos negativos, denominador ~0). Senal sin contenido informativo. Ademas RSI=79.7 sobrecomprado. Descartado pese a superar umbral.",
         "decidido_por": "sentinel"
       }
-    ]
+    ],
+    "semana_2026-09-07": {
+      "SIG": {
+        "motivo": "BLOQUE_H_FLUJO_OPCIONES_BAJISTA",
+        "fecha": "2026-09-07",
+        "score": 5.8,
+        "detalle": "callvol 104 vs putvol 922 (calls 10% del total) en vencimiento 11-sep. Asimetria +8.9% y guia FY subida no compensan. Short 18.5% del float."
+      },
+      "M": {
+        "motivo": "SCORE_INSUFICIENTE",
+        "fecha": "2026-09-07",
+        "score": 6.8,
+        "detalle": "Asimetria +18.9% valida (diff $0.07 justo en el minimo) pero put-leaning (41% calls, putvol 1414) y precio ya en el target medio de analistas ($23.23 vs $23.05)."
+      },
+      "LOVE": {
+        "motivo": "COBERTURA_Y_LIQUIDEZ_INSUFICIENTES",
+        "fecha": "2026-09-07",
+        "score": 5.3,
+        "detalle": "6 analistas < min 12. Cap $244M, vol 218k. Asimetria sobre EPS negativo."
+      },
+      "SKIL": {
+        "motivo": "ILIQUIDO",
+        "fecha": "2026-09-07",
+        "detalle": "Asimetria +9.6% valida pero cap $61M, vol medio 95k, sin cadena de opciones, sin cobertura de analistas. No operable al sizing del sistema."
+      }
+    }
   },
   "weekly_ew_intel": {
     "semana": "2026-09-07",
@@ -15785,6 +15810,16 @@
       "candidatos_scoreados": 9,
       "ejecuciones": 0,
       "motivo_no_ejecucion": "sin earnings hoy AH ni manana (sabado); scores 2.0-5.0 < umbral 8.75"
+    },
+    {
+      "ts": "2026-09-07T14:28:48Z",
+      "tarea": "pre-market-earnings-scan",
+      "metodo": "earningswhispers /api/caldata + /api/getstocksdata + yfinance",
+      "universo": 64,
+      "con_whisper": 34,
+      "candidatos_scoreados": 4,
+      "ejecuciones": 0,
+      "motivo_no_ejecucion": "Mercado cerrado (Labor Day) + mejor score 6.8 (M) < min_signal_score 7.5"
     }
   ],
   "pre_market_scan_log": [
@@ -16330,6 +16365,173 @@
         }
       ],
       "nota_labor_day": "CASO BORDE: hoy (vie 4-sep) es la sesion D-1 de los reporters del martes 8-sep, porque el lunes 7 es festivo. Entrar hoy implica un hold de 4 dias naturales con riesgo de gap de fin de semana largo y CERO drift que capturar. La regla D-1 asume sesion contigua; no aplica sobre puente."
+    },
+    {
+      "fecha": "2026-09-07",
+      "hora_et": "10:35",
+      "tarea": "pre-market-earnings-scan",
+      "resultado": "SIN SENALES — 0 candidatos >= 7.5, 0 ordenes. MERCADO CERRADO (Labor Day).",
+      "mercado": {
+        "is_open": false,
+        "motivo": "Labor Day 2026-09-07",
+        "next_open": "2026-09-08T09:30:00-04:00",
+        "implicacion": "Ninguna entrada posible hoy. Regla D-1 desplaza toda entrada a 2026-09-08."
+      },
+      "universo": {
+        "fuente": "earningswhispers /api/caldata (HTML scraper deprecado)",
+        "2026-09-08": 13,
+        "2026-09-09": 29,
+        "2026-09-10": 22,
+        "total_escaneado": 64,
+        "con_whisper_valido": 34
+      },
+      "macro": {
+        "vix": 15.19,
+        "vix_chg_1d_pct": 4.54,
+        "spy_1d_pct": -0.39,
+        "spy_5d_pct": 0.11,
+        "qqq_1d_pct": 0.18,
+        "xly_5d_pct": -1.96,
+        "xrt_5d_pct": 0.81,
+        "xlk_5d_pct": 0.86,
+        "macro_score": 0.6,
+        "macro_bonus": 0.18,
+        "regimen": "BULL_POST_EARNINGS",
+        "vix_block": false
+      },
+      "cuentas": {
+        "paper_equity": 108099.51,
+        "paper_cash": 98088.84,
+        "paper_posiciones": 4,
+        "real_equity": 4548.14,
+        "real_cash": 4547.48,
+        "real_posiciones": 1,
+        "nota": "Todas las posiciones con stop_limit GTC activo y verificado."
+      },
+      "top_candidatos": [
+        {
+          "ticker": "M",
+          "empresa": "Macy's",
+          "earnings": "2026-09-10",
+          "timing": "BMO",
+          "entrada_teorica": "2026-09-09",
+          "whisper": 0.44,
+          "consenso": 0.37,
+          "asimetria_pct": 18.9,
+          "diff_usd": 0.07,
+          "beat_rate_4q": 100.0,
+          "score_final": 6.8,
+          "desglose": "A=3.0(v2:confirmacion beat_rate 100%>=70%) B=2.0 C=1.5(est) D=0.5(hold,upside+0.8%) G=+1.0(guidance FY subida) H=-1.0(putvol 1414, calls 41%) SI=-0.4(short 12.9% float) macro=+0.2",
+          "veredicto": "DESCARTADO — 6.8 < 7.5. Flujo de opciones put-leaning y target medio a 0.8% del precio anulan la asimetria."
+        },
+        {
+          "ticker": "SIG",
+          "empresa": "Signet Jewelers",
+          "earnings": "2026-09-09",
+          "timing": "BMO",
+          "entrada_teorica": "2026-09-08",
+          "whisper": 1.84,
+          "consenso": 1.69,
+          "asimetria_pct": 8.9,
+          "diff_usd": 0.15,
+          "beat_rate_4q": 100.0,
+          "score_final": 5.8,
+          "desglose": "A=2.0 B=2.0 C=1.5(est) D=1.5(buy,upside+28%) G=+1.0(subio guia FY27 a 9.20-11.00 en Q1) H=-2.0(BEARISH: callvol 104 vs putvol 922, calls solo 10%) SI=-0.4(short 18.5% float) macro=+0.2",
+          "veredicto": "DESCARTADO — 5.8 < 7.5. BLOQUE H decisivo: 90% del volumen de opciones en PUTs (leccion CRM/PATH). Denominador y asimetria fiables, pero el flujo contradice la tesis."
+        },
+        {
+          "ticker": "LOVE",
+          "empresa": "Lovesac",
+          "earnings": "2026-09-10",
+          "timing": "BMO",
+          "entrada_teorica": "2026-09-09",
+          "whisper": -0.3,
+          "consenso": -0.39,
+          "asimetria_pct": 23.1,
+          "diff_usd": 0.09,
+          "beat_rate_4q": 100.0,
+          "score_final": 5.3,
+          "veredicto": "DESCARTADO — 5.3 < 7.5. Ademas incumple min_analistas_para_asimetria=12 (solo 6) y liquidez marginal (cap $244M, vol medio 218k). Asimetria sobre EPS negativo = menos fiable."
+        }
+      ],
+      "descartes_por_filtro": {
+        "diff_usd_<_0.07": [
+          "NAVN",
+          "AVAV",
+          "AEO",
+          "SAIL",
+          "CAL",
+          "JILL",
+          "BRZE",
+          "TTAN",
+          "MCFT",
+          "COO",
+          "VNCE",
+          "CHWY",
+          "ORCL",
+          "CPRT"
+        ],
+        "asimetria_negativa": [
+          "ADBE",
+          "ASO",
+          "CNM",
+          "UNFI",
+          "FLWS",
+          "SHOE",
+          "DBI",
+          "INNV",
+          "ZUMZ",
+          "RH",
+          "ODD",
+          "LSAK"
+        ],
+        "sin_whisper": [
+          "CAN",
+          "GMHS",
+          "WDH",
+          "AVO",
+          "GME",
+          "MIND",
+          "YQ",
+          "NNOX",
+          "JMKE",
+          "CGNT",
+          "OCC",
+          "SUNB",
+          "DXLG",
+          "PPIH",
+          "LAKE",
+          "WLTH",
+          "CULP",
+          "GLOO",
+          "RSSS",
+          "KEQU",
+          "IMPP",
+          "TEN",
+          "YB",
+          "AENT",
+          "LPTH",
+          "REF",
+          "CSBR",
+          "FEIM",
+          "IBEX"
+        ],
+        "iliquido_no_operable": [
+          "SKIL"
+        ],
+        "posicion_ya_abierta": [
+          "KFY"
+        ],
+        "earnings_hoy_o_mercado_cerrado": [
+          "ABM",
+          "CASY"
+        ]
+      },
+      "notas": [
+        "filtro_beat_and_fade NO aplicado: VIX 15.19 <16 cumple regimen, pero M/SIG/LOVE son retail y rige la prohibicion_extension_analogica (2026-08-19).",
+        "penalizacion_score_largecap_earnings (-1.5) verificada disponible; ningun candidato finalista supera $10B (accion pendiente del 08-sep resuelta).",
+        "0 ordenes enviadas. Ninguna orden real ejecutada por el asistente en ningun caso."
+      ]
     }
   ],
   "acciones_pendientes_manana": [
@@ -16350,6 +16552,18 @@
       "accion": "aplicar_penalizacion_largecap",
       "prioridad": "ALTA",
       "detalle": "Nuevo parametro penalizacion_score_largecap_earnings=-1.5 para tickers >=$10B. Verificar que el scan lo aplica."
+    },
+    {
+      "fecha": "2026-09-08",
+      "accion": "cerrar_KFY_antes_del_cierre",
+      "prioridad": "CRITICA",
+      "detalle": "KFY (88 sh, entrada 85.37, stop_limit 82.74 activo) reporta earnings BMO el 2026-09-09. Regla no_holdings_earnings_overnight: cerrar antes de las 15:45 ET del 8-sep. Score de entrada 5.8 no cumple la excepcion (>=9.0). El stop_limit NO protege contra gap post-earnings."
+    },
+    {
+      "fecha": "2026-09-09",
+      "accion": "reevaluar_M_para_entrada",
+      "prioridad": "MEDIA",
+      "detalle": "Macy's reporta BMO el 10-sep. Score hoy 6.8. Reevaluar el 9-sep con flujo de opciones actualizado: si el ratio call/(call+put) sube por encima de 0.55 el BLOQUE H pasa de -1.0 a 0/+0.5 y el score alcanzaria 7.8-8.3."
     }
   ],
   "auditoria_tareas": [
@@ -17062,20 +17276,7 @@
       ]
     }
   ],
-  "_last_ew_daily_run": {
-    "fecha": "2026-08-28",
-    "ts": "2026-08-28T21:41:48.770099+00:00",
-    "resumen": "EW Daily 2026-08-28 (viernes). Email epsguidance del 27-ago NO EMITIDO (ultimo disponible: 26-ago/NVDA, ya procesado). Viernes 28-ago sin earnings relevantes (calendario ligero, 9 reportes menores; CIEN aun no ha reportado). Recuperados 3 rezagados del 27-ago AH omitidos en la run anterior: GAP, S, BBW. Sin continuation plays: todas las ventanas de entrada (28-ago open) ya cerraron. 4 lecciones generadas; tema dominante de la semana: la GUIA manda sobre el beat.",
-    "continuation_generados": [],
-    "vetos": [
-      "GAP: reporto 27-ago AH, ventana de entrada (28-ago open) ya cerrada -> no continuation",
-      "S: sell-the-news (AH -3.0%, recorte de guia) + ventana cerrada -> no continuation",
-      "BBW: ingresos -7.2% YoY + recorte de guia + ventana cerrada -> no continuation"
-    ],
-    "actualizados": [],
-    "resultados_n": 3,
-    "fuente_principal": "websearch + gmail newsletters (Gmail EW epsguidance no emitido para 27/28-ago)"
-  },
+  "_last_ew_daily_run": "2026-09-07T14:28:48Z",
   "guidance_eventos": [
     {
       "ticker": "BZAI",
@@ -18030,48 +18231,84 @@
       "accion_requerida": "Sustituir get_ew_headless por caldata API + fuente alternativa de whisper, o aprobar el dominio en el navegador para render JS."
     }
   ],
-  "ultima_actualizacion": "2026-09-05T07:12",
+  "ultima_actualizacion": "2026-09-07T14:28:48Z",
   "ew_calendario_proximo": {
-    "ts_actualizado": "2026-09-07T09:17:11.439496+00:00",
+    "ts_actualizado": "2026-09-07T14:28:48Z",
     "fuente": "earningswhispers /api/caldata",
     "2026-09-08": [
-      "CASY(AMC)",
       "ABM(BMO)",
+      "UNFI(BMO)",
+      "CAN(BMO)",
+      "GMHS(BMO)",
+      "WDH(BMO)",
+      "CASY(AMC)",
       "BRZE(AMC)",
       "TTAN(AMC)",
-      "UNFI(BMO)",
+      "AVO(AMC)",
+      "INNV(AMC)",
       "GME(AMC)",
-      "CAN(BMO)",
-      "AVO(AMC)"
+      "MIND(AMC)",
+      "YQ(AMC)"
     ],
     "2026-09-09": [
       "CHWY(BMO)",
+      "CAL(BMO)",
+      "SAIL(BMO)",
+      "SIG(BMO)",
+      "NNOX(BMO)",
+      "ASO(BMO)",
+      "CNM(BMO)",
+      "JMKE(BMO)",
+      "CGNT(BMO)",
+      "JILL(BMO)",
+      "KFY(BMO)",
+      "OCC(BMO)",
+      "ODD(BMO)",
+      "SUNB(BMO)",
+      "DXLG(BMO)",
+      "PPIH(BMO)",
       "AVAV(AMC)",
       "AEO(AMC)",
-      "SIG(BMO)",
-      "ASO(BMO)",
+      "NAVN(AMC)",
       "COO(AMC)",
-      "KFY(BMO)",
-      "CNM(BMO)",
-      "SAIL(BMO)",
-      "CAL(BMO)",
-      "ODD(BMO)"
+      "LAKE(AMC)",
+      "WLTH(AMC)",
+      "LSAK(AMC)",
+      "CULP(AMC)",
+      "GLOO(AMC)",
+      "LMNR(AMC)",
+      "RSSS(AMC)",
+      "SKIL(AMC)",
+      "KEQU(AMC)"
     ],
     "2026-09-10": [
+      "FLWS(BMO)",
+      "M(BMO)",
+      "MCFT(BMO)",
+      "SHOE(BMO)",
+      "DBI(BMO)",
+      "VNCE(BMO)",
+      "IMPP(BMO)",
+      "TEN(BMO)",
+      "YB(BMO)",
+      "LOVE(BMO)",
       "ORCL(AMC)",
       "ADBE(AMC)",
-      "M(BMO)",
       "RH(AMC)",
       "CPRT(AMC)",
       "DSGX(AMC)",
-      "DBI(BMO)"
-    ],
-    "2026-09-11": [
-      "KR(BMO)"
+      "AENT(AMC)",
+      "LPTH(AMC)",
+      "REF(AMC)",
+      "ZUMZ(AMC)",
+      "CSBR(AMC)",
+      "FEIM(AMC)",
+      "IBEX(AMC)"
     ],
     "eventos_macro": [
+      "2026-09-07 Labor Day — mercado CERRADO",
       "2026-09-09 Apple product event",
-      "2026-09-10 PPI agosto + ORCL earnings",
+      "2026-09-10 PPI agosto + ORCL/ADBE earnings",
       "2026-09-11 CPI agosto"
     ]
   },
