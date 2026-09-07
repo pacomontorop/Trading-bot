@@ -1253,7 +1253,9 @@
       "real_max_entry": 87.5,
       "created_at": "2026-09-07T11:32:26.243043+00:00",
       "earnings_confirmado": "2026-09-09 BMO (fuente EW caldata, confirmado 1 analista)",
-      "alerta_sentinel_20260907": "Earnings KFY = miercoles 9-sep PRE-MARKET. Regla del sistema: cerrar posicion el martes 8-sep antes del cierre (gap overnight). El plan de anadir 6sh REALES el martes contradice esa regla — entraria un dia antes del gap."
+      "alerta_sentinel_20260907": "Earnings KFY = miercoles 9-sep PRE-MARKET. Regla del sistema: cerrar posicion el martes 8-sep antes del cierre (gap overnight). El plan de anadir 6sh REALES el martes contradice esa regla — entraria un dia antes del gap.",
+      "earnings_confirmado_caldata": "2026-09-09 BMO (est EPS 1.35) — verificado 09-07 via /api/caldata",
+      "riesgo_overnight": "Reportar BMO miercoles 09-09 => posicion paper 88sh DEBE cerrarse martes 09-08 antes del close (regla earnings pre-market manana). Stop activo 82.74."
     },
     {
       "symbol": "MDB",
@@ -1374,11 +1376,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-07T09:17",
-      "nivel": "alerta",
+      "timestamp": "2026-09-07T11:19",
+      "nivel": "normal_sesgo_negativo",
       "shocks": [],
       "bloquear_entradas": false,
-      "motivo": "Mercado cerrado (Labor Day). Regimen hawkish + oil geopolitico + CPI viernes."
+      "mercado": "cerrado_festivo",
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1399,7 +1403,34 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-07T09:17:11.439496+00:00"
+    "ts_actualizado": "2026-09-07T11:19",
+    "macro_score": -0.7,
+    "macro_bonus_ew": -0.21,
+    "macro_nivel": "normal_sesgo_negativo",
+    "contexto_resumen": [
+      "VIX 15.25 (+4.96%) — sin estres, nivel absoluto bajo",
+      "WTI $91.48, +9.7% semanal — war premium US-Iran, strikes reanudados. Riesgo inflacionario",
+      "XLE -0.87% viernes pese a crudo +9.7% semanal — equities de energia NO han descontado la prima de guerra",
+      "Yield 10Y 4.78% — alto, presion sobre valuaciones growth (-0.3)",
+      "Oro $4,476 (+1.06%) — bid de refugio moderado",
+      "Tech liderando: QQQ +0.18% vs SPY -0.39%; SOXL +9.87% viernes por DELL Q2 (+41% EPS beat)",
+      "Asia positiva (N225 +1.26%), Europa plana (DAX -0.25%)"
+    ],
+    "catalizadores_semana": [
+      "PPI jueves 2026-09-10",
+      "CPI viernes 2026-09-11",
+      "FOMC 2026-09-15/16 (quiet period activo desde 09-05)",
+      "Cleveland Fed nowcast: CPI headline 3.38% YoY / core 2.38% YoY",
+      "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
+    ],
+    "bonos": {
+      "yield_10y": 4.78,
+      "tlt": 82.21
+    },
+    "commodities": {
+      "wti": 91.48,
+      "oro": 4476.6
+    }
   },
   "operaciones_crypto": [
     {
@@ -11997,6 +12028,17 @@
       "cowork_abiertas": 1,
       "vix": 15.19,
       "nota": "EW whisper no disponible (old.earningswhispers.com timeout; www es Blazor/JS). Scan tecnico-fundamental via caldata API + yfinance."
+    },
+    {
+      "ts": "2026-09-07T11:19:48.987899+00:00",
+      "modo": "holiday_standby",
+      "mercado": "CERRADO Labor Day 2026-09-07",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "vix": 15.25,
+      "nota": "Festivo no contemplado por guard IS_WEEKEND/IS_PREOPEN del skill. Ejecutado scan informativo read-only, sin ordenes."
     }
   ],
   "momentum_15m": {
@@ -18229,88 +18271,350 @@
       "workaround": "Endpoint JSON funcional descubierto: https://www.earningswhispers.com/api/caldata/YYYYMMDD -> devuelve ticker, company, releaseTime (1=BMO,3=AMC), q1EstEPS, q1RevEst, total(confirmaciones). NO incluye whisper number.",
       "impacto": "Sin whisper -> no se puede calcular asimetria EW -> el score EW del sentinel es inoperativo. Los scores actuales son tecnicos, no EW.",
       "accion_requerida": "Sustituir get_ew_headless por caldata API + fuente alternativa de whisper, o aprobar el dominio en el navegador para render JS."
+    },
+    {
+      "fecha": "2026-09-07",
+      "severidad": "CRITICA",
+      "componente": "get_ew_headless / EW scraper",
+      "descripcion": "earningswhispers.com migrado a render client-side (Blazor). URLs /stocks/{tk}, /epsdetails/{tk}, /company/{tk} devuelven pagina de error (\"Doh! ... resource could not be found\"). IDs whisperbox/epsconsensus/earningsdate/tweeturl ya NO existen en el HTML. Scan 60 tickers -> parsed_ok=0, hits=0.",
+      "impacto": "sentinel, pre-market scan y ew-daily-results devolveran 0 candidatos silenciosamente. Pipeline EW efectivamente ciego.",
+      "fix_encontrado": "Endpoint JSON operativo: GET https://www.earningswhispers.com/api/caldata/YYYYMMDD (header Referer: https://www.earningswhispers.com/calendar). Devuelve lista con ticker, company, nextEPSDate, releaseTime (1=BMO,2=AMC), q1EstEPS (consensus), q1RevEst, confirmDate, qSales.",
+      "limitacion": "caldata NO incluye el whisper number (de pago) -> no se puede calcular asimetria whisper-vs-consensus con este endpoint. Requiere fuente alternativa para el whisper o re-scoring basado en consensus + beat_rate historico.",
+      "accion_requerida": "Reescribir get_ew_headless() sobre /api/caldata/ en sentinel, pre-market-scan y ew-daily-results ANTES de la apertura del martes 2026-09-08.",
+      "detectado_por": "sentinel-holiday-run"
     }
   ],
-  "ultima_actualizacion": "2026-09-07T14:28:48Z",
+  "ultima_actualizacion": "2026-09-07T15:19:48Z",
   "ew_calendario_proximo": {
-    "ts_actualizado": "2026-09-07T14:28:48Z",
-    "fuente": "earningswhispers /api/caldata",
+    "fuente": "earningswhispers /api/caldata (verificado 2026-09-07)",
+    "ts": "2026-09-07T11:19",
     "2026-09-08": [
-      "ABM(BMO)",
-      "UNFI(BMO)",
-      "CAN(BMO)",
-      "GMHS(BMO)",
-      "WDH(BMO)",
-      "CASY(AMC)",
-      "BRZE(AMC)",
-      "TTAN(AMC)",
-      "AVO(AMC)",
-      "INNV(AMC)",
-      "GME(AMC)",
-      "MIND(AMC)",
-      "YQ(AMC)"
+      {
+        "t": "ABM",
+        "rt": 1,
+        "est": 1.01
+      },
+      {
+        "t": "CAN",
+        "rt": 1,
+        "est": -0.1
+      },
+      {
+        "t": "UNFI",
+        "rt": 1,
+        "est": 0.62
+      },
+      {
+        "t": "GMHS",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "WDH",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "CASY",
+        "rt": 3,
+        "est": 6.6
+      },
+      {
+        "t": "BRZE",
+        "rt": 3,
+        "est": 0.16
+      },
+      {
+        "t": "TTAN",
+        "rt": 3,
+        "est": 0.35
+      },
+      {
+        "t": "AVO",
+        "rt": 3,
+        "est": 0.1
+      },
+      {
+        "t": "INNV",
+        "rt": 3,
+        "est": 0.09
+      },
+      {
+        "t": "GME",
+        "rt": 3,
+        "est": null
+      },
+      {
+        "t": "MIND",
+        "rt": 3,
+        "est": null
+      },
+      {
+        "t": "YQ",
+        "rt": 3,
+        "est": null
+      }
     ],
     "2026-09-09": [
-      "CHWY(BMO)",
-      "CAL(BMO)",
-      "SAIL(BMO)",
-      "SIG(BMO)",
-      "NNOX(BMO)",
-      "ASO(BMO)",
-      "CNM(BMO)",
-      "JMKE(BMO)",
-      "CGNT(BMO)",
-      "JILL(BMO)",
-      "KFY(BMO)",
-      "OCC(BMO)",
-      "ODD(BMO)",
-      "SUNB(BMO)",
-      "DXLG(BMO)",
-      "PPIH(BMO)",
-      "AVAV(AMC)",
-      "AEO(AMC)",
-      "NAVN(AMC)",
-      "COO(AMC)",
-      "LAKE(AMC)",
-      "WLTH(AMC)",
-      "LSAK(AMC)",
-      "CULP(AMC)",
-      "GLOO(AMC)",
-      "LMNR(AMC)",
-      "RSSS(AMC)",
-      "SKIL(AMC)",
-      "KEQU(AMC)"
+      {
+        "t": "CHWY",
+        "rt": 1,
+        "est": 0.36
+      },
+      {
+        "t": "CAL",
+        "rt": 1,
+        "est": 0.37
+      },
+      {
+        "t": "SAIL",
+        "rt": 1,
+        "est": 0.08
+      },
+      {
+        "t": "SIG",
+        "rt": 1,
+        "est": 1.69
+      },
+      {
+        "t": "NNOX",
+        "rt": 1,
+        "est": 999.0
+      },
+      {
+        "t": "ASO",
+        "rt": 1,
+        "est": 2.09
+      },
+      {
+        "t": "CNM",
+        "rt": 1,
+        "est": 0.91
+      },
+      {
+        "t": "JMKE",
+        "rt": 1,
+        "est": 0.23
+      },
+      {
+        "t": "CGNT",
+        "rt": 1,
+        "est": 0.01
+      },
+      {
+        "t": "JILL",
+        "rt": 1,
+        "est": 0.58
+      },
+      {
+        "t": "KFY",
+        "rt": 1,
+        "est": 1.35
+      },
+      {
+        "t": "OCC",
+        "rt": 1,
+        "est": 0.2
+      },
+      {
+        "t": "ODD",
+        "rt": 1,
+        "est": 0.12
+      },
+      {
+        "t": "SUNB",
+        "rt": 1,
+        "est": 0.99
+      },
+      {
+        "t": "DXLG",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "PPIH",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "AVAV",
+        "rt": 3,
+        "est": 0.22
+      },
+      {
+        "t": "AEO",
+        "rt": 3,
+        "est": 0.21
+      },
+      {
+        "t": "NAVN",
+        "rt": 3,
+        "est": 0.04
+      },
+      {
+        "t": "COO",
+        "rt": 3,
+        "est": 1.11
+      },
+      {
+        "t": "LAKE",
+        "rt": 3,
+        "est": -0.02
+      },
+      {
+        "t": "WLTH",
+        "rt": 3,
+        "est": 0.09
+      },
+      {
+        "t": "LSAK",
+        "rt": 3,
+        "est": 0.09
+      },
+      {
+        "t": "CULP",
+        "rt": 3,
+        "est": 0.44
+      },
+      {
+        "t": "GLOO",
+        "rt": 3,
+        "est": -0.11
+      },
+      {
+        "t": "LMNR",
+        "rt": 3,
+        "est": 0.19
+      },
+      {
+        "t": "RSSS",
+        "rt": 3,
+        "est": 0.03
+      },
+      {
+        "t": "SKIL",
+        "rt": 3,
+        "est": 0.83
+      },
+      {
+        "t": "KEQU",
+        "rt": 3,
+        "est": null
+      }
     ],
     "2026-09-10": [
-      "FLWS(BMO)",
-      "M(BMO)",
-      "MCFT(BMO)",
-      "SHOE(BMO)",
-      "DBI(BMO)",
-      "VNCE(BMO)",
-      "IMPP(BMO)",
-      "TEN(BMO)",
-      "YB(BMO)",
-      "LOVE(BMO)",
-      "ORCL(AMC)",
-      "ADBE(AMC)",
-      "RH(AMC)",
-      "CPRT(AMC)",
-      "DSGX(AMC)",
-      "AENT(AMC)",
-      "LPTH(AMC)",
-      "REF(AMC)",
-      "ZUMZ(AMC)",
-      "CSBR(AMC)",
-      "FEIM(AMC)",
-      "IBEX(AMC)"
+      {
+        "t": "FLWS",
+        "rt": 1,
+        "est": -0.72
+      },
+      {
+        "t": "M",
+        "rt": 1,
+        "est": 0.37
+      },
+      {
+        "t": "MCFT",
+        "rt": 1,
+        "est": 0.61
+      },
+      {
+        "t": "SHOE",
+        "rt": 1,
+        "est": 0.32
+      },
+      {
+        "t": "DBI",
+        "rt": 1,
+        "est": 0.25
+      },
+      {
+        "t": "VNCE",
+        "rt": 1,
+        "est": 0.27
+      },
+      {
+        "t": "LOVE",
+        "rt": 1,
+        "est": -0.39
+      },
+      {
+        "t": "IMPP",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "TEN",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "YB",
+        "rt": 1,
+        "est": null
+      },
+      {
+        "t": "ORCL",
+        "rt": 3,
+        "est": 1.75
+      },
+      {
+        "t": "ADBE",
+        "rt": 3,
+        "est": 6.08
+      },
+      {
+        "t": "RH",
+        "rt": 3,
+        "est": 0.42
+      },
+      {
+        "t": "CPRT",
+        "rt": 3,
+        "est": 0.39
+      },
+      {
+        "t": "DSGX",
+        "rt": 3,
+        "est": 0.57
+      },
+      {
+        "t": "AENT",
+        "rt": 3,
+        "est": 0.02
+      },
+      {
+        "t": "LPTH",
+        "rt": 3,
+        "est": -0.02
+      },
+      {
+        "t": "REF",
+        "rt": 3,
+        "est": 0.2
+      },
+      {
+        "t": "ZUMZ",
+        "rt": 3,
+        "est": -0.14
+      },
+      {
+        "t": "CSBR",
+        "rt": 3,
+        "est": null
+      },
+      {
+        "t": "FEIM",
+        "rt": 3,
+        "est": null
+      },
+      {
+        "t": "IBEX",
+        "rt": 3,
+        "est": null
+      }
     ],
-    "eventos_macro": [
-      "2026-09-07 Labor Day — mercado CERRADO",
-      "2026-09-09 Apple product event",
-      "2026-09-10 PPI agosto + ORCL/ADBE earnings",
-      "2026-09-11 CPI agosto"
-    ]
+    "nota": "Martes 09-08 sin large caps del universo. Miercoles 09-09 BMO: KFY (est 1.35) CONFIRMADO, CHWY, SIG, ASO, COO. Jueves 09-10 AMC: ORCL (est 1.75) y ADBE (est 6.08)."
   },
   "sentinel_ultimo_check": {
     "fecha": "2026-09-04",
