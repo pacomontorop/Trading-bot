@@ -1237,7 +1237,8 @@
       "tp_pct": 0.08,
       "sizing_paper_shares": 20,
       "sizing_real_shares": 1,
-      "created_at": "2026-09-07T11:32:26.243043+00:00"
+      "created_at": "2026-09-07T11:32:26.243043+00:00",
+      "alerta_sentinel_20260907": "DELL +14.9% en 5 sesiones y +19.3% sobre MA50 -> INCUMPLE parametro max_5day_momentum_pct=10.0. Entrada en apertura del martes viola el filtro propio del sistema. Revisar antes de ejecutar."
     },
     {
       "symbol": "KFY",
@@ -1250,18 +1251,21 @@
       "stop_paper": 81.72,
       "real_shares_pendientes": 6,
       "real_max_entry": 87.5,
-      "created_at": "2026-09-07T11:32:26.243043+00:00"
+      "created_at": "2026-09-07T11:32:26.243043+00:00",
+      "earnings_confirmado": "2026-09-09 BMO (fuente EW caldata, confirmado 1 analista)",
+      "alerta_sentinel_20260907": "Earnings KFY = miercoles 9-sep PRE-MARKET. Regla del sistema: cerrar posicion el martes 8-sep antes del cierre (gap overnight). El plan de anadir 6sh REALES el martes contradice esa regla — entraria un dia antes del gap."
     },
     {
       "symbol": "MDB",
-      "estado": "vigilar",
+      "estado": "descartado",
       "prioridad": 2,
       "score": 7.8,
       "razon": "MongoDB raised FY27 guidance. Above MA50. Beat rate 72%. Entrar si abre fuerte.",
       "precio_referencia": 368.74,
       "stop_pct": 0.05,
       "tp_pct": 0.09,
-      "created_at": "2026-09-07T11:32:26.243043+00:00"
+      "created_at": "2026-09-07T11:32:26.243043+00:00",
+      "revision_sentinel_20260907": "Nota original (\"Above MA50\") es INCORRECTA: MDB cierra 368.74, -1.3% POR DEBAJO de MA50 (373.45) y -17.4% en 5 sesiones, MA20=425.42 muy por encima. Tendencia bajista fuerte. Descartado."
     },
     {
       "symbol": "SOXL",
@@ -1276,7 +1280,8 @@
       "sizing_paper_shares": 50,
       "sizing_real_shares": 0,
       "paper_notional": 5864,
-      "created_at": "2026-09-07T11:38:08.323412+00:00"
+      "created_at": "2026-09-07T11:38:08.323412+00:00",
+      "alerta_sentinel_20260907": "SOXL cierra 117.28: +9.9% el viernes pero -19.2% POR DEBAJO de MA50 (145.21). ETF 3x con decay. Notional paper 5.864$ (~5.4% equity) en producto apalancado: riesgo real ~16% del notional con stop 8%."
     },
     {
       "symbol": "TQQQ",
@@ -1367,7 +1372,34 @@
     "dias_riesgo_macro": [
       "2026-09-11"
     ],
-    "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana."
+    "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
+    "sentinel_ultimo_check": {
+      "timestamp": "2026-09-07T09:17",
+      "nivel": "alerta",
+      "shocks": [],
+      "bloquear_entradas": false,
+      "motivo": "Mercado cerrado (Labor Day). Regimen hawkish + oil geopolitico + CPI viernes."
+    },
+    "cierre_viernes_20260904": {
+      "VIX": 15.19,
+      "SPY": 770.19,
+      "QQQ": 718.96,
+      "SOXX": 519.86,
+      "SOXX_1d": "+3.52%",
+      "US10Y": 4.78,
+      "TLT": 82.21,
+      "GLD": 406.77,
+      "XLK_1d": "+0.70%",
+      "XLY_1d": "-1.33%",
+      "XLV_1d": "-1.04%"
+    },
+    "riesgos_semana": [
+      "CPI agosto viernes 11-sep",
+      "PPI jueves 10-sep",
+      "Brent >95$ por escalada Hormuz",
+      "Futuros descuentan ~58% prob. SUBIDA de tipos"
+    ],
+    "ts_actualizado": "2026-09-07T09:17:11.439496+00:00"
   },
   "operaciones_crypto": [
     {
@@ -11955,6 +11987,16 @@
       "cowork_abiertas": 0,
       "vix": 14.0,
       "nota": "EW scraper caido; sin earnings ejecutables (Sab + Lunes 7 Labor Day festivo). Proxima sesion 2026-09-08."
+    },
+    {
+      "ts": "2026-09-07T09:17:11.439496+00:00",
+      "modo": "pre-apertura (mercado cerrado — Labor Day)",
+      "alertas": 4,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "vix": 15.19,
+      "nota": "EW whisper no disponible (old.earningswhispers.com timeout; www es Blazor/JS). Scan tecnico-fundamental via caldata API + yfinance."
     }
   ],
   "momentum_15m": {
@@ -12778,102 +12820,6 @@
     }
   },
   "sentinel_signals": [
-    {
-      "ticker": "SAIC",
-      "score": 3.0,
-      "tipo": "earnings_ew",
-      "asimetria": 13.77777777777778,
-      "earnings_fecha": "2026-08-31",
-      "earnings_timing": "pre-market",
-      "razon": "asim=13.77777777777778% beat=4/4 vsMA200=22.3% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "DELL",
-      "score": 0.0,
-      "tipo": "earnings_ew",
-      "asimetria": 1.405622489959827,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "after-hours",
-      "razon": "asim=1.405622489959827% beat=4/4 vsMA200=86.4% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "PANW",
-      "score": 1.5,
-      "tipo": "earnings_ew",
-      "asimetria": 4.081632653061228,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "after-hours",
-      "razon": "asim=4.081632653061228% beat=4/4 vsMA200=61.9% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "CRDO",
-      "score": 3.0,
-      "tipo": "earnings_ew",
-      "asimetria": 12.149532710280363,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "after-hours",
-      "razon": "asim=12.149532710280363% beat=4/4 vsMA200=33.4% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "GTLB",
-      "score": 3.0,
-      "tipo": "earnings_ew",
-      "asimetria": 22.222222222222225,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "after-hours",
-      "razon": "asim=22.222222222222225% beat=4/4 vsMA200=42.4% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "MDB",
-      "score": 1.5,
-      "tipo": "earnings_ew",
-      "asimetria": 3.7267080745341503,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "after-hours",
-      "razon": "asim=3.7267080745341503% beat=4/4 vsMA200=30.9% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "MDT",
-      "score": 2.0,
-      "tipo": "earnings_ew",
-      "asimetria": 1.449275362318842,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "pre-market",
-      "razon": "asim=1.449275362318842% beat=4/4 vsMA200=1.6% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "AVGO",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 4.037267080745338,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=4.037267080745338% beat=4/4 vsMA200=-0.2% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
     {
       "ticker": "SNOW",
       "score": 3.0,
@@ -14071,6 +14017,102 @@
       "ts_detected": "2026-09-04T12:28:22.758180+00:00",
       "ejecutado": false,
       "fuente": "sentinel-ew-api"
+    },
+    {
+      "ticker": "ORCL",
+      "score": 5.9,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "after-hours",
+      "razon": "tecnico: r5=5.26% r20=8.0% vol x1.01 beat_rate=0.75 $vol=3607.4M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "CPRT",
+      "score": 5.9,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "after-hours",
+      "razon": "tecnico: r5=2.21% r20=13.69% vol x0.74 beat_rate=0.75 $vol=335.8M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "AEO",
+      "score": 5.4,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "after-hours",
+      "razon": "tecnico: r5=3.08% r20=-3.23% vol x1.04 beat_rate=0.75 $vol=83.1M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "KFY",
+      "score": 5.4,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "razon": "tecnico: r5=-1.08% r20=1.52% vol x1.3 beat_rate=1.0 $vol=29.1M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "GME",
+      "score": 4.9,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-08",
+      "earnings_timing": "after-hours",
+      "razon": "tecnico: r5=7.22% r20=0.0% vol x1.35 beat_rate=1.0 $vol=118.8M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "M",
+      "score": 4.4,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-10",
+      "earnings_timing": "pre-market",
+      "razon": "tecnico: r5=4.73% r20=-9.25% vol x1.02 beat_rate=1.0 $vol=120.1M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "SIG",
+      "score": 3.6,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "razon": "tecnico: r5=3.14% r20=-11.98% vol x1.12 beat_rate=1.0 $vol=55.3M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "CHWY",
+      "score": 3.3,
+      "tipo": "preview_tecnico_sin_whisper",
+      "asimetria": 0,
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "razon": "tecnico: r5=1.72% r20=0.55% vol x1.17 beat_rate=0.25 $vol=155.0M",
+      "ts_detected": "2026-09-07T09:17:11.439496+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen-20260907"
     }
   ],
   "skip_analysis": {
@@ -17976,56 +18018,61 @@
       "impacto": "Sin señales EW nuevas hasta reparar. Scoring EW inoperativo.",
       "accion_sugerida": "Migrar a fuente alternativa (Nasdaq/Zacks/Benzinga earnings calendar API o render JS) o parsear los endpoints JSON internos de EW.",
       "verificado_en": "2026-09-04 15:2x ET"
+    },
+    {
+      "fecha": "2026-09-07",
+      "ts": "2026-09-07T09:17:11.439496+00:00",
+      "severidad": "alta",
+      "componente": "get_ew_headless / sentinel PASO 3",
+      "descripcion": "old.earningswhispers.com no responde (ReadTimeout) desde el sandbox. www.earningswhispers.com responde 200 pero es Blazor: el whisper NO esta en el HTML estatico, por lo que el parser devuelve 0 hits siempre.",
+      "workaround": "Endpoint JSON funcional descubierto: https://www.earningswhispers.com/api/caldata/YYYYMMDD -> devuelve ticker, company, releaseTime (1=BMO,3=AMC), q1EstEPS, q1RevEst, total(confirmaciones). NO incluye whisper number.",
+      "impacto": "Sin whisper -> no se puede calcular asimetria EW -> el score EW del sentinel es inoperativo. Los scores actuales son tecnicos, no EW.",
+      "accion_requerida": "Sustituir get_ew_headless por caldata API + fuente alternativa de whisper, o aprobar el dominio en el navegador para render JS."
     }
   ],
   "ultima_actualizacion": "2026-09-05T07:12",
   "ew_calendario_proximo": {
-    "generado": "2026-09-04T14:19",
-    "fuente": "yfinance (EW caido)",
-    "nota": "Sin numeros whisper - solo fecha y consenso EPS. NO ejecutar por score EW hasta restaurar la fuente.",
-    "eventos": [
-      {
-        "ticker": "CHWY",
-        "fecha": "2026-09-09",
-        "hora_et": "08:00",
-        "timing": "BMO",
-        "consenso_eps": 0.33
-      },
-      {
-        "ticker": "AVAV",
-        "fecha": "2026-09-09",
-        "hora_et": "16:00",
-        "timing": "AMC",
-        "consenso_eps": 0.3
-      },
-      {
-        "ticker": "ORCL",
-        "fecha": "2026-09-10",
-        "hora_et": "16:00",
-        "timing": "AMC",
-        "consenso_eps": 1.74
-      },
-      {
-        "ticker": "ADBE",
-        "fecha": "2026-09-10",
-        "hora_et": "16:00",
-        "timing": "AMC",
-        "consenso_eps": 6.08
-      },
-      {
-        "ticker": "RH",
-        "fecha": "2026-09-10",
-        "hora_et": "16:00",
-        "timing": "AMC",
-        "consenso_eps": 3.22
-      },
-      {
-        "ticker": "KR",
-        "fecha": "2026-09-11",
-        "hora_et": "08:00",
-        "timing": "BMO",
-        "consenso_eps": 1.0
-      }
+    "ts_actualizado": "2026-09-07T09:17:11.439496+00:00",
+    "fuente": "earningswhispers /api/caldata",
+    "2026-09-08": [
+      "CASY(AMC)",
+      "ABM(BMO)",
+      "BRZE(AMC)",
+      "TTAN(AMC)",
+      "UNFI(BMO)",
+      "GME(AMC)",
+      "CAN(BMO)",
+      "AVO(AMC)"
+    ],
+    "2026-09-09": [
+      "CHWY(BMO)",
+      "AVAV(AMC)",
+      "AEO(AMC)",
+      "SIG(BMO)",
+      "ASO(BMO)",
+      "COO(AMC)",
+      "KFY(BMO)",
+      "CNM(BMO)",
+      "SAIL(BMO)",
+      "CAL(BMO)",
+      "ODD(BMO)"
+    ],
+    "2026-09-10": [
+      "ORCL(AMC)",
+      "ADBE(AMC)",
+      "M(BMO)",
+      "RH(AMC)",
+      "CPRT(AMC)",
+      "DSGX(AMC)",
+      "DBI(BMO)"
+    ],
+    "2026-09-11": [
+      "KR(BMO)"
+    ],
+    "eventos_macro": [
+      "2026-09-09 Apple product event",
+      "2026-09-10 PPI agosto + ORCL earnings",
+      "2026-09-11 CPI agosto"
     ]
   },
   "sentinel_ultimo_check": {
