@@ -1298,6 +1298,38 @@
       "shares_paper": 20,
       "shares_real": 1,
       "created_at": "2026-09-08T11:34:07.073531+00:00"
+    },
+    {
+      "ticker": "SMH",
+      "symbol": "SMH",
+      "estado": "pendiente",
+      "prioridad": 2,
+      "score": 8.3,
+      "score_ajustado": 8.3,
+      "accion_recomendada": "LARGO",
+      "argumento": "SMH semiconductores score 4/5 momentum. DELL beat +41% contagio sector. 5d +1.9%.",
+      "precio_referencia": 567.01,
+      "stop_pct": 0.05,
+      "tp_pct": 0.08,
+      "shares_paper": 13,
+      "shares_real": 0,
+      "created_at": "2026-09-08T11:38:51.837792+00:00"
+    },
+    {
+      "ticker": "NVDA",
+      "symbol": "NVDA",
+      "estado": "pendiente",
+      "prioridad": 2,
+      "score": 8.2,
+      "score_ajustado": 8.2,
+      "accion_recomendada": "LARGO",
+      "argumento": "NVDA -2.5% vs 52wk hi, 5d +4.3%, above MA50. AI leader. DELL semis beat cataliza.",
+      "precio_referencia": 230.36,
+      "stop_pct": 0.05,
+      "tp_pct": 0.09,
+      "shares_paper": 33,
+      "shares_real": 0,
+      "created_at": "2026-09-08T11:38:51.837792+00:00"
     }
   ],
   "macro_context": {
@@ -19037,5 +19069,51 @@
     ],
     "sec_edgar_url": "https://efts.sec.gov/LATEST/search-index",
     "actualizado": "2026-09-07T11:38:08.323412+00:00"
+  },
+  "estrategia_perpetua": {
+    "descripcion": "El sistema piensa siempre 3 horizontes simultáneos",
+    "horizonte_1_hoy": "Ejecutar candidatos pendientes. Gestionar stops. Tomar profits.",
+    "horizonte_2_semana": "Pre-earnings drift 3-7 dias. Sector momentum ETFs. Macro eventos.",
+    "horizonte_3_mes": "Earnings season Q3 (Oct 14+). Rotar sectores. Ajustar parámetros.",
+    "reglas_perpetuas": [
+      "Siempre tener 3-5 candidatos pendiente en el log — nunca vacio",
+      "Sector mas fuerte de la semana → ETF apalancado (SOXL/TQQQ/UPRO)",
+      "Antes de CPI/FOMC → reducir exposicion 50%, aumentar post-evento",
+      "Insider buy (SEC Form4 >$500K) → candidato automatico score +1.5",
+      "Post-earnings beat >5% → buscar sector peers para drift contagio",
+      "Nunca mas de 4 posiciones simultaneas en paper, 2 en real",
+      "Cada domingo → cargar earnings proximas 2 semanas via EW"
+    ],
+    "actualizado": "2026-09-08T11:38:51.837792+00:00"
+  },
+  "macro_calendar": {
+    "eventos": [
+      {
+        "fecha": "2026-09-10",
+        "evento": "CPI agosto",
+        "accion": "reducir_posiciones_dia_antes"
+      },
+      {
+        "fecha": "2026-09-16",
+        "evento": "FOMC inicio",
+        "accion": "no_entrar_nuevas_posiciones"
+      },
+      {
+        "fecha": "2026-09-17",
+        "evento": "Fed decision tipos",
+        "accion": "entrar_post_decision"
+      },
+      {
+        "fecha": "2026-10-02",
+        "evento": "NFP septiembre",
+        "accion": "vigilar_apertura"
+      },
+      {
+        "fecha": "2026-10-14",
+        "evento": "Earnings Q3 start (JPM,GS)",
+        "accion": "cargar_pipeline_EW"
+      }
+    ],
+    "actualizado": "2026-09-08T11:38:51.837792+00:00"
   }
 }
