@@ -1235,7 +1235,7 @@
     {
       "ticker": "DELL",
       "symbol": "DELL",
-      "estado": "pendiente",
+      "estado": "bloqueado_gates",
       "prioridad": 1,
       "score": 9.2,
       "score_ajustado": 9.2,
@@ -1246,12 +1246,24 @@
       "tp_pct": 0.08,
       "shares_paper": 20,
       "shares_real": 1,
-      "created_at": "2026-09-08T11:34:07.073531+00:00"
+      "created_at": "2026-09-08T11:34:07.073531+00:00",
+      "bloqueo_motivo": [
+        "FAIL max_5day_momentum (14.9%>10)"
+      ],
+      "bloqueo_ts": "2026-09-08T09:14 ET",
+      "bloqueo_por": "sentinel-pre-apertura",
+      "datos_verificados": {
+        "px": 524.14,
+        "d5_pct": 14.88,
+        "d20_pct": 15.51,
+        "ma50": 439.23,
+        "atr14": 29.98
+      }
     },
     {
       "ticker": "SOXL",
       "symbol": "SOXL",
-      "estado": "pendiente",
+      "estado": "bloqueado_gates",
       "prioridad": 1,
       "score": 8.8,
       "score_ajustado": 8.8,
@@ -1262,7 +1274,20 @@
       "tp_pct": 0.12,
       "shares_paper": 50,
       "shares_real": 0,
-      "created_at": "2026-09-08T11:34:07.073531+00:00"
+      "created_at": "2026-09-08T11:34:07.073531+00:00",
+      "bloqueo_motivo": [
+        "FAIL ETF_3X apalancado",
+        "FAIL bajo MA50"
+      ],
+      "bloqueo_ts": "2026-09-08T09:14 ET",
+      "bloqueo_por": "sentinel-pre-apertura",
+      "datos_verificados": {
+        "px": 117.28,
+        "d5_pct": 5.34,
+        "d20_pct": -16.38,
+        "ma50": 145.21,
+        "atr14": 11.06
+      }
     },
     {
       "ticker": "KFY",
@@ -1281,12 +1306,20 @@
       "tp_pct": 0.075,
       "shares_paper": 0,
       "shares_real": 6,
-      "created_at": "2026-09-08T11:34:07.073531+00:00"
+      "created_at": "2026-09-08T11:34:07.073531+00:00",
+      "verificado_pre_apertura": {
+        "ts": "2026-09-08T09:14 ET",
+        "px": 85.35,
+        "d5_pct": -1.08,
+        "ma50": 79.89,
+        "atr14": 1.84,
+        "gates": "PASS"
+      }
     },
     {
       "ticker": "MDB",
       "symbol": "MDB",
-      "estado": "pendiente",
+      "estado": "bloqueado_gates",
       "prioridad": 2,
       "score": 7.8,
       "score_ajustado": 7.8,
@@ -1297,12 +1330,24 @@
       "tp_pct": 0.09,
       "shares_paper": 20,
       "shares_real": 1,
-      "created_at": "2026-09-08T11:34:07.073531+00:00"
+      "created_at": "2026-09-08T11:34:07.073531+00:00",
+      "bloqueo_motivo": [
+        "FAIL bajo MA50"
+      ],
+      "bloqueo_ts": "2026-09-08T09:14 ET",
+      "bloqueo_por": "sentinel-pre-apertura",
+      "datos_verificados": {
+        "px": 368.74,
+        "d5_pct": -17.44,
+        "d20_pct": -7.54,
+        "ma50": 373.45,
+        "atr14": 24.09
+      }
     },
     {
       "ticker": "SMH",
       "symbol": "SMH",
-      "estado": "pendiente",
+      "estado": "bloqueado_gates",
       "prioridad": 2,
       "score": 8.3,
       "score_ajustado": 8.3,
@@ -1313,7 +1358,19 @@
       "tp_pct": 0.08,
       "shares_paper": 13,
       "shares_real": 0,
-      "created_at": "2026-09-08T11:38:51.837792+00:00"
+      "created_at": "2026-09-08T11:38:51.837792+00:00",
+      "bloqueo_motivo": [
+        "FAIL bajo MA50"
+      ],
+      "bloqueo_ts": "2026-09-08T09:14 ET",
+      "bloqueo_por": "sentinel-pre-apertura",
+      "datos_verificados": {
+        "px": 567.01,
+        "d5_pct": 2.51,
+        "d20_pct": -2.69,
+        "ma50": 573.97,
+        "atr14": 15.43
+      }
     },
     {
       "ticker": "NVDA",
@@ -1329,7 +1386,15 @@
       "tp_pct": 0.09,
       "shares_paper": 33,
       "shares_real": 0,
-      "created_at": "2026-09-08T11:38:51.837792+00:00"
+      "created_at": "2026-09-08T11:38:51.837792+00:00",
+      "verificado_pre_apertura": {
+        "ts": "2026-09-08T09:14 ET",
+        "px": 230.36,
+        "d5_pct": 5.89,
+        "ma50": 210.57,
+        "atr14": 7.62,
+        "gates": "PASS"
+      }
     }
   ],
   "macro_context": {
@@ -1414,17 +1479,16 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-07T15:19",
+      "timestamp": "2026-09-08T09:14",
       "nivel": "alerta",
-      "mercado": "CERRADO_LABOR_DAY",
       "shocks": [
-        "oil_spike_geopolitico_hormuz",
-        "fed_hawkish_riesgo"
+        "oil_spike_geopolitico",
+        "fed_hawkish_risk"
       ],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 8.0,
-      "nota": "Holiday scan. Sin ejecucion (mercado cerrado). Umbrales elevados sugeridos para reapertura 2026-09-08."
+      "score_min_real_efectivo": 8.5,
+      "nota": "Pre-apertura 09:1x ET: sin ejecucion (mercado cerrado). Umbrales elevados por macro alerta."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1445,17 +1509,17 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-07T15:19",
-    "macro_score": -1.2,
-    "macro_bonus_ew": -0.36,
+    "ts_actualizado": "2026-09-08T09:14 ET",
+    "macro_score": -1.0,
+    "macro_bonus_ew": -0.3,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "US-Iran: ataques a petroleros, trafico Hormuz minimo desde mayo. WTI $91.5 (+10% semana), Brent ~$96-97 cerca de $100.",
-      "Jobs report viernes mas fuerte de lo esperado -> expectativas de subida de tipos Fed. 10Y=4.78%.",
-      "Semana con PPI (jue 10-sep) y CPI (vie 11-sep) -> riesgo evento alto.",
-      "Oro $4476 (+2.96% semana) confirma demanda de refugio.",
-      "Semis fuertes (SMH +2.61% viernes) tras DELL +41% EPS beat.",
-      "VIX 15.3 bajo -> complacencia frente a riesgo geopolitico/inflacion."
+      "Ataques cruzados EEUU-Iran fin de semana -> petroleo al alza (WTI $92.6, +1.2%)",
+      "Aranceles represalia Canada ~$20B entran en vigor hoy",
+      "Mercado descuenta ~60% prob. de SUBIDA de tipos Fed 25pb la proxima semana (hawkish)",
+      "Yield 10Y 4.76% (>4.5) - presion sobre valoraciones growth",
+      "Futuros mixtos: ES -0.2%, YM -0.7%, NQ +0.2% (semis lideran, SOXX +1.7% premkt)",
+      "Nikkei -1.7% overnight; VIX 15.4 (bajo) - sin panico"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -1465,12 +1529,14 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_last": 82.21,
-      "yield_10y": 4.78
+      "us10y": 4.76,
+      "tlt_chg": 0.17
     },
     "commodities": {
-      "wti": 91.48,
-      "oro": 4476.6
+      "wti": 92.59,
+      "wti_chg": 1.21,
+      "oro": 4450.9,
+      "oro_chg": 0.48
     },
     "snapshot_holiday_20260907": {
       "VIX": [
@@ -1516,22 +1582,18 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "semis",
-      "cambio_lider": 2.61,
+      "lider": "tech",
       "tech_chg": 0.7,
+      "debil": "cons_disc",
       "all": {
-        "tech": 0.7,
-        "fin": -0.79,
-        "energy": -0.87,
-        "health": -1.04,
-        "indus": 0.41,
-        "cons_disc": -1.33,
-        "utils": 0.12,
-        "materials": -0.34,
-        "reit": -0.72,
-        "semis": 2.61
-      },
-      "ts": "2026-09-07T15:19"
+        "XLK": 0.7,
+        "XLI": 0.41,
+        "XLU": 0.12,
+        "XLF": -0.79,
+        "XLE": -0.87,
+        "XLV": -1.04,
+        "XLY": -1.33
+      }
     },
     "eventos_recientes": [
       {
@@ -1546,7 +1608,12 @@
         ],
         "fuente": "Bloomberg Morning Briefing Americas 2026-09-07"
       }
-    ]
+    ],
+    "futuros": {
+      "ES": -0.2,
+      "NQ": 0.2,
+      "YM": -0.7
+    }
   },
   "operaciones_crypto": [
     {
@@ -12334,6 +12401,16 @@
       "cowork_abiertas": 1,
       "vix": 15.3,
       "nota": "Labor Day. Sin ejecucion. Posiciones verificadas: 4/4 paper con stop activo. Real solo dust BTC $1."
+    },
+    {
+      "ts": "2026-09-08T09:14:27.491774+00:00",
+      "modo": "pre-apertura",
+      "alertas": 4,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 15.4,
+      "nota": "Gates aplicados; EW inaccesible; sin ejecucion (pre-open)"
     }
   ],
   "momentum_15m": {
@@ -18807,9 +18884,18 @@
       "workaround_aplicado": "yfinance get_earnings_dates() para fechas/timing/EPS estimate + beat_rate y sorpresas 4 trimestres. Sin whisper number.",
       "fix_sugerido": "Renderizar EW con navegador headless, o sustituir la fuente de whisper, o basar el score en beat_rate+sorpresa historica+drift post-earnings via yfinance.",
       "detectado_por": "sentinel"
+    },
+    {
+      "fecha": "2026-09-08",
+      "ts": "09:14 ET",
+      "severidad": "media",
+      "incidencia": "EarningsWhispers (old./www.) inaccesible desde el sandbox de la tarea: connection timeout en warm-up y en las 19 paginas /stocks/*. Calendario via web_fetch devuelve shell JS sin datos.",
+      "impacto": "PASO 3 (scan EW headless) devolvio 0 resultados. Scoring EW no disponible este ciclo.",
+      "workaround": "Validacion de candidatos hecha con yfinance (precio, 5d/20d momentum, MA50, ATR14) + WebSearch para calendario de earnings.",
+      "accion_sugerida": "Anadir fuente alternativa de whisper/consensus (p.ej. API Alpaca/Finnhub/Nasdaq) o cachear el calendario EW desde una tarea que si tenga acceso."
     }
   ],
-  "ultima_actualizacion": "2026-09-07",
+  "ultima_actualizacion": "2026-09-08T09:14 ET (sentinel pre-apertura)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
@@ -18897,11 +18983,11 @@
     ]
   },
   "sentinel_ultimo_check": {
-    "fecha": "2026-09-04",
+    "fecha": "2026-09-08",
     "bloquear_entradas": false,
-    "score_min_paper_efectivo": 5.0,
-    "score_min_real_efectivo": 9.0,
-    "nota": "Safeguards TTL renovado 2026-09-04 hasta 2027-09-03. Real account desbloqueada."
+    "score_min_paper_efectivo": 7.5,
+    "score_min_real_efectivo": 8.5,
+    "nota": "Sentinel pre-apertura 2026-09-08. Hard gates aplicados a CV. EW headless NO disponible (timeout desde sandbox)."
   },
   "regimen_mercado": {
     "tipo": "BULL_POST_EARNINGS",
