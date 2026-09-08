@@ -1292,7 +1292,7 @@
     {
       "ticker": "KFY",
       "symbol": "KFY",
-      "estado": "pendiente",
+      "estado": "bloqueado_gates",
       "prioridad": 1,
       "score": 8.7,
       "score_ajustado": 8.7,
@@ -1314,7 +1314,15 @@
         "ma50": 79.89,
         "atr14": 1.84,
         "gates": "PASS"
-      }
+      },
+      "bloqueo_motivo": [
+        "FAIL earnings BMO 2026-09-09 - entrada hoy implicaria gap overnight sobre earnings (prohibido por regla pre-close)"
+      ],
+      "bloqueo_ts": "2026-09-08T13:20 ET",
+      "bloqueo_por": "sentinel-13:10ET",
+      "earnings_fecha": "2026-09-09",
+      "earnings_timing": "pre-market",
+      "notas_sentinel": "Verificado via IR Korn Ferry: Q1 FY27 se publica antes de apertura 2026-09-09. Precio ahora $81.98 (ref pre-apertura 85.31, -3.9%). NO se ejecuta paper ni real. Reevaluar 2026-09-09 como post_earnings_continuation si bate."
     },
     {
       "ticker": "MDB",
@@ -1394,7 +1402,8 @@
         "ma50": 210.57,
         "atr14": 7.62,
         "gates": "PASS"
-      }
+      },
+      "notas_sentinel": "Sentinel 13:20 ET: NO ejecutado. Gates PASS pero timing pobre: px $225.88 (+0.06% 15m), vol x0.11, RSI 43.7, senal=LATERAL, -2.4% en 24h. Reevaluar proximo ciclo si momentum ALCISTA con volumen."
     },
     {
       "ticker": "XOM",
@@ -1515,14 +1524,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-08T10:14",
-      "nivel": "shock",
-      "shocks": [
-        "oil_spike_geopolitico"
-      ],
-      "bloquear_entradas": true,
-      "score_min_paper_efectivo": 8.0,
-      "score_min_real_efectivo": 9.0
+      "timestamp": "2026-09-08T13:20",
+      "nivel": "normal",
+      "shocks": [],
+      "bloquear_entradas": false,
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 7.5,
+      "nota": "score_min_paper del log (5.0) OVERRIDE a 7.5 por sentinel_hard_min_score=7.5 + enforce_min_score_all_sources=True"
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1543,17 +1551,15 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-08T10:14",
-    "macro_score": -1.1,
-    "macro_bonus_ew": -0.33,
-    "macro_nivel": "shock",
+    "ts_actualizado": "2026-09-08T13:20",
+    "macro_score": -0.3,
+    "macro_bonus_ew": -0.09,
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Oil spike geopolitico: WTI $93.3 (+2.0%), Brent ~$97.7, +9% en septiembre",
-      "Iran/EEUU: ataques reciprocos en Golfo Persico, amenaza zona exclusion maritima, ataques a instalaciones saudies",
-      "Futuros bajistas ES -0.38% NQ -0.28% YM -0.97%; SPY -0.51%",
-      "XLE +1.77% lidera; XLV -1.90% y XLY -0.96% rezagados; XLU +1.03% defensivo",
-      "VIX 15.50 (+1.31%) — sin panico; shock es sectorial/geopolitico, no sistemico",
-      "Nikkei -1.70%; yields 10Y 4.78%; expectativa subida tipos Fed septiembre"
+      "Tech liderando vs Dow (+1.2pp) - favorece candidatos tech",
+      "Yield 10Y alto (4.79%) - presion valoraciones growth",
+      "WTI $91.93 (+0.49%) - riesgo inflacion / soporte energia",
+      "Sectores: lider=utilities(+1.06%) debil=healthcare(-2.19%)"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -1563,14 +1569,14 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": 0.06,
-      "yield_10y": 4.78
+      "tlt_chg": 0.01,
+      "yield_10y": 4.79
     },
     "commodities": {
-      "wti": 92.59,
-      "wti_chg": 1.21,
-      "oro": 4450.9,
-      "oro_chg": 0.48
+      "wti": 91.93,
+      "wti_chg": 0.49,
+      "oro_chg": 0.3,
+      "dxy_chg": -0.32
     },
     "snapshot_holiday_20260907": {
       "VIX": [
@@ -1616,10 +1622,21 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "energy",
-      "cambio_lider": 1.77,
-      "tech_chg": -0.06,
-      "ts": "10:14"
+      "lider": "utilities",
+      "cambio_lider": 1.06,
+      "tech_chg": 0.63,
+      "all": {
+        "tech": 0.63,
+        "financials": -1.0,
+        "energy": 0.47,
+        "healthcare": -2.19,
+        "industrials": 0,
+        "consumer_disc": -0.52,
+        "utilities": 1.06,
+        "materials": -0.6,
+        "realestate": 0.51
+      },
+      "ts": "13:20"
     },
     "eventos_recientes": [
       {
@@ -1636,14 +1653,33 @@
       }
     ],
     "futuros": {
-      "ES": -0.38,
-      "NQ": -0.28,
-      "YM": -0.97
+      "ES": -0.31,
+      "NQ": 0.18,
+      "YM": -0.98
     },
     "shock_tipo": "oil_spike",
     "oil": {
       "wti": 93.33,
       "chg": 2.02
+    },
+    "calendario_earnings_inmediato": {
+      "ts": "2026-09-08T13:20",
+      "hoy_AH": [
+        "GME"
+      ],
+      "manana_BMO": [
+        "KFY",
+        "CHWY",
+        "SIG"
+      ],
+      "proximos": {
+        "2026-09-10": [
+          "ORCL",
+          "ADBE",
+          "RH"
+        ]
+      },
+      "fuente": "yfinance calendar (EW no disponible)"
     }
   },
   "operaciones_crypto": [
@@ -12565,6 +12601,16 @@
       "vix": 15.5,
       "macro_nivel": "shock",
       "shock_tipo": "oil_spike"
+    },
+    {
+      "ts": "2026-09-08T13:20:32.852888+00:00",
+      "alertas": 1,
+      "acciones": 2,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 15.3,
+      "macro_score": -0.3,
+      "nota": "EW scraper caido - 0 senales EW; sin ejecuciones"
     }
   ],
   "momentum_15m": {
@@ -12719,14 +12765,14 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "px": 228.6,
-      "m15": -0.43,
-      "m30": -0.51,
-      "vr": 0.16,
-      "vwap": -0.77,
-      "rsi": 43.5,
-      "sig": "debil_bajista",
-      "ts": "10:14"
+      "precio": 225.88,
+      "mom_15m": 0.06,
+      "mom_30m": 0.024,
+      "vol_ratio": 0.11,
+      "vwap_dev": -0.104,
+      "rsi": 43.7,
+      "señal": "LATERAL",
+      "ts": "13:20"
     },
     "HPQ": {
       "precio": 30.0,
@@ -12819,14 +12865,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "px": 517.83,
-      "m15": -0.22,
-      "m30": -0.16,
-      "vr": 0.1,
-      "vwap": -0.62,
-      "rsi": 50.7,
-      "sig": "debil_bajista",
-      "ts": "10:14"
+      "precio": 528.4,
+      "mom_15m": 0.455,
+      "mom_30m": 0.11,
+      "vol_ratio": 0.09,
+      "vwap_dev": -0.015,
+      "rsi": 49.6,
+      "señal": "debil_alcista",
+      "ts": "13:20"
     },
     "LULU": {
       "px": 119.42,
@@ -12947,14 +12993,14 @@
       "ts": "15:25"
     },
     "MDB": {
-      "px": 359.49,
-      "m15": -0.67,
-      "m30": 0.93,
-      "vr": 0.09,
-      "vwap": -1.77,
-      "rsi": 28.9,
-      "sig": "debil_bajista",
-      "ts": "10:14"
+      "precio": 362.15,
+      "mom_15m": 0.082,
+      "mom_30m": 0.119,
+      "vol_ratio": 0.09,
+      "vwap_dev": 0.748,
+      "rsi": 66.9,
+      "señal": "LATERAL",
+      "ts": "13:20"
     },
     "SAIC": {
       "precio": 132.25,
@@ -13386,34 +13432,54 @@
       "ts": "15:24"
     },
     "SOXL": {
-      "px": 122.28,
-      "m15": -0.59,
-      "m30": 0.44,
-      "vr": 0.11,
-      "vwap": 0.62,
-      "rsi": 68.9,
-      "sig": "debil_bajista",
-      "ts": "10:14"
+      "precio": 125.55,
+      "mom_15m": 0.892,
+      "mom_30m": 0.924,
+      "vol_ratio": 0.11,
+      "vwap_dev": -0.272,
+      "rsi": 39.7,
+      "señal": "debil_alcista",
+      "ts": "13:20"
     },
     "KFY": {
-      "px": 83.31,
-      "m15": 0.71,
-      "m30": 0.42,
-      "vr": 0.0,
-      "vwap": -1.9,
-      "rsi": 31.1,
-      "sig": "debil_alcista",
-      "ts": "10:14"
+      "precio": 81.98,
+      "mom_15m": 0.159,
+      "mom_30m": -0.012,
+      "vol_ratio": 0.67,
+      "vwap_dev": -0.062,
+      "rsi": 38.6,
+      "señal": "debil_alcista",
+      "ts": "13:20"
     },
     "SMH": {
-      "px": 572.73,
-      "m15": -0.2,
-      "m30": -0.03,
-      "vr": 0.08,
-      "vwap": 0.42,
-      "rsi": 66.8,
-      "sig": "debil_bajista",
-      "ts": "10:14"
+      "precio": 576.09,
+      "mom_15m": 0.257,
+      "mom_30m": 0.266,
+      "vol_ratio": 0.17,
+      "vwap_dev": -0.099,
+      "rsi": 40.5,
+      "señal": "debil_alcista",
+      "ts": "13:20"
+    },
+    "CVX": {
+      "precio": 209.36,
+      "mom_15m": -0.34,
+      "mom_30m": -0.257,
+      "vol_ratio": 0.21,
+      "vwap_dev": -0.505,
+      "rsi": 25.6,
+      "señal": "debil_bajista",
+      "ts": "13:20"
+    },
+    "XOM": {
+      "precio": 158.85,
+      "mom_15m": -0.257,
+      "mom_30m": -0.16,
+      "vol_ratio": 0.14,
+      "vwap_dev": -0.32,
+      "rsi": 33.5,
+      "señal": "debil_bajista",
+      "ts": "13:20"
     }
   },
   "sentinel_signals": [
@@ -19256,9 +19322,20 @@
       "incidencia": "EarningsWhispers (old./www.) ReadTimeout desde sandbox — PASO 3 scan EW no ejecutado este ciclo",
       "impacto": "bajo — entradas EW bloqueadas por shock macro de todos modos",
       "fuente": "sentinel"
+    },
+    {
+      "ts": "2026-09-08T13:20 ET",
+      "fecha": "2026-09-08",
+      "severidad": "CRITICA",
+      "componente": "EarningsWhispers headless scraper (PASO 3 sentinel / ew-daily-results / pre-market scan)",
+      "sintoma": "old.earningswhispers.com y www.earningswhispers.com devuelven HTTP 200 pero el HTML ya NO contiene los ids/clases usados por el parser: 'whisperbox', 'epsconsensus', 'earningsdate' ni la variable JS 'tweeturl'. Resultado: whisper=None para el 100% de tickers probados (GME, KFY, CHWY, SIG, ORCL, ADBE, RH + universo de 15). Ademas latencia muy alta (>60s/ticker) y ReadTimeouts intermitentes.",
+      "impacto": "Pipeline EW sin senal: 0 candidatos EW generados este ciclo. Afecta a sentinel PASO 3, pre-market scan y ew-daily-results de esta noche. Los earnings de KFY/CHWY/SIG (2026-09-09 BMO) y GME (hoy AH) no tienen whisper ni asimetria.",
+      "workaround_aplicado": "Calendario de earnings obtenido via yfinance .calendar sobre universo de 60 tickers (funciona). Scoring EW no reconstruible sin whisper.",
+      "fix_sugerido": "Reescribir get_ew_headless: la pagina ahora es client-rendered/gated (carga Google Sign-In). Opciones: (a) endpoint JSON interno de EW, (b) navegador headless con JS, (c) sustituir whisper por consenso de otro proveedor y recalibrar el bloque de asimetria del score.",
+      "detectado_por": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-08T10:35 ET (pre-market-earnings-scan)",
+  "ultima_actualizacion": "2026-09-08T13:20 ET",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
