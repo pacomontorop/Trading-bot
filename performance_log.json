@@ -1395,6 +1395,42 @@
         "atr14": 7.62,
         "gates": "PASS"
       }
+    },
+    {
+      "ticker": "XOM",
+      "estado": "abierta",
+      "tipo": "macro_oil_spike",
+      "side": "buy",
+      "qty_paper": 6,
+      "precio_entrada": 161.59,
+      "stop_propuesto": 156.74,
+      "tp_propuesto": 169.67,
+      "score": 8.5,
+      "razon": "Major integrado petroleo — beneficiario directo de oil spike geopolitico Golfo",
+      "cid_paper": "COWORK-MACRO-OIL_SP-B-202609081412-XOM",
+      "ts_entrada": "2026-09-08T14:14:58.655548+00:00",
+      "fuente": "sentinel_macro_oil_spike",
+      "cuenta": "paper",
+      "expira": null,
+      "notas": "Bracket verificado: stop_limit leg held + TP leg new. Sizing 1% equity (macro play conservador)."
+    },
+    {
+      "ticker": "CVX",
+      "estado": "abierta",
+      "tipo": "macro_oil_spike",
+      "side": "buy",
+      "qty_paper": 5,
+      "precio_entrada": 212.98,
+      "stop_propuesto": 206.59,
+      "tp_propuesto": 223.63,
+      "score": 8.0,
+      "razon": "Major integrado petroleo — beneficiario directo de oil spike geopolitico Golfo",
+      "cid_paper": "COWORK-MACRO-OIL_SP-B-202609081412-CVX",
+      "ts_entrada": "2026-09-08T14:14:58.655550+00:00",
+      "fuente": "sentinel_macro_oil_spike",
+      "cuenta": "paper",
+      "expira": null,
+      "notas": "Bracket verificado: stop_limit leg held + TP leg new. Sizing 1% equity (macro play conservador)."
     }
   ],
   "macro_context": {
@@ -1479,16 +1515,14 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-08T09:14",
-      "nivel": "alerta",
+      "timestamp": "2026-09-08T10:14",
+      "nivel": "shock",
       "shocks": [
-        "oil_spike_geopolitico",
-        "fed_hawkish_risk"
+        "oil_spike_geopolitico"
       ],
-      "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 8.5,
-      "nota": "Pre-apertura 09:1x ET: sin ejecucion (mercado cerrado). Umbrales elevados por macro alerta."
+      "bloquear_entradas": true,
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1509,17 +1543,17 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-08T09:14 ET",
-    "macro_score": -1.0,
-    "macro_bonus_ew": -0.3,
-    "macro_nivel": "alerta",
+    "ts_actualizado": "2026-09-08T10:14",
+    "macro_score": -1.1,
+    "macro_bonus_ew": -0.33,
+    "macro_nivel": "shock",
     "contexto_resumen": [
-      "Ataques cruzados EEUU-Iran fin de semana -> petroleo al alza (WTI $92.6, +1.2%)",
-      "Aranceles represalia Canada ~$20B entran en vigor hoy",
-      "Mercado descuenta ~60% prob. de SUBIDA de tipos Fed 25pb la proxima semana (hawkish)",
-      "Yield 10Y 4.76% (>4.5) - presion sobre valoraciones growth",
-      "Futuros mixtos: ES -0.2%, YM -0.7%, NQ +0.2% (semis lideran, SOXX +1.7% premkt)",
-      "Nikkei -1.7% overnight; VIX 15.4 (bajo) - sin panico"
+      "Oil spike geopolitico: WTI $93.3 (+2.0%), Brent ~$97.7, +9% en septiembre",
+      "Iran/EEUU: ataques reciprocos en Golfo Persico, amenaza zona exclusion maritima, ataques a instalaciones saudies",
+      "Futuros bajistas ES -0.38% NQ -0.28% YM -0.97%; SPY -0.51%",
+      "XLE +1.77% lidera; XLV -1.90% y XLY -0.96% rezagados; XLU +1.03% defensivo",
+      "VIX 15.50 (+1.31%) — sin panico; shock es sectorial/geopolitico, no sistemico",
+      "Nikkei -1.70%; yields 10Y 4.78%; expectativa subida tipos Fed septiembre"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -1529,8 +1563,8 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "us10y": 4.76,
-      "tlt_chg": 0.17
+      "tlt_chg": 0.06,
+      "yield_10y": 4.78
     },
     "commodities": {
       "wti": 92.59,
@@ -1582,18 +1616,10 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "tech",
-      "tech_chg": 0.7,
-      "debil": "cons_disc",
-      "all": {
-        "XLK": 0.7,
-        "XLI": 0.41,
-        "XLU": 0.12,
-        "XLF": -0.79,
-        "XLE": -0.87,
-        "XLV": -1.04,
-        "XLY": -1.33
-      }
+      "lider": "energy",
+      "cambio_lider": 1.77,
+      "tech_chg": -0.06,
+      "ts": "10:14"
     },
     "eventos_recientes": [
       {
@@ -1610,9 +1636,14 @@
       }
     ],
     "futuros": {
-      "ES": -0.2,
-      "NQ": 0.2,
-      "YM": -0.7
+      "ES": -0.38,
+      "NQ": -0.28,
+      "YM": -0.97
+    },
+    "shock_tipo": "oil_spike",
+    "oil": {
+      "wti": 93.33,
+      "chg": 2.02
     }
   },
   "operaciones_crypto": [
@@ -7552,6 +7583,14 @@
         "TQQQ (3x NASDAQ): gatillo >$73; cerro $72.37. Apalancado 3x en semana de doble dato de inflacion.",
         "Contexto: jobs report fuerte -> riesgo Fed hawkish; CPI viernes 11-sep. Combinar 3x ETFs con riesgo evento es el escenario de mayor drawdown."
       ]
+    },
+    {
+      "fecha": "2026-09-08",
+      "hora": "10:14",
+      "nivel": "shock",
+      "tipo": "oil_spike",
+      "mensaje": "Escalada Golfo Persico: WTI $93.3 (+2%), Brent ~$97.7. Iran amenaza zona exclusion maritima; ataques a instalaciones saudies. Entradas EW bloqueadas; ejecutados macro plays long energia (XOM, CVX) en paper.",
+      "accion": "Vigilar exposicion a aerolineas/consumo; energia y defensa favorecidas mientras dure la prima geopolitica."
     }
   ],
   "mejoras_sistema": [
@@ -12411,6 +12450,16 @@
       "cowork_abiertas": 0,
       "vix": 15.4,
       "nota": "Gates aplicados; EW inaccesible; sin ejecucion (pre-open)"
+    },
+    {
+      "ts": "2026-09-08T10:14:58.655508+00:00",
+      "alertas": 1,
+      "acciones": 2,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 15.5,
+      "macro_nivel": "shock",
+      "shock_tipo": "oil_spike"
     }
   ],
   "momentum_15m": {
@@ -12565,13 +12614,14 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 233.89,
-      "mom_15m": 0.01,
-      "mom_30m": -0.09,
-      "vwap_dev": 0.66,
-      "rsi": 73.8,
-      "señal": "LATERAL",
-      "ts": "10:17"
+      "px": 228.6,
+      "m15": -0.43,
+      "m30": -0.51,
+      "vr": 0.16,
+      "vwap": -0.77,
+      "rsi": 43.5,
+      "sig": "debil_bajista",
+      "ts": "10:14"
     },
     "HPQ": {
       "precio": 30.0,
@@ -12664,14 +12714,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 459.46,
-      "mom_15m": -0.239,
-      "mom_30m": -0.067,
-      "vol_ratio": 0.22,
-      "vwap_dev": -0.49,
-      "rsi": 38.5,
-      "senal": "debil_bajista",
-      "ts": "13:16"
+      "px": 517.83,
+      "m15": -0.22,
+      "m30": -0.16,
+      "vr": 0.1,
+      "vwap": -0.62,
+      "rsi": 50.7,
+      "sig": "debil_bajista",
+      "ts": "10:14"
     },
     "LULU": {
       "px": 119.42,
@@ -12792,16 +12842,14 @@
       "ts": "15:25"
     },
     "MDB": {
-      "precio": 438.22,
-      "mom_15m": 0.08,
-      "mom_30m": -0.57,
-      "vol_ratio": 0.09,
-      "vwap_dev": -0.26,
-      "rsi": 43.2,
-      "mom_5d": 8.3,
-      "chg_hoy": -3.27,
-      "senal": "LATERAL",
-      "ts": "11:19"
+      "px": 359.49,
+      "m15": -0.67,
+      "m30": 0.93,
+      "vr": 0.09,
+      "vwap": -1.77,
+      "rsi": 28.9,
+      "sig": "debil_bajista",
+      "ts": "10:14"
     },
     "SAIC": {
       "precio": 132.25,
@@ -13231,6 +13279,36 @@
       "rsi": 63.3,
       "señal": "debil_bajista",
       "ts": "15:24"
+    },
+    "SOXL": {
+      "px": 122.28,
+      "m15": -0.59,
+      "m30": 0.44,
+      "vr": 0.11,
+      "vwap": 0.62,
+      "rsi": 68.9,
+      "sig": "debil_bajista",
+      "ts": "10:14"
+    },
+    "KFY": {
+      "px": 83.31,
+      "m15": 0.71,
+      "m30": 0.42,
+      "vr": 0.0,
+      "vwap": -1.9,
+      "rsi": 31.1,
+      "sig": "debil_alcista",
+      "ts": "10:14"
+    },
+    "SMH": {
+      "px": 572.73,
+      "m15": -0.2,
+      "m30": -0.03,
+      "vr": 0.08,
+      "vwap": 0.42,
+      "rsi": 66.8,
+      "sig": "debil_bajista",
+      "ts": "10:14"
     }
   },
   "sentinel_signals": [
@@ -18893,9 +18971,16 @@
       "impacto": "PASO 3 (scan EW headless) devolvio 0 resultados. Scoring EW no disponible este ciclo.",
       "workaround": "Validacion de candidatos hecha con yfinance (precio, 5d/20d momentum, MA50, ATR14) + WebSearch para calendario de earnings.",
       "accion_sugerida": "Anadir fuente alternativa de whisper/consensus (p.ej. API Alpaca/Finnhub/Nasdaq) o cachear el calendario EW desde una tarea que si tenga acceso."
+    },
+    {
+      "fecha": "2026-09-08",
+      "hora": "10:14",
+      "incidencia": "EarningsWhispers (old./www.) ReadTimeout desde sandbox — PASO 3 scan EW no ejecutado este ciclo",
+      "impacto": "bajo — entradas EW bloqueadas por shock macro de todos modos",
+      "fuente": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-08T09:14 ET (sentinel pre-apertura)",
+  "ultima_actualizacion": "2026-09-08T10:14 ET (sentinel oil_spike)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
