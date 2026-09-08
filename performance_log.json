@@ -1235,7 +1235,7 @@
     {
       "ticker": "DELL",
       "symbol": "DELL",
-      "estado": "bloqueado_gates",
+      "estado": "no_ejecutado_ventana_expirada",
       "prioridad": 1,
       "score": 9.2,
       "score_ajustado": 9.2,
@@ -1258,12 +1258,14 @@
         "d20_pct": 15.51,
         "ma50": 439.23,
         "atr14": 29.98
-      }
+      },
+      "nota_sentinel_20260908_1415ET": "Plan 7-sep pedia entrada en los 10 primeros min de apertura. A las 14:15 ET DELL $531.55 (+1.41% dia, +1.4% sobre referencia $524.14), RSI 62.9, momentum debil_alcista con vol x0.83. Ventana de entrada agotada; no se persigue. Reevaluar en apertura 9-sep si sigue sobre MA5.",
+      "revisado_por": "sentinel"
     },
     {
       "ticker": "SOXL",
       "symbol": "SOXL",
-      "estado": "bloqueado_gates",
+      "estado": "descartado_extendido",
       "prioridad": 1,
       "score": 8.8,
       "score_ajustado": 8.8,
@@ -1287,12 +1289,14 @@
         "d20_pct": -16.38,
         "ma50": 145.21,
         "atr14": 11.06
-      }
+      },
+      "nota_sentinel_20260908_1415ET": "SOXL +6.80% en el dia a $125.25 vs referencia de plan $117.28. Entrar un ETF 3x semis con +6.8% ya recorrido y a 4.5h del cierre es perseguir. Ademas macro_context W37 baja technology de +2 a 0 y hay FOMC 16-sep con ~60% prob. de subida: un 3x de larga duracion es la exposicion equivocada en repricing hawkish. No ejecutado.",
+      "revisado_por": "sentinel"
     },
     {
       "ticker": "KFY",
       "symbol": "KFY",
-      "estado": "bloqueado_gates",
+      "estado": "descartado_earnings_overnight",
       "prioridad": 1,
       "score": 8.7,
       "score_ajustado": 8.7,
@@ -1322,12 +1326,14 @@
       "bloqueo_por": "sentinel-13:10ET",
       "earnings_fecha": "2026-09-09",
       "earnings_timing": "pre-market",
-      "notas_sentinel": "Verificado via IR Korn Ferry: Q1 FY27 se publica antes de apertura 2026-09-09. Precio ahora $81.98 (ref pre-apertura 85.31, -3.9%). NO se ejecuta paper ni real. Reevaluar 2026-09-09 como post_earnings_continuation si bate."
+      "notas_sentinel": "Verificado via IR Korn Ferry: Q1 FY27 se publica antes de apertura 2026-09-09. Precio ahora $81.98 (ref pre-apertura 85.31, -3.9%). NO se ejecuta paper ni real. Reevaluar 2026-09-09 como post_earnings_continuation si bate.",
+      "nota_sentinel_20260908_1415ET": "KFY $81.85 (-4.10% dia). Cumple el filtro de precio real (<$87.50) pero reporta earnings 8-9 sep: la regla no_holdings_earnings_overnight prohibe abrir posicion que quedaria overnight ante earnings (excepcion solo con score>=9.0). Los 6sh reales pendientes NO se ejecutan. La caida de -4.1% previa al reporte refuerza la prudencia.",
+      "revisado_por": "sentinel"
     },
     {
       "ticker": "MDB",
       "symbol": "MDB",
-      "estado": "bloqueado_gates",
+      "estado": "condicion_no_cumplida",
       "prioridad": 2,
       "score": 7.8,
       "score_ajustado": 7.8,
@@ -1350,7 +1356,9 @@
         "d20_pct": -7.54,
         "ma50": 373.45,
         "atr14": 24.09
-      }
+      },
+      "nota_sentinel_20260908_1415ET": "Plan exigia \"entrar si abre fuerte\". MDB -2.22% en el dia a $360.55, RSI 36.4, bajo VWAP. Abrio debil -> sin entrada.",
+      "revisado_por": "sentinel"
     },
     {
       "ticker": "SMH",
@@ -1524,13 +1532,19 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-08T13:20",
-      "nivel": "normal",
+      "timestamp": "2026-09-08T14:15",
+      "nivel": "alerta",
+      "macro_score": -0.6,
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 7.5,
-      "nota": "score_min_paper del log (5.0) OVERRIDE a 7.5 por sentinel_hard_min_score=7.5 + enforce_min_score_all_sources=True"
+      "score_min_real_efectivo": 9.0,
+      "lectura": "VIX 15.28 (-0.13% 30m), SPY -0.30% dia (+0.07% 30m) => sin shock intradia. Regimen de fondo persistente: Brent $98 / WTI $92.24 por riesgo Hormuz, US10Y 4.79%, aranceles de represalia de Canada en vigor desde hoy, ~60% prob. de SUBIDA de tipos en FOMC 16-sep. XLE +0.99% lidera junto a XLU +1.22%; XLV -1.91% y XLF -0.96% rezagados.",
+      "fuentes": [
+        "Alpaca clock/positions/news",
+        "yfinance 5m+1d",
+        "WebSearch mercado 8-sep-2026"
+      ]
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -12611,6 +12625,17 @@
       "vix": 15.3,
       "macro_score": -0.3,
       "nota": "EW scraper caido - 0 senales EW; sin ejecuciones"
+    },
+    {
+      "ts": "2026-09-08T14:15:10.997015+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 15.28,
+      "macro_nivel": "alerta",
+      "macro_score": -0.6,
+      "nota": "Martes 14:15 ET. CVX(5sh) y XOM(6sh) abiertas por el macro-play oil_spike de las 10:12 ET, ambas con bracket stop vivo (206.59 / 156.74) -> PASO 1 sin intervencion. EarningsWhispers ahora es SPA client-side: /stocks/{tk} y /api/calendar/{d} devuelven shell HTML sin datos -> scan EW headless imposible; el browser pane requiere aprobacion del usuario (ausente en tarea programada). Sin whisper no hay score => enforce_min_score_all_sources bloquea cualquier entrada EW. ORCL y ADBE reportan AH hoy pero no_holdings_earnings_overnight las excluye. Los 5 candidatos del plan del 7-sep quedan sin ejecutar por criterio (ver notas por ticker). Ademas ya estamos en max_posiciones_paper_para_nuevas_entradas=2. Sin trades. Telegram silenciado por politica."
     }
   ],
   "momentum_15m": {
@@ -12865,14 +12890,15 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 528.4,
-      "mom_15m": 0.455,
-      "mom_30m": 0.11,
-      "vol_ratio": 0.09,
-      "vwap_dev": -0.015,
-      "rsi": 49.6,
-      "señal": "debil_alcista",
-      "ts": "13:20"
+      "px": 531.55,
+      "day": 1.41,
+      "m15": 0.4,
+      "m30": -0.11,
+      "vr": 0.83,
+      "vwap_dev": 0.37,
+      "rsi": 62.9,
+      "sig": "debil_alcista",
+      "ts": "14:15"
     },
     "LULU": {
       "px": 119.42,
@@ -12993,14 +13019,15 @@
       "ts": "15:25"
     },
     "MDB": {
-      "precio": 362.15,
-      "mom_15m": 0.082,
-      "mom_30m": 0.119,
-      "vol_ratio": 0.09,
-      "vwap_dev": 0.748,
-      "rsi": 66.9,
-      "señal": "LATERAL",
-      "ts": "13:20"
+      "px": 360.55,
+      "day": -2.22,
+      "m15": 0.12,
+      "m30": -0.28,
+      "vr": 0.87,
+      "vwap_dev": -0.2,
+      "rsi": 36.4,
+      "sig": "LATERAL",
+      "ts": "14:15"
     },
     "SAIC": {
       "precio": 132.25,
@@ -13285,24 +13312,26 @@
       "ts": "15:24"
     },
     "ADBE": {
-      "precio": 267.97,
-      "mom_15m": -0.062,
-      "mom_30m": -0.261,
-      "vol_ratio": 0.34,
-      "vwap_dev": 0.38,
-      "rsi": 72.2,
-      "senal": "LATERAL",
-      "ts": "12:27"
+      "px": 257.85,
+      "day": -3.25,
+      "m15": 0.17,
+      "m30": 0.23,
+      "vr": 0.59,
+      "vwap_dev": 0.13,
+      "rsi": 54.3,
+      "sig": "debil_alcista",
+      "ts": "14:15"
     },
     "ORCL": {
-      "precio": 156.84,
-      "mom_15m": -0.14,
-      "mom_30m": -0.286,
-      "vol_ratio": 0.89,
-      "vwap_dev": -0.335,
-      "rsi": 34.5,
-      "señal": "LATERAL",
-      "ts": "15:24"
+      "px": 162.54,
+      "day": 2.37,
+      "m15": 0.05,
+      "m30": 0.11,
+      "vr": 0.33,
+      "vwap_dev": -0.05,
+      "rsi": 46.7,
+      "sig": "LATERAL",
+      "ts": "14:15"
     },
     "RH": {
       "precio": 148.23,
@@ -13432,24 +13461,26 @@
       "ts": "15:24"
     },
     "SOXL": {
-      "precio": 125.55,
-      "mom_15m": 0.892,
-      "mom_30m": 0.924,
-      "vol_ratio": 0.11,
-      "vwap_dev": -0.272,
-      "rsi": 39.7,
-      "señal": "debil_alcista",
-      "ts": "13:20"
+      "px": 125.25,
+      "day": 6.8,
+      "m15": 0.33,
+      "m30": 0.05,
+      "vr": 0.42,
+      "vwap_dev": 0.02,
+      "rsi": 59.6,
+      "sig": "debil_alcista",
+      "ts": "14:15"
     },
     "KFY": {
-      "precio": 81.98,
-      "mom_15m": 0.159,
-      "mom_30m": -0.012,
-      "vol_ratio": 0.67,
-      "vwap_dev": -0.062,
-      "rsi": 38.6,
-      "señal": "debil_alcista",
-      "ts": "13:20"
+      "px": 81.85,
+      "day": -4.1,
+      "m15": 0.02,
+      "m30": 0.06,
+      "vr": 0.0,
+      "vwap_dev": -0.01,
+      "rsi": 50.0,
+      "sig": "LATERAL",
+      "ts": "14:15"
     },
     "SMH": {
       "precio": 576.09,
@@ -13462,24 +13493,48 @@
       "ts": "13:20"
     },
     "CVX": {
-      "precio": 209.36,
-      "mom_15m": -0.34,
-      "mom_30m": -0.257,
-      "vol_ratio": 0.21,
-      "vwap_dev": -0.505,
-      "rsi": 25.6,
-      "señal": "debil_bajista",
-      "ts": "13:20"
+      "px": 210.35,
+      "day": 0.84,
+      "m15": 0.14,
+      "m30": 0.13,
+      "vr": 0.57,
+      "vwap_dev": 0.25,
+      "rsi": 56.5,
+      "sig": "LATERAL",
+      "ts": "14:15"
     },
     "XOM": {
-      "precio": 158.85,
-      "mom_15m": -0.257,
-      "mom_30m": -0.16,
-      "vol_ratio": 0.14,
-      "vwap_dev": -0.32,
-      "rsi": 33.5,
-      "señal": "debil_bajista",
-      "ts": "13:20"
+      "px": 160.14,
+      "day": 0.42,
+      "m15": 0.18,
+      "m30": 0.24,
+      "vr": 0.47,
+      "vwap_dev": 0.52,
+      "rsi": 74.7,
+      "sig": "debil_alcista",
+      "ts": "14:15"
+    },
+    "TQQQ": {
+      "px": 72.66,
+      "day": 0.39,
+      "m15": 0.16,
+      "m30": 0.06,
+      "vr": 0.45,
+      "vwap_dev": 0.02,
+      "rsi": 59.6,
+      "sig": "debil_alcista",
+      "ts": "14:15"
+    },
+    "XLE": {
+      "px": 64.71,
+      "day": 1.02,
+      "m15": 0.19,
+      "m30": 0.19,
+      "vr": 0.44,
+      "vwap_dev": 0.34,
+      "rsi": 58.7,
+      "sig": "debil_alcista",
+      "ts": "14:15"
     }
   },
   "sentinel_signals": [
