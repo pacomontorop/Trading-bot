@@ -65,8 +65,8 @@
       "razon": "Asegura beneficio sin sacrificar el upside del runner. Mejora profit_factor significativamente.",
       "implementacion": "post-market-review PASO 3 y intraday-monitor PASO 1 verifican R actual de cada posición y ejecutan parcial si procede"
     },
-    "score_threshold_real_account": 7.5,
-    "score_min_real": 7.5,
+    "score_threshold_real_account": 8.5,
+    "score_min_real": 8.5,
     "_nota_threshold": "CUENTA REAL ACTIVA (2026-05-17). score_threshold_real_account=9.0 Y score_min_real=9.0. Activada semana 20 con Render ENABLE_LIVE_TRADING=true.",
     "sizing_alta_conviccion": {
       "score_min": 9.0,
@@ -89,7 +89,7 @@
       "cowork_monitora_bot": "post-market-review revisa posiciones del bot y alerta si hay sin stop o en pérdida > 10%",
       "motivo": "Separar responsabilidades: bot opera con su algoritmo, Cowork opera solo con señales validadas"
     },
-    "score_min_paper": 5.0,
+    "score_min_paper": 8.0,
     "riesgo_por_trade_equity_pct_real": 0.005,
     "atr_multiplier_stop": 2.0,
     "atr_multiplier_tp": 3.0,
@@ -176,7 +176,18 @@
       "cap_puntos": 1.0,
       "motivo": "Leccion AVAV 2026-09-08: asimetria alta sin beat rate no es edge"
     },
-    "stop_detection_metodo": "orders?status=all&nested=true -> recorrer legs[] (status new/held/accepted)"
+    "stop_detection_metodo": "orders?status=all&nested=true -> recorrer legs[] (status new/held/accepted)",
+    "runup_max_pct_high_score": 8.0,
+    "runup_max_pct_low_score": 5.0,
+    "score_runup_override": 8.5,
+    "sizing_mode": "dynamic_equity_pct",
+    "paper_position_pct": 0.07,
+    "real_position_pct": 0.12,
+    "block_on_ew_failure": false,
+    "min_sources_required": 1,
+    "trailing_stop_activate_at_r": 1.0,
+    "breakeven_stop_at_r": 0.5,
+    "actualizado": "2026-09-08T20:51:25.067274+00:00"
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -1303,7 +1314,8 @@
       "tp_pct": 0.07,
       "shares_paper": 18,
       "shares_real": 1,
-      "created_at": "2026-09-08T20:38:53.023138+00:00"
+      "created_at": "2026-09-08T20:38:53.023138+00:00",
+      "runup_tolerance_pct": 8.0
     },
     {
       "ticker": "NVDA",
@@ -1318,7 +1330,8 @@
       "tp_pct": 0.09,
       "shares_paper": 33,
       "shares_real": 0,
-      "created_at": "2026-09-08T20:38:53.023138+00:00"
+      "created_at": "2026-09-08T20:38:53.023138+00:00",
+      "runup_tolerance_pct": 8.0
     },
     {
       "ticker": "SMH",
@@ -1333,7 +1346,8 @@
       "tp_pct": 0.08,
       "shares_paper": 13,
       "shares_real": 0,
-      "created_at": "2026-09-08T20:38:53.023138+00:00"
+      "created_at": "2026-09-08T20:38:53.023138+00:00",
+      "runup_tolerance_pct": 5.0
     }
   ],
   "macro_context": {
@@ -19926,5 +19940,19 @@
       "decision": "Sin cambio de umbrales: muestra por tier < 5 operaciones. Se requiere n>=5 por tier."
     }
   ],
-  "nota_miercoles": "CPI 14:30 CEST — sentinel NO entra antes del dato. Post-CPI si inflacion ok → entrar DELL+NVDA agresivo."
+  "nota_miercoles": "CPI 14:30 CEST — sentinel NO entra antes del dato. Post-CPI si inflacion ok → entrar DELL+NVDA agresivo.",
+  "sistema_config": {
+    "version": "2.1",
+    "fecha": "2026-09-08T20:51:25.067274+00:00",
+    "principios": [
+      "Precios se leen en tiempo real (yfinance) al momento de ejecutar, no del log",
+      "Sizing = equity_actual * position_pct / precio_actual — siempre dinámico",
+      "Run-up > 8% con score >= 8.5 = sizing 50% (no bloquear, reducir)",
+      "Run-up > 10% = descartar siempre (sobreextendido)",
+      "Si EW falla = usar yfinance + SEC EDGAR + sector momentum",
+      "Nunca 0 candidatos — multi-source-intel rellena cada 2h",
+      "Max 4 posiciones paper simultáneas, 2 real",
+      "Stop update automático: breakeven al 0.5R, trailing al 1R"
+    ]
+  }
 }
