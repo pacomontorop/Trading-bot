@@ -1308,46 +1308,58 @@
       "score": 9.2,
       "score_ajustado": 9.2,
       "accion_recomendada": "LARGO",
-      "argumento": "Post-earnings +2.4% hoy. Momentum continua 2-3 dias. FY27 guide +42%.",
-      "precio_referencia": 533.8800048828125,
+      "precio_referencia": 533.88,
       "stop_pct": 0.05,
       "tp_pct": 0.07,
       "shares_paper": 18,
       "shares_real": 1,
-      "created_at": "2026-09-08T20:38:53.023138+00:00",
-      "runup_tolerance_pct": 8.0
+      "runup_tolerance_pct": 8.0,
+      "notas": "Pre-earnings drift + AI demand. Ref activo. Prioridad 1."
     },
     {
       "ticker": "NVDA",
       "symbol": "NVDA",
       "estado": "pendiente",
-      "score": 8.5,
-      "score_ajustado": 8.5,
+      "score": 8.8,
+      "score_ajustado": 8.8,
       "accion_recomendada": "LARGO",
-      "argumento": "NVDA near 52wk hi. AI sector fuerte. Semis beat DELL contagio.",
-      "precio_referencia": 225.72999572753906,
+      "precio_referencia": 225.73,
       "stop_pct": 0.05,
       "tp_pct": 0.09,
       "shares_paper": 33,
       "shares_real": 0,
-      "created_at": "2026-09-08T20:38:53.023138+00:00",
-      "runup_tolerance_pct": 8.0
+      "runup_tolerance_pct": 8.0,
+      "notas": "AI líder. Score actualizado +0.3 por momentum sectorial. Si CPI bueno → entrada fuerte."
     },
     {
-      "ticker": "SMH",
-      "symbol": "SMH",
+      "ticker": "TQQQ",
+      "symbol": "TQQQ",
       "estado": "pendiente",
-      "score": 8.3,
-      "score_ajustado": 8.3,
+      "score": 8.5,
+      "score_ajustado": 8.5,
       "accion_recomendada": "LARGO",
-      "argumento": "Semiconductor ETF. SOXL bloqueado por gap — SMH más estable. Score 4/5 momentum.",
-      "precio_referencia": 573.72998046875,
-      "stop_pct": 0.05,
-      "tp_pct": 0.08,
-      "shares_paper": 13,
+      "precio_referencia": 72.16,
+      "stop_pct": 0.06,
+      "tp_pct": 0.1,
+      "shares_paper": 50,
       "shares_real": 0,
-      "created_at": "2026-09-08T20:38:53.023138+00:00",
-      "runup_tolerance_pct": 5.0
+      "runup_tolerance_pct": 6.0,
+      "notas": "3x NASDAQ. Activar solo si CPI <= expectativas. Amplifica movimiento post-CPI. No entrar si CPI >3.5%."
+    },
+    {
+      "ticker": "SOXL",
+      "symbol": "SOXL",
+      "estado": "pendiente",
+      "score": 8.2,
+      "score_ajustado": 8.2,
+      "accion_recomendada": "LARGO",
+      "precio_referencia": 123.27,
+      "stop_pct": 0.07,
+      "tp_pct": 0.12,
+      "shares_paper": 200,
+      "shares_real": 0,
+      "runup_tolerance_pct": 8.0,
+      "notas": "3x semis. Juego CPI + NVDA earnings drift. Volátil — stop amplio."
     }
   ],
   "macro_context": {
@@ -19954,5 +19966,19 @@
       "Max 4 posiciones paper simultáneas, 2 real",
       "Stop update automático: breakeven al 0.5R, trailing al 1R"
     ]
+  },
+  "estrategia_miercoles_cpi": {
+    "fecha": "2026-09-09",
+    "evento": "CPI 14:30 CEST (8:30 ET) — PRE-MARKET",
+    "plan": {
+      "CPI_bueno_lt32": "Entrar DELL+NVDA+TQQQ completo. SOXL si buying power permite.",
+      "CPI_neutral_32_35": "Entrar DELL+NVDA solamente. Reducir TQQQ sizing -50%.",
+      "CPI_malo_gt35": "DELL solo (defensive). Cancelar NVDA/TQQQ/SOXL.",
+      "timing": "market-open-execution a las 15:40 CEST ya tiene datos post-CPI de yfinance"
+    },
+    "target_paper": 110000,
+    "equity_actual": 107830,
+    "gap": 2170,
+    "como_llegar": "DELL 18acc x $533 x 7% = +$671. NVDA 33acc x $226 x 9% = +$671. Total = +$1342. Con TQQQ = +$2,000+"
   }
 }
