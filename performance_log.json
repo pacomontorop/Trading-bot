@@ -17190,6 +17190,179 @@
         "penalizacion_score_largecap_earnings (-1.5) verificada disponible; ningun candidato finalista supera $10B (accion pendiente del 08-sep resuelta).",
         "0 ordenes enviadas. Ninguna orden real ejecutada por el asistente en ningun caso."
       ]
+    },
+    {
+      "fecha": "2026-09-08",
+      "hora_et": "10:35",
+      "tarea": "pre-market-earnings-scan",
+      "resultado": "SIN SENALES — 0 candidatos >= 7.5 (max: SIG 6.30). 0 ordenes enviadas.",
+      "mercado": {
+        "is_open": true,
+        "next_close": "2026-09-08T16:00:00-04:00"
+      },
+      "universo": {
+        "fuente": "earningswhispers /api/caldata + /api/getstocksdata (endpoints JSON validados 2026-08-29)",
+        "2026-09-08": 14,
+        "2026-09-09": 29,
+        "2026-09-10": 22,
+        "total_escaneado": 65,
+        "scoreados": 27,
+        "con_whisper_valido": 21
+      },
+      "macro": {
+        "vix": 15.67,
+        "vix_chg_1d": 0.37,
+        "spy_5d_pct": -0.02,
+        "sectores_5d": {
+          "XLK": 0.68,
+          "XLF": -0.29,
+          "XLV": -1.66,
+          "XLY": -2.07,
+          "XLI": -0.13,
+          "XLE": 1.94,
+          "XLU": 3.0,
+          "XLB": -0.46,
+          "XLRE": 0.12,
+          "XLC": -0.12
+        },
+        "macro_score": 0.0,
+        "macro_bonus": 0.0,
+        "regimen": "BULL_POST_EARNINGS (VIX 15.7) pero con riesgo macro creciente",
+        "vix_block": false,
+        "riesgos": [
+          "Brent >$95 y escalada Oriente Medio (Iran)",
+          "FOMC 16-sep: futuros oscilan 50-58% prob. de SUBIDA",
+          "PPI 10-sep 08:30 ET y CPI 11-sep antes de los earnings de ORCL/ADBE"
+        ]
+      },
+      "cuentas": {
+        "paper_equity": 107833.89,
+        "paper_cash": 103330.97,
+        "paper_posiciones": 5,
+        "paper_equity_positions": [
+          "CVX 5sh +0.07%",
+          "XOM 6sh -0.19%"
+        ],
+        "paper_crypto": [
+          "BTC -1.40%",
+          "ETH -0.60%",
+          "SOL -2.37%"
+        ],
+        "real_equity": 4548.13,
+        "real_cash": 4547.48,
+        "real_posiciones": 1,
+        "nota": "KFY cerrada correctamente (R0 ejecutado). Gate max_posiciones_paper_para_nuevas_entradas=2 ya saturado con CVX+XOM."
+      },
+      "top_candidatos": [
+        {
+          "ticker": "SIG",
+          "empresa": "Signet Jewelers",
+          "earnings": "2026-09-09",
+          "timing": "BMO",
+          "precio": 81.75,
+          "whisper": 1.84,
+          "consenso": 1.69,
+          "asimetria_pct": 8.9,
+          "beat_rate_4q": 100.0,
+          "avg_move_pct": 2.22,
+          "score_final": 6.3,
+          "desglose": "A=2.0(asim 8.9%) B=2.0(beat 4/4) C=0.0(mov medio 2.2%) D=1.5(buy, upside +34%) E=+0.5 F=0(vsMA200 -7.3%, sano) G=+1.0(subio guidance FY tras Q1) H=-1.0(put-lean 64%, pv=281) macro=0.0",
+          "veredicto": "DESCARTADO — 6.30 < 7.5. Ademas earnings BMO manana: mantener overnight exigiria score >= 9.0 (R0).",
+          "nota": "Cayo -4.2% hoy (85.30 -> 81.75) con beat_rate 100% = drift negativo pre-earnings. Setup de interes para entrada POST-print el 9-sep si bate y sostiene."
+        },
+        {
+          "ticker": "M",
+          "empresa": "Macy's",
+          "earnings": "2026-09-10",
+          "timing": "BMO",
+          "precio": 22.73,
+          "whisper": 0.44,
+          "consenso": 0.37,
+          "asimetria_pct": 18.9,
+          "beat_rate_4q": 100.0,
+          "avg_move_pct": 3.22,
+          "score_final": 5.5,
+          "desglose": "A=3.0 B=2.0 C=0.0 D=0.5(hold, upside +2%) H=0.0(cp 0.495 neutro) macro=0.0",
+          "veredicto": "DESCARTADO — 5.50 < 7.5. Target medio a +2% del precio anula la asimetria; consumo discrecional en deterioro."
+        },
+        {
+          "ticker": "ORCL",
+          "empresa": "Oracle",
+          "earnings": "2026-09-10",
+          "timing": "AH",
+          "precio": 162.85,
+          "whisper": 1.8,
+          "consenso": 1.75,
+          "asimetria_pct": 2.9,
+          "beat_rate_4q": 75.0,
+          "avg_move_pct": 12.38,
+          "score_final": 5.37,
+          "desglose": "A=0.57 B=1.0 C=1.5 D=1.5(buy, upside +48%) G=+0.3 H=+0.5(calls 69%, cv=32.7k) macro=0.0",
+          "veredicto": "DESCARTADO — 5.37 < 7.5. Unico motor con demanda AI verificada, pero asimetria minima y reporta DESPUES de PPI+CPI. mom5d +9.7% roza el gate de 10%."
+        }
+      ],
+      "vetos_aplicados": {
+        "beat_rate<60% (PIVOTE W20)": [
+          "AVAV 25%",
+          "CAL 50%",
+          "CHWY 50%",
+          "ASO 50%",
+          "CNM 50%",
+          "SHOE 50%",
+          "RH 25%",
+          "LMNR 0%",
+          "CULP 0%",
+          "DSGX 0%",
+          "SUNB 0%"
+        ],
+        "|consenso|<0.15 USD (leccion 2026-09-04)": [
+          "SAIL 0.08",
+          "ODD 0.12"
+        ],
+        "sin whisper publicado": [
+          "KFY",
+          "SUNB",
+          "JMKE",
+          "CULP"
+        ],
+        "liquidez (mcap<200M o vol<300k)": [
+          "VNCE",
+          "SKIL",
+          "JILL",
+          "MCFT",
+          "CULP"
+        ],
+        "asimetria negativa": [
+          "ASO",
+          "CNM",
+          "ODD",
+          "RH",
+          "ADBE",
+          "SHOE",
+          "DBI"
+        ],
+        "flujo de opciones bajista (BLOQUE H)": [
+          "AEO -2.0 (puts 79%, pv=2668)",
+          "COO -1.0 (puts 91%)",
+          "SIG -1.0",
+          "ODD -2.0"
+        ]
+      },
+      "ordenes": {
+        "paper": 0,
+        "real": 0,
+        "motivo": "Ningun candidato alcanza min_signal_score=7.5 ni min_signal_score_real. Adicionalmente el gate max_posiciones_paper_para_nuevas_entradas=2 esta saturado (CVX+XOM)."
+      },
+      "acciones_para_manana": [
+        "SIG 9-sep BMO: si bate y sostiene >+0.5% sobre apertura a los 15 min -> evaluar entrada de drift (score post-print, stop ATRx2.5 = 2.95 USD).",
+        "BRZE y TTAN reportan AH hoy 8-sep: evaluar drift el 9-sep segun lo ya planificado.",
+        "ORCL/ADBE 10-sep AH: NO abrir antes del PPI (10-sep 08:30) ni del CPI (11-sep)."
+      ],
+      "notas_sistema": [
+        "EW: endpoints JSON /api/caldata/{YYYYMMDD} y /api/getstocksdata/{TICKER} funcionan sin login. El scraper HTML de old.earningswhispers.com sigue caido (timeout). Confirmado el fix de ew_pipeline del 29-ago.",
+        "avgEPSMove viene None en getstocksdata para todos los tickers -> BLOQUE C calculado con yfinance (media |move| D+1 de los ultimos 8 earnings).",
+        "Ejecucion automatica de ordenes NO realizada por decision del operador de la sesion; el scan entrega analisis y registro. Ninguna senal superaba el umbral, por lo que no hay divergencia de resultado."
+      ]
     }
   ],
   "acciones_pendientes_manana": [
@@ -18980,7 +19153,7 @@
       "fuente": "sentinel"
     }
   ],
-  "ultima_actualizacion": "2026-09-08T10:14 ET (sentinel oil_spike)",
+  "ultima_actualizacion": "2026-09-08T10:35 ET (pre-market-earnings-scan)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
