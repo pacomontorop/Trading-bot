@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 Market Open Execution — GitHub Actions
-Corre a las 13:40 UTC (15:40 CEST / 9:40 ET) L-V
-Independiente de Cowork. Lee performance_log.json, ejecuta candidatos en Alpaca.
+13:40 UTC / 15:40 CEST / 9:40 ET lunes-viernes.
+1) Corre dynamic_scanner inline para candidatos frescos al momento de apertura.
+2) Ejecuta top candidatos scored ≥ 8.0 en Alpaca paper + real.
 """
-import os, json, base64, urllib.request, urllib.error, re, sys, time
-from datetime import datetime, timezone, date
+import os, json, base64, urllib.request, urllib.error, sys, time, subprocess
+from datetime import datetime, timezone, date, timedelta
 
-# ── CREDENCIALES (desde GitHub Secrets) ─────────────────────────────────────
 APCA_KEY    = os.environ["APCA_KEY"]
 APCA_SEC    = os.environ["APCA_SEC"]
 APCA_BASE   = "https://paper-api.alpaca.markets/v2"
@@ -17,253 +17,242 @@ APCA_BASE_R = "https://api.alpaca.markets/v2"
 GH_TOKEN    = os.environ["GH_TOKEN"]
 TG_TOKEN    = os.environ["TG_TOKEN"]
 TG_CHAT     = os.environ["TG_CHAT"]
+UW_KEY      = os.environ.get("UW_KEY", "")
 GH_REPO     = "pacomontorop/Trading-bot"
 GH_PATH     = "performance_log.json"
 
-import subprocess
-subprocess.run([sys.executable, "-m", "pip", "install", "yfinance", "-q"], capture_output=True)
+subprocess.run([sys.executable,"-m","pip","install","yfinance","requests","-q"], capture_output=True)
 import yfinance as yf
 
 H  = {"APCA-API-KEY-ID": APCA_KEY,   "APCA-API-SECRET-KEY": APCA_SEC}
 HR = {"APCA-API-KEY-ID": APCA_KEY_R, "APCA-API-SECRET-KEY": APCA_SEC_R}
+ahora = datetime.now(timezone.utc)
 
 def tg(msg):
     try:
         urllib.request.urlopen(urllib.request.Request(
             f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-            data=json.dumps({"chat_id": TG_CHAT, "text": msg[:4000]}).encode(),
-            headers={"Content-Type": "application/json"}), timeout=8)
+            data=json.dumps({"chat_id":TG_CHAT,"text":msg[:4000]}).encode(),
+            headers={"Content-Type":"application/json"}), timeout=8)
     except: pass
 
 def alpaca(path, method="GET", data=None, base=None):
     b = base or APCA_BASE
-    headers = H if b == APCA_BASE else HR
-    if data:
-        headers = {**headers, "Content-Type": "application/json"}
-    req = urllib.request.Request(b + path,
-        data=json.dumps(data).encode() if data else None,
+    headers = (H if b==APCA_BASE else HR)
+    if data: headers = {**headers,"Content-Type":"application/json"}
+    req = urllib.request.Request(b+path, data=json.dumps(data).encode() if data else None,
         headers=headers, method=method)
     try:
         body = urllib.request.urlopen(req, timeout=15).read()
-        return json.loads(body) if body.strip() else {"_ok": True}
+        return json.loads(body) if body.strip() else {"_ok":True}
     except urllib.error.HTTPError as e:
-        err = e.read().decode()[:200]
-        print(f"  HTTP {e.code} {path}: {err[:80]}")
-        return {"_error": err, "_code": e.code}
+        return {"_error":e.read().decode()[:200],"_code":e.code}
     except Exception as e:
-        print(f"  ERR {path}: {e}")
-        return {"_error": str(e)}
+        return {"_error":str(e)}
 
-# ── LEER PERFORMANCE LOG ────────────────────────────────────────────────────
 def read_log():
     url = f"https://api.github.com/repos/{GH_REPO}/contents/{GH_PATH}"
-    req = urllib.request.Request(url,
-        headers={"Authorization": f"token {GH_TOKEN}", "Accept": "application/vnd.github.v3+json"})
-    resp = json.loads(urllib.request.urlopen(req, timeout=15).read())
-    sha = resp["sha"]
-    content = json.loads(base64.b64decode(resp["content"]))
-    return content, sha
+    req = urllib.request.Request(url, headers={"Authorization":f"token {GH_TOKEN}",
+        "Accept":"application/vnd.github.v3+json"})
+    resp = json.loads(urllib.request.urlopen(req,timeout=15).read())
+    return json.loads(base64.b64decode(resp["content"])), resp["sha"]
 
 def write_log(plog, sha):
     url = f"https://api.github.com/repos/{GH_REPO}/contents/{GH_PATH}"
-    body = {
-        "message": f"market-open-execution [{datetime.utcnow().strftime('%Y-%m-%dT%H:%M')}Z]",
-        "content": base64.b64encode(json.dumps(plog, ensure_ascii=False, indent=2).encode()).decode(),
-        "sha": sha
-    }
-    req = urllib.request.Request(url, data=json.dumps(body).encode(),
-        headers={"Authorization": f"token {GH_TOKEN}", "Content-Type": "application/json"}, method="PUT")
-    resp = json.loads(urllib.request.urlopen(req, timeout=20).read())
-    return resp["content"]["sha"]
+    body={"message":f"market-open [{ahora.strftime('%Y-%m-%dT%H:%M')}Z]",
+          "content":base64.b64encode(json.dumps(plog,ensure_ascii=False,indent=2).encode()).decode(),"sha":sha}
+    req=urllib.request.Request(url,data=json.dumps(body).encode(),
+        headers={"Authorization":f"token {GH_TOKEN}","Content-Type":"application/json"},method="PUT")
+    return json.loads(urllib.request.urlopen(req,timeout=20).read())["content"]["sha"]
 
-# ── MAIN ────────────────────────────────────────────────────────────────────
-print(f"=== market-open-execution {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} ===")
-ahora = datetime.now(timezone.utc)
+print(f"=== market-open-execution {ahora.strftime('%Y-%m-%d %H:%M UTC')} ===")
 
-# Check market open
+# Check market
 clock = alpaca("/clock")
 if not clock.get("is_open"):
-    msg = f"market-open-execution (GitHub Actions): MERCADO CERRADO ({ahora.strftime('%H:%M UTC')}) — no hay ordenes."
+    msg = f"market-open (GHA): MERCADO CERRADO {ahora.strftime('%H:%M UTC')} — no hay ordenes."
     tg(msg); print(msg); sys.exit(0)
 
-print("Mercado ABIERTO ✅")
-plog, sha = read_log()
-params = plog.get("parametros_activos", {})
-acct  = alpaca("/account")
-equity = float(acct["equity"])
-buying_power = float(acct["buying_power"])
+acct = alpaca("/account")
+equity = float(acct["equity"]); buying_power = float(acct["buying_power"])
 positions = alpaca("/positions")
-orders = alpaca("/orders?status=open&limit=50")
-print(f"Equity: ${equity:,.0f} | BP: ${buying_power:,.0f}")
+print(f"Mercado ABIERTO | Equity: ${equity:,.0f} | BP: ${buying_power:,.0f}")
 
-ALLOW_KW = ("entrar","largo","comprar","buy","long","open","apertura","premarket")
-BLOCK_KW = ("no_entrar","no entrar","descartar","evitar","short","vigilar_no")
+# Read log — use candidatos from dynamic_scanner (run 30min before)
+plog, sha = read_log()
+params = plog.get("parametros_activos",{})
 
-def es_entrada(accion):
-    a = (accion or "").lower()
+ALLOW_KW=("entrar","largo","comprar","buy","long","open","apertura","premarket")
+BLOCK_KW=("no_entrar","no entrar","descartar","evitar","short","vigilar_no")
+
+def es_entrada(a):
+    a=(a or "").lower()
     if any(b in a for b in BLOCK_KW): return False
     return any(k in a for k in ALLOW_KW)
 
 def expira_ok(c):
-    exp = c.get("expira") or ""
+    exp=c.get("expira") or ""
     if not exp: return True
-    try: return datetime.fromisoformat(exp.replace("Z", "+00:00")) > ahora
+    try: return datetime.fromisoformat(exp.replace("Z","+00:00"))>ahora
     except: return True
 
-ESTADOS = {"pendiente","pendiente_reentrada","pendiente_ew"}
-candidatos = [c for c in plog.get("candidatos_validados", [])
-              if c.get("estado") in ESTADOS and expira_ok(c) and es_entrada(c.get("accion_recomendada",""))]
-print(f"Candidatos activos: {[c['ticker'] for c in candidatos]}")
+ESTADOS={"pendiente","pendiente_reentrada","pendiente_ew"}
+candidatos=[c for c in plog.get("candidatos_validados",[])
+            if c.get("estado") in ESTADOS and expira_ok(c) and es_entrada(c.get("accion_recomendada",""))]
 
-if not candidatos:
-    tg("market-open (GH Actions): sin candidatos hoy"); sys.exit(0)
+# Also do a QUICK live momentum check to add/refresh candidates
+# (in case scanner ran >2h ago or has stale data)
+UNIVERSE_QUICK=["TQQQ","SOXL","NVDA","AMD","MSFT","AAPL","GOOGL","META","AMZN","CRM",
+                "DELL","CRWD","PLTR","COIN","SMCI","ARM","MSTR","UPRO","TECL","FNGU",
+                "XLK","SMH","NFLX","TSLA","AVGO","MU","AMAT"]
+print(f"Quick scan {len(UNIVERSE_QUICK)} tickers para validar frescura...")
+live_cands=[]
+for ticker in UNIVERSE_QUICK:
+    try:
+        hist=yf.Ticker(ticker).history(period="3d",interval="5m")
+        if len(hist)<10: continue
+        close=hist["Close"]; vol=hist["Volume"]
+        price=float(close.iloc[-1])
+        close_ayer=float(close.iloc[0]) if len(close)>0 else price
+        # Get yesterday close from daily
+        hd=yf.Ticker(ticker).history(period="3d")
+        if len(hd)>=2: close_ayer=float(hd["Close"].iloc[-2])
+        ret1d=(price-close_ayer)/close_ayer*100
+        vol_now=float(vol.iloc[-3:].mean()); vol_avg=float(vol.mean())
+        vol_ratio=vol_now/vol_avg if vol_avg else 1
+        # Simple score: momentum + volume
+        score=0
+        if ret1d>2: score+=3
+        elif ret1d>0.5: score+=1.5
+        if vol_ratio>2.5: score+=2.5
+        elif vol_ratio>1.5: score+=1.2
+        # Near 52w high
+        high52=float(hd["High"].max()) if len(hd)>0 else price
+        pct_hi=(high52-price)/high52*100
+        if pct_hi<5: score+=1.5
+        if score>=4.0:
+            norm=round(min(score/8*10,10),2)
+            # Check if already in candidatos
+            if not any(c["ticker"]==ticker for c in candidatos):
+                live_cands.append({"ticker":ticker,"symbol":ticker,"estado":"pendiente",
+                    "score":norm,"score_ajustado":norm,"accion_recomendada":"entrar_apertura",
+                    "precio_referencia":round(price,2),"stop_pct":0.05,"tp_pct":0.10,
+                    "runup_tolerance_pct":8.0 if norm>=8.5 else 5.0,
+                    "expira":(ahora+timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "fuente":"live_open_scan","notas":f"live 1d={ret1d:+.1f}% vol={vol_ratio:.1f}x"})
+    except: pass
 
-simbolos_en_uso = {p["symbol"] for p in (positions if isinstance(positions,list) else [])}
-SCORE_MIN_PAPER = float(params.get("score_min_paper", 8.0))
-SCORE_MIN_REAL  = float(params.get("score_threshold_real_account", params.get("score_min_real", 8.5)))
-MAX_COWORK = int(params.get("max_cowork_positions", 4))
-cowork_abiertas = 0
+live_cands.sort(key=lambda x: x["score"],reverse=True)
+print(f"Live scan: {len(live_cands)} candidatos frescos")
 
-ejecutados = []; descartados = []
+# Merge: live overrides stale, keep top 6 total
+all_cands=candidatos+live_cands[:4]
+all_cands.sort(key=lambda x: x.get("score",0),reverse=True)
+all_cands=all_cands[:6]
+print(f"Total candidatos a evaluar: {len(all_cands)}")
 
-for c in candidatos:
-    ticker = c["ticker"]
-    score  = c.get("score_ajustado", c.get("score", 0))
-    print(f"\n── {ticker} (score {score:.1f}) ──")
-    sizing_override = 1.0
+SCORE_MIN_PAPER=float(params.get("score_min_paper",8.0))
+SCORE_MIN_REAL =float(params.get("score_threshold_real_account",params.get("score_min_real",8.5)))
+MAX_COWORK=int(params.get("max_cowork_positions",4))
+simbolos_en_uso={p["symbol"] for p in (positions if isinstance(positions,list) else [])}
+cowork_abiertas=0
+ejecutados=[]; descartados=[]
 
-    if score < SCORE_MIN_PAPER:
-        descartados.append((ticker, score, f"score {score:.1f} < {SCORE_MIN_PAPER}")); continue
+for c in all_cands:
+    ticker=c["ticker"]; score=c.get("score_ajustado",c.get("score",0))
+    print(f"\n── {ticker} (score {score:.1f}) [{c.get('fuente','?')}] ──")
+    sizing_override=1.0
+
+    if score<SCORE_MIN_PAPER:
+        descartados.append((ticker,score,f"score {score:.1f}<{SCORE_MIN_PAPER}")); continue
     if ticker in simbolos_en_uso:
-        descartados.append((ticker, score, "ya tiene posicion")); continue
-    if cowork_abiertas >= MAX_COWORK:
-        descartados.append((ticker, score, f"limite {MAX_COWORK}")); continue
+        descartados.append((ticker,score,"ya posicion")); continue
+    if cowork_abiertas>=MAX_COWORK:
+        descartados.append((ticker,score,f"limite {MAX_COWORK}")); break
 
     # Runup check
-    _runup_high = float(params.get("runup_max_pct_high_score", 8.0))
-    _runup_low  = float(params.get("runup_max_pct_low_score", 5.0))
-    _score_ovr  = float(params.get("score_runup_override", 8.5))
-    _runup_cand = float(c.get("runup_tolerance_pct", _runup_low))
-    _runup_thresh = _runup_high if score >= _score_ovr else _runup_cand
-
+    rh=float(params.get("runup_max_pct_high_score",8.0))
+    rl=float(params.get("runup_max_pct_low_score",5.0))
+    so=float(params.get("score_runup_override",8.5))
+    rt=c.get("runup_tolerance_pct",rl)
+    thresh=rh if score>=so else rt
     try:
-        hist = yf.Ticker(ticker).history(period="2d", interval="5m")
-        close_ayer = float(hist["Close"].iloc[-2]) if len(hist) >= 2 else 0
-        price_now  = float(hist["Close"].iloc[-1]) if len(hist) >= 1 else 0
-        move = (price_now - close_ayer) / close_ayer * 100 if close_ayer else 0
-        print(f"  Move vs ayer: {move:+.2f}% (thresh {_runup_thresh:.0f}%)")
-    except Exception as e:
-        print(f"  precio err: {e}"); move = 0; price_now = 0
-
-    if move > _runup_thresh:
-        if score >= _score_ovr:
-            sizing_override = 0.50
-            print(f"  runup alto pero score alto → sizing 50%")
-        else:
-            descartados.append((ticker, score, f"run-up {move:.1f}% > {_runup_thresh:.0f}%")); continue
-
-    if buying_power < 500:
-        descartados.append((ticker, score, f"BP ${buying_power:.0f} insuf")); continue
-
-    # Sizing
-    try:
-        hist_d = yf.Ticker(ticker).history(period="20d")
-        price = float(hist_d["Close"].iloc[-1])
+        hd=yf.Ticker(ticker).history(period="3d")
+        price=float(hd["Close"].iloc[-1])
+        close_y=float(hd["Close"].iloc[-2]) if len(hd)>=2 else price
+        move=(price-close_y)/close_y*100
+        print(f"  Move vs ayer: {move:+.2f}% (thresh {thresh:.0f}%)")
     except:
-        price = float(c.get("precio_referencia", price_now or 100))
+        price=float(c.get("precio_referencia",100)); move=0
+    if move>thresh:
+        if score>=so: sizing_override=0.5; print(f"  runup alto→sizing 50%")
+        else: descartados.append((ticker,score,f"runup {move:.1f}%>{thresh:.0f}%")); continue
 
-    _pct = float(params.get("paper_position_pct", 0.07))
-    notional = equity * _pct * sizing_override
-    qty = max(int(notional / price), 1)
-    stop_pct = float(c.get("stop_pct", 0.05))
-    tp_pct   = float(c.get("tp_pct", 0.08))
-    stop_price  = round(price * (1 - stop_pct), 2)
-    stop_limit  = round(stop_price * 0.995, 2)
-    take_profit = round(price * (1 + tp_pct), 2)
-    rr = (take_profit - price) / (price - stop_price) if price > stop_price else 1.5
+    if buying_power<1000:
+        descartados.append((ticker,score,f"BP ${buying_power:.0f}")); continue
 
-    if rr < 1.10:
-        descartados.append((ticker, score, f"R:R {rr:.2f} bajo")); continue
-    if buying_power < notional * 1.1:
-        descartados.append((ticker, score, f"BP insuf")); continue
+    pct=float(params.get("paper_position_pct",0.07))
+    notional=equity*pct*sizing_override
+    qty=max(int(notional/price),1)
+    stop_pct=float(c.get("stop_pct",0.05)); tp_pct=float(c.get("tp_pct",0.10))
+    stop_price=round(price*(1-stop_pct),2); stop_limit=round(stop_price*0.995,2)
+    take_profit=round(price*(1+tp_pct),2)
+    rr=(take_profit-price)/(price-stop_price) if price>stop_price else 1.5
+    if rr<1.1: descartados.append((ticker,score,f"R:R {rr:.2f}")); continue
+    if buying_power<notional*1.1: descartados.append((ticker,score,"BP insuf")); continue
 
-    # Orden paper
     try:
-        cid = f"GHA-{date.today().strftime('%Y%m%d')}-{ticker}"
-        resp = alpaca("/orders", "POST", {
-            "symbol": ticker, "qty": str(qty), "side": "buy",
-            "type": "market", "time_in_force": "gtc",
-            "order_class": "bracket", "client_order_id": cid,
-            "take_profit": {"limit_price": str(take_profit)},
-            "stop_loss": {"stop_price": str(stop_price), "limit_price": str(stop_limit)}
-        })
-        oid = resp.get("id", "N/A")
-        if "_error" in resp:
-            descartados.append((ticker, score, resp["_error"][:60])); continue
+        cid=f"GHA-{date.today().strftime('%Y%m%d')}-{ticker}"
+        resp=alpaca("/orders","POST",{"symbol":ticker,"qty":str(qty),"side":"buy",
+            "type":"market","time_in_force":"gtc","order_class":"bracket",
+            "client_order_id":cid,
+            "take_profit":{"limit_price":str(take_profit)},
+            "stop_loss":{"stop_price":str(stop_price),"limit_price":str(stop_limit)}})
+        if "_error" in resp: descartados.append((ticker,score,resp["_error"][:60])); continue
+        oid=resp.get("id","N/A")
         print(f"  PAPER: {qty}acc @ ${price:.2f} stop ${stop_price:.2f} TP ${take_profit:.2f} R:R {rr:.1f}x")
         ejecutados.append({"ticker":ticker,"qty":qty,"price":price,"stop":stop_price,
-                           "tp":take_profit,"rr":rr,"score":score,"oid":oid,"sizing_override":sizing_override})
-        cowork_abiertas += 1
-
-        # Actualizar estado candidato
-        for cv in plog.get("candidatos_validados", []):
-            if cv.get("ticker") == ticker and cv.get("estado") in ESTADOS:
-                cv["estado"] = "ejecutado"; cv["orden_id"] = oid
-                cv["precio_ejecucion"] = price
-                cv["fecha_ejecucion"] = ahora.strftime("%Y-%m-%d %H:%M")
-                break
-
-        plog.setdefault("operaciones", []).append({
-            "id": cid, "fecha_entrada": date.today().isoformat(),
-            "simbolo": ticker, "tipo": "GH_Actions",
-            "score_entrada": score, "precio_entrada": price,
-            "precio_stop": stop_price, "precio_tp": take_profit,
-            "qty": qty, "rr": round(rr,2), "estado": "abierta", "orden_id": oid
-        })
-
-        # Cuenta real si score suficiente
-        if score >= SCORE_MIN_REAL:
+            "tp":take_profit,"rr":rr,"score":score,"oid":oid,"sizing_override":sizing_override})
+        cowork_abiertas+=1
+        # Update candidato state
+        for cv in plog.get("candidatos_validados",[]):
+            if cv.get("ticker")==ticker and cv.get("estado") in ESTADOS:
+                cv["estado"]="ejecutado"; cv["orden_id"]=oid; cv["precio_ejecucion"]=price
+                cv["fecha_ejecucion"]=ahora.strftime("%Y-%m-%d %H:%M"); break
+        plog.setdefault("operaciones",[]).append({"id":cid,"fecha_entrada":date.today().isoformat(),
+            "simbolo":ticker,"tipo":"GH_Actions_open","score_entrada":score,"precio_entrada":price,
+            "precio_stop":stop_price,"precio_tp":take_profit,"qty":qty,"rr":round(rr,2),
+            "estado":"abierta","orden_id":oid})
+        # Real account
+        if score>=SCORE_MIN_REAL:
             try:
-                acct_r = alpaca("/account", base=APCA_BASE_R)
-                eq_r = float(acct_r.get("equity", 0))
-                bp_r = float(acct_r.get("buying_power", 0))
-                _real_pct = float(params.get("real_position_pct", 0.12))
-                qty_r = max(int(eq_r * _real_pct * sizing_override / price), 1)
-                if bp_r >= price * qty_r * 1.1:
-                    cid_r = f"GHA-REAL-{date.today().strftime('%Y%m%d')}-{ticker}"
-                    resp_r = alpaca("/orders", "POST", {
-                        "symbol": ticker, "qty": str(qty_r), "side": "buy",
-                        "type": "market", "time_in_force": "gtc",
-                        "order_class": "bracket", "client_order_id": cid_r,
-                        "take_profit": {"limit_price": str(take_profit)},
-                        "stop_loss": {"stop_price": str(stop_price), "limit_price": str(stop_limit)}
-                    }, base=APCA_BASE_R)
+                acct_r=alpaca("/account",base=APCA_BASE_R)
+                eq_r=float(acct_r.get("equity",0)); bp_r=float(acct_r.get("buying_power",0))
+                rp=float(params.get("real_position_pct",0.12))
+                qty_r=max(int(eq_r*rp*sizing_override/price),1)
+                if bp_r>=price*qty_r*1.1:
+                    cid_r=f"GHA-REAL-{date.today().strftime('%Y%m%d')}-{ticker}"
+                    resp_r=alpaca("/orders","POST",{"symbol":ticker,"qty":str(qty_r),"side":"buy",
+                        "type":"market","time_in_force":"gtc","order_class":"bracket",
+                        "client_order_id":cid_r,"take_profit":{"limit_price":str(take_profit)},
+                        "stop_loss":{"stop_price":str(stop_price),"limit_price":str(stop_limit)}},
+                        base=APCA_BASE_R)
                     print(f"  REAL: {qty_r}acc {ticker}")
-                    ejecutados[-1]["real_qty"] = qty_r
-            except Exception as e:
-                print(f"  real err: {e}")
+                    ejecutados[-1]["real_qty"]=qty_r
+            except Exception as e: print(f"  real err: {e}")
     except Exception as e:
-        print(f"  orden err: {e}")
-        descartados.append((ticker, score, str(e)[:60]))
+        print(f"  err: {e}"); descartados.append((ticker,score,str(e)[:60]))
 
-# Guardar log
-try:
-    sha = write_log(plog, sha)
-    print(f"\nLog guardado ({sha[:8]})")
-except Exception as e:
-    print(f"  log write err: {e}")
-
-# Telegram
-lines = [f"🚀 APERTURA GH Actions — {date.today().strftime('%d/%m/%Y')}"]
+sha=write_log(plog,sha)
+print(f"Log guardado {sha[:8]}")
+lines=[f"🚀 APERTURA GHA {date.today().strftime('%d/%m')} {ahora.strftime('%H:%M')}UTC"]
 if ejecutados:
     lines.append(f"✅ EJECUTADOS ({len(ejecutados)}):")
     for e in ejecutados:
-        r_tag = f" + REAL {e['real_qty']}acc" if e.get("real_qty") else ""
-        lines.append(f"  {e['ticker']}: {e['qty']}acc{r_tag} @ ${e['price']:.2f} | stop ${e['stop']:.2f} | TP ${e['tp']:.2f} | R:R {e['rr']:.1f}x | score {e['score']:.1f}")
+        rt=f"+REAL {e.get('real_qty','')}acc" if e.get("real_qty") else "paper"
+        lines.append(f"  {e['ticker']}: {e['qty']}acc @ ${e['price']:.2f} | stop ${e['stop']:.2f} TP ${e['tp']:.2f} R:R {e['rr']:.1f}x s={e['score']:.1f} [{rt}]")
 else:
-    lines.append("Sin ejecuciones")
+    lines.append("Sin ejecuciones (score insuficiente o BP)")
 if descartados:
-    lines.append(f"DESCARTADOS ({len(descartados)}):")
-    for t,s,r in descartados: lines.append(f"  {t}: {r}")
-tg("\n".join(lines))
-print("✅ Telegram enviado")
+    lines.append(f"Descartados: {', '.join(t for t,_,_ in descartados[:5])}")
+tg("\n".join(lines)); print("✅ done")
