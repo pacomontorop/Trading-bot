@@ -1,0 +1,39 @@
+name: Selftest
+on:
+  schedule:
+    - cron: "10 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "basic = sin fills (orden no llenable + cancelación) · full = compra 1 acc F en paper, PATCH stop y cierre (mercado abierto)"
+        type: choice
+        options: [basic, full]
+        default: basic
+concurrency:
+  group: selftest
+  cancel-in-progress: false
+permissions:
+  contents: write   # GITHUB_TOKEN puede actualizar performance_log.json
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Dependencias
+        run: pip install -q yfinance requests
+      - name: Run
+        env:
+          SELFTEST_MODE: ${{ inputs.mode || 'basic' }}
+          APCA_KEY:   ${{ secrets.APCA_KEY }}
+          APCA_SEC:   ${{ secrets.APCA_SEC }}
+          APCA_KEY_R: ${{ secrets.APCA_KEY_R }}
+          APCA_SEC_R: ${{ secrets.APCA_SEC_R }}
+          GH_TOKEN:   ${{ secrets.GH_TOKEN_TRADING || github.token }}
+          TG_TOKEN:   ${{ secrets.TG_TOKEN }}
+          TG_CHAT:    ${{ secrets.TG_CHAT }}
+        run: python scripts/selftest.py
