@@ -196,23 +196,29 @@ def score_unusual_whales(ticker):
     try:
         url = f"https://api.unusualwhales.com/api/stock/{ticker}/options-volume"
         headers = {"Authorization": f"Bearer {UW_KEY}", "Accept": "application/json"}
-        r = requests.get(url, headers=headers, timeout=8).json()
-        data = r.get("data", {})
-        # High call/put ratio = bullish
-        call_vol = data.get("call_volume", 0)
-        put_vol  = data.get("put_volume", 0)
-        total    = call_vol + put_vol
+        resp = requests.get(url, headers=headers, timeout=8)
+        if resp.status_code != 200:
+            print(f"  UW {ticker}: HTTP {resp.status_code} {resp.text[:120]}")
+            return 0
+        data = resp.json().get("data", {})
+        if isinstance(data, list):          # la API devuelve lista por fecha → última
+            data = data[0] if data else {}
+        num = lambda k: float(data.get(k) or 0)
+        call_vol, put_vol = num("call_volume"), num("put_volume")
+        total = call_vol + put_vol
         if total > 0:
             cp_ratio = call_vol / total
             if cp_ratio > 0.7: score += 2.0
             elif cp_ratio > 0.6: score += 1.0
-        # Unusual activity flag
         if data.get("is_unusual"): score += 1.5
-        # Premium paid (bullish sweeps)
-        premium = data.get("net_premium", 0)
+        premium = num("net_premium") or (num("bullish_premium") - num("bearish_premium")) \
+                  or (num("net_call_premium") - num("net_put_premium"))
         if premium > 5_000_000: score += 1.5
         elif premium > 1_000_000: score += 0.8
-    except: pass
+        if not score and total == 0:
+            print(f"  UW {ticker}: respuesta sin campos esperados: {list(data)[:12]}")
+    except Exception as e:
+        print(f"  UW {ticker}: {e}")
     return score
 
 # ── FUENTE 5: SECTOR MOMENTUM ────────────────────────────────────────────────
@@ -302,8 +308,10 @@ now_iso = ahora.isoformat()
 expiry  = (ahora + timedelta(hours=6)).strftime("%Y-%m-%dT%H:%M:%SZ")  # valid for 6h
 
 # Keep existing ejecutado/abierto candidatos, replace pendiente ones
-existing = [c for c in plog.get("candidatos_validados", [])
-            if c.get("estado") not in ("pendiente","pendiente_ew","pendiente_reentrada")]
+# FIX 2026-09-10: antes se borraban TODOS los pendientes (incluidos los de la
+# pipeline EW/Cowork). Ahora solo se sustituyen los pendientes propios del scanner.
+def _es_mio_pendiente(c):
+    return c.get("fuente") == "dynamic_scanner_gha" and c.get("estado") in ("pendiente","pendiente_ew","pendiente_reentrada")
 
 new_candidatos = []
 for r in top:
@@ -337,19 +345,21 @@ for r in top:
         "notas": f"1d={stats.get('ret1d',0):+.1f}% vol={stats.get('vol_ratio',1):.1f}x 52h_dist={stats.get('pct_from_52h',0):.1f}%"
     })
 
-plog["candidatos_validados"] = existing + new_candidatos
-plog.setdefault("scanner_history", []).append({
-    "timestamp": now_iso,
-    "tickers_scanned": len(UNIVERSE),
-    "top_results": [{"sym":r["sym"],"score":r["score"]} for r in top[:5]],
-    "uw_active": bool(UW_KEY),
-    "market_open": is_open
-})
-# Keep only last 20 scan records
-plog["scanner_history"] = plog["scanner_history"][-20:]
+def _mutate(pl):
+    kept = [c for c in pl.get("candidatos_validados", []) if not _es_mio_pendiente(c)]
+    kept_syms = {(c.get("ticker") or c.get("symbol") or "").upper() for c in kept
+                 if c.get("estado") in ("pendiente","pendiente_ew","pendiente_reentrada")}
+    pl["candidatos_validados"] = kept + [c for c in new_candidatos if c["ticker"] not in kept_syms]
+    hist = pl.setdefault("scanner_history", [])
+    hist.append({"timestamp": now_iso, "tickers_scanned": len(UNIVERSE),
+                 "top_results": [{"sym":r["sym"],"score":r["score"]} for r in top[:5]],
+                 "uw_active": bool(UW_KEY), "market_open": is_open})
+    pl["scanner_history"] = hist[-20:]
 
-sha = write_log(plog, sha)
-print(f"Log actualizado ({sha[:8]})")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import update_log
+update_log(_mutate, f"dynamic-scanner [{ahora.strftime('%Y-%m-%dT%H:%M')}Z] {len(new_candidatos)} candidatos")
+print("Log actualizado (con reintento ante conflictos)")
 
 # Telegram alert with top picks
 sources = "yfinance+news+EDGAR" + ("+UW" if UW_KEY else "")
