@@ -18,7 +18,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,6 +27,21 @@ jobs:
           cache: pip
       - name: Dependencias
         run: pip install -q yfinance requests
+      - name: EW pipeline (candidatos pre-earnings multi-fuente para hoy)
+        continue-on-error: true
+        env:
+          EW_MODE: today
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          APCA_KEY:   ${{ secrets.APCA_KEY }}
+          APCA_SEC:   ${{ secrets.APCA_SEC }}
+          APCA_KEY_R: ${{ secrets.APCA_KEY_R }}
+          APCA_SEC_R: ${{ secrets.APCA_SEC_R }}
+          GH_TOKEN:   ${{ secrets.GH_TOKEN_TRADING || github.token }}
+          TG_TOKEN:   ${{ secrets.TG_TOKEN }}
+          TG_CHAT:    ${{ secrets.TG_CHAT }}
+          UW_KEY:     ${{ secrets.UW_KEY }}
+          RENDER_HEALTH_URL: ${{ secrets.RENDER_HEALTH_URL }}
+        run: python scripts/ew_pipeline.py
       - name: Scanner pre-apertura (refresca candidatos del scanner; no toca los EW)
         continue-on-error: true
         env:

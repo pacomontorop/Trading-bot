@@ -95,3 +95,27 @@ def test_fifo_trades():
     assert [round(t[2], 2) for t in eq] == [10.0, -5.0] and round(cr[0][2], 2) == -10.0
     s = kpi_report.stats(eq)
     assert s["n"] == 2 and s["profit_factor"] == 2.0 and s["expectancy_usd"] == 2.5
+
+
+def test_ew_scoring_rangos():
+    import ew_pipeline
+    top = {"asym_pct": 20, "beat_rate": 100, "n_q": 8, "reaction_pct": 5, "rev_up": 5, "rev_down": 0, "mom5": 0, "news": 5}
+    sc, parts = ew_pipeline.score_candidate(top, {"vix": 15, "spy_above_ma50": True})
+    assert sc == 10.0 and parts["beat_rate"] == 3.0
+    flojo = {"asym_pct": -5, "beat_rate": 40, "n_q": 8, "reaction_pct": -3, "rev_up": 0, "rev_down": 3, "mom5": 12}
+    sc2, _ = ew_pipeline.score_candidate(flojo, {"vix": 30, "spy_above_ma50": False})
+    assert sc2 == 0.0
+    # sin datos de Yahoo: la puntuación no puede llegar a real (≥9)
+    solo_ew = {"asym_pct": 15, "mom5": 0, "news": 4}
+    assert ew_pipeline.score_candidate(solo_ew, {"vix": 15, "spy_above_ma50": True})[0] < 9
+
+
+def test_pre_close_reglas():
+    from datetime import date
+    import pre_close
+    hoy, nxt = date(2026, 9, 11), date(2026, 9, 14)
+    assert pre_close.should_close({"nextEPSDate": "2026-09-11T00:00:00", "releaseTime": 3}, hoy, nxt)[0]
+    assert pre_close.should_close({"nextEPSDate": "2026-09-14T00:00:00", "releaseTime": 1}, hoy, nxt)[0]
+    assert not pre_close.should_close({"nextEPSDate": "2026-09-14T00:00:00", "releaseTime": 3}, hoy, nxt)[0]
+    assert not pre_close.should_close({"nextEPSDate": "2026-09-11T00:00:00", "releaseTime": 1}, hoy, nxt)[0]
+    assert not pre_close.should_close(None, hoy, nxt)[0]

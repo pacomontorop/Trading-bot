@@ -20,6 +20,15 @@
 6. **Workflows GHA**: `market-open` (13:35/14:35 UTC, decide por calendario Alpaca),
    `intraday` (cada 30 min), `kpi-report` (21:30 UTC), `watchdog` (horario), `ci`.
    Todos admiten "Run workflow" con `dry_run`.
+7. **EarningsWhispers (fuente de los fallos de ago-sep)**: usar SOLO la API JSON
+   `https://www.earningswhispers.com/api/{caldata/YYYYMMDD | getstocksdata/TICKER | todaysresults}`,
+   sin login, con la cabecera **`Referer: https://www.earningswhispers.com/`** (sin ella responde
+   HTTP 204 vacío). NUNCA scrapear HTML ni `old.earningswhispers.com` (muerto). Implementación de
+   referencia con reintentos y respaldo Nasdaq: `scripts/datasources.py`. El workflow `ew-pipeline`
+   deja cada noche los candidatos multi-fuente en `candidatos_validados` (fuente `ew_pipeline_gha`)
+   y el estado de cada fuente en `fuentes_estado`: las tareas Cowork pueden leerlos sin scrapear.
+8. **Pre-cierre**: `scripts/pre_close.py` cierra antes del cierre toda posición con resultados
+   esa noche (AMC) o antes de la próxima apertura (BMO), en paper y real (respeta la regla PDT).
 
 ---
 

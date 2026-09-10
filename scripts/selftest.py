@@ -4,7 +4,7 @@ Selftest — GitHub Actions (v1, 2026-09-10). Demuestra que el sistema puede ope
 
 Modo "basic" (diario, 13:10 UTC, antes de la apertura):
   1. Credenciales paper y real válidas, cuentas ACTIVE y sin bloqueo.
-  2. Datos de mercado (último precio) y calendario accesibles.
+  2. Datos de mercado y TODAS las fuentes (EarningsWhispers, Nasdaq, Alpaca noticias, Yahoo).
   3. Orden real de prueba en PAPER: bracket buy limit a -50 % (no puede llenarse),
      con patas TP/SL → se verifica que Alpaca la acepta con sus 2 patas → se cancela.
   4. Lectura y escritura del performance_log en GitHub (campo "selftest").
@@ -54,6 +54,14 @@ def main():
     check("Reloj de mercado", "is_open" in clock, f"abierto={clock.get('is_open')}")
     px = P.latest_price(SYM)
     check(f"Precio {SYM}", bool(px), f"{px}")
+
+    # 2b · todas las fuentes de datos (EarningsWhispers, Nasdaq, Alpaca, Yahoo)
+    try:
+        from datasources import health_check
+        for k, (good, det) in health_check().items():
+            check(f"Fuente {k}", good, det)
+    except Exception as e:
+        check("Fuentes de datos", False, str(e)[:100])
 
     # 3 · orden de prueba (no llenable)
     if px:
