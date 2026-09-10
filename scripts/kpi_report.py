@@ -62,6 +62,22 @@ def fills(alp, start):
     return out
 
 
+def selftest_ids(alp, start):
+    """ids de órdenes de scripts/selftest.py (client_order_id SELFTEST-*) para excluir sus fills."""
+    ids, after = set(), f"{start}T00:00:00Z"
+    for _ in range(40):
+        r = alp.req(f"/orders?status=all&limit=500&direction=asc&nested=true&after={after}")
+        if not isinstance(r, list) or not r:
+            break
+        for o in r:
+            if (o.get("client_order_id") or "").startswith("SELFTEST-"):
+                ids.add(o["id"]); ids.update(l["id"] for l in (o.get("legs") or []))
+        if len(r) < 500:
+            break
+        after = r[-1]["submitted_at"]
+    return ids
+
+
 def closed_trades(fs):
     """FIFO → lista de (fecha, símbolo, pnl, es_crypto) agregada por símbolo y día de cierre."""
     lots = collections.defaultdict(list)
@@ -118,7 +134,8 @@ def main():
             out[name] = {"equity_inicio": round(cur[0][1], 2), "equity_actual": round(cur[-1][1], 2),
                          "retorno_pct": ret, "alpha_vs_spy_pct": round(ret - spy, 2) if spy is not None else None,
                          "max_drawdown_pct": max_dd([v for _, v in cur])}
-        tr = closed_trades(fills(alp, start))
+        skip = selftest_ids(alp, start)
+        tr = closed_trades([f for f in fills(alp, start) if f.get("order_id") not in skip])
         eq_tr = [t for t in tr if not t[3]]; cr_tr = [t for t in tr if t[3]]
         out.setdefault(name, {})["acciones"] = stats(eq_tr)
         out[name]["crypto"] = stats(cr_tr)
