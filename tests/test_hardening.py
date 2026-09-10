@@ -28,12 +28,20 @@ def test_log_si_puede_endurecer():
 
 
 def test_real_auto_depende_del_gate():
-    assert LIM["real"]["enabled"] == "auto"
-    off = common.effective_limits({"kpis": {"rendimiento_verificado": {"gate_real_ok": False}}}, LIM)
-    on = common.effective_limits({"kpis": {"rendimiento_verificado": {"gate_real_ok": True}}}, LIM)
+    import copy
+    auto = copy.deepcopy(LIM); auto["real"]["enabled"] = "auto"
+    off = common.effective_limits({"kpis": {"rendimiento_verificado": {"gate_real_ok": False}}}, auto)
+    on = common.effective_limits({"kpis": {"rendimiento_verificado": {"gate_real_ok": True}}}, auto)
     killed = common.effective_limits({"parametros_activos": {"real_trading_enabled": False},
-                                      "kpis": {"rendimiento_verificado": {"gate_real_ok": True}}}, LIM)
+                                      "kpis": {"rendimiento_verificado": {"gate_real_ok": True}}}, auto)
     assert off["real"]["active"] is False and on["real"]["active"] is True and killed["real"]["active"] is False
+
+
+def test_real_forzado_on_respeta_kill_switch_del_log():
+    import copy
+    forced = copy.deepcopy(LIM); forced["real"]["enabled"] = True
+    assert common.effective_limits({}, forced)["real"]["active"] is True
+    assert common.effective_limits({"parametros_activos": {"real_trading_enabled": False}}, forced)["real"]["active"] is False
 
 
 def test_fuentes_momentum_y_apalancados_bloqueados_en_real():
