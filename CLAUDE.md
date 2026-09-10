@@ -1,5 +1,28 @@
 # CLAUDE.md — Trading-bot System Guide (Guía Completa para Claude Cowork)
 
+## ⚠️ ENDURECIMIENTO 2026-09-10 — LEER ANTES DE TOCAR NADA
+
+1. **`config/risk_limits.json` = límites duros.** Los scripts de GitHub Actions aplican siempre
+   lo más estricto entre ese fichero y `performance_log.parametros_activos`. Las tareas Cowork
+   **no deben editarlo**; solo se cambia por commit revisado por Paco.
+2. **Cuenta real**: solo candidatos de la pipeline EW/Cowork (nunca `dynamic_scanner_gha` ni
+   `live_open_scan`), score ≥ 9.0, sin ETFs apalancados, máx. 2 posiciones, riesgo 0,5 % por
+   operación. Con `real.enabled = "auto"` solo opera si `kpis.rendimiento_verificado.gate_real_ok`
+   es `true`. `parametros_activos.real_trading_enabled = false` la apaga desde el log.
+3. **Fuente de verdad de rendimiento**: `kpis.rendimiento_verificado` (lo escribe
+   `scripts/kpi_report.py` a diario desde Alpaca: equity vs SPY mismo periodo, PF, expectativa).
+   No usar cifras calculadas a mano para decidir.
+4. **Gestión de posiciones (evidencia 133 cierres paper: ganancia media $129 vs pérdida media $241)**:
+   stop a break-even en +1R, lock +1R en +2R, TP = 2R. Sin parciales ni break-even temprano.
+   Los stops se modifican con PATCH (conserva el OCO del bracket), nunca cancelar+recrear.
+5. **Escritura del log**: usar `scripts/common.py:update_log(mutate, msg)` (reintenta ante
+   conflicto de SHA y soporta ficheros > 1 MB). Nunca escribir con un SHA viejo.
+6. **Workflows GHA**: `market-open` (13:35/14:35 UTC, decide por calendario Alpaca),
+   `intraday` (cada 30 min), `kpi-report` (21:30 UTC), `watchdog` (horario), `ci`.
+   Todos admiten "Run workflow" con `dry_run`.
+
+---
+
 ## ¿Qué es este bot?
 
 **Trading bot long-only** (solo compras, sin shorts) para acciones de EE.UU.

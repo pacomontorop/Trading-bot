@@ -12,6 +12,20 @@ services:
     # numInstances must ALWAYS be 1. Never enable autoscaling.
     numInstances: 1
 
+    # FIX 2026-09-10: las tareas Cowork/GHA hacen decenas de commits diarios al
+    # performance_log.json. Sin este filtro, CADA commit redespliega y reinicia
+    # el bot (stateful). Solo se redespliega si cambia código del bot.
+    buildFilter:
+      ignoredPaths:
+        - performance_log.json
+        - performance_log_archive_*.json
+        - scripts/**
+        - .github/**
+        - config/risk_limits.json
+        - "**/*.md"
+        - tests/**
+        - backtest/**
+
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn start:app --host 0.0.0.0 --workers 1 --ws none
 
