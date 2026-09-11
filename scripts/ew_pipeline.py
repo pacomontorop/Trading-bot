@@ -24,7 +24,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from common import DRY_RUN, et_today, log, now_utc, paper_client, tg, update_log
 from datasources import (alpaca_daily_bars, alpaca_news_count, alpaca_snapshots, earnings_calendar,
-                         ew_stock, health_check, macro_state, yf_earnings_profile)
+                         ew_results_today, ew_stock, health_check, macro_state, yf_earnings_profile)
 
 FUENTE = "ew_pipeline_gha"
 PEND = ("pendiente", "pendiente_ew", "pendiente_reentrada")
@@ -146,6 +146,22 @@ def main():
         log(f"  {t:6} {tm:11} score {sc:5.2f} {parts}")
     cands = sorted(evaluados, key=lambda c: -c["score"])
 
+    # ── ew_cache: datos EW para las tareas que no pueden llamar a la API (sin shell / sin Referer) ──
+    cal_cache, tick_cache, res_cache = {}, {}, []
+    try:
+        for dd in sessions(P, E)[:5]:
+            rows = earnings_calendar(dd)
+            cal_cache[dd.isoformat()] = [{k: r.get(k) for k in ("ticker", "company", "releaseTime", "total", "fuente")}
+                                         for r in rows if r.get("ticker")][:150]
+        tick_cache = {c["ticker"]: {k: c.get(k) for k in ("consenso_eps", "whisper", "asimetria_pct", "earnings_fecha",
+                                                         "earnings_timing", "beat_rate", "reaccion_media_pct", "score")}
+                      for c in evaluados}
+        res_cache = [{k: r.get(k) for k in ("ticker", "epsDate", "eps", "estimate", "whisper", "revenue",
+                                            "revenueEstimate", "earningsSurprise", "revenueSurprise", "subject")}
+                     for r in ew_results_today()][:80]
+    except Exception as e:           # la caché nunca debe romper el pipeline
+        log(f"  ew_cache incompleta: {e}")
+
     def mutate(pl):
         kept = [c for c in pl.get("candidatos_validados", [])
                 if not (c.get("fuente") == FUENTE and c.get("estado") in PEND)]
@@ -163,6 +179,14 @@ def main():
                                      "Referer": "https://www.earningswhispers.com/",
                                      "X-Requested-With": "XMLHttpRequest"}
         ewp["ultimo_acceso_ok"] = salud.get("earningswhispers", (False,))[0]
+        ewp["si_no_puedes_llamar_a_la_api"] = ("Si tu entorno no tiene shell o no puede enviar la cabecera Referer "
+                                              "(p.ej. fetch desde navegador), NO consultes earningswhispers.com: usa "
+                                              "la sección ew_cache de este log, que GitHub Actions actualiza cada hora "
+                                              "en sesión y cada noche. No es un fallo de EW; no bloquees la tarea.")
+        pl["ew_cache"] = {"_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si "
+                                  "no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
+                          "ts": ahora.strftime("%Y-%m-%dT%H:%MZ"), "calendario": cal_cache,
+                          "tickers": tick_cache, "resultados_hoy": res_cache}
         pl["ew_pipeline_gha"] = {"ts": ahora.strftime("%Y-%m-%dT%H:%MZ"), "entrada": E.isoformat(),
                                  "salida": X.isoformat(), "eventos": len(tick), "evaluados": len(evaluados),
                                  "macro": macro, "top": [{k: c[k] for k in ("ticker", "score", "earnings_fecha",

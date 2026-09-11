@@ -23,7 +23,7 @@ from datetime import timedelta
 
 import time
 
-from common import (DRY_RUN, FORCE_WINDOW, YF_ENABLED, atr14, compute_levels, count_new_entries_today,
+from common import (DRY_RUN, ET, FORCE_WINDOW, YF_ENABLED, atr14, compute_levels, count_new_entries_today,
                     day_pnl_pct, effective_limits, et_today, is_crypto, load_limits, log,
                     minutes_since_open, now_utc, paper_client, place_bracket_entry, read_log,
                     real_client, size_by_risk, tg, update_log, wait_fill_or_cancel)
@@ -52,6 +52,18 @@ def expira_ok(c, ahora):
         return datetime.fromisoformat(exp.replace("Z", "+00:00")) > ahora
     except Exception:
         return True
+
+
+def macro_block(plog, now_et):
+    """Regla del log (lección 29): en días de macro_context.dias_riesgo_macro no se entra antes de las 10:30 ET."""
+    pa = plog.get("parametros_activos") or {}
+    if not pa.get("bloqueo_entradas_dias_riesgo_macro"):
+        return None
+    hoy = now_et.date().isoformat()
+    ev = [str(d) for d in ((plog.get("macro_context") or {}).get("dias_riesgo_macro") or []) if str(d).startswith(hoy)]
+    if ev and (now_et.hour, now_et.minute) < (10, 30):
+        return ev[0]
+    return None
 
 
 def fuente(c):
@@ -121,6 +133,10 @@ def main():
         log(f"⚠️ no se pudo leer el log ({e}); se continúa solo con escaneo en vivo")
         plog = {}
     primera_hoy = (plog.get("ejecucion_apertura") or {}).get("fecha") != hoy
+    evento = None if FORCE_WINDOW else macro_block(plog, ahora.astimezone(ET))
+    if evento:
+        msg = f"⏸️ market-open: día de riesgo macro ({evento}). Sin entradas hasta las 10:30 ET; la siguiente pasada horaria operará."
+        log(msg); tg(msg); return
 
     L = effective_limits(plog, limits)
     lp, lr = L["paper"], L["real"]
