@@ -30,8 +30,23 @@ if int(os.environ.get("WEB_CONCURRENCY", "1")) > 1:
 
 app = FastAPI()
 
+# 2026-09-11 — decisión de Paco: el bot de Render queda APAGADO por defecto. El sistema que
+# opera es GitHub Actions (scripts/*.py + motor.yml). Este proceso sigue respondiendo al
+# healthcheck para que Render no lo reinicie en bucle, pero NO arranca el scheduler (ni
+# escaneo, ni órdenes, ni PROTECT). Para volver a encenderlo: variable RENDER_BOT_ENABLED=1.
+BOT_ENABLED = os.environ.get("RENDER_BOT_ENABLED", "0") == "1"
+
 
 def _start_scheduler() -> None:
+    if not BOT_ENABLED:
+        sys.stderr.write("Render bot DESACTIVADO (RENDER_BOT_ENABLED != 1): scheduler no arrancado.\n")
+        try:
+            from utils.telegram_alert import send_telegram_alert
+            send_telegram_alert("⏸️ Bot de Render desactivado por código (RENDER_BOT_ENABLED≠1). "
+                                "Opera solo el sistema de GitHub Actions.")
+        except Exception:
+            pass
+        return
     thread = threading.Thread(
         target=equity_scheduler_loop,
         name="equity-scheduler",
@@ -47,8 +62,11 @@ def start_scheduler_loop() -> None:
 
 @app.get("/")
 def healthcheck() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "bot": "enabled" if BOT_ENABLED else "disabled"}
 
 
 if __name__ == "__main__":
-    equity_scheduler_loop()
+    if BOT_ENABLED:
+        equity_scheduler_loop()
+    else:
+        sys.stderr.write("Render bot DESACTIVADO (RENDER_BOT_ENABLED != 1).\n")
