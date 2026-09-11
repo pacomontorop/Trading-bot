@@ -15,16 +15,18 @@
   },
 
   "paper": {
-    "min_score": 8.0,
-    "max_positions": 6,
-    "max_new_per_day": 4,
+    "_doc": "Cuenta de APRENDIZAJE: umbral más bajo y más posiciones para acumular operaciones y datos. Estos valores mandan sobre el log (ignore_log_limits).",
+    "ignore_log_limits": true,
+    "min_score": 6.0,
+    "max_positions": 8,
+    "max_new_per_day": 8,
     "risk_per_trade_pct": 0.5,
     "max_position_pct": 10.0,
     "daily_loss_stop_pct": 2.0
   },
 
   "execution": {
-    "open_window_min": [3, 60],
+    "open_window_min": [3, 330],
     "entry_limit_slippage_pct": 0.3,
     "entry_fill_timeout_s": 90,
     "min_rr": 2.0,
