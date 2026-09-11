@@ -52,8 +52,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-10",
-    "motivo_actualizacion": "Post-market 2026-09-10: bloqueo de entradas en dias de riesgo macro (CPI 11-sep, FOMC 16-sep), submapeo de energia en 3 buckets, y KPIs restringidos a equity sin duplicados.",
+    "ultima_actualizacion": "2026-09-11",
+    "motivo_actualizacion": "Post-market 2026-09-11: nuevo stop_min_dist_atr_mult=1.0 tras detectar que los stops PROTECT.* del bot se colocan a ~0.2% (0.02R) y scalpean las posiciones (QCOM/QRVO hoy). Ademas bloqueo de nuevas entradas 15-16 sep por FOMC con ~70% prob. de subida de tipos.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -247,7 +247,13 @@
         "WFRD"
       ]
     },
-    "kpi_universo_equity_only": true
+    "kpi_universo_equity_only": true,
+    "stop_min_dist_atr_mult": 1,
+    "stop_min_dist_regla": "Ningun stop puede estar a <1.0xATR14 del precio mientras R_actual<1.0. Break-even solo tras 1.0R. Trailing ceñido solo tras 1.5R.",
+    "bloqueo_nuevas_entradas_fechas": [
+      "2026-09-15",
+      "2026-09-16"
+    ]
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -300,16 +306,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-09-03",
-      "origen": "post-market-review",
-      "severidad": "alta",
-      "titulo": "BUG — supply chain propago un beat inexistente (AVGO)",
-      "descripcion": "El modulo de supply chain uso 'batio el consenso' como criterio de anchor beat. AVGO batio consenso ($3.32 vs $3.22) pero FALLO el whisper ($3.35) y guio revenue por debajo. El +0.5 se propago a CIEN, MRVL, ALAB, CRDO, ANET, COHR, LITE, AMD, NVDA, VRT durante 24h.",
-      "accion_correctiva": "Gate de 3 condiciones en supply_chain_signals.reglas_propagacion. Anchor que cae >3% el dia del print => bonus NEGATIVO al downstream.",
-      "tarea_afectada": "post-market-review",
-      "aplicada": true
-    },
     {
       "fecha": "2026-09-03",
       "origen": "post-market-review",
@@ -542,6 +538,16 @@
       "descripcion": "Manana 11-sep hay CPI de agosto a las 08:30 ET con los futuros descontando 59% de probabilidad de SUBIDA de tipos en el FOMC del 15-16. Abrir en la apertura (09:40) significa entrar despues del dato pero con el mercado aun digiriendolo; abrir antes es apostar a una moneda al aire. El unico earnings de manana (KR, 06:45 ET) coincide con el CPI, doble riesgo.",
       "accion_correctiva": "Nuevo parametro bloqueo_entradas_dias_riesgo_macro=true. En cualquier fecha listada en macro_context.dias_riesgo_macro no se ejecutan candidatos pendientes en la ventana 09:40-10:30 ET; se espera confirmacion de direccion hasta las 10:30 ET como minimo.",
       "tarea_afectada": "market-open-execution | pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-11",
+      "titulo": "BUG CRITICO — stops PROTECT.* del bot a distancia fija ~0.2%, no escalada por ATR: convierte swings en scalps de 0.1R",
+      "descripcion": "Hoy el bot (GHA-20260911-*) abrio DELL 11@564.75, QCOM 51@184.08, AAPL 30@334.59 y QRVO 89@117.08. Inmediatamente colocó stops PROTECT.* POR ENCIMA de la entrada a ~0.15-0.20%: QCOM stop 184.44 (entry 184.08) salto a los 32 min → +$7.14. QRVO stop 117.31 (entry 117.08) salto a los 27 min → +$14.24. DELL sigue abierta con stop 565.87 vs entry 564.75 y precio 567.13: distancia al stop 0.22% = 0.02R (ATR14 DELL = $32.21, 1R real = $64.41). Es decir, el stop protector esta a 1/50 del riesgo unitario previsto. Efecto: se captura +0.1% y se destruye toda la tesis de drift post-earnings, que necesita 1.5-3R. Explica directamente el avg_R_logrado = -0.15 con profit_factor 1.51 (muchas ganancias diminutas, perdidas completas).",
+      "accion_correctiva": "Regla: NINGUN stop de proteccion puede situarse a menos de 1.0×ATR14 del precio actual mientras R_actual < 1.0. Solo tras superar 1.0R se permite mover a break-even, y tras 1.5R a trailing ceñido. Nuevo parametro stop_min_dist_atr_mult=1.0 en parametros_activos; intraday-monitor y pre-close-manager deben validar cada stop contra ese minimo y re-colocarlo si lo incumple. El bot autonomo (GHA) requiere fix en su modulo PROTECT — encolado en bot_improvement_queue.",
+      "tarea_afectada": "intraday-monitor | pre-close-manager | bot_autonomo_GHA",
+      "evidencia": "QCOM +$7.14 en 32min, QRVO +$14.24 en 27min, DELL stop a 0.02R con ATR=32.21",
+      "auto_generado": false,
       "aplicada": true
     }
   ],
@@ -1336,8 +1342,8 @@
       "precio_entrada": 564.75,
       "precio_stop": 519.31,
       "precio_tp": 654.79,
-      "stop_pct": 8.0,
-      "rr": 2.0,
+      "stop_pct": 8,
+      "rr": 2,
       "qty": 11,
       "real_qty": 0,
       "estado": "abierta",
@@ -1362,7 +1368,7 @@
       "precio_stop": 174.06,
       "precio_tp": 203.97,
       "stop_pct": 5.42,
-      "rr": 2.0,
+      "rr": 2,
       "qty": 51,
       "real_qty": 0,
       "estado": "abierta",
@@ -1385,8 +1391,8 @@
       "precio_entrada": 334.59,
       "precio_stop": 317.8,
       "precio_tp": 367.98,
-      "stop_pct": 5.0,
-      "rr": 2.0,
+      "stop_pct": 5,
+      "rr": 2,
       "qty": 30,
       "real_qty": 0,
       "estado": "abierta",
@@ -1410,7 +1416,7 @@
       "precio_stop": 111.38,
       "precio_tp": 128.36,
       "stop_pct": 4.83,
-      "rr": 2.0,
+      "rr": 2,
       "qty": 89,
       "real_qty": 0,
       "estado": "abierta",
@@ -1493,7 +1499,7 @@
     },
     {
       "ticker": "OXY",
-      "score": 7,
+      "score": 6.8,
       "score_ajustado": 7,
       "sector": "energy",
       "estado": "vigilar_cauteloso",
@@ -1504,22 +1510,23 @@
       "tipo": "macro_oil_catchup",
       "precio_referencia": 61.3,
       "atr14_pct": 2.28,
-      "accion_recomendada": "NO entrar antes del PPI. Evaluar 10-sep DESPUES de 09:00 ET si el PPI no sorprende al alza.",
-      "ventana_entrada": "2026-09-10 10:00-12:00 ET, solo post-PPI benigno",
+      "accion_recomendada": "vigilar_solo_lunes_martes — NO entrar 16-sep (FOMC). Entrada solo si XLE mantiene RS>+1.5% vs SPY y OXY rompe 62.0 con volumen.",
+      "ventana_entrada": "2026-09-14/15 10:15-13:00 ET",
       "argumento": "E&P de mayor beta al crudo entre las grandes. Crudo +6.43% en 5 sesiones y OXY solo +0.57%: DIVERGENCIA de catch-up. Es la menos extendida del complejo energetico (+8.35% sobre MA50 frente a VLO +21.8%, MPC +22.1%, PSX +20.1%). Volumen 1.27x la media de 20d = interes creciente. Sector energy con prioridad +2 y el unico que sube hoy (XLE +0.83% vs XLK 0.00%).",
       "riesgo": "Titular de acuerdo Ormuz-Oman revierte el crudo de golpe. Riesgo BIDIRECCIONAL, no unidireccional.",
-      "stop_tipo": "ATRx1.5 = -3.4%",
-      "expira": "2026-09-14T20:00:00Z",
+      "stop_tipo": "ATR×1.5 = $2.10 (ATR14 1.40) — suelo minimo 1.0xATR por nueva regla stop_min_dist_atr_mult",
+      "expira": "2026-09-15T20:00:00Z",
       "score_macro_bonus": 2,
-      "notas": " | 2026-09-10: E&P confirmada como sub-sector valido (energy +2). OXY -0.24% hoy, +0.41% en 5d con crudo +6.7% — sin momentum propio. NO ENTRAR antes del CPI de manana 08:30 ET. Reevaluar el lunes 14-sep con confirmacion de momentum (regla validada 2 veces).",
-      "bloqueo_activo": "riesgo_macro_CPI_20260911"
+      "notas": " | 2026-09-10: E&P confirmada como sub-sector valido (energy +2). OXY -0.24% hoy, +0.41% en 5d con crudo +6.7% — sin momentum propio. NO ENTRAR antes del CPI de manana 08:30 ET. Reevaluar el lunes 14-sep con confirmacion de momentum (regla validada 2 veces). | 2026-09-11: PPI/CPI ya publicados. Energia sigue lider: XLE +4.58% 10d vs SPY -0.91%; OXY RS +2.56% 5d, +3.86% 10d. NO es trade de earnings (reporta 09-nov) — es continuacion de momentum sectorial. Riesgo: ya hay exposicion energia via XOM+CVX. FOMC 16-sep bloquea entradas.",
+      "bloqueo_activo": "riesgo_macro_CPI_20260911",
+      "score_total": 8.8
     },
     {
       "ticker": "SLB",
-      "score": 5.8,
+      "score": 5.2,
       "score_ajustado": 5.8,
       "sector": "energy_services",
-      "estado": "vigilar_cauteloso",
+      "estado": "descartado",
       "fecha_deteccion": "2026-09-09",
       "detectado_por": "post-market-review",
       "earnings_fecha": "2026-10-16",
@@ -1535,7 +1542,7 @@
       "expira": "2026-09-14T20:00:00Z",
       "score_macro_bonus": -1,
       "score_total": 5.8,
-      "notas": " | 2026-09-10 DEGRADADO -1pt: SLB reclasificado de 'energy' (+2) a 'energy_services' (-1). Evidencia: con crudo +6.7% SLB hizo -1.85% (5d -3.67%, volumen 0.63x), HAL -2.91%, BKR -6.63%. Los servicios petroleros no capturan el shock de oferta. Requiere ruptura de la tendencia relativa antes de reconsiderar."
+      "notas": " | 2026-09-10 DEGRADADO -1pt: SLB reclasificado de 'energy' (+2) a 'energy_services' (-1). Evidencia: con crudo +6.7% SLB hizo -1.85% (5d -3.67%, volumen 0.63x), HAL -2.91%, BKR -6.63%. Los servicios petroleros no capturan el shock de oferta. Requiere ruptura de la tendencia relativa antes de reconsiderar. | 2026-09-11: DESCARTADO — unico nombre de energia con RS negativa (-1.26% vs SPY 5d, -2.42% 5d absoluto) mientras el sector sube. Servicios petroleros (energy_services, prioridad -1) no participa del rally del crudo. Sin catalizador hasta earnings 16-oct."
     },
     {
       "ticker": "KR",
@@ -1566,7 +1573,7 @@
       "score_ajustado": 6.92,
       "score_raw": 8.3,
       "score_breakdown": {
-        "momentum": 7.0,
+        "momentum": 7,
         "news": 0.8,
         "insider": 0,
         "uw": 0,
@@ -1576,7 +1583,7 @@
       "precio_referencia": 564.26,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-11T21:47:17Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T15:47:17.638482+00:00",
@@ -1591,7 +1598,7 @@
       "score_ajustado": 6.25,
       "score_raw": 7.5,
       "score_breakdown": {
-        "momentum": 7.0,
+        "momentum": 7,
         "news": 0,
         "insider": 0,
         "uw": 0,
@@ -1601,7 +1608,7 @@
       "precio_referencia": 184.21,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-11T21:47:17Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T15:47:17.638482+00:00",
@@ -1626,7 +1633,7 @@
       "precio_referencia": 117.14,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T00:36:31Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T18:36:31.654800+00:00",
@@ -1636,7 +1643,7 @@
     {
       "ticker": "QRVO",
       "symbol": "QRVO",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 7.08,
       "score_ajustado": 7.08,
       "score_raw": 8.5,
@@ -1651,16 +1658,16 @@
       "precio_referencia": 116.65,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+3.8% vol=2.1x 52h_dist=3.2%"
+      "notas": "1d=+3.8% vol=2.1x 52h_dist=3.2% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "DELL",
       "symbol": "DELL",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 6.92,
       "score_ajustado": 6.92,
       "score_raw": 8.3,
@@ -1675,16 +1682,16 @@
       "precio_referencia": 567.14,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+11.9% vol=1.6x 52h_dist=0.1%"
+      "notas": "1d=+11.9% vol=1.6x 52h_dist=0.1% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "SWKS",
       "symbol": "SWKS",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 6.5,
       "score_ajustado": 6.5,
       "score_raw": 7.8,
@@ -1699,16 +1706,16 @@
       "precio_referencia": 88.35,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+5.1% vol=1.8x 52h_dist=4.3%"
+      "notas": "1d=+5.1% vol=1.8x 52h_dist=4.3% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "HPE",
       "symbol": "HPE",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 5.67,
       "score_ajustado": 5.67,
       "score_raw": 6.8,
@@ -1723,21 +1730,21 @@
       "precio_referencia": 62.08,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+12.4% vol=1.5x 52h_dist=2.1%"
+      "notas": "1d=+12.4% vol=1.5x 52h_dist=2.1% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "QCOM",
       "symbol": "QCOM",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 5.42,
       "score_ajustado": 5.42,
       "score_raw": 6.5,
       "score_breakdown": {
-        "momentum": 6.0,
+        "momentum": 6,
         "news": 0,
         "insider": 0,
         "uw": 0,
@@ -1747,16 +1754,16 @@
       "precio_referencia": 181.97,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+2.9% vol=1.0x 52h_dist=1.9%"
+      "notas": "1d=+2.9% vol=1.0x 52h_dist=1.9% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "AAPL",
       "symbol": "AAPL",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 5.08,
       "score_ajustado": 5.08,
       "score_raw": 6.1,
@@ -1771,16 +1778,16 @@
       "precio_referencia": 332.27,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+1.8% vol=1.1x 52h_dist=1.2%"
+      "notas": "1d=+1.8% vol=1.1x 52h_dist=1.2% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "META",
       "symbol": "META",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 5.08,
       "score_ajustado": 5.08,
       "score_raw": 6.1,
@@ -1795,21 +1802,21 @@
       "precio_referencia": 648.03,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+0.6% vol=0.8x 52h_dist=2.4%"
+      "notas": "1d=+0.6% vol=0.8x 52h_dist=2.4% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     },
     {
       "ticker": "RBLX",
       "symbol": "RBLX",
-      "estado": "pendiente",
-      "score": 5.0,
-      "score_ajustado": 5.0,
-      "score_raw": 6.0,
+      "estado": "expirado",
+      "score": 5,
+      "score_ajustado": 5,
+      "score_raw": 6,
       "score_breakdown": {
-        "momentum": 6.0,
+        "momentum": 6,
         "news": 0,
         "insider": 0,
         "uw": 0,
@@ -1819,23 +1826,23 @@
       "precio_referencia": 45.48,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
+      "runup_tolerance_pct": 5,
       "expira": "2026-09-12T02:01:06Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
-      "notas": "1d=+1.3% vol=0.5x 52h_dist=2.2%"
+      "notas": "1d=+1.3% vol=0.5x 52h_dist=2.2% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-10",
+    "fecha_actualizacion": "2026-09-11",
     "semana": "2026-W37",
-    "regimen": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "regimen_anterior": "STAGFLATION_SHOCK + HAWKISH_REPRICING + TARIFF_ESCALATION",
-    "vix": 16.46,
+    "regimen": "DEFENSIVE_MODE + HAWKISH_FED_HIKE_RISK",
+    "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
+    "vix": 18.82,
     "yield_spread_10y2y": 0.41,
     "us10y": 4.84,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-10: (1) WTI cierra en 102.48 (+6.7%) y Brent en 107.63 (+5.9%), primera vez sobre 100, por temor a guerra prolongada en Oriente Medio. (2) PPI agosto +0.4% m/m en linea pero 5.4% a/a, 0.1pp por encima de lo esperado; energia final +4.2% y diesel +24.1%. Core PPI +0.2%, por debajo del 0.3% esperado: el shock es de OFERTA, no de demanda. (3) Cuarta sesion consecutiva de caidas: Dow -0.6% (52064), S&P500 -0.58% (7591.70), Nasdaq -0.65% (26081.72). (4) Futuros de fondos federales descuentan 59% de probabilidad de SUBIDA de tipos en el FOMC del 15-16 sep. (5) DIVERGENCIA CLAVE: con el crudo +6.7% las petroleras NO acompanaron. XLE -0.57%, servicios petroleros hundidos (BKR -6.6% por costes de integracion de Chart Industries, HAL -2.9%, SLB -1.9%) y solo E&P e integradas aguantaron (DVN +2.1%, FANG +1.4%, XOM +0.7%). El mercado lee el crudo como destruccion de demanda y estanflacion, no como bull case de beneficios energeticos. VIX 16.46, aun sorprendentemente bajo para el contexto.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-11: CPI agosto +0.4% m/m, 3.4% a/a (en linea); core +0.3% m/m (0.1pp por encima de consenso), core anual 2.4%. Reaccion clave NO fue el dato sino los tipos: el 2y saltó ~15pb a maximo de 2+ años y el mercado pasó a descontar ~70% de probabilidad de SUBIDA de tipos en el FOMC del 16-sep. Petroleo en triple digito mantiene la presion de costes. VIX 18.82 (cerró >17 por primera vez en 28 sesiones el 10-sep). Indices cerraron en negativo. Implicacion: repricing hawkish real, no ruido — duracion y growth penalizados, energia y financieras favorecidas, consumo discrecional e inmobiliario muy expuestos. Semana del 14-sep dominada por el FOMC: calendario de earnings practicamente vacio (solo micro-caps sin whisper number).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -1847,17 +1854,18 @@
       "Gmail post-market 2026-09-09: 16 emails (Bloomberg Morning Briefing 'Oil tops $100', Supply Lines, Markets Daily, Energy Daily, EW Summary Tue, EW Whisper Report 1113, InsiderFinance Evening Edge, TipRanks watchlist) + WebSearch econ calendar + yfinance",
       "Gmail post-market 2026-09-10: 12 emails revisados, sin resultados de earnings de posiciones Cowork",
       "WebSearch 2026-09-10: cierre mercado, PPI agosto, KR preview, BKR drop",
-      "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos"
+      "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos",
+      "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)"
     ],
     "sector_prioridades": {
       "energy": 2,
       "materials": 1,
       "industrials": 0,
       "healthcare": 1,
-      "financials": 0,
-      "technology": 0,
-      "communication": 0,
-      "utilities": 1,
+      "financials": 1,
+      "technology": -1,
+      "communication": -1,
+      "utilities": 0,
       "consumer_discretionary": -2,
       "consumer_staples": -2,
       "real_estate": -2,
@@ -1868,50 +1876,34 @@
       "energy",
       "materials",
       "healthcare",
-      "utilities",
+      "financials",
       "energy_refiners"
     ],
     "sectores_a_evitar_esta_semana": [
+      "technology",
+      "communication",
       "consumer_discretionary",
       "consumer_staples",
       "real_estate",
       "energy_services"
     ],
-    "cambios_vs_semana_anterior": [
-      "technology +2 -> 0: Pimco recorta Mag7; AVGO fallo whisper; GWRE -19,93% pese a batir; US10Y 4,77% comprime multiplos de larga duracion.",
-      "financials 0 -> +1: 58% de probabilidad de subida = viento de cola para margenes de intermediacion.",
-      "real_estate -1 -> -2: tipos largos al 4,77% con riesgo de subida es el peor escenario posible.",
-      "utilities 0: Bloomberg Energy Daily avisa de mas volatilidad al aplazarse las reformas regulatorias."
-    ],
+    "cambios_vs_semana_anterior": "technology 0→-1 y communication 0→-1 (repricing hawkish castiga duracion); financials 0→+1 (curva/tipos al alza); utilities +1→0 (bond proxy penalizado por 2y en maximos).",
     "eventos_macro_proxima_semana": [
       {
-        "fecha": "2026-09-07",
-        "evento": "Labor Day — MERCADO CERRADO",
-        "hora_et": "-",
-        "impacto": "N/A"
-      },
-      {
-        "fecha": "2026-09-10",
-        "evento": "Peticiones semanales de desempleo",
-        "hora_et": "08:30",
-        "impacto": "MEDIO"
-      },
-      {
-        "fecha": "2026-09-11",
-        "evento": "IPC de agosto",
-        "hora_et": "08:30",
-        "impacto": "MAXIMO"
-      },
-      {
         "fecha": "2026-09-16",
-        "evento": "FOMC (semana siguiente) — 58% prob. de SUBIDA",
-        "hora_et": "14:00",
-        "impacto": "MAXIMO"
+        "evento": "FOMC decision — mercado descuenta ~70% prob. de SUBIDA de tipos",
+        "impacto": "MUY ALTO"
+      },
+      {
+        "fecha": "2026-09-15",
+        "evento": "Retail sales / datos consumo",
+        "impacto": "MEDIO"
       }
     ],
     "dias_riesgo_macro": [
       "2026-09-11 CPI 08:30 ET (IMPACTO MAXIMO)",
-      "2026-09-16 FOMC 14:00 ET (59% prob. SUBIDA)"
+      "2026-09-16 FOMC 14:00 ET (59% prob. SUBIDA)",
+      "2026-09-16"
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
@@ -1944,7 +1936,7 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-10T20:30:23.125Z",
+    "ts_actualizado": "2026-09-11T20:28:13.621Z",
     "macro_score": -1.3,
     "macro_bonus_ew": -0.39,
     "macro_nivel": "alerta",
@@ -2112,6 +2104,19 @@
           "energy_services"
         ],
         "fuente": "Alpaca bars + StockStory"
+      },
+      {
+        "fecha": "2026-09-11",
+        "evento": "CPI en linea pero 2y +15pb a maximo de 2 años; mercado descuenta ~70% prob. de subida FOMC 16-sep",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "communication",
+          "real_estate",
+          "consumer_discretionary",
+          "financials"
+        ],
+        "fuente": "WebSearch/Yahoo Finance/Vantage/Schwab"
       }
     ],
     "futuros": {
@@ -2129,25 +2134,30 @@
       "nota": "WTI cruza 100 USD por primera vez en el ciclo; diesel medio USA 5.85 USD/gal (record)"
     },
     "calendario_earnings_inmediato": {
-      "ts": "2026-09-08T13:20",
-      "hoy_AH": [
-        "GME"
+      "lunes_14_pre": [
+        "RFIL",
+        "HAIN",
+        "CODA",
+        "CSHR"
       ],
-      "manana_BMO": [
-        "KFY",
-        "CHWY",
-        "SIG"
+      "lunes_14_ah": [
+        "HITI",
+        "PLAY",
+        "HYFT",
+        "KMTS",
+        "RLGT"
       ],
-      "proximos": {
-        "2026-09-10": [
-          "ORCL",
-          "ADBE",
-          "RH"
-        ]
-      },
-      "fuente": "yfinance calendar (EW no disponible)"
+      "martes_15_pre": [
+        "FPS",
+        "VRA",
+        "BIOX",
+        "COE"
+      ],
+      "nota": "Ninguno con whisper number ni sentiment publicado. Universo sin liquidez ni asimetria — semana SIN candidatos earnings validos."
     },
-    "nota_industrials": "industrials bajado +1 -> 0: crudo $100 + aranceles Canada golpean costes de transporte e inputs."
+    "nota_industrials": "industrials bajado +1 -> 0: crudo $100 + aranceles Canada golpean costes de transporte e inputs.",
+    "preparacion_semana": "semana del 2026-09-14 — FOMC-driven, sin earnings relevantes",
+    "top_candidatos_lunes": []
   },
   "operaciones_crypto": [
     {
@@ -3394,7 +3404,7 @@
           "symbol": "BTC/USD",
           "entry": 80714.27,
           "curr": 78186.365,
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "pnl_pct": -3.13,
           "atr": 599.677942,
           "r_mult": -2.108,
@@ -3761,7 +3771,7 @@
         },
         {
           "symbol": "BTC/USD",
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "mv_usd": 0.52334,
           "entry": 80714.27,
           "current": 76973.04,
@@ -3836,7 +3846,7 @@
           "symbol": "BTC/USD",
           "entry": 80714.27,
           "current": 76697.393,
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "atr_now": 759.754237,
           "r_multiple": -2.644,
           "tier_mult": 2,
@@ -4863,6 +4873,17 @@
         "riesgo_por_trade_equity_pct": 0.01
       },
       "motivo": "Desglose por tier de score sobre 11 ops cerradas: todo el edge esta en 8.5+; banda 7.5-8.5 sin datos -> sizing 0.6x."
+    },
+    {
+      "fecha": "2026-09-11",
+      "parametros": {
+        "stop_min_dist_atr_mult": 1,
+        "bloqueo_nuevas_entradas_fechas": [
+          "2026-09-15",
+          "2026-09-16"
+        ]
+      },
+      "motivo": "Stops PROTECT a 0.02R scalpean posiciones (QCOM +$7 en 32min, QRVO +$14 en 27min, DELL stop a 0.22%); FOMC 16-sep con 70% prob. de hike."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -4904,22 +4925,22 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-10",
+    "_ultima_actualizacion": "2026-09-11",
     "rendimiento_global": {
-      "equity_paper_actual": 107807.99,
+      "equity_paper_actual": 107818.97,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2307.99,
-      "pnl_total_paper_pct": 2.19,
+      "pnl_total_paper_dolares": 2318.97,
+      "pnl_total_paper_pct": 2.2,
       "equity_real_actual": 4548.12,
       "equity_real_inicio_sistema": 4500,
-      "pnl_total_real_dolares": 48.13,
+      "pnl_total_real_dolares": 48.12,
       "pnl_total_real_pct": 1.07,
       "spy_mismo_periodo_pct": 12.14,
       "alpha_paper_vs_spy_pct": -13.32,
       "alpha_real_vs_spy_pct": -11.33,
       "dias_activo_sistema": 28,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 105.56,
+      "pnl_dia_paper_dolares": 106.13,
       "pnl_dia_real_dolares": 0,
       "equity_paper_peak": 109924.64,
       "_nota_spy": "Sobrescrito por kpi_report.py con datos Alpaca (SPY ajustado, mismo periodo)."
@@ -5056,7 +5077,7 @@
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
       "max_drawdown_paper_actual_pct": 1.65,
-      "drawdown_actual_pct": 1.91
+      "drawdown_actual_pct": 1.92
     },
     "bot_metricas": {
       "paper": {
@@ -5604,6 +5625,17 @@
         "profit_factor": 1.51,
         "operaciones_acumuladas": 26,
         "vix": 16.46
+      },
+      {
+        "fecha": "2026-09-11",
+        "equity_paper": 107818.97,
+        "equity_real": 4548.12,
+        "pnl_dia_paper": 106.13,
+        "win_rate_acumulado": 30.8,
+        "avg_r_acumulado": -0.15,
+        "operaciones_acumuladas": 26,
+        "vix": 18.82,
+        "drawdown_pct": 1.92
       }
     ],
     "objetivos": {
@@ -5648,7 +5680,7 @@
         },
         "acciones_ultimas_40": {
           "n": 40,
-          "win_rate_pct": 50.0,
+          "win_rate_pct": 50,
           "profit_factor": 1.42,
           "avg_win_usd": 293.24,
           "avg_loss_usd": -206.04,
@@ -5965,7 +5997,7 @@
         {
           "symbol": "BTCUSD",
           "account": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "mv": 0.31,
           "clasificacion": "dust",
           "accion": "ignorar (<$5, leccion 2026-08-11)"
@@ -5973,7 +6005,7 @@
         {
           "symbol": "SOLUSD",
           "account": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "mv": 0,
           "clasificacion": "dust",
           "accion": "ignorar (<$5, leccion 2026-08-11)"
@@ -5981,7 +6013,7 @@
         {
           "symbol": "BTCUSD",
           "account": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "mv": 0.52,
           "clasificacion": "dust",
           "accion": "ignorar (<$5)"
@@ -6187,7 +6219,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 68729.5,
           "pnl_pct": 5.8,
@@ -6197,7 +6229,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 82.11,
           "pnl_pct": 6.32,
@@ -6433,12 +6465,12 @@
       "posiciones_post_cierre": [
         {
           "symbol": "BTCUSD",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "mv": 0.39
         },
         {
           "symbol": "SOLUSD",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "mv": 0.002
         }
       ],
@@ -6452,7 +6484,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 78073.491,
           "pnl_pct": 20.19,
@@ -6462,7 +6494,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 95.76,
           "pnl_pct": 23.98,
@@ -6590,7 +6622,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 77674.82,
           "pnl_pct": 19.57,
@@ -6601,7 +6633,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 104.36,
           "pnl_pct": 35.11,
@@ -6678,12 +6710,12 @@
       "posiciones_dust_crypto": [
         {
           "symbol": "BTCUSD",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "valor_usd": 0.38
         },
         {
           "symbol": "SOLUSD",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "valor_usd": 0.0025
         }
       ],
@@ -7356,7 +7388,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "market_value": 0.3139,
           "pnl_pct": -0.87,
           "pnl_abs": -0.0028,
@@ -7366,7 +7398,7 @@
         {
           "symbol": "SOLUSD",
           "cuenta": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "market_value": 0.0019,
           "pnl_pct": -1.55,
           "pnl_abs": 0,
@@ -7376,7 +7408,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "market_value": 0.5344,
           "pnl_pct": -45.35,
           "pnl_abs": -0.4435,
@@ -7407,7 +7439,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "market_value": 0.3156,
           "entry": 64959.1,
           "price_now": 64752.6,
@@ -7420,7 +7452,7 @@
         {
           "symbol": "SOLUSD",
           "cuenta": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "market_value": 0.0019,
           "entry": 77.22,
           "price_now": 77.157360406,
@@ -7433,7 +7465,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "market_value": 0.5374,
           "entry": 117828.22,
           "price_now": 64752.6,
@@ -7471,7 +7503,7 @@
           "price_now": 68258.5,
           "entry_price": 64959.1,
           "stop_actual": 0,
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "source": "bot_autonomo"
         },
         {
@@ -7485,7 +7517,7 @@
           "price_now": 81.8151,
           "entry_price": 77.22,
           "stop_actual": 0,
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "source": "bot_autonomo"
         },
         {
@@ -7499,7 +7531,7 @@
           "price_now": 68258.5,
           "entry_price": 117828.22,
           "stop_actual": 0,
-          "shares": 8.299e-06,
+          "shares": 0.000008299,
           "source": "bot_autonomo"
         }
       ],
@@ -7544,7 +7576,7 @@
           "price_now": 72360.41,
           "entry_price": 64959.1,
           "stop_actual": 0,
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "source": "bot_autonomo"
         },
         {
@@ -7558,7 +7590,7 @@
           "price_now": 86.9102,
           "entry_price": 77.22,
           "stop_actual": 0,
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "source": "bot_autonomo"
         },
         {
@@ -7572,7 +7604,7 @@
           "price_now": 72360.41,
           "entry_price": 117828.22,
           "stop_actual": 0,
-          "shares": 8.299e-06,
+          "shares": 0.000008299,
           "source": "bot_autonomo"
         }
       ],
@@ -8162,6 +8194,26 @@
       ],
       "evento_clave": "WTI cierra en 102.48 (+6.7%, primera vez sobre 100). PPI 5.4% a/a. 59% prob. de subida de tipos en FOMC. CPI manana 08:30 ET.",
       "leccion": "El crudo subiendo no implica petroleras subiendo: XLE -0.57% con crudo +6.7%. Los servicios petroleros (SLB/HAL/BKR) van en direccion contraria a las E&P. Hay que separar el sector energia en sub-buckets."
+    },
+    {
+      "fecha": "2026-09-11",
+      "dia": "Friday",
+      "equity_paper_cierre": 107818.97,
+      "variacion_dia": 106.13,
+      "variacion_pct": 0.1,
+      "equity_real_cierre": 4548.12,
+      "variacion_real_dia": 0,
+      "vix": 18.82,
+      "regimen_macro": "DEFENSIVE_MODE + HAWKISH_FED_HIKE_RISK",
+      "trades_paper": [
+        "DELL buy 11 @ $564.75",
+        "QCOM buy 51 @ $184.08 → sell 51 @ $184.22 (+$7.14)",
+        "AAPL buy 30 @ $334.59",
+        "QRVO buy 89 @ $117.08 → sell 89 @ $117.24 (+$14.24)"
+      ],
+      "trades_cowork": [],
+      "evento_clave": "CPI en linea pero el 2y salta 15pb a maximo de 2 años y el mercado descuenta ~70% de probabilidad de SUBIDA de tipos en el FOMC del 16-sep.",
+      "leccion": "Los stops PROTECT del bot a ~0.2% del precio (0.02R) convierten swings de earnings en scalps de +0.1%: QCOM y QRVO cerrados en menos de 35 minutos por +$21 combinados."
     }
   ],
   "alertas_criticas": [
@@ -8432,6 +8484,17 @@
       "mensaje": "XOM y CVX marcadas inicialmente como 'sin stop'. Verificado: ambas tienen pata stop_limit en estado 'held' dentro de su orden bracket (XOM 156.74 / CVX 206.59).",
       "accion_tomada": "Se corrigio el metodo de deteccion (leer legs de la orden padre con nested=true). Leccion registrada.",
       "resuelto": true
+    },
+    {
+      "fecha": "2026-09-11",
+      "tipo": "STOP_MICRO_DISTANCIA",
+      "mensaje": "DELL stop 565.87 vs precio 567.13 = 0.22% (0.02R; ATR14=32.21). Saltara al primer ruido del lunes por +$12. Stop coherente seria ~500-535.",
+      "tickers": [
+        "DELL"
+      ],
+      "urgencia": "ALTA",
+      "accion_requerida": "Posicion del bot — no se modifica automaticamente (regla de no-interferencia). Revisar manualmente.",
+      "resuelto": false
     }
   ],
   "mejoras_sistema": [
@@ -8812,6 +8875,15 @@
       "evidencia": "PF pasa de 2.60 a 1.51 al quitar DOGE/USD (+1264.65) y el PLTR duplicado (+270). WR pasa de 35.7% a 30.8%. Divergencia observada hoy: crudo +6.7% vs XLE -0.57% y servicios -2%/-6.6%.",
       "archivo_modificado": "performance_log.json (kpis, operaciones, macro_context.sector_prioridades, parametros_activos)",
       "impacto_esperado": "Las decisiones de sizing y de umbral dejan de apoyarse en un edge inexistente. El sistema deja de comprar servicios petroleros creyendo que son una apuesta al crudo.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-11",
+      "tipo": "parametro_ajustado + regla_añadida",
+      "descripcion": "stop_min_dist_atr_mult=1.0 — suelo de distancia de stop en 1xATR14 mientras R<1.0",
+      "evidencia": "QCOM y QRVO stopeados en <35 min por +0.1%; DELL con stop a 0.02R (ATR 32.21, stop a 1.26$)",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Permitir que el drift post-earnings madure hasta 1.5-3R en vez de cortar a 0.1R. Deberia subir avg_R desde -0.15 hacia positivo sin tocar el win rate.",
       "implementada": true
     }
   ],
@@ -9942,6 +10014,24 @@
           ],
           "tickers_sin_stop": [],
           "nota": "Posiciones sin stop residuales son polvo cripto (<5 USD de valor), sin riesgo material."
+        },
+        {
+          "fecha": "2026-09-11",
+          "bot_positions": 6,
+          "bot_sin_stop": 1,
+          "sin_stop_detalle": "SOLUSD (0.00005 SOL, valor $0.00 — polvo, irrelevante)",
+          "bot_pnl_latente_pct": 0.0203,
+          "tickers_bot": [
+            "AAPL",
+            "CVX",
+            "DELL",
+            "ETHUSD",
+            "SOLUSD",
+            "XOM"
+          ],
+          "trades_cerrados_hoy": 2,
+          "pnl_realizado_hoy": 21.38,
+          "anomalia": "stops PROTECT a 0.02R — ver leccion 2026-09-11"
         }
       ]
     },
@@ -10490,6 +10580,19 @@
         "evidencia": "performance_log operaciones W36 + candidatos_validados (KFY score 5,8 ejecutado).",
         "estado": "pendiente",
         "implementada": false
+      },
+      {
+        "fecha": "2026-09-11",
+        "prioridad": "MAXIMA",
+        "modulo": "PROTECT / trailing stop del bot GHA",
+        "problema": "Stops colocados a distancia fija ~0.15-0.20% del precio, por encima de la entrada, inmediatamente tras el fill.",
+        "fix_propuesto": "stop_dist = max(1.0*ATR14, 0.8*stop_inicial) mientras R<1.0. Prohibir stop por encima de entry antes de alcanzar 1.0R.",
+        "evidencia_tickers": [
+          "QCOM",
+          "QRVO",
+          "DELL"
+        ],
+        "estado": "pendiente_usuario"
       }
     ],
     "stats": {
@@ -10884,6 +10987,16 @@
       "parametros_version": "2026-09-10",
       "mejora_hoy": "Saneamiento KPIs (PF 2.60 -> 1.51 real) + submapeo de energia en 3 sub-sectores",
       "nota_entorno": "Sandbox Linux caido (fallo de montaje virtiofs/Plan9). Toda la tarea ejecutada via fetch desde el navegador Chrome contra GitHub, Alpaca y Telegram. Sin perdida de funcionalidad."
+    },
+    {
+      "fecha": "2026-09-11",
+      "lecciones_acumuladas": 30,
+      "mejoras_acumuladas": 42,
+      "candidatos_activos": 1,
+      "bugs_pendientes": 5,
+      "parametros_version": "2026-09-11",
+      "mejora_hoy": "stop_min_dist_atr_mult=1.0 (suelo de stop en 1xATR mientras R<1.0)",
+      "score_sistema": 5.7
     }
   ],
   "motor_alpha_diario": {
@@ -17252,127 +17365,36 @@
     "si_no_puedes_llamar_a_la_api": "Si tu entorno no tiene shell o no puede enviar la cabecera Referer (p.ej. fetch desde navegador), NO consultes earningswhispers.com: usa la sección ew_cache de este log, que GitHub Actions actualiza cada hora en sesión y cada noche. No es un fallo de EW; no bloquees la tarea."
   },
   "plan_semana_proxima": {
-    "semana": "2026-W37",
-    "fecha_inicio": "2026-09-07",
-    "fecha_fin": "2026-09-11",
-    "generado": "2026-09-05",
-    "regimen_esperado": "STAGFLATION_SHOCK + HAWKISH_REPRICING",
-    "sesiones": 4,
-    "nota_festivo": "Lunes 7-sep: Labor Day, mercado CERRADO. Primera sesion: martes 8.",
-    "modo": "DEFENSIVO toda la semana",
-    "calendario_earnings": {
-      "2026-09-08": {
-        "BMO": [],
-        "AMC": [
-          "BRZE"
-        ]
-      },
-      "2026-09-09": {
-        "BMO": [
-          "CHWY",
-          "KFY",
-          "WLTH"
-        ],
-        "AMC": [
-          "AVAV"
-        ]
-      },
-      "2026-09-10": {
-        "BMO": [
-          "TEN"
-        ],
-        "AMC": [
-          "ORCL",
-          "ADBE",
-          "RH"
-        ]
-      },
-      "2026-09-11": {
-        "BMO": [
-          "KR"
-        ],
-        "AMC": []
-      }
-    },
-    "acciones_obligatorias": [
+    "semana": "2026-09-14 / 2026-09-18",
+    "preparado_en": "2026-09-11",
+    "regimen_esperado": "DEFENSIVE_MODE — FOMC 16-sep con ~70% prob. de subida de tipos descontada",
+    "modo": "DEFENSIVO",
+    "earnings_relevantes": "NINGUNO. Lunes pre: RFIL/HAIN/CODA/CSHR. Lunes AH: HITI/PLAY/HYFT/KMTS/RLGT. Martes pre: FPS/VRA/BIOX/COE. Ninguno con whisper number, sentiment ni liquidez suficiente. Semana sin motor de earnings.",
+    "reglas": [
+      "NO nuevas entradas de earnings-drift: no hay universo valido.",
+      "NO nuevas entradas 15 y 16 de septiembre (vispera y dia del FOMC).",
+      "Lunes: gestion pura. Verificar que ningun stop este a <1.0xATR del precio (nueva regla).",
+      "Unico sesgo largo aceptable: energia (XLE RS +1.9% vs SPY, crudo triple digito, prioridad macro +2) y solo con confirmacion de ruptura.",
+      "Evitar tecnologia, comunicacion, consumo discrecional e inmobiliario hasta ver el FOMC."
+    ],
+    "candidatos_lunes": [
       {
-        "fecha": "2026-09-08",
-        "accion": "CERRAR KFY antes del cierre (regla R0: earnings BMO el 9-sep). Entrada 85,37, stop 82,74.",
-        "prioridad": "MAXIMA"
-      },
-      {
-        "fecha": "2026-09-08",
-        "accion": "Verificar el Session Summary del bot: si vuelve a marcar 0/N señales, el fix de EW del 4-sep no funciono -> escalar BIQ-W36-02.",
-        "prioridad": "MAXIMA"
-      },
-      {
-        "fecha": "2026-09-08",
-        "accion": "Barrer los residuos polvo: SOLUSD en paper ($0,00) y BTCUSD en real ($0,66 al -32%).",
-        "prioridad": "BAJA"
+        "ticker": "OXY",
+        "score_total": 8.8,
+        "tipo": "momentum sectorial (no earnings)",
+        "nota": "Solo si rompe 62.0 con volumen y XLE mantiene RS. Ojo: ya hay XOM+CVX en cartera."
       }
     ],
-    "top_candidatos_vigilar": [
+    "posiciones_a_vigilar": [
       {
-        "ticker": "TEN",
-        "score_preliminar": 7.4,
-        "earnings": "2026-09-10",
-        "timing": "BMO",
-        "nota": "Unico candidato pendiente por encima de 7.0. Requiere score completo con datos EW el 9-sep."
+        "ticker": "DELL",
+        "motivo": "stop a 0.22% del precio — saltara al primer ruido"
       },
       {
-        "ticker": "BRZE",
-        "score_preliminar": 7,
-        "earnings": "2026-09-08",
-        "timing": "AMC",
-        "nota": "Justo en el limite. Small/mid cap — el segmento con mejor base rate medida (+0,30% de media)."
-      },
-      {
-        "ticker": "AVAV",
-        "score_preliminar": null,
-        "earnings": "2026-09-09",
-        "timing": "AMC",
-        "nota": "Defensa/drones con conflicto de Iran activo. Sector industrials +1. Requiere scoring."
+        "ticker": "AAPL",
+        "motivo": "-0.15R, tecnologia con prioridad macro -1 tras repricing hawkish; stop 322.82 a 2.84%"
       }
-    ],
-    "vetos_explicitos": [
-      "ORCL, ADBE, CHWY, KR: large caps >=10.000 M$. Penalizacion -1.5 vigente por expectativa negativa medida (n=8, media -5,00%, upside topado). NO abrir drift pre-earnings.",
-      "Viernes 11 por la mañana: IPC 08:30 ET + KR el mismo dia. NO abrir posiciones nuevas.",
-      "KFY, WLTH: score 5,8 y 5,7, por debajo del suelo duro de 7,5. NO reabrir."
-    ],
-    "eventos_macro": [
-      {
-        "fecha": "2026-09-07",
-        "evento": "Labor Day — cerrado"
-      },
-      {
-        "fecha": "2026-09-11",
-        "evento": "IPC agosto 08:30 ET",
-        "impacto": "MAXIMO",
-        "hora_cest": "14:30"
-      },
-      {
-        "fecha": "2026-09-16",
-        "evento": "FOMC — 58% prob. subida",
-        "impacto": "MAXIMO"
-      }
-    ],
-    "supply_chain_activos": [
-      "ai_networking_optica (ancla NVDA) EXPIRA HOY 5-sep, no aplicar en W37",
-      "ai_datacenter_optical_networking (ancla AVGO, MISS_WHISPER) — señal NEGATIVA: penalizar downstream, no premiar"
-    ],
-    "sectores_favorecer": [
-      "energy (+2)",
-      "financials (+1)",
-      "industrials (+1)",
-      "healthcare (+1)",
-      "materials (+1)"
-    ],
-    "sectores_evitar": [
-      "real_estate (-2)",
-      "consumer_staples (-1)",
-      "consumer_discretionary (-1)"
-    ],
-    "condicion_modo_defensivo": "Activo por defecto. Levantar solo si: (a) el bot recupera generacion de señales, (b) el gate de enforcement esta activo, y (c) el IPC del 11 sale por debajo de 0,3% intermensual."
+    ]
   },
   "scan_history": [
     {
@@ -19441,6 +19463,63 @@
       "tareas_con_issues": [
         "sentinel"
       ]
+    },
+    {
+      "fecha": "2026-09-11",
+      "score_sistema": 5.7,
+      "tareas": {
+        "market-open-execution": {
+          "ok": false,
+          "ejecutados_hoy": 0,
+          "issues": [
+            "8 candidatos con accion 'entrar_apertura' expiraron sin ejecucion Cowork; el bot GHA entró por su cuenta en DELL/QCOM/AAPL/QRVO"
+          ],
+          "score": 4
+        },
+        "pre-market-earnings-scan": {
+          "ok": false,
+          "candidatos_detectados": 0,
+          "issues": [
+            "Sin candidatos nuevos detectados hoy — calendario de earnings vacio (lull de mediados de septiembre)"
+          ],
+          "score": 5
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "stops_en_breakeven": 4,
+          "issues": [
+            "No detecto que los stops PROTECT estaban a 0.02R; QCOM y QRVO fueron scalpeados sin alerta"
+          ],
+          "score": 4
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "r0_cerradas_hoy": 0,
+          "issues": [],
+          "score": 10
+        },
+        "sentinel": {
+          "ok": false,
+          "ciclos_hoy": 0,
+          "issues": [
+            "Sin logs de sentinel hoy"
+          ],
+          "score": 3
+        },
+        "post-market-review": {
+          "ok": true,
+          "issues": [
+            "Sandbox Linux caido — ejecutado integramente via browser JS (GitHub API + Alpaca API + EW web)"
+          ],
+          "score": 8
+        }
+      },
+      "tareas_con_issues": [
+        "market-open-execution",
+        "pre-market-earnings-scan",
+        "intraday-monitor",
+        "sentinel"
+      ]
     }
   ],
   "_last_ew_daily_run": "2026-09-07T14:28:48Z",
@@ -20993,22 +21072,22 @@
         "earnings_fecha": "2026-09-14",
         "earnings_timing": "AMC",
         "score_breakdown": {
-          "beat_rate": 3.0,
+          "beat_rate": 3,
           "reaccion": 0.91,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "revisiones": 0,
+          "momentum5d": 1,
+          "macro": 1
         }
       },
       {
         "ticker": "COE",
-        "score": 4.0,
+        "score": 4,
         "earnings_fecha": "2026-09-15",
         "earnings_timing": "BMO",
         "score_breakdown": {
-          "beat_rate": 3.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "beat_rate": 3,
+          "momentum5d": 0,
+          "macro": 1
         }
       },
       {
@@ -21018,23 +21097,23 @@
         "earnings_timing": "BMO",
         "score_breakdown": {
           "whisper": 1.21,
-          "revisiones": 0.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "revisiones": 0,
+          "momentum5d": 0,
+          "macro": 1
         }
       },
       {
         "ticker": "PLAY",
-        "score": 0.0,
+        "score": 0,
         "earnings_fecha": "2026-09-14",
         "earnings_timing": "AMC",
         "score_breakdown": {
-          "whisper": -1.0,
-          "beat_rate": -1.0,
+          "whisper": -1,
+          "beat_rate": -1,
           "reaccion": 0.36,
-          "revisiones": -1.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "revisiones": -1,
+          "momentum5d": 0,
+          "macro": 1
         }
       }
     ]
@@ -21714,7 +21793,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 12.5,
         "reaccion_media_pct": 0.95,
-        "score": 0.0
+        "score": 0
       },
       "RLGT": {
         "consenso_eps": null,
@@ -21734,7 +21813,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": null,
-        "score": 4.0
+        "score": 4
       }
     },
     "resultados_hoy": [
@@ -21744,8 +21823,8 @@
         "eps": 1.09,
         "estimate": 1.05,
         "whisper": 1.07,
-        "revenue": 34621.0,
-        "revenueEstimate": 34690.0,
+        "revenue": 34621,
+        "revenueEstimate": 34690,
         "earningsSurprise": 0.018691588785046728,
         "revenueSurprise": -0.001989045834534448,
         "subject": "The Kroger Beat Expectations"
@@ -21816,7 +21895,7 @@
         "eps": 1.92,
         "estimate": 1.75,
         "whisper": 1.8,
-        "revenue": 19345.0,
+        "revenue": 19345,
         "revenueEstimate": null,
         "earningsSurprise": 0.06666666666666667,
         "revenueSurprise": null,
@@ -21828,7 +21907,7 @@
         "eps": 6.13,
         "estimate": 6.08,
         "whisper": 6.05,
-        "revenue": 6760.0,
+        "revenue": 6760,
         "revenueEstimate": null,
         "earningsSurprise": 0.013223140495867768,
         "revenueSurprise": null,
@@ -21924,7 +22003,7 @@
         "eps": 0.4,
         "estimate": 0.37,
         "whisper": 0.44,
-        "revenue": 5059.0,
+        "revenue": 5059,
         "revenueEstimate": null,
         "earningsSurprise": -0.09090909090909091,
         "revenueSurprise": null,
@@ -22114,7 +22193,7 @@
         "ticker": "NNOX",
         "epsDate": "2026-09-09T08:03:00",
         "eps": -0.79,
-        "estimate": 999.0,
+        "estimate": 999,
         "whisper": 999,
         "revenue": 4.156,
         "revenueEstimate": null,
@@ -22152,7 +22231,7 @@
         "eps": 0.92,
         "estimate": 0.91,
         "whisper": 0.89,
-        "revenue": 2145.0,
+        "revenue": 2145,
         "revenueEstimate": null,
         "earningsSurprise": 0.033707865168539325,
         "revenueSurprise": null,
@@ -22200,7 +22279,7 @@
         "eps": 1.18,
         "estimate": 0.99,
         "whisper": 999,
-        "revenue": 3115.0,
+        "revenue": 3115,
         "revenueEstimate": null,
         "earningsSurprise": 0.1919191919191919,
         "revenueSurprise": null,
@@ -22283,11 +22362,11 @@
         },
         {
           "sym": "QRVO",
-          "score": 7.0
+          "score": 7
         },
         {
           "sym": "SWKS",
-          "score": 7.0
+          "score": 7
         },
         {
           "sym": "META",
@@ -22315,11 +22394,11 @@
         },
         {
           "sym": "SWKS",
-          "score": 7.0
+          "score": 7
         },
         {
           "sym": "HPE",
-          "score": 6.0
+          "score": 6
         }
       ],
       "uw_active": false,
@@ -22343,11 +22422,11 @@
         },
         {
           "sym": "SWKS",
-          "score": 7.0
+          "score": 7
         },
         {
           "sym": "HPE",
-          "score": 6.0
+          "score": 6
         }
       ],
       "uw_active": false,
@@ -22371,11 +22450,11 @@
         },
         {
           "sym": "RBLX",
-          "score": 7.0
+          "score": 7
         },
         {
           "sym": "SWKS",
-          "score": 7.0
+          "score": 7
         }
       ],
       "uw_active": false,
@@ -22526,9 +22605,9 @@
         }
       },
       "HPE": {
-        "base": 5.0,
+        "base": 5,
         "paper": 5.65,
-        "real": 5.0,
+        "real": 5,
         "partes": {
           "opciones": 0.5,
           "sector": 0.15
@@ -22547,7 +22626,7 @@
       "credito_hyg_ief_20": 1.22,
       "fear_greed": 34.1,
       "regimen": "neutral",
-      "ajuste": 0.0
+      "ajuste": 0
     },
     "estado": {
       "cnn_fear_greed": {
