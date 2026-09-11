@@ -9,6 +9,10 @@ on:
         description: "DRY_RUN (no envía órdenes ni escribe log)"
         type: boolean
         default: false
+      force_window:
+        description: "Solo junto con DRY_RUN: ignora reloj y ventana para ensayar todo el flujo con el mercado cerrado"
+        type: boolean
+        default: false
 concurrency:
   group: market-open
   cancel-in-progress: false
@@ -40,6 +44,7 @@ jobs:
           TG_CHAT:    ${{ secrets.TG_CHAT }}
           UW_KEY:     ${{ secrets.UW_KEY }}
           RENDER_HEALTH_URL: ${{ secrets.RENDER_HEALTH_URL }}
+          SEC_UA:     ${{ secrets.SEC_UA }}
         run: python scripts/ew_pipeline.py
       - name: Scanner pre-apertura (refresca candidatos del scanner; no toca los EW)
         continue-on-error: true
@@ -54,10 +59,12 @@ jobs:
           TG_CHAT:    ${{ secrets.TG_CHAT }}
           UW_KEY:     ${{ secrets.UW_KEY }}
           RENDER_HEALTH_URL: ${{ secrets.RENDER_HEALTH_URL }}
+          SEC_UA:     ${{ secrets.SEC_UA }}
         run: python scripts/dynamic_scanner.py
       - name: Run
         env:
           DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          FORCE_WINDOW: ${{ inputs.dry_run && inputs.force_window && '1' || '0' }}
           APCA_KEY:   ${{ secrets.APCA_KEY }}
           APCA_SEC:   ${{ secrets.APCA_SEC }}
           APCA_KEY_R: ${{ secrets.APCA_KEY_R }}
@@ -67,4 +74,5 @@ jobs:
           TG_CHAT:    ${{ secrets.TG_CHAT }}
           UW_KEY:     ${{ secrets.UW_KEY }}
           RENDER_HEALTH_URL: ${{ secrets.RENDER_HEALTH_URL }}
+          SEC_UA:     ${{ secrets.SEC_UA }}
         run: python scripts/market_open_execution.py
