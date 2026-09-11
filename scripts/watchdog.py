@@ -58,6 +58,7 @@ def main():
         url = os.environ.get("RENDER_HEALTH_URL", "")
         if url:
             st, _b = http(url, timeout=30, retries=2)
+            log(f"Render healthcheck: HTTP {st} {str(_b)[:120]}")   # {"bot": "disabled"} = apagado por código
             if st != 200:
                 warn.append(f"Render bot no responde (HTTP {st}) en {url}")
         if R is not None and L["real"]["active"]:
