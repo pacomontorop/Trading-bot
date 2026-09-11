@@ -19,6 +19,9 @@ from core.safeguards import is_safeguards_active
 from utils.logger import log_event
 from utils.telegram_alert import send_telegram_alert
 
+# Positions opened by these systems are managed by them, never by PROTECT / AH-earnings close.
+EXTERNALLY_MANAGED_PREFIXES = ("COWORK-", "GHA-")
+
 _PROTECT_LOCK = threading.Lock()
 # File-level lock prevents multiple bot processes (e.g. two Render instances)
 # from running the paper protect cycle simultaneously.
@@ -216,16 +219,18 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
         except Exception:
             open_orders = []
 
-        # Build set of symbols opened by Cowork (client_order_id starts with "COWORK-").
-        # The PROTECT mechanism must NOT interfere with Cowork-managed positions —
-        # Cowork places its own stops and has its own lifecycle management.
+        # Build set of symbols opened by Cowork ("COWORK-") or by the GitHub Actions system ("GHA-").
+        # The PROTECT mechanism must NOT interfere with those positions — they place their own
+        # bracket stops and have their own lifecycle (scripts/intraday_monitor.py: break-even at 1R).
         # Lesson: 2026-04-24 MSFT closed 8min after Cowork entry by PROTECT (BUG MEJ-005).
+        # Lesson: 2026-09-11 QCOM/QRVO/DELL (GHA) got PROTECT stops +0.2% above entry via
+        # min_profit_lock_pct=0.3 → swings turned into +0.1% scalps. Fix: exclude GHA-* too.
         _cowork_symbols: set[str] = set()
         try:
-            _recent_filled = broker.api.list_orders(status="all", limit=100)
+            _recent_filled = broker.api.list_orders(status="all", limit=500)
             for _o in (_recent_filled or []):
                 _cid = str(getattr(_o, "client_order_id", "") or "")
-                if _cid.upper().startswith("COWORK-") and getattr(_o, "status", "") in ("filled", "partially_filled"):
+                if _cid.upper().startswith(EXTERNALLY_MANAGED_PREFIXES) and getattr(_o, "status", "") in ("filled", "partially_filled"):
                     _sym = str(getattr(_o, "symbol", "") or "").upper()
                     if _sym:
                         _cowork_symbols.add(_sym)
@@ -245,10 +250,10 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
             if side and side != "long":
                 continue
-            # Skip Cowork-managed positions — Cowork places its own stops.
+            # Skip Cowork/GHA-managed positions — they place their own stops.
             if symbol in _cowork_symbols:
                 log_event(
-                    f"symbol={symbol} reason=skip_cowork_managed_position",
+                    f"symbol={symbol} reason=skip_externally_managed_position",
                     event="PROTECT",
                 )
                 continue
@@ -742,6 +747,8 @@ def tick_protect_positions(*, dry_run: bool = False) -> None:
                 continue
             if asset_class not in {"us_equity", "equity"}:
                 continue
+            if symbol in _cowork_symbols:          # Cowork/GHA gestionan su propio take-profit
+                continue
             if time.monotonic() < _BLOWN_STOP_SUPPRESS.get(symbol, 0):
                 continue
             # Skip if shares are committed to a bracket/stop order.
@@ -893,7 +900,7 @@ def close_positions_with_ah_earnings(*, dry_run: bool = False) -> None:
         recent = broker.api.list_orders(status="all", limit=200)
         for o in (recent or []):
             cid = str(getattr(o, "client_order_id", "") or "")
-            if cid.upper().startswith("COWORK-"):
+            if cid.upper().startswith(EXTERNALLY_MANAGED_PREFIXES):
                 sym = str(getattr(o, "symbol", "") or "").upper()
                 if sym and getattr(o, "status", "") in ("filled", "partially_filled",
                                                           "new", "accepted", "held"):

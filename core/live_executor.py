@@ -318,6 +318,18 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
         positions = list_live_positions()
         open_orders = list_live_open_orders()
 
+        # Positions opened by the GitHub Actions system (GHA-REAL-*) or Cowork are managed by
+        # them (bracket stop + intraday_monitor). LIVE_PROTECT must not tighten their stops
+        # (2026-09-11: min_profit_lock_pct moved paper stops to +0.2% over entry within minutes).
+        _external: set[str] = set()
+        try:
+            for _o in (live_api.list_orders(status="all", limit=500) or []):
+                _cid = str(getattr(_o, "client_order_id", "") or "").upper()
+                if _cid.startswith(("GHA-", "COWORK-")) and getattr(_o, "status", "") in ("filled", "partially_filled"):
+                    _external.add(str(getattr(_o, "symbol", "") or "").upper())
+        except Exception:
+            pass
+
         for pos in positions or []:
             try:
                 symbol = str(getattr(pos, "symbol", "") or "").upper()
@@ -329,6 +341,9 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             if not symbol or qty <= 0 or entry <= 0:
                 continue
             if side and side != "long":
+                continue
+            if symbol in _external:
+                log_event(f"LIVE_PROTECT symbol={symbol} reason=skip_externally_managed_position", event="LIVE")
                 continue
             # Skip symbols where a blown-stop market-sell was already submitted.
             if time.monotonic() < _LIVE_BLOWN_STOP_SUPPRESS.get(symbol, 0):
@@ -1052,6 +1067,8 @@ def tick_protect_live_positions(*, dry_run: bool = False) -> None:
             if not symbol or qty <= 0 or entry <= 0 or (side and side != "long"):
                 continue
             if _is_crypto_symbol(symbol):
+                continue
+            if symbol in _external:              # GHA/Cowork gestionan su propio take-profit
                 continue
             if time.monotonic() < _LIVE_BLOWN_STOP_SUPPRESS.get(symbol, 0):
                 continue
