@@ -2,10 +2,10 @@
 """
 Market Open Execution — GitHub Actions (v3, endurecido 2026-09-10)
 
-Se programa a las 13:35 y 14:35 UTC para cubrir horario de verano e invierno.
-La decisión real de ejecutar la toma el calendario de Alpaca: solo opera si
-han pasado entre open_window_min[0] y open_window_min[1] minutos desde la
-apertura y no se ha ejecutado ya hoy.
+Se ejecuta cada hora (13:35-19:35 UTC). Opera si han pasado entre open_window_min[0]
+y open_window_min[1] minutos desde la apertura según el calendario de Alpaca (cubre
+verano/invierno y retrasos del cron). Cada pasada vuelve a escanear y entra en lo nuevo;
+los duplicados se evitan por posición existente, topes diarios y client_order_id único.
 
 Cambios clave frente a v2:
   • Cuenta REAL solo con candidatos de la pipeline EW/Cowork (nunca del scanner
@@ -16,7 +16,7 @@ Cambios clave frente a v2:
     cancelación si no llena en 90 s.
   • Sin "perseguir" subidas: si el runup supera el umbral, se descarta.
   • Freno diario: si el día va por debajo de daily_loss_stop_pct, no entra.
-  • Idempotente: no repite si ya se ejecutó hoy.
+  • Nunca se bloquea por el log: si GitHub falla, opera con el escaneo en vivo.
 """
 import sys
 from datetime import timedelta
@@ -108,18 +108,19 @@ def main():
     if not clock.get("is_open") and not FORCE_WINDOW:
         log("Mercado cerrado — nada que hacer."); return
     mso = minutes_since_open(P)
-    plog, _ = read_log()
-    ya = (plog.get("ejecucion_apertura") or {}).get("fecha") == hoy
-    if ya and not FORCE_WINDOW:
-        log(f"Apertura ya ejecutada hoy ({hoy}) — salida idempotente."); return
     w0, w1 = ex["open_window_min"]
     if not FORCE_WINDOW and (mso is None or mso < w0 or mso > w1):
-        msg = (f"⏱️ market-open: fuera de ventana ({'?' if mso is None else f'{mso:.0f}'} min desde apertura; "
-               f"ventana {w0}-{w1}). Sin órdenes.")
-        log(msg)
-        if mso is not None and mso > w1:
-            tg(msg + " Probable retraso del cron de GitHub.")
+        log(f"market-open: fuera de ventana ({'?' if mso is None else f'{mso:.0f}'} min desde apertura; "
+            f"ventana {w0}-{w1}). Sin órdenes.")
         return
+    # Se ejecuta cada hora durante la sesión. Sin bloqueo "ya ejecutado hoy": los duplicados
+    # los evitan "ya en cartera", los topes diarios y el client_order_id único por día y ticker.
+    try:
+        plog, _ = read_log()
+    except Exception as e:           # si GitHub falla, se opera igual con el escaneo en vivo (paper)
+        log(f"⚠️ no se pudo leer el log ({e}); se continúa solo con escaneo en vivo")
+        plog = {}
+    primera_hoy = (plog.get("ejecucion_apertura") or {}).get("fecha") != hoy
 
     L = effective_limits(plog, limits)
     lp, lr = L["paper"], L["real"]
@@ -249,7 +250,13 @@ def main():
                                     "ejecutados": [e["ticker"] for e in ejecutados],
                                     "descartados": [f"{t}: {w}" for t, w in descartados][:20]}
 
-    update_log(mutate, f"market-open v3 [{ahora:%Y-%m-%dT%H:%M}Z] {len(ejecutados)} ejecutadas")
+    try:
+        update_log(mutate, f"market-open v3 [{ahora:%Y-%m-%dT%H:%M}Z] {len(ejecutados)} ejecutadas")
+    except Exception as e:           # las órdenes ya están en Alpaca; un fallo del log no debe ocultarlas
+        log(f"⚠️ no se pudo escribir el log: {e}")
+        descartados.append(("LOG", f"no escrito: {str(e)[:60]}"))
+    if not ejecutados and not primera_hoy:
+        log("Sin ejecuciones en esta pasada (no se envía Telegram)."); return
 
     lines = [f"🚀 APERTURA {ahora:%d/%m %H:%M}UTC (+{mso or 0:.0f}min) | Real: {'ON' if lr['active'] else 'OFF'}"]
     for e in ejecutados:

@@ -281,11 +281,13 @@ def effective_limits(plog: dict, limits: dict) -> dict:
     L = json.loads(json.dumps(limits))  # copia
     paper, real = L["paper"], L["real"]
 
-    paper["min_score"] = max(paper["min_score"], _f(p, "score_min_paper", "min_signal_score", default=0))
+    if not paper.get("ignore_log_limits"):
+        paper["min_score"] = max(paper["min_score"], _f(p, "score_min_paper", "min_signal_score", default=0))
     real["min_score"] = max(real["min_score"],
                             _f(p, "score_threshold_real_account", default=0),
                             _f(p, "score_min_real", default=0))
-    paper["max_positions"] = int(min(paper["max_positions"], _f(p, "max_cowork_positions", default=99)))
+    if not paper.get("ignore_log_limits"):
+        paper["max_positions"] = int(min(paper["max_positions"], _f(p, "max_cowork_positions", default=99)))
     real["max_positions"] = int(min(real["max_positions"], _f(p, "max_real_positions", default=99)))
 
     hard = real.get("enabled", False)
