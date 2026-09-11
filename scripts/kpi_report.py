@@ -113,6 +113,45 @@ def stats(tr):
             "expectancy_usd": round(sum(v) / len(v), 2), "net_usd": round(sum(v), 2)}
 
 
+def atribuir(trades: list, operaciones: list) -> list:
+    """Asocia cada operación cerrada de ACCIONES (FIFO Alpaca) a su entrada en el log (GHA-*):
+    la más reciente del mismo símbolo con fecha_entrada ≤ fecha de cierre. Sin entrada → origen 'otras'."""
+    ops = sorted([o for o in operaciones if str(o.get("id", "")).startswith("GHA-") and o.get("simbolo")],
+                 key=lambda o: str(o.get("fecha_entrada") or ""))
+    out = []
+    for d, s, pnl, crypto in trades:
+        if crypto:
+            continue
+        cand = [o for o in ops if o["simbolo"] == s and str(o.get("fecha_entrada") or "") <= d]
+        o = cand[-1] if cand else {}
+        out.append({"fecha": d, "simbolo": s, "pnl": pnl, "fuente": o.get("fuente") or "otras",
+                    "score": o.get("score_entrada"), "score_base": o.get("score_base"),
+                    "ajuste": o.get("ajuste_fuentes"), "partes": o.get("fuentes_extra") or {}})
+    return out
+
+
+def aprendizaje(atr: list, min_paper: float) -> dict:
+    """Qué fuentes ganan dinero: estadísticas por origen del candidato y por cada señal extra
+    (a favor / en contra) y de las entradas que solo existieron gracias a las fuentes extra."""
+    st = lambda xs: stats([(x["fecha"], x["simbolo"], x["pnl"], False) for x in xs])
+    por_fuente = {}
+    for x in atr:
+        por_fuente.setdefault(x["fuente"], []).append(x)
+    senales = sorted({k for x in atr for k in x["partes"]})
+    con_datos = [x for x in atr if x["score_base"] is not None]
+    empujadas = [x for x in con_datos if (x["score_base"] or 0) < min_paper <= (x["score"] or 0)]
+    return {"_doc": "kpi_report.py: operaciones cerradas de acciones (Alpaca) atribuidas a su entrada GHA del log. "
+                    "Base para decidir qué fuentes extra pueden empezar a sumar en la cuenta real.",
+            "n_total": len(atr), "n_con_fuentes_extra": len(con_datos),
+            "por_fuente": {k: st(v) for k, v in sorted(por_fuente.items())},
+            "por_senal_extra": {k: {"a_favor": st([x for x in con_datos if x["partes"].get(k, 0) > 0]),
+                                    "en_contra": st([x for x in con_datos if x["partes"].get(k, 0) < 0])}
+                                for k in senales},
+            "ajuste_positivo": st([x for x in con_datos if (x["ajuste"] or 0) > 0]),
+            "ajuste_cero_o_negativo": st([x for x in con_datos if (x["ajuste"] or 0) <= 0]),
+            "solo_entraron_por_fuentes_extra": st(empujadas)}
+
+
 def main():
     ahora = now_utc()
     log(f"=== kpi-report {ahora:%Y-%m-%d %H:%M} UTC {'[DRY_RUN]' if DRY_RUN else ''} ===")
@@ -125,6 +164,7 @@ def main():
     out = {"_meta": "Calculado por scripts/kpi_report.py desde Alpaca (fuente de verdad). No editar a mano.",
            "actualizado_utc": ahora.strftime("%Y-%m-%dT%H:%MZ"), "desde": start, "spy_pct": spy}
 
+    apr: dict = {}
     for name, alp in (("paper", P), ("real", R)):
         if alp is None:
             continue
@@ -138,6 +178,12 @@ def main():
         tr = closed_trades([f for f in fills(alp, start) if f.get("order_id") not in skip])
         eq_tr = [t for t in tr if not t[3]]; cr_tr = [t for t in tr if t[3]]
         out.setdefault(name, {})["acciones"] = stats(eq_tr)
+        if name == "paper":
+            try:                               # aprendizaje por fuente: nunca rompe el informe
+                apr = aprendizaje(atribuir(eq_tr, plog.get("operaciones", [])),
+                                  float(load_limits()["paper"]["min_score"]))
+            except Exception as e:  # noqa: BLE001
+                apr = {"error": f"{type(e).__name__}: {e}"[:120]}
         out[name]["crypto"] = stats(cr_tr)
         out[name]["acciones_ultimas_%d" % G["lookback_trades"]] = stats(eq_tr[-G["lookback_trades"]:])
         if name == "paper":
@@ -162,6 +208,7 @@ def main():
         guard[:] = enforce_guardrails(pl)
         k = pl.setdefault("kpis", {})
         k["rendimiento_verificado"] = out
+        k["aprendizaje_fuentes"] = apr
         rg = k.setdefault("rendimiento_global", {})
         if spy is not None:
             rg["spy_mismo_periodo_pct"] = spy
@@ -181,6 +228,11 @@ def main():
            f"Últimas {s.get('n', 0)} ops acciones paper: WR {s.get('win_rate_pct', 0)}% PF {s.get('profit_factor', 0)} "
            f"E={s.get('expectancy_usd', 0):+.0f}$ (win {s.get('avg_win_usd', 0):.0f} / loss {s.get('avg_loss_usd', 0):.0f})",
            f"Gate cuenta real: {'🟢 OK' if out.get('gate_real_ok') else '🔴 NO'} {out.get('gate_checks', {})}"]
+    if apr.get("n_con_fuentes_extra"):
+        fx_pos, emp = apr.get("ajuste_positivo", {}), apr.get("solo_entraron_por_fuentes_extra", {})
+        msg.append(f"🧪 Fuentes extra: {apr['n_con_fuentes_extra']} ops cerradas · ajuste+ PF {fx_pos.get('profit_factor', '-')} "
+                   f"E={fx_pos.get('expectancy_usd', 0):+.0f}$ · solo por fuentes extra: n={emp.get('n', 0)} "
+                   f"PF {emp.get('profit_factor', '-')}")
     if guard:
         msg.append("🛡️ Guardrails re-aplicados: " + "; ".join(guard))
     tg("\n".join(msg))
