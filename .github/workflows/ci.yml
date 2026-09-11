@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    paths: ["scripts/**", "config/risk_limits.json", ".github/workflows/**", "tests/test_hardening.py"]
+    paths: ["scripts/**", "config/risk_limits.json", ".github/workflows/**", "tests/test_hardening.py", "tests/test_fuentes_extra.py"]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -20,5 +20,5 @@ jobs:
         run: python -m py_compile scripts/*.py
       - name: Validar risk_limits.json
         run: python -c "import json;json.load(open('config/risk_limits.json'))"
-      - name: Tests de endurecimiento
-        run: python -m pytest -q tests/test_hardening.py
+      - name: Tests de endurecimiento y fuentes
+        run: python -m pytest -q tests/test_hardening.py tests/test_fuentes_extra.py
