@@ -228,8 +228,67 @@ def resumen_insiders(txs: list) -> dict:
             "compradores": sorted({f"{t['owner']} ({t['cargo']})" for t in compras})[:4]}
 
 
-@fuente("sec_insiders")
+NASDAQ_H = {"User-Agent": UA, "Accept": "application/json, text/plain, */*",
+            "Origin": "https://www.nasdaq.com", "Referer": "https://www.nasdaq.com/"}
+
+
+def parse_nasdaq_insiders(data: dict | None, desde: date) -> list | None:
+    """Filas de api.nasdaq.com/api/company/{T}/insider-trades → mismo formato que parse_form4.
+    None si la respuesta no tiene la estructura esperada (fallo); [] si no hay operaciones."""
+    d = (data or {}).get("data")
+    if not isinstance(d, dict):
+        return None
+    tabla = (d.get("transactionTable") or {}).get("table") or {}
+    rows = tabla.get("rows")
+    if rows is None:
+        return None if not d.get("numberOfTrades") else []
+    out = []
+    for r in rows or []:
+        try:
+            f = datetime.strptime(str(r.get("lastDate") or "")[:10], "%m/%d/%Y").date()
+        except ValueError:
+            continue
+        if f < desde:
+            continue
+        tt = str(r.get("transactionType") or "").lower()
+        code = "P" if ("buy" in tt or "purchase" in tt) and "option" not in tt else "S" if "sell" in tt or "sale" in tt else ""
+        sh = _num(str(r.get("sharesTraded") or "").replace(",", ""), 0.0)
+        px = _num(str(r.get("lastPrice") or "").replace("$", "").replace(",", ""), 0.0)
+        out.append({"owner": str(r.get("insider") or "?"), "cargo": str(r.get("relation") or ""), "code": code,
+                     "shares": sh, "price": px, "usd": round(sh * px, 2), "fecha": f.isoformat()})
+    return out
+
+
+def _insiders_nasdaq(ticker: str, dias: int) -> dict | None:
+    st, data = _get(f"https://api.nasdaq.com/api/company/{ticker.upper()}/insider-trades"
+                    f"?limit=50&type=ALL&sortColumn=lastDate&sortOrder=DESC", NASDAQ_H, timeout=12)
+    txs = parse_nasdaq_insiders(data, date.today() - timedelta(days=dias))
+    if txs is None:
+        _marca("insiders_nasdaq", False, f"HTTP {st} sin tabla", 0)
+        return None
+    _marca("insiders_nasdaq", True, None, 0)
+    r = resumen_insiders(txs)
+    r.update(origen="nasdaq", filas=len(txs))
+    return r
+
+
+@fuente("insiders")
 def insiders(ticker: str, dias: int = 30, deadline: float | None = None) -> dict | None:
+    """SEC EDGAR (Form 4 oficiales) y, si la SEC falla, Nasdaq (misma información resumida)."""
+    try:
+        r = _insiders_sec(ticker, dias, deadline)
+        _marca("insiders_sec", True, None, 0)
+        return r
+    except Exception as e:  # noqa: BLE001
+        _marca("insiders_sec", False, f"{type(e).__name__}: {e}", 0)
+        err = f"{type(e).__name__}: {e}"
+    r = _insiders_nasdaq(ticker, dias)
+    if r is None:
+        raise RuntimeError(f"SEC ({err}) y Nasdaq sin datos")
+    return r
+
+
+def _insiders_sec(ticker: str, dias: int, deadline: float | None) -> dict:
     cik = cik_de(ticker)
     if cik is None:
         return {}                                 # ETF o sin registro en la SEC: no aplica (no es fallo)
@@ -247,8 +306,7 @@ def insiders(ticker: str, dias: int = 30, deadline: float | None = None) -> dict
             except ET.ParseError:
                 pass
     r = resumen_insiders(txs)
-    r["form4_leidos"] = leidos
-    r["sic"] = sub.get("sic")
+    r.update(origen="sec", form4_leidos=leidos, sic=sub.get("sic"))
     return r
 
 
@@ -541,7 +599,19 @@ def fred_series(serie: str, dias: int = 120) -> list | None:
     st, txt = _get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={serie}&cosd={desde}",
                    {"User-Agent": UA}, timeout=15, as_json=False)
     vals = parse_fred_csv(txt) if isinstance(txt, str) else []
-    return vals or None
+    if not vals:
+        raise RuntimeError(f"HTTP {st}" + (f" ({str(txt)[:60]!r})" if isinstance(txt, str) else ""))
+    return vals
+
+
+@fuente("credito_hyg_ief")
+def credito_proxy() -> dict | None:
+    """Respaldo de FRED: bonos high-yield (HYG) frente a Tesoro 7-10a (IEF), 20 sesiones (Alpaca)."""
+    hyg, ief = _closes("HYG"), _closes("IEF")
+    if len(hyg) < 21 or len(ief) < 21:
+        raise RuntimeError("sin barras HYG/IEF")
+    r = lambda c: (c[-1] / c[-21] - 1) * 100
+    return {"rel20": round(r(hyg) - r(ief), 2)}
 
 
 @fuente("cnn_fear_greed")
@@ -554,9 +624,12 @@ def fear_greed() -> dict | None:
     return {"score": round(sc, 1), "rating": fg.get("rating")} if sc is not None else None
 
 
-def regimen_macro(hy: list | None, nfci: list | None, curva: list | None, fg: dict | None) -> dict:
-    """Ajuste común a todos los candidatos según el riesgo de mercado. Acotado a [-0.6, +0.2]."""
+def regimen_macro(hy: list | None, nfci: list | None, curva: list | None, fg: dict | None,
+                  credito: dict | None = None) -> dict:
+    """Ajuste común a todos los candidatos según el riesgo de mercado. Acotado a [-0.6, +0.2].
+    Si FRED no responde, el crédito se mide con HYG/IEF (credito['rel20'])."""
     out = {"hy_oas": None, "hy_cambio_20": None, "nfci": None, "curva_10a2a": None,
+           "credito_hyg_ief_20": (credito or {}).get("rel20"),
            "fear_greed": (fg or {}).get("score"), "regimen": "neutral", "ajuste": 0.0}
     aj = 0.0
     if hy and len(hy) >= 21:
@@ -573,6 +646,12 @@ def regimen_macro(hy: list | None, nfci: list | None, curva: list | None, fg: di
         out["regimen"], aj = "cautela", -0.2
     elif ch is not None and ch <= -0.2 and nf is not None and nf < -0.3:
         out["regimen"], aj = "risk_on", 0.1
+    elif ch is None and out["credito_hyg_ief_20"] is not None:      # respaldo sin FRED
+        rel = out["credito_hyg_ief_20"]
+        if rel <= -2:
+            out["regimen"], aj = "risk_off", -0.4
+        elif rel <= -1:
+            out["regimen"], aj = "cautela", -0.2
     f = out["fear_greed"]
     if f is not None:
         aj += -0.2 if f < 20 else -0.1 if f > 85 else 0.0   # pánico o euforia extrema: más cautela
@@ -583,9 +662,9 @@ def regimen_macro(hy: list | None, nfci: list | None, curva: list | None, fg: di
 def macro_extra(presupuesto_s: float = 40) -> dict:
     """Nunca lanza ni tarda más de `presupuesto_s`. Si todo falla → régimen neutral, ajuste 0."""
     try:
-        ex = ThreadPoolExecutor(max_workers=4, thread_name_prefix="fxm")
+        ex = ThreadPoolExecutor(max_workers=5, thread_name_prefix="fxm")
         fs = [ex.submit(fred_series, "BAMLH0A0HYM2"), ex.submit(fred_series, "NFCI", 200),
-              ex.submit(fred_series, "T10Y2Y"), ex.submit(fear_greed)]
+              ex.submit(fred_series, "T10Y2Y"), ex.submit(fear_greed), ex.submit(credito_proxy)]
         wait(fs, timeout=presupuesto_s)
         ex.shutdown(wait=False, cancel_futures=True)
         vals = [f.result() if f.done() else None for f in fs]
@@ -659,11 +738,13 @@ def health() -> dict:
         res[nombre] = (bool(ok), det)
 
     def _sec():
-        i = insiders("AAPL", dias=60)
-        return i is not None, (f"{i['form4_leidos']} Form 4 leídos" if i else
-                               (ESTADO.get("sec_insiders") or {}).get("ultimo_error") or "sin datos")
-    chk("sec_edgar", _sec)
-    chk("fred", lambda: (lambda v: (bool(v), f"HY OAS {v[-1][1]}" if v else "sin datos"))(fred_series("BAMLH0A0HYM2")))
+        i = _insiders_sec("AAPL", 60, None)
+        return True, f"{i.get('form4_leidos')} Form 4 leídos"
+    chk("insiders_sec", _sec)
+    chk("insiders_nasdaq", lambda: (lambda v: (v is not None, f"{v and v.get('filas')} filas 60 d"))(_insiders_nasdaq("AAPL", 60)))
+    chk("fred", lambda: (lambda v: (bool(v), f"HY OAS {v[-1][1]}" if v else
+                                    (ESTADO.get("fred") or {}).get("ultimo_error") or "sin datos"))(fred_series("BAMLH0A0HYM2")))
+    chk("credito_hyg_ief", lambda: (lambda v: (v is not None, f"{v}"))(credito_proxy()))
     chk("cnn_fear_greed", lambda: (lambda v: (bool(v), f"{v}" if v else "sin datos"))(fear_greed()))
     chk("apewisdom", lambda: (lambda v: (v is not None, f"{v}" if v else "sin datos"))(social("NVDA")))
     if YF_ENABLED:
