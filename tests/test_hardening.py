@@ -130,3 +130,15 @@ def test_paper_aprendizaje_no_afecta_a_real():
     L = common.effective_limits({"parametros_activos": {"score_min_paper": 9.5, "score_threshold_real_account": 8.0}}, LIM)
     assert L["paper"]["min_score"] == LIM["paper"]["min_score"] < 8
     assert L["real"]["min_score"] >= 9.0 and L["real"]["max_positions"] <= 2
+
+
+def test_bloqueo_dia_riesgo_macro():
+    from datetime import datetime
+    import market_open_execution as mo
+    pl = {"parametros_activos": {"bloqueo_entradas_dias_riesgo_macro": True},
+          "macro_context": {"dias_riesgo_macro": ["2026-09-11 CPI 08:30 ET (IMPACTO MAXIMO)"]}}
+    assert mo.macro_block(pl, datetime(2026, 9, 11, 9, 40, tzinfo=common.ET))
+    assert mo.macro_block(pl, datetime(2026, 9, 11, 10, 35, tzinfo=common.ET)) is None
+    assert mo.macro_block(pl, datetime(2026, 9, 14, 9, 40, tzinfo=common.ET)) is None
+    pl["parametros_activos"]["bloqueo_entradas_dias_riesgo_macro"] = False
+    assert mo.macro_block(pl, datetime(2026, 9, 11, 9, 40, tzinfo=common.ET)) is None
