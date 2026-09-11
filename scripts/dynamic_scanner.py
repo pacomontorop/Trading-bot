@@ -169,25 +169,13 @@ def score_news(ticker):
     except: pass
     return score
 
-# ── FUENTE 3: SEC EDGAR — INSIDER BUYS (últimos 7 días) ─────────────────────
-_edgar_cache = {}
+# ── FUENTE 3: SEC EDGAR — INSIDERS ───────────────────────────────────────────
+# FIX 2026-09-11: la versión anterior sumaba +0,8 por CUALQUIER Form 4 que mencionara el
+# ticker (también ventas y planes de stock), inflando scores con ruido. Los insiders se
+# evalúan ahora bien (solo compras P/ventas S en mercado abierto) en fuentes_extra.py,
+# sobre los candidatos finales en market_open_execution.py. Aquí aporta 0.
 def score_insider(ticker):
-    if ticker in _edgar_cache: return _edgar_cache[ticker]
-    score = 0
-    try:
-        # CIK lookup
-        cik_url = f"https://efts.sec.gov/LATEST/search-index?q=%22{ticker}%22&dateRange=custom&startdt={date.today()-timedelta(days=7)}&enddt={date.today()}&forms=4"
-        req = urllib.request.Request(cik_url, headers={"User-Agent":"trading-bot contact@example.com"})
-        r = json.loads(urllib.request.urlopen(req, timeout=8).read())
-        hits = r.get("hits",{}).get("hits",[])
-        for h in hits[:3]:
-            src = h.get("_source",{})
-            if src.get("period_of_report"):
-                # P form 4: insider buy = positive signal
-                score += 0.8
-    except: pass
-    _edgar_cache[ticker] = score
-    return score
+    return 0
 
 # ── FUENTE 4: UNUSUAL WHALES (si API key disponible) ─────────────────────────
 def score_unusual_whales(ticker):

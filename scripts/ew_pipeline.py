@@ -94,6 +94,13 @@ def main():
     salud = health_check()
     for k, (ok, det) in salud.items():
         log(f"  fuente {k}: {'OK' if ok else 'FALLO'} ({det})")
+    try:                                  # fuentes opcionales: informan, nunca bloquean
+        from fuentes_extra import health as extra_health
+        salud_extra = extra_health()
+    except Exception as e:  # noqa: BLE001
+        salud_extra = {"fuentes_extra": (False, f"{type(e).__name__}: {e}"[:100])}
+    for k, (ok, det) in salud_extra.items():
+        log(f"  fuente extra {k}: {'OK' if ok else 'FALLO'} ({det})")
 
     days = entry_exit_days(P, os.environ.get("EW_MODE", "next"))
     if not days:
@@ -168,7 +175,8 @@ def main():
         kept_syms = {(c.get("ticker") or c.get("symbol") or "").upper() for c in kept if c.get("estado") in PEND}
         pl["candidatos_validados"] = kept + [c for c in cands[:15] if c["score"] >= 6 and c["ticker"] not in kept_syms]
         pl["fuentes_estado"] = {"ts": ahora.strftime("%Y-%m-%dT%H:%MZ"),
-                                **{k: {"ok": ok, "detalle": det} for k, (ok, det) in salud.items()}}
+                                **{k: {"ok": ok, "detalle": det} for k, (ok, det) in salud.items()},
+                                "extra_opcionales": {k: {"ok": ok, "detalle": det} for k, (ok, det) in salud_extra.items()}}
         ewp = pl.setdefault("ew_pipeline", {})
         ewp["acceso_correcto"] = ("API JSON https://www.earningswhispers.com/api/... SIN login. OBLIGATORIO cabecera "
                                   "Referer: https://www.earningswhispers.com/ (sin ella responde HTTP 204 vacío). "
@@ -198,6 +206,9 @@ def main():
     malas = [k for k, (ok, _) in salud.items() if not ok]
     lines = [f"📡 EW PIPELINE · entrada {E:%d/%m} · salida {X:%d/%m} · {len(tick)} eventos · {len(evaluados)} evaluados",
              "Fuentes: " + ("✅ todas OK" if not malas else "⚠️ fallan " + ", ".join(malas)),
+             f"Fuentes extra: {sum(ok for ok, _ in salud_extra.values())}/{len(salud_extra)} OK"
+             + ("" if all(ok for ok, _ in salud_extra.values()) else
+                " (sin: " + ", ".join(k for k, (ok, _) in salud_extra.items() if not ok) + ")"),
              f"Macro: VIX {macro.get('vix')} · SPY>MA50 {macro.get('spy_above_ma50')}"]
     for c in cands[:6]:
         tag = "🟢REAL+PAPER" if c["score"] >= 9 else "🔵PAPER" if c["score"] >= 8 else "⚪"

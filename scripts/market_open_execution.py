@@ -17,6 +17,9 @@ Cambios clave frente a v2:
   • Sin "perseguir" subidas: si el runup supera el umbral, se descarta.
   • Freno diario: si el día va por debajo de daily_loss_stop_pct, no entra.
   • Nunca se bloquea por el log: si GitHub falla, opera con el escaneo en vivo.
+  • (2026-09-11) Fuentes extra (fuentes_extra.py): SEC Form 4, analistas, opciones, corto,
+    sector, Reddit y macro FRED/Fear&Greed ajustan el score ±2 como máximo. Paper usa el
+    ajuste completo; real solo la parte negativa. Si una fuente cae, ajuste 0 y se opera igual.
 """
 import sys
 from datetime import timedelta
@@ -68,6 +71,41 @@ def macro_block(plog, now_et):
 
 def fuente(c):
     return c.get("fuente") or c.get("source") or c.get("fuente_señal") or "?"
+
+
+def _base(c):
+    return float(c.get("score_ajustado", c.get("score", 0)) or 0)
+
+
+def aplicar_fuentes_extra(uniq, min_paper):
+    """Enriquece los candidatos con scripts/fuentes_extra.py (SEC, analistas, opciones, sector,
+    social, macro) y fija en cada uno _score_base/_score_paper/_score_real/_ajuste/_partes.
+    Paper usa el ajuste completo; real solo la parte negativa. NUNCA lanza: si algo falla,
+    todos los scores quedan como el base (ajuste 0) y se opera igual."""
+    for c in uniq:
+        b = _base(c)
+        c.update(_score_base=b, _score_paper=b, _score_real=b, _ajuste=0.0, _partes={})
+    try:
+        import fuentes_extra as fx
+        if not fx.ACTIVADA:
+            return None, {}
+        macro = fx.macro_extra()
+        objetivo = [c["ticker"] for c in uniq
+                    if c["_score_base"] >= min_paper - fx.AJUSTE_MAX and "/" not in c["ticker"]][:fx.MAX_TICKERS]
+        t0 = time.time()
+        datos = fx.enriquecer(objetivo)
+        for c in uniq:
+            aj, partes = fx.ajuste(datos.get(c["ticker"]), macro)
+            sp, sr = fx.scores_por_cuenta(c["_score_base"], aj)
+            c.update(_score_paper=sp, _score_real=sr, _ajuste=aj, _partes=partes)
+        log(f"Fuentes extra: macro {macro.get('regimen')} ({macro.get('ajuste'):+.2f}) · "
+            f"{len(datos)}/{len(objetivo)} enriquecidos en {time.time() - t0:.0f}s")
+        return macro, fx.resumen_estado()
+    except Exception as e:  # noqa: BLE001 — las fuentes extra nunca bloquean la ejecución
+        log(f"⚠️ fuentes extra no disponibles ({type(e).__name__}: {e}); se opera con el score base")
+        for c in uniq:
+            c.update(_score_paper=c["_score_base"], _score_real=c["_score_base"], _ajuste=0.0, _partes={})
+        return None, {}
 
 
 def live_scan(ahora):
@@ -153,6 +191,8 @@ def main():
         if t and t not in seen:
             seen.add(t); c["ticker"] = t; uniq.append(c)
     log(f"Candidatos: {[(c['ticker'], c.get('score_ajustado', c.get('score')), fuente(c)) for c in uniq]}")
+    macro_x, estado_x = aplicar_fuentes_extra(uniq, lp["min_score"])
+    uniq.sort(key=lambda c: c["_score_paper"], reverse=True)
 
     # ── estado cuentas ──
     acct = P.account(); eq = float(acct["equity"]); bp = float(acct["buying_power"])
@@ -174,8 +214,9 @@ def main():
     tag = ahora.strftime("%Y%m%d")
 
     for c in uniq:
-        t = c["ticker"]; sc = float(c.get("score_ajustado", c.get("score", 0)) or 0); src = fuente(c)
-        log(f"\n── {t} score {sc:.2f} [{src}]")
+        t = c["ticker"]; src = fuente(c)
+        base, sc, sc_real = c["_score_base"], c["_score_paper"], c["_score_real"]
+        log(f"\n── {t} score {sc:.2f} (base {base:.2f}, fuentes extra {c['_ajuste']:+.2f} {c['_partes']}) [{src}]")
         if sc < lp["min_score"]:
             descartados.append((t, f"score {sc:.1f}<{lp['min_score']}")); continue
         price = P.latest_price(t)
@@ -184,13 +225,14 @@ def main():
         ref = float(c.get("precio_referencia") or 0)
         if ref > 0:
             move = (price / ref - 1) * 100
-            thr = ex["max_runup_pct_high_score"] if sc >= ex["high_score"] else \
+            thr = ex["max_runup_pct_high_score"] if base >= ex["high_score"] else \
                 min(float(c.get("runup_tolerance_pct", ex["max_runup_pct"])), ex["max_runup_pct"])
             if move > thr:
                 descartados.append((t, f"runup {move:+.1f}%>{thr:.0f}%")); continue
         lv = compute_levels(price, float(c["stop_pct"]) if c.get("stop_pct") else None, atr14(t, P), ex)
         limit_px = price * (1 + ex["entry_limit_slippage_pct"] / 100)
-        rec = {"ticker": t, "score": sc, "fuente": src, "precio": round(price, 2), **{k: lv[k] for k in ("stop", "tp", "stop_pct", "rr")}}
+        rec = {"ticker": t, "score": sc, "score_base": base, "ajuste": c["_ajuste"], "partes": c["_partes"],
+               "fuente": src, "precio": round(price, 2), **{k: lv[k] for k in ("stop", "tp", "stop_pct", "rr")}}
 
         # PAPER
         if t in pos:
@@ -223,7 +265,7 @@ def main():
         if not lr["active"]:
             continue
         why = None
-        if sc < lr["min_score"]: why = f"score<{lr['min_score']}"
+        if sc_real < lr["min_score"]: why = f"score real {sc_real:.2f}<{lr['min_score']}"
         elif src in lr["blocked_sources"]: why = f"fuente {src} bloqueada en real"
         elif t in L["leveraged"] and not lr["allow_leveraged_etf"]: why = "ETF apalancado"
         elif t in pos_r: why = "ya en cartera real"
@@ -256,7 +298,8 @@ def main():
             if not any(o.get("id") == op_id for o in pl.get("operaciones", [])):
                 pl.setdefault("operaciones", []).append({
                     "id": op_id, "simbolo": e["ticker"], "tipo": "GH_Actions_open", "fuente": e["fuente"],
-                    "score_entrada": e["score"], "fecha_entrada": hoy, "precio_entrada": e.get("fill", e["precio"]),
+                    "score_entrada": e["score"], "score_base": e.get("score_base"),
+                    "ajuste_fuentes": e.get("ajuste"), "fuentes_extra": e.get("partes"), "fecha_entrada": hoy, "precio_entrada": e.get("fill", e["precio"]),
                     "precio_stop": e["stop"], "precio_tp": e["tp"], "stop_pct": e["stop_pct"], "rr": e["rr"],
                     "qty": e.get("qty", 0), "real_qty": e.get("real_qty", 0), "estado": "abierta",
                     "orden_id": e.get("oid"), "cuenta": "paper+real" if e.get("real_qty") else "paper"})
@@ -264,7 +307,15 @@ def main():
                                     "min_desde_apertura": round(mso or 0, 1),
                                     "real_activa": lr["active"], "real_motivo": lr["why"],
                                     "ejecutados": [e["ticker"] for e in ejecutados],
-                                    "descartados": [f"{t}: {w}" for t, w in descartados][:20]}
+                                    "descartados": [f"{t}: {w}" for t, w in descartados][:20],
+                                    "ajustes_fuentes": {c["ticker"]: {"base": c["_score_base"], "paper": c["_score_paper"],
+                                                                      "real": c["_score_real"], "partes": c["_partes"]}
+                                                        for c in uniq[:12] if c.get("_partes")}}
+        if macro_x is not None or estado_x:
+            pl["fuentes_extra"] = {"_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, "
+                                           "Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el "
+                                           "ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
+                                   "ts": ahora.strftime("%Y-%m-%dT%H:%MZ"), "macro": macro_x, "estado": estado_x}
 
     try:
         update_log(mutate, f"market-open v3 [{ahora:%Y-%m-%dT%H:%M}Z] {len(ejecutados)} ejecutadas")
@@ -277,7 +328,8 @@ def main():
     lines = [f"🚀 APERTURA {ahora:%d/%m %H:%M}UTC (+{mso or 0:.0f}min) | Real: {'ON' if lr['active'] else 'OFF'}"]
     for e in ejecutados:
         lines.append(f"✅ {e['ticker']} {e.get('qty', 0)}acc @ {e.get('fill', e['precio']):.2f} | SL {e['stop']} "
-                     f"({e['stop_pct']}%) TP {e['tp']} | s={e['score']:.1f} {('+REAL ' + str(e['real_qty'])) if e.get('real_qty') else ''}")
+                     f"({e['stop_pct']}%) TP {e['tp']} | s={e['score']:.1f}"
+                     f"{(' (base ' + format(e['score_base'], '.1f') + ')') if e.get('ajuste') else ''} {('+REAL ' + str(e['real_qty'])) if e.get('real_qty') else ''}")
     if not ejecutados:
         lines.append("Sin ejecuciones.")
     if descartados:
