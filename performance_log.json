@@ -22335,8 +22335,8 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-11",
-    "hora_utc": "17:11",
-    "min_desde_apertura": 221.4,
+    "hora_utc": "17:37",
+    "min_desde_apertura": 247.6,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
     "ejecutados": [],
@@ -22344,12 +22344,12 @@
       "DELL: ya en cartera paper",
       "QCOM: paper: {\"code\":40010001,\"message\":\"client_order_id must be unique\"}",
       "AAPL: ya en cartera paper",
-      "HPE: score 5.7<6.0",
+      "RBLX: score 6.0<6.0",
+      "INTC: score 5.7<6.0",
+      "META: score 5.7<6.0",
       "QRVO: score 5.6<6.0",
       "SWKS: score 5.5<6.0",
-      "AMD: score 5.2<6.0",
-      "RBLX: score 5.2<6.0",
-      "META: score 5.0<6.0"
+      "ARM: score 5.1<6.0"
     ],
     "ajustes_fuentes": {
       "DELL": {
@@ -22381,12 +22381,29 @@
           "sector": 0.15
         }
       },
-      "HPE": {
-        "base": 5.0,
-        "paper": 5.65,
-        "real": 5.0,
+      "RBLX": {
+        "base": 5.83,
+        "paper": 5.98,
+        "real": 5.83,
         "partes": {
+          "sector": 0.15
+        }
+      },
+      "INTC": {
+        "base": 5.42,
+        "paper": 5.72,
+        "real": 5.42,
+        "partes": {
+          "analistas": -0.05,
           "opciones": 0.5,
+          "sector": -0.15
+        }
+      },
+      "META": {
+        "base": 5.5,
+        "paper": 5.65,
+        "real": 5.5,
+        "partes": {
           "sector": 0.15
         }
       },
@@ -22410,71 +22427,52 @@
           "sector": -0.15
         }
       },
-      "AMD": {
-        "base": 4.58,
-        "paper": 5.18,
-        "real": 4.58,
+      "ARM": {
+        "base": 5.25,
+        "paper": 5.1,
+        "real": 5.1,
         "partes": {
-          "insiders": -0.3,
-          "analistas": 0.55,
-          "opciones": 0.5,
           "sector": -0.15
-        }
-      },
-      "RBLX": {
-        "base": 5.0,
-        "paper": 5.15,
-        "real": 5.0,
-        "partes": {
-          "sector": 0.15
-        }
-      },
-      "META": {
-        "base": 4.83,
-        "paper": 4.98,
-        "real": 4.83,
-        "partes": {
-          "sector": 0.15
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-11T17:11Z",
+    "ts": "2026-09-11T17:37Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 1.16,
+      "credito_hyg_ief_20": 1.15,
       "fear_greed": 34.1,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
-      "cnn_fear_greed": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 65,
-        "ultimo_error": null
-      },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 161,
+        "ms": 131,
+        "ultimo_error": null
+      },
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 206,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 94889,
+        "ms": 95360,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1635,
+        "ms": 1791,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -22492,31 +22490,31 @@
       "insiders": {
         "ok": 9,
         "fallos": 0,
-        "ms": 23711,
+        "ms": 17219,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 9,
         "fallos": 0,
-        "ms": 811,
+        "ms": 835,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1496,
+        "ms": 1304,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 9,
         "fallos": 0,
-        "ms": 201,
+        "ms": 195,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 9,
         "fallos": 0,
-        "ms": 2452,
+        "ms": 1658,
         "ultimo_error": null
       }
     }
