@@ -21087,7 +21087,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-11T20:00Z",
+    "ts": "2026-09-11T21:40Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -21115,7 +21115,7 @@
       },
       "insiders_nasdaq": {
         "ok": true,
-        "detalle": "4 filas 60 d"
+        "detalle": "5 filas 60 d"
       },
       "fred": {
         "ok": false,
@@ -21123,15 +21123,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 1.18}"
+        "detalle": "{'rel20': 1.17}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 33.6, 'rating': 'fear'}"
+        "detalle": "{'score': 33.3, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 7, 'menciones': 58, 'menciones_24h_antes': 68, 'ratio_24h': 0.85}"
+        "detalle": "{'en_ranking': True, 'rank': 7, 'menciones': 54, 'menciones_24h_antes': 79, 'ratio_24h': 0.68}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -21139,7 +21139,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.13"
+        "detalle": "C/P 1.14"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -21152,64 +21152,77 @@
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-11T20:00Z",
-    "entrada": "2026-09-11",
-    "salida": "2026-09-14",
+    "ts": "2026-09-11T21:40Z",
+    "entrada": "2026-09-14",
+    "salida": "2026-09-15",
     "eventos": 22,
-    "evaluados": 4,
+    "evaluados": 5,
     "macro": {
-      "vix": 15.81,
+      "vix": 15.84,
       "spy_above_ma50": true
     },
     "top": [
       {
-        "ticker": "RLGT",
-        "score": 5.91,
-        "earnings_fecha": "2026-09-14",
+        "ticker": "TCOM",
+        "score": 3.39,
+        "earnings_fecha": "2026-09-15",
         "earnings_timing": "AMC",
         "score_breakdown": {
-          "beat_rate": 3,
-          "reaccion": 0.91,
-          "revisiones": 0,
-          "momentum5d": 1,
-          "macro": 1
+          "whisper": -0.61,
+          "beat_rate": 3.0,
+          "reaccion": 0.0,
+          "revisiones": -1.0,
+          "momentum5d": 1.0,
+          "macro": 1.0
         }
       },
       {
-        "ticker": "COE",
-        "score": 4,
-        "earnings_fecha": "2026-09-15",
-        "earnings_timing": "BMO",
+        "ticker": "ANAB",
+        "score": 2.39,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
         "score_breakdown": {
-          "beat_rate": 3,
-          "momentum5d": 0,
-          "macro": 1
+          "beat_rate": 2.0,
+          "reaccion": 0.39,
+          "revisiones": -1.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
         }
       },
       {
-        "ticker": "FPS",
-        "score": 2.21,
-        "earnings_fecha": "2026-09-15",
-        "earnings_timing": "BMO",
+        "ticker": "LKSP",
+        "score": 2.0,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
         "score_breakdown": {
-          "whisper": 1.21,
-          "revisiones": 0,
-          "momentum5d": 0,
-          "macro": 1
+          "momentum5d": 1.0,
+          "macro": 1.0
         }
       },
       {
-        "ticker": "PLAY",
-        "score": 0,
-        "earnings_fecha": "2026-09-14",
-        "earnings_timing": "AMC",
+        "ticker": "SA",
+        "score": 1.26,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
         "score_breakdown": {
-          "whisper": -1,
-          "beat_rate": -1,
-          "reaccion": 0.36,
-          "revisiones": -1,
-          "momentum5d": 0,
-          "macro": 1
+          "beat_rate": -1.0,
+          "reaccion": 0.26,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "PTN",
+        "score": 0.0,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": 0.0,
+          "reaccion": -0.5,
+          "revisiones": -1.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
         }
       }
     ]
@@ -21227,122 +21240,8 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-11T20:00Z",
+    "ts": "2026-09-11T21:40Z",
     "calendario": {
-      "2026-09-11": [
-        {
-          "ticker": "KR",
-          "company": "The Kroger Co.",
-          "releaseTime": 1,
-          "total": 22,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "HOFT",
-          "company": "Hooker Furnishings Corporation",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "MNY",
-          "company": "MoneyHero Limited",
-          "releaseTime": 1,
-          "total": 1,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "CMCM",
-          "company": "Cheetah Mobile Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "IHT",
-          "company": "InnSuites Hospitality Trust",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "JVA",
-          "company": "Coffee Holding Co Inc",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "LAES",
-          "company": "SEALSQ Corp",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "OCCI",
-          "company": "OFS Credit Company, Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "RENT",
-          "company": "Rent the Runway, Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "NB",
-          "company": "NioCorp Developments Ltd.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "HTLM",
-          "company": "HomesToLife Ltd",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ZONE",
-          "company": "Zone Frontier Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "PLCE",
-          "company": "Children's Place, Inc. (The)",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CELU",
-          "company": "Celularity Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ENLV",
-          "company": "Enlivex Ltd.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "LNAI",
-          "company": "Lunai Bioworks Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        }
-      ],
       "2026-09-14": [
         {
           "ticker": "RFIL",
@@ -21868,48 +21767,67 @@
           "total": 1,
           "fuente": "nasdaq"
         }
+      ],
+      "2026-09-18": [
+        {
+          "ticker": "TRT",
+          "company": "Trio-Tech International",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        }
       ]
     },
     "tickers": {
-      "FPS": {
-        "consenso_eps": 0.22,
-        "whisper": 0.24,
-        "asimetria_pct": 9.09,
+      "TCOM": {
+        "consenso_eps": 0.98,
+        "whisper": 0.92,
+        "asimetria_pct": -6.12,
         "earnings_fecha": "2026-09-15",
-        "earnings_timing": "BMO",
+        "earnings_timing": "AMC",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": -0.51,
+        "score": 3.39
+      },
+      "ANAB": {
+        "consenso_eps": -0.22,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
+        "beat_rate": 75.0,
+        "reaccion_media_pct": 1.04,
+        "score": 2.39
+      },
+      "PTN": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
+        "beat_rate": 50.0,
+        "reaccion_media_pct": -4.35,
+        "score": 0.0
+      },
+      "LKSP": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
         "beat_rate": null,
         "reaccion_media_pct": null,
-        "score": 2.21
+        "score": 2.0
       },
-      "PLAY": {
-        "consenso_eps": 0.19,
-        "whisper": 0.16,
-        "asimetria_pct": -15.79,
-        "earnings_fecha": "2026-09-14",
-        "earnings_timing": "AMC",
-        "beat_rate": 12.5,
-        "reaccion_media_pct": 0.95,
-        "score": 0
-      },
-      "RLGT": {
-        "consenso_eps": null,
+      "SA": {
+        "consenso_eps": 999.0,
         "whisper": null,
         "asimetria_pct": null,
-        "earnings_fecha": "2026-09-14",
-        "earnings_timing": "AMC",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 2.43,
-        "score": 5.91
-      },
-      "COE": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-09-15",
-        "earnings_timing": "BMO",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": null,
-        "score": 4
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
+        "beat_rate": 25.0,
+        "reaccion_media_pct": 0.7,
+        "score": 1.26
       }
     },
     "resultados_hoy": [
@@ -21919,8 +21837,8 @@
         "eps": 1.09,
         "estimate": 1.05,
         "whisper": 1.07,
-        "revenue": 34621,
-        "revenueEstimate": 34690,
+        "revenue": 34621.0,
+        "revenueEstimate": 34690.0,
         "earningsSurprise": 0.018691588785046728,
         "revenueSurprise": -0.001989045834534448,
         "subject": "The Kroger Beat Expectations"
@@ -21991,7 +21909,7 @@
         "eps": 1.92,
         "estimate": 1.75,
         "whisper": 1.8,
-        "revenue": 19345,
+        "revenue": 19345.0,
         "revenueEstimate": null,
         "earningsSurprise": 0.06666666666666667,
         "revenueSurprise": null,
@@ -22003,7 +21921,7 @@
         "eps": 6.13,
         "estimate": 6.08,
         "whisper": 6.05,
-        "revenue": 6760,
+        "revenue": 6760.0,
         "revenueEstimate": null,
         "earningsSurprise": 0.013223140495867768,
         "revenueSurprise": null,
@@ -22070,18 +21988,6 @@
         "subject": "MasterCraft Boat Beat Expectations"
       },
       {
-        "ticker": "VNCE",
-        "epsDate": "2026-09-10T07:00:00",
-        "eps": 1.02,
-        "estimate": 0.27,
-        "whisper": 0.31,
-        "revenue": 81.788,
-        "revenueEstimate": null,
-        "earningsSurprise": 2.2903225806451615,
-        "revenueSurprise": null,
-        "subject": "Vince Holding Beat Expectations"
-      },
-      {
         "ticker": "LOVE",
         "epsDate": "2026-09-10T07:00:00",
         "eps": -0.35,
@@ -22094,12 +22000,24 @@
         "subject": "The Lovesac Missed Expectations"
       },
       {
+        "ticker": "VNCE",
+        "epsDate": "2026-09-10T07:00:00",
+        "eps": 1.02,
+        "estimate": 0.27,
+        "whisper": 0.31,
+        "revenue": 81.788,
+        "revenueEstimate": null,
+        "earningsSurprise": 2.2903225806451615,
+        "revenueSurprise": null,
+        "subject": "Vince Holding Beat Expectations"
+      },
+      {
         "ticker": "M",
         "epsDate": "2026-09-10T06:55:00",
         "eps": 0.4,
         "estimate": 0.37,
         "whisper": 0.44,
-        "revenue": 5059,
+        "revenue": 5059.0,
         "revenueEstimate": null,
         "earningsSurprise": -0.09090909090909091,
         "revenueSurprise": null,
@@ -22202,16 +22120,16 @@
         "subject": "Navan Missed Expectations"
       },
       {
-        "ticker": "SKIL",
+        "ticker": "WLTH",
         "epsDate": "2026-09-09T16:05:00",
-        "eps": 1.17,
-        "estimate": 0.83,
-        "whisper": 0.91,
-        "revenue": 98.248,
+        "eps": 0.1,
+        "estimate": 0.09,
+        "whisper": 999,
+        "revenue": 91.874,
         "revenueEstimate": null,
-        "earningsSurprise": 0.2857142857142857,
+        "earningsSurprise": 0.1111111111111111,
         "revenueSurprise": null,
-        "subject": "Skillsoft Corp. Beat Expectations"
+        "subject": "Wealthfront Beat Consensus Estimates"
       },
       {
         "ticker": "LMNR",
@@ -22250,16 +22168,16 @@
         "subject": "Culp Beat Consensus Estimates"
       },
       {
-        "ticker": "WLTH",
+        "ticker": "SKIL",
         "epsDate": "2026-09-09T16:05:00",
-        "eps": 0.1,
-        "estimate": 0.09,
-        "whisper": 999,
-        "revenue": 91.874,
+        "eps": 1.17,
+        "estimate": 0.83,
+        "whisper": 0.91,
+        "revenue": 98.248,
         "revenueEstimate": null,
-        "earningsSurprise": 0.1111111111111111,
+        "earningsSurprise": 0.2857142857142857,
         "revenueSurprise": null,
-        "subject": "Wealthfront Beat Consensus Estimates"
+        "subject": "Skillsoft Corp. Beat Expectations"
       },
       {
         "ticker": "RSSS",
@@ -22289,7 +22207,7 @@
         "ticker": "NNOX",
         "epsDate": "2026-09-09T08:03:00",
         "eps": -0.79,
-        "estimate": 999,
+        "estimate": 999.0,
         "whisper": 999,
         "revenue": 4.156,
         "revenueEstimate": null,
@@ -22327,7 +22245,7 @@
         "eps": 0.92,
         "estimate": 0.91,
         "whisper": 0.89,
-        "revenue": 2145,
+        "revenue": 2145.0,
         "revenueEstimate": null,
         "earningsSurprise": 0.033707865168539325,
         "revenueSurprise": null,
@@ -22375,7 +22293,7 @@
         "eps": 1.18,
         "estimate": 0.99,
         "whisper": 999,
-        "revenue": 3115,
+        "revenue": 3115.0,
         "revenueEstimate": null,
         "earningsSurprise": 0.1919191919191919,
         "revenueSurprise": null,
@@ -22418,18 +22336,6 @@
         "subject": "Caleres Beat Expectations"
       },
       {
-        "ticker": "JILL",
-        "epsDate": "2026-09-09T06:45:00",
-        "eps": 1.24,
-        "estimate": 0.59,
-        "whisper": 0.64,
-        "revenue": 154.829,
-        "revenueEstimate": null,
-        "earningsSurprise": 0.9375,
-        "revenueSurprise": null,
-        "subject": "J.Jill Beat Expectations"
-      },
-      {
         "ticker": "KFY",
         "epsDate": "2026-09-09T06:45:00",
         "eps": 1.43,
@@ -22440,6 +22346,18 @@
         "earningsSurprise": 0.05925925925925926,
         "revenueSurprise": null,
         "subject": "Korn Ferry Beat Consensus Estimates"
+      },
+      {
+        "ticker": "JILL",
+        "epsDate": "2026-09-09T06:45:00",
+        "eps": 1.24,
+        "estimate": 0.59,
+        "whisper": 0.64,
+        "revenue": 154.829,
+        "revenueEstimate": null,
+        "earningsSurprise": 0.9375,
+        "revenueSurprise": null,
+        "subject": "J.Jill Beat Expectations"
       }
     ]
   },
