@@ -24,7 +24,12 @@ def test_log_no_puede_relajar_umbral_real():
 def test_log_si_puede_endurecer():
     plog = {"parametros_activos": {"score_threshold_real_account": 9.6, "max_cowork_positions": 2}}
     L = common.effective_limits(plog, LIM)
-    assert L["real"]["min_score"] == 9.6 and L["paper"]["max_positions"] == 2
+    assert L["real"]["min_score"] == 9.6
+    # paper es la cuenta de aprendizaje: con ignore_log_limits manda risk_limits.json
+    assert L["paper"]["max_positions"] == LIM["paper"]["max_positions"]
+    import copy
+    strict = copy.deepcopy(LIM); strict["paper"]["ignore_log_limits"] = False
+    assert common.effective_limits(plog, strict)["paper"]["max_positions"] == 2
 
 
 def test_real_auto_depende_del_gate():
@@ -119,3 +124,9 @@ def test_pre_close_reglas():
     assert not pre_close.should_close({"nextEPSDate": "2026-09-14T00:00:00", "releaseTime": 3}, hoy, nxt)[0]
     assert not pre_close.should_close({"nextEPSDate": "2026-09-11T00:00:00", "releaseTime": 1}, hoy, nxt)[0]
     assert not pre_close.should_close(None, hoy, nxt)[0]
+
+
+def test_paper_aprendizaje_no_afecta_a_real():
+    L = common.effective_limits({"parametros_activos": {"score_min_paper": 9.5, "score_threshold_real_account": 8.0}}, LIM)
+    assert L["paper"]["min_score"] == LIM["paper"]["min_score"] < 8
+    assert L["real"]["min_score"] >= 9.0 and L["real"]["max_positions"] <= 2
