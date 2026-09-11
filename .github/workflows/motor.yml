@@ -1,0 +1,31 @@
+name: Motor (marcapasos)
+# El cron de GitHub llega tarde o no llega. Este job vive ~5 h 20 min, lanza cada workflow en su
+# franja (sin duplicar) y antes de terminar lanza su relevo. Concurrencia: nunca dos motores.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/motor.yml", "scripts/motor.py"]
+  schedule:
+    - cron: "17 */3 * * *"   # respaldo por si la cadena se rompe
+concurrency:
+  group: motor
+  cancel-in-progress: false
+permissions:
+  actions: write     # workflow_dispatch de los demás workflows y del relevo
+  contents: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Motor
+        env:
+          DISPATCH_TOKEN: ${{ github.token }}
+          APCA_KEY:   ${{ secrets.APCA_KEY }}
+          APCA_SEC:   ${{ secrets.APCA_SEC }}
+        run: python scripts/motor.py
