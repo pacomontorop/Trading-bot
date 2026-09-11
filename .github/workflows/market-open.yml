@@ -1,9 +1,8 @@
 name: Market Open Execution
 on:
   schedule:
-    # 13:35 y 14:35 UTC → cubre EDT y EST; el script decide por calendario Alpaca
-    - cron: "35 13 * * 1-5"
-    - cron: "35 14 * * 1-5"
+    # cada hora en sesión (13:35-19:35 UTC); el script decide por calendario Alpaca
+    - cron: "35 13-19 * * 1-5"
   workflow_dispatch:
     inputs:
       dry_run:
