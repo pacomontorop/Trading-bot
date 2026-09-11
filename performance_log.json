@@ -1392,6 +1392,30 @@
       "estado": "abierta",
       "orden_id": "94153aac-3f75-491c-b181-01bd7b945081",
       "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260911-QRVO",
+      "simbolo": "QRVO",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 6.05,
+      "score_base": 6.5,
+      "ajuste_fuentes": -0.45,
+      "fuentes_extra": {
+        "analistas": -0.3,
+        "sector": -0.15
+      },
+      "fecha_entrada": "2026-09-11",
+      "precio_entrada": 117.081798,
+      "precio_stop": 111.38,
+      "precio_tp": 128.36,
+      "stop_pct": 4.83,
+      "rr": 2.0,
+      "qty": 89,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "a2d6acb1-32f7-4ea9-9487-843f2fe6f2f2",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -1611,7 +1635,7 @@
     {
       "ticker": "QRVO",
       "symbol": "QRVO",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.5,
       "score_ajustado": 6.5,
       "score_raw": 7.8,
@@ -1630,7 +1654,8 @@
       "expira": "2026-09-12T00:36:31Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T18:36:31.654800+00:00",
-      "notas": "1d=+4.2% vol=1.5x 52h_dist=2.8%"
+      "notas": "1d=+4.2% vol=1.5x 52h_dist=2.8%",
+      "fecha_ejecucion": "2026-09-11 18:37"
     },
     {
       "ticker": "QCOM",
@@ -22363,31 +22388,32 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-11",
-    "hora_utc": "17:37",
-    "min_desde_apertura": 247.6,
+    "hora_utc": "18:37",
+    "min_desde_apertura": 307.1,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
-    "ejecutados": [],
+    "ejecutados": [
+      "QRVO"
+    ],
     "descartados": [
       "DELL: ya en cartera paper",
       "QCOM: paper: {\"code\":40010001,\"message\":\"client_order_id must be unique\"}",
-      "AAPL: ya en cartera paper",
-      "RBLX: score 6.0<6.0",
+      "AAPL: score 5.8<6.0",
+      "SWKS: score 5.7<6.0",
       "INTC: score 5.7<6.0",
       "META: score 5.7<6.0",
-      "QRVO: score 5.6<6.0",
-      "SWKS: score 5.5<6.0",
-      "ARM: score 5.1<6.0"
+      "HPE: score 5.7<6.0"
     ],
     "ajustes_fuentes": {
       "DELL": {
-        "base": 6.25,
-        "paper": 6.9,
-        "real": 6.25,
+        "base": 6.5,
+        "paper": 7.35,
+        "real": 6.5,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.8,
-          "sector": 0.15
+          "sector": 0.15,
+          "social": 0.2
         }
       },
       "QCOM": {
@@ -22400,21 +22426,33 @@
           "sector": -0.15
         }
       },
+      "QRVO": {
+        "base": 6.5,
+        "paper": 6.05,
+        "real": 6.05,
+        "partes": {
+          "analistas": -0.3,
+          "sector": -0.15
+        }
+      },
       "AAPL": {
-        "base": 5.62,
-        "paper": 6.32,
-        "real": 5.62,
+        "base": 5.08,
+        "paper": 5.78,
+        "real": 5.08,
         "partes": {
           "analistas": 0.55,
           "sector": 0.15
         }
       },
-      "RBLX": {
-        "base": 5.83,
-        "paper": 5.98,
-        "real": 5.83,
+      "SWKS": {
+        "base": 6.08,
+        "paper": 5.73,
+        "real": 5.73,
         "partes": {
-          "sector": 0.15
+          "analistas": -0.3,
+          "opciones": 0.5,
+          "corto": -0.4,
+          "sector": -0.15
         }
       },
       "INTC": {
@@ -22435,114 +22473,95 @@
           "sector": 0.15
         }
       },
-      "QRVO": {
-        "base": 6.08,
-        "paper": 5.63,
-        "real": 5.63,
+      "HPE": {
+        "base": 5.0,
+        "paper": 5.65,
+        "real": 5.0,
         "partes": {
-          "analistas": -0.3,
-          "sector": -0.15
-        }
-      },
-      "SWKS": {
-        "base": 5.83,
-        "paper": 5.48,
-        "real": 5.48,
-        "partes": {
-          "analistas": -0.3,
           "opciones": 0.5,
-          "corto": -0.4,
-          "sector": -0.15
-        }
-      },
-      "ARM": {
-        "base": 5.25,
-        "paper": 5.1,
-        "real": 5.1,
-        "partes": {
-          "sector": -0.15
+          "sector": 0.15
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-11T17:37Z",
+    "ts": "2026-09-11T18:37Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 1.15,
+      "credito_hyg_ief_20": 1.22,
       "fear_greed": 34.1,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
-      "credito_hyg_ief": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 131,
-        "ultimo_error": null
-      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 206,
+        "ms": 173,
+        "ultimo_error": null
+      },
+      "credito_hyg_ief": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 309,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95360,
+        "ms": 95569,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 1791,
+        "ms": 2360,
         "ultimo_error": null
       },
       "insiders_sec": {
         "ok": 0,
-        "fallos": 9,
+        "fallos": 8,
         "ms": 0,
         "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
       },
       "insiders_nasdaq": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 17219,
+        "ms": 16191,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 835,
+        "ms": 705,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 1304,
+        "ms": 1396,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 195,
+        "ms": 738,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 9,
+        "ok": 8,
         "fallos": 0,
-        "ms": 1658,
+        "ms": 1968,
         "ultimo_error": null
       }
     }
