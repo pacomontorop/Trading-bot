@@ -188,3 +188,43 @@ def test_market_open_si_fuentes_caen_opera_con_score_base(monkeypatch):
     assert macro is None and estado == {}
     assert [(c["_score_paper"], c["_score_real"], c["_ajuste"]) for c in u] == [(7.0, 7.0, 0.0), (9.2, 9.2, 0.0),
                                                                               (2.0, 2.0, 0.0)]
+
+
+def test_insiders_nasdaq_respaldo():
+    hoy = date.today()
+    f = lambda d: (hoy - timedelta(days=d)).strftime("%m/%d/%Y")
+    data = {"data": {"numberOfTrades": {"rows": []}, "transactionTable": {"table": {"rows": [
+        {"insider": "SMITH ANN", "relation": "Director", "lastDate": f(3), "transactionType": "Buy",
+         "sharesTraded": "20,000", "lastPrice": "$12.50"},
+        {"insider": "LEE BOB", "relation": "CFO", "lastDate": f(5), "transactionType": "Automatic Sell",
+         "sharesTraded": "1,000", "lastPrice": "$13.00"},
+        {"insider": "OLD GUY", "relation": "CEO", "lastDate": f(90), "transactionType": "Buy",
+         "sharesTraded": "1,000", "lastPrice": "$10.00"},
+        {"insider": "X", "relation": "CEO", "lastDate": f(2), "transactionType": "Option Execute",
+         "sharesTraded": "5,000", "lastPrice": "$1.00"}]}}}}
+    txs = fx.parse_nasdaq_insiders(data, hoy - timedelta(days=30))
+    r = fx.resumen_insiders(txs)
+    assert r["compras_usd"] == 250000 and r["n_compradores"] == 1 and r["ventas_usd"] == 13000
+    assert fx.puntua_insiders(r) == 0.6
+    assert fx.parse_nasdaq_insiders(None, hoy) is None                 # respuesta rota → fallo
+    assert fx.parse_nasdaq_insiders({"data": {"numberOfTrades": {"x": 1}, "transactionTable": {}}}, hoy) == []
+
+
+def test_insiders_usa_nasdaq_si_sec_falla(monkeypatch):
+    def sec_rota(*a, **k):
+        raise RuntimeError("HTTP 403")
+    monkeypatch.setattr(fx, "_insiders_sec", sec_rota)
+    monkeypatch.setattr(fx, "_insiders_nasdaq", lambda t, d: {"compras_usd": 0, "ventas_usd": 0, "n_compradores": 0,
+                                                            "n_vendedores": 0, "origen": "nasdaq"})
+    assert fx.insiders("AAA")["origen"] == "nasdaq"
+    monkeypatch.setattr(fx, "_insiders_nasdaq", lambda t, d: None)
+    assert fx.insiders("AAA") is None                                  # ambas caídas → None, sin excepción
+
+
+def test_macro_respaldo_credito_sin_fred():
+    assert fx.regimen_macro(None, None, None, None, {"rel20": -2.5})["ajuste"] == -0.4
+    assert fx.regimen_macro(None, None, None, None, {"rel20": -1.2})["regimen"] == "cautela"
+    assert fx.regimen_macro(None, None, None, None, {"rel20": 0.5})["ajuste"] == 0.0
+    # con FRED disponible manda FRED
+    calma = [("d", 3.0)] * 25
+    assert fx.regimen_macro(calma, [("d", -0.5)], None, None, {"rel20": -5})["ajuste"] == 0.0
