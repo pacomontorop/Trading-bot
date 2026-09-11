@@ -1318,6 +1318,80 @@
       "pnl_latente_abs": 4.2,
       "R_actual": 0.13,
       "stop_verificado_2026-09-09": true
+    },
+    {
+      "id": "GHA-20260911-DELL",
+      "simbolo": "DELL",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 7.57,
+      "score_base": 6.92,
+      "ajuste_fuentes": 0.65,
+      "fuentes_extra": {
+        "insiders": -0.3,
+        "analistas": 0.8,
+        "sector": 0.15
+      },
+      "fecha_entrada": "2026-09-11",
+      "precio_entrada": 564.75,
+      "precio_stop": 519.31,
+      "precio_tp": 654.79,
+      "stop_pct": 8.0,
+      "rr": 2.0,
+      "qty": 11,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "d6580429-d0e8-4c36-b9fd-ecc52adff1ae",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260911-QCOM",
+      "simbolo": "QCOM",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 6.75,
+      "score_base": 6.25,
+      "ajuste_fuentes": 0.5,
+      "fuentes_extra": {
+        "analistas": 0.15,
+        "opciones": 0.5,
+        "sector": -0.15
+      },
+      "fecha_entrada": "2026-09-11",
+      "precio_entrada": 184.08,
+      "precio_stop": 174.06,
+      "precio_tp": 203.97,
+      "stop_pct": 5.42,
+      "rr": 2.0,
+      "qty": 51,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "cbe06d0c-9bae-48af-9071-da8ba398e7d3",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260911-AAPL",
+      "simbolo": "AAPL",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "score_entrada": 6.32,
+      "score_base": 5.62,
+      "ajuste_fuentes": 0.7,
+      "fuentes_extra": {
+        "analistas": 0.55,
+        "sector": 0.15
+      },
+      "fecha_entrada": "2026-09-11",
+      "precio_entrada": 334.59,
+      "precio_stop": 317.8,
+      "precio_tp": 367.98,
+      "stop_pct": 5.0,
+      "rr": 2.0,
+      "qty": 30,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "94153aac-3f75-491c-b181-01bd7b945081",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -1463,7 +1537,7 @@
     {
       "ticker": "DELL",
       "symbol": "DELL",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.92,
       "score_ajustado": 6.92,
       "score_raw": 8.3,
@@ -1482,12 +1556,13 @@
       "expira": "2026-09-11T21:47:17Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T15:47:17.638482+00:00",
-      "notas": "1d=+11.4% vol=1.0x 52h_dist=0.6%"
+      "notas": "1d=+11.4% vol=1.0x 52h_dist=0.6%",
+      "fecha_ejecucion": "2026-09-11 15:47"
     },
     {
       "ticker": "QCOM",
       "symbol": "QCOM",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.25,
       "score_ajustado": 6.25,
       "score_raw": 7.5,
@@ -1506,7 +1581,8 @@
       "expira": "2026-09-11T21:47:17Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T15:47:17.638482+00:00",
-      "notas": "1d=+4.1% vol=0.4x 52h_dist=0.5%"
+      "notas": "1d=+4.1% vol=0.4x 52h_dist=0.5%",
+      "fecha_ejecucion": "2026-09-11 15:47"
     },
     {
       "ticker": "QRVO",
@@ -22119,5 +22195,193 @@
       "uw_active": false,
       "market_open": true
     }
-  ]
+  ],
+  "ejecucion_apertura": {
+    "fecha": "2026-09-11",
+    "hora_utc": "15:47",
+    "min_desde_apertura": 138.0,
+    "real_activa": true,
+    "real_motivo": "forzado ON en risk_limits.json",
+    "ejecutados": [
+      "DELL",
+      "QCOM",
+      "AAPL"
+    ],
+    "descartados": [
+      "INTC: score 5.7<6.0",
+      "HPE: score 5.7<6.0",
+      "META: score 5.6<6.0",
+      "SWKS: score 5.5<6.0",
+      "QRVO: score 5.4<6.0",
+      "RBLX: score 5.2<6.0"
+    ],
+    "ajustes_fuentes": {
+      "DELL": {
+        "base": 6.92,
+        "paper": 7.57,
+        "real": 6.92,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": 0.8,
+          "sector": 0.15
+        }
+      },
+      "QCOM": {
+        "base": 6.25,
+        "paper": 6.75,
+        "real": 6.25,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.5,
+          "sector": -0.15
+        }
+      },
+      "AAPL": {
+        "base": 5.62,
+        "paper": 6.32,
+        "real": 5.62,
+        "partes": {
+          "analistas": 0.55,
+          "sector": 0.15
+        }
+      },
+      "INTC": {
+        "base": 5.42,
+        "paper": 5.72,
+        "real": 5.42,
+        "partes": {
+          "analistas": -0.05,
+          "opciones": 0.5,
+          "sector": -0.15
+        }
+      },
+      "HPE": {
+        "base": 5.0,
+        "paper": 5.65,
+        "real": 5.0,
+        "partes": {
+          "opciones": 0.5,
+          "sector": 0.15
+        }
+      },
+      "META": {
+        "base": 5.42,
+        "paper": 5.57,
+        "real": 5.42,
+        "partes": {
+          "sector": 0.15
+        }
+      },
+      "SWKS": {
+        "base": 5.83,
+        "paper": 5.48,
+        "real": 5.48,
+        "partes": {
+          "analistas": -0.3,
+          "opciones": 0.5,
+          "corto": -0.4,
+          "sector": -0.15
+        }
+      },
+      "QRVO": {
+        "base": 5.83,
+        "paper": 5.38,
+        "real": 5.38,
+        "partes": {
+          "analistas": -0.3,
+          "sector": -0.15
+        }
+      },
+      "RBLX": {
+        "base": 5.0,
+        "paper": 5.15,
+        "real": 5.0,
+        "partes": {
+          "sector": 0.15
+        }
+      }
+    }
+  },
+  "fuentes_extra": {
+    "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
+    "ts": "2026-09-11T15:47Z",
+    "macro": {
+      "hy_oas": null,
+      "hy_cambio_20": null,
+      "nfci": null,
+      "curva_10a2a": null,
+      "credito_hyg_ief_20": 1.14,
+      "fear_greed": 34.4,
+      "regimen": "neutral",
+      "ajuste": 0.0
+    },
+    "estado": {
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 124,
+        "ultimo_error": null
+      },
+      "credito_hyg_ief": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 448,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 0,
+        "fallos": 3,
+        "ms": 95497,
+        "ultimo_error": "RuntimeError: HTTP 0"
+      },
+      "yahoo_ficha": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 2685,
+        "ultimo_error": null
+      },
+      "insiders_sec": {
+        "ok": 0,
+        "fallos": 9,
+        "ms": 0,
+        "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
+      },
+      "insiders_nasdaq": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 0,
+        "ultimo_error": null
+      },
+      "insiders": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 22899,
+        "ultimo_error": null
+      },
+      "yahoo_analistas": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 1002,
+        "ultimo_error": null
+      },
+      "yahoo_opciones": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 1805,
+        "ultimo_error": null
+      },
+      "sector_alpaca": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 800,
+        "ultimo_error": null
+      },
+      "social_apewisdom": {
+        "ok": 9,
+        "fallos": 0,
+        "ms": 1137,
+        "ultimo_error": null
+      }
+    }
+  }
 }
