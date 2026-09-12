@@ -60,7 +60,10 @@ def test_fuentes_momentum_y_apalancados_bloqueados_en_real():
 def test_niveles_rr_y_acotado():
     ex = LIM["execution"]
     lv = common.compute_levels(100.0, 0.05, 2.0, ex)            # 1.5×ATR = 3% < 5% → 5%
-    assert lv["stop"] == 95.0 and lv["tp"] == 110.0
+    # El TP sale del min_rr de risk_limits.json (12-sep: 2.0 → 10.0, dejar correr las ganadoras),
+    # así que se deriva de la configuración en vez de fijarlo a mano.
+    assert lv["stop"] == 95.0 and lv["tp"] == 100.0 + ex["min_rr"] * 5.0
+    assert lv["rr"] == ex["min_rr"] and ex["min_rr"] >= 2.0
     lv = common.compute_levels(100.0, 0.01, 10.0, ex)           # 1.5×ATR = 15% → tope 8%
     assert lv["stop_pct"] == ex["stop_pct_max"]
     assert abs((lv["tp"] - 100) / (100 - lv["stop"]) - ex["min_rr"]) < 0.01
@@ -82,6 +85,8 @@ def test_guardrails_idempotentes():
     c1 = common.enforce_guardrails(pl)
     p = pl["parametros_activos"]
     assert p["score_threshold_real_account"] == 9.0 and p["be_lock_R_threshold_ew"] == 1.0
+    # r_ratio_minimo = R:R mínimo EXIGIBLE a un candidato (2:1), independiente del múltiplo
+    # del take-profit (execution.min_rr = 10). Si se acoplaran, Cowork exigiría 10:1 y no entraría.
     assert p["toma_parciales"]["activado"] is False and p["r_ratio_minimo"] == 2.0
     assert c1 and common.enforce_guardrails(pl) == []
     # Una tarea vuelve a relajar el umbral real → se re-aplica; la gestión ya no se toca
