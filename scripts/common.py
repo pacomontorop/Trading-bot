@@ -162,6 +162,27 @@ class Alpaca:
         except Exception:
             return None
 
+    def ref_price(self, sym: str) -> float | None:
+        """Precio de referencia robusto: última operación → medio de la horquilla → cierre previo.
+        Antes de la apertura IEX puede no tener ninguna operación del día (el selftest de las
+        13:10 UTC fallaba por eso cada mañana). Para COMPROBACIONES y avisos, no para valorar
+        entradas: la ejecución sigue usando latest_price, que solo devuelve precio negociado."""
+        p = self.latest_price(sym)
+        if p:
+            return p
+        q = self.data(f"/stocks/{sym}/quotes/latest?feed=iex")
+        try:
+            bid, ask = float(q["quote"]["bp"]), float(q["quote"]["ap"])
+            if bid > 0 and ask > 0:
+                return round((bid + ask) / 2, 4)
+        except Exception:
+            pass
+        b = self.data(f"/stocks/{sym}/bars?timeframe=1Day&limit=1&feed=iex")
+        try:
+            return float(b["bars"][-1]["c"])
+        except Exception:
+            return None
+
 
 def paper_client() -> Alpaca:
     return Alpaca(os.environ["APCA_KEY"], os.environ["APCA_SEC"], PAPER_BASE, "PAPER")

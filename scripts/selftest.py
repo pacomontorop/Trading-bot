@@ -9,6 +9,12 @@ Modo "basic" (diario, 13:10 UTC, antes de la apertura):
      con patas TP/SL → se verifica que Alpaca la acepta con sus 2 patas → se cancela.
   4. Lectura y escritura del performance_log en GitHub (campo "selftest").
   5. Aviso por Telegram.
+
+Fallo DURO (sale con código 1 y GitHub avisa por email): cuentas no operativas, Alpaca
+rechaza el bracket de prueba, no se puede leer/escribir el log, o TODAS las fuentes caídas.
+Fallo BLANDO (⚠️ en el aviso, run en verde): una fuente suelta caída o sin datos todavía.
+Corre 20 min ANTES de la apertura: a esa hora el mercado está cerrado y IEX puede no tener
+ninguna operación del día, así que eso no es una avería y no debe despertar a nadie.
 Modo "full" (manual, con mercado abierto): además compra 1 acción en PAPER con
   bracket, espera el fill, sube el stop con PATCH (la misma operación que usa el
   intraday monitor) y cierra la posición. Sus fills se excluyen de los KPIs.
@@ -31,11 +37,12 @@ def main():
     ahora = now_utc()
     tag = ahora.strftime("%Y%m%d%H%M")
     P, R = paper_client(), real_client()
-    ok, fail = [], []
+    ok, fail, warn = [], [], []
 
-    def check(name, cond, detail=""):
-        (ok if cond else fail).append(f"{name}{(' — ' + detail) if detail else ''}")
-        log(f"{'✅' if cond else '❌'} {name} {detail}")
+    def check(name, cond, detail="", duro=True):
+        txt = f"{name}{(' — ' + detail) if detail else ''}"
+        (ok if cond else (fail if duro else warn)).append(txt)
+        log(f"{'✅' if cond else ('❌' if duro else '⚠️')} {name} {detail}")
         return cond
 
     # 1 · cuentas
@@ -51,15 +58,22 @@ def main():
 
     # 2 · datos
     clock = P.clock()
-    check("Reloj de mercado", "is_open" in clock, f"abierto={clock.get('is_open')}")
-    px = P.latest_price(SYM)
-    check(f"Precio {SYM}", bool(px), f"{px}")
+    # Vale cualquier respuesta con forma de reloj: 20 min antes de la apertura is_open es False
+    # y eso es lo correcto, no un fallo. Solo es fallo que la API no conteste.
+    check("Reloj de mercado", bool(clock) and ("is_open" in clock or "next_open" in clock),
+          f"abierto={clock.get('is_open')} próxima={str(clock.get('next_open'))[:16]}")
+    px = P.ref_price(SYM)
+    check(f"Precio {SYM}", bool(px), f"{px}" + ("" if P.latest_price(SYM) else " (horquilla/cierre previo: pre-market sin operaciones)"),
+          duro=False)
 
     # 2b · todas las fuentes de datos (EarningsWhispers, Nasdaq, Alpaca, Yahoo)
     try:
         from datasources import health_check
-        for k, (good, det) in health_check().items():
-            check(f"Fuente {k}", good, det)
+        salud = health_check()
+        for k, (good, det) in salud.items():
+            check(f"Fuente {k}", good, det, duro=False)      # una fuente suelta no bloquea: hay respaldos
+        vivas = sum(1 for good, _ in salud.values() if good)
+        check("Fuentes de datos (al menos una viva)", vivas > 0, f"{vivas}/{len(salud)} OK")
     except Exception as e:
         check("Fuentes de datos", False, str(e)[:100])
 
@@ -108,15 +122,17 @@ def main():
                     check("FULL: cierre posición", "_error" not in cr, cr.get("_error", "")[:100])
 
     # 4 · log en GitHub + 5 · Telegram
-    resumen = {"ts": ahora.strftime("%Y-%m-%dT%H:%MZ"), "modo": MODE, "ok": len(ok), "fallos": fail}
+    resumen = {"ts": ahora.strftime("%Y-%m-%dT%H:%MZ"), "modo": MODE, "ok": len(ok),
+               "fallos": fail, "avisos": warn}
     try:
         update_log(lambda pl: pl.__setitem__("selftest", resumen), f"selftest {MODE} [{ahora:%Y-%m-%dT%H:%M}Z]")
         check("GitHub log lectura+escritura", True)
     except Exception as e:
         check("GitHub log lectura+escritura", False, str(e)[:100])
 
-    head = "🧪 SELFTEST " + MODE.upper() + (" ✅ TODO OK" if not fail else f" ❌ {len(fail)} FALLOS")
-    tg("\n".join([head] + ["✅ " + x for x in ok] + ["❌ " + x for x in fail]))
+    head = "🧪 SELFTEST " + MODE.upper() + (
+        f" ❌ {len(fail)} FALLOS" if fail else (f" ✅ OK ({len(warn)} avisos)" if warn else " ✅ TODO OK"))
+    tg("\n".join([head] + ["❌ " + x for x in fail] + ["⚠️ " + x for x in warn] + ["✅ " + x for x in ok]))
     if fail:
         sys.exit(1)
 
