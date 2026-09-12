@@ -424,7 +424,13 @@ def enforce_guardrails(pl: dict) -> list:
     # Seguridad (siempre)
     floor("score_threshold_real_account", lim["real"]["min_score"])
     floor("score_min_real", lim["real"]["min_score"])
-    floor("r_ratio_minimo", lim["execution"]["min_rr"])
+    # 12-sep-2026: execution.min_rr pasó de 2.0 a 10.0 y CAMBIÓ DE SIGNIFICADO — ahora es el
+    # múltiplo del take-profit del bracket (dejar correr a las ganadoras), no el R:R mínimo
+    # exigible a un candidato. Si se sigue usando como suelo de r_ratio_minimo, las tareas
+    # Cowork que leen ese parámetro del log empezarían a exigir 10:1 para entrar y no
+    # entrarían nunca. El R:R mínimo aceptable sigue siendo 2:1.
+    RR_MINIMO_ACEPTABLE = 2.0
+    floor("r_ratio_minimo", min(lim["execution"]["min_rr"], RR_MINIMO_ACEPTABLE))
     setv("bloqueo_etf_apalancado", True)
     if "real_trading_enabled" not in p:
         setv("real_trading_enabled", True)  # el log solo puede APAGAR; risk_limits.json manda
