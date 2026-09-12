@@ -16,7 +16,7 @@
     ],
     "total_candidatos_validados": 33,
     "ultima_actualizacion_ew_daily": "2026-08-15T20:58:42.911258+00:00",
-    "ultima_actualizacion": "2026-09-10T20:20:00Z",
+    "ultima_actualizacion": "2026-09-12T05:11:35.910Z",
     "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
     "ultima_tarea": "post-market-review",
     "ultima_ejecucion_post_market": "2026-07-16T20:45:46.929128+00:00",
@@ -30,7 +30,8 @@
       "empresas": 10
     },
     "ultima_actualizacion_weekly": "2026-08-29T07:15:45.221936+00:00",
-    "nota_lecciones": "No truncar lecciones_sistema a 30: la memoria historica es el activo del sistema."
+    "nota_lecciones": "No truncar lecciones_sistema a 30: la memoria historica es el activo del sistema.",
+    "ultimo_proceso": "weekend-ew-intel 2026-09-12"
   },
   "parametros_activos": {
     "min_signal_score": 7.5,
@@ -549,6 +550,39 @@
       "evidencia": "QCOM +$7.14 en 32min, QRVO +$14.24 en 27min, DELL stop a 0.02R con ATR=32.21",
       "auto_generado": false,
       "aplicada": true
+    },
+    {
+      "fecha": "2026-09-12",
+      "tipo": "SISTEMA",
+      "titulo": "Weekend EW Intel en MODO DEGRADADO (2a vez tras 2026-06-06)",
+      "descripcion": "Email semanal EW no llego y la web exige login para whisper/sentiment. Solucion aplicada: scrapear /stocks/<TICKER> uno a uno, que SI muestra el Earnings Whisper y el consenso sin login.",
+      "accion_futura": "Anadir /stocks/<TICKER> como fuente de fallback estandar en el PASO 1B del skill; el calendario /calendar/YYYYMMDD/1 (BTO) y /3 (AC) da la lista de tickers."
+    },
+    {
+      "fecha": "2026-09-12",
+      "tipo": "SISTEMA",
+      "titulo": "Sandbox Python no disponible (fallo de montaje)",
+      "descripcion": "El entorno bash no pudo montar los directorios del host; todo el pipeline se ejecuto con JavaScript en el navegador (Yahoo chart API + GitHub API).",
+      "accion_futura": "Mantener la ruta JS-en-navegador como plan B documentado para enrichment y escritura del log."
+    },
+    {
+      "fecha": "2026-09-12",
+      "tipo": "MERCADO",
+      "titulo": "Semana 14-18 sep: hueco de earnings",
+      "descripcion": "Solo 15 reportes confirmados, ninguno relevante. Jueves y viernes practicamente vacios.",
+      "accion_futura": "No forzar entradas. Proximo catalizador real: temporada Q3 desde mediados de octubre."
+    },
+    {
+      "fecha": "2026-09-12",
+      "tipo": "RESULTADO",
+      "titulo": "KR beat +1.87% vs consenso (whisper 1.07 vs actual 1.09)",
+      "descripcion": "Kroger reporto 1.09 vs consenso 1.05 y whisper 1.07; revenue +2.01% YoY; reafirmo guia FY 5.10-5.30."
+    },
+    {
+      "fecha": "2026-09-12",
+      "tipo": "RESULTADO",
+      "titulo": "MNY miss -50% vs consenso",
+      "descripcion": "MoneyHero -0.03 vs consenso -0.02, revenue -12.6% YoY."
     }
   ],
   "operaciones": [
@@ -1831,6 +1865,104 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-11T20:01:06.043510+00:00",
       "notas": "1d=+1.3% vol=0.5x 52h_dist=2.2% | Auto-expirado 2026-09-11 (post-market viernes): ventana cerrada sin ejecucion Cowork. Nota: el bot GHA entró autónomamente en DELL/QCOM/AAPL/QRVO el 11-sep."
+    },
+    {
+      "ticker": "VRA",
+      "earnings_fecha": "2026-09-15",
+      "earnings_timing": "pre-market",
+      "score": 5.4,
+      "score_ajustado": 5.4,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 75,
+      "whisper": -0.02,
+      "consensus": -0.08,
+      "revenue_growth_yoy": -6.9,
+      "pct_bullish": 60,
+      "vs_ma200": -2.02,
+      "drift_desde_earnings": -4.27,
+      "short_interest_change": 0,
+      "options_implied_move": 0,
+      "avg_move_hist": 0,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "sin_guidance",
+      "estimates_revised": "stable",
+      "precio_actual": 3.14,
+      "vol_hist_30d": 46.1,
+      "sector": "consumer_discretionary",
+      "sector_etf": "XLY",
+      "sector_5d_chg": -3.01,
+      "score_detalle": {
+        "A": 3,
+        "B": 0,
+        "C": 0,
+        "D": 1,
+        "E": 0,
+        "F": 1.4,
+        "G": 0,
+        "penalizaciones": 0
+      },
+      "fuente": "EW /stocks scrape Chrome 2026-09-12 (modo degradado: sin sentiment/IV)",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-09-12T05:11:35.910Z",
+      "expira": "2026-09-15T14:00:00+00:00",
+      "advertencias": [
+        "asimetria calculada sobre EPS negativo (-0.08 -> -0.02): el +75% esta inflado por base pequena",
+        "sin datos de pct_bullish / IV / opciones (EW web con paywall) -> D asumido 60% por defecto",
+        "sector XLY -3.0% en 5d: momentum sectorial adverso"
+      ]
+    },
+    {
+      "ticker": "FPS",
+      "earnings_fecha": "2026-09-15",
+      "earnings_timing": "pre-market",
+      "score": 5.4,
+      "score_ajustado": 5.4,
+      "estado": "pendiente",
+      "accion_recomendada": "estudiar_antes_entrar",
+      "asimetria_pct": 9.09,
+      "whisper": 0.24,
+      "consensus": 0.22,
+      "revenue_growth_yoy": null,
+      "pct_bullish": 60,
+      "vs_ma200": -19.58,
+      "drift_desde_earnings": 3.99,
+      "short_interest_change": 0,
+      "options_implied_move": 0,
+      "avg_move_hist": 0,
+      "notable_options": "",
+      "guidance_texto": "",
+      "guidance_tipo": "sin_guidance",
+      "estimates_revised": "stable",
+      "precio_actual": 31.82,
+      "vol_hist_30d": 66.4,
+      "sector": "technology",
+      "sector_etf": "XLK",
+      "sector_5d_chg": 0.91,
+      "score_detalle": {
+        "A": 3,
+        "B": 0,
+        "C": 0,
+        "D": 1,
+        "E": 0,
+        "F": 1.4,
+        "G": 0,
+        "penalizaciones": 0
+      },
+      "fuente": "EW /stocks scrape Chrome 2026-09-12 (modo degradado: sin sentiment/IV)",
+      "conviction": "BAJA",
+      "tier": 3,
+      "real_eligible": false,
+      "ts_creado": "2026-09-12T05:11:35.910Z",
+      "expira": "2026-09-15T14:00:00+00:00",
+      "advertencias": [
+        "sin datos de pct_bullish / IV / opciones (EW web con paywall) -> D asumido 60% por defecto",
+        "ticker de historia corta: verificar liquidez y spread antes de entrar",
+        "vol 30d 66% anualizada: sizing reducido"
+      ]
     }
   ],
   "macro_context": {
@@ -3404,7 +3536,7 @@
           "symbol": "BTC/USD",
           "entry": 80714.27,
           "curr": 78186.365,
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "pnl_pct": -3.13,
           "atr": 599.677942,
           "r_mult": -2.108,
@@ -3771,7 +3903,7 @@
         },
         {
           "symbol": "BTC/USD",
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "mv_usd": 0.52334,
           "entry": 80714.27,
           "current": 76973.04,
@@ -3846,7 +3978,7 @@
           "symbol": "BTC/USD",
           "entry": 80714.27,
           "current": 76697.393,
-          "qty": 6.799e-06,
+          "qty": 0.000006799,
           "atr_now": 759.754237,
           "r_multiple": -2.644,
           "tier_mult": 2,
@@ -5680,7 +5812,7 @@
         },
         "acciones_ultimas_40": {
           "n": 40,
-          "win_rate_pct": 50.0,
+          "win_rate_pct": 50,
           "profit_factor": 1.41,
           "avg_win_usd": 291.29,
           "avg_loss_usd": -206.04,
@@ -5733,8 +5865,8 @@
       "por_fuente": {
         "dynamic_scanner_gha": {
           "n": 2,
-          "win_rate_pct": 100.0,
-          "profit_factor": 99.0,
+          "win_rate_pct": 100,
+          "profit_factor": 99,
           "avg_win_usd": 10.61,
           "avg_loss_usd": 0,
           "expectancy_usd": 10.61,
@@ -5754,8 +5886,8 @@
         "analistas": {
           "a_favor": {
             "n": 1,
-            "win_rate_pct": 100.0,
-            "profit_factor": 99.0,
+            "win_rate_pct": 100,
+            "profit_factor": 99,
             "avg_win_usd": 7.14,
             "avg_loss_usd": 0,
             "expectancy_usd": 7.14,
@@ -5763,8 +5895,8 @@
           },
           "en_contra": {
             "n": 1,
-            "win_rate_pct": 100.0,
-            "profit_factor": 99.0,
+            "win_rate_pct": 100,
+            "profit_factor": 99,
             "avg_win_usd": 14.08,
             "avg_loss_usd": 0,
             "expectancy_usd": 14.08,
@@ -5774,8 +5906,8 @@
         "opciones": {
           "a_favor": {
             "n": 1,
-            "win_rate_pct": 100.0,
-            "profit_factor": 99.0,
+            "win_rate_pct": 100,
+            "profit_factor": 99,
             "avg_win_usd": 7.14,
             "avg_loss_usd": 0,
             "expectancy_usd": 7.14,
@@ -5791,8 +5923,8 @@
           },
           "en_contra": {
             "n": 2,
-            "win_rate_pct": 100.0,
-            "profit_factor": 99.0,
+            "win_rate_pct": 100,
+            "profit_factor": 99,
             "avg_win_usd": 10.61,
             "avg_loss_usd": 0,
             "expectancy_usd": 10.61,
@@ -5802,8 +5934,8 @@
       },
       "ajuste_positivo": {
         "n": 1,
-        "win_rate_pct": 100.0,
-        "profit_factor": 99.0,
+        "win_rate_pct": 100,
+        "profit_factor": 99,
         "avg_win_usd": 7.14,
         "avg_loss_usd": 0,
         "expectancy_usd": 7.14,
@@ -5811,8 +5943,8 @@
       },
       "ajuste_cero_o_negativo": {
         "n": 1,
-        "win_rate_pct": 100.0,
-        "profit_factor": 99.0,
+        "win_rate_pct": 100,
+        "profit_factor": 99,
         "avg_win_usd": 14.08,
         "avg_loss_usd": 0,
         "expectancy_usd": 14.08,
@@ -6093,7 +6225,7 @@
         {
           "symbol": "BTCUSD",
           "account": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "mv": 0.31,
           "clasificacion": "dust",
           "accion": "ignorar (<$5, leccion 2026-08-11)"
@@ -6101,7 +6233,7 @@
         {
           "symbol": "SOLUSD",
           "account": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "mv": 0,
           "clasificacion": "dust",
           "accion": "ignorar (<$5, leccion 2026-08-11)"
@@ -6109,7 +6241,7 @@
         {
           "symbol": "BTCUSD",
           "account": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "mv": 0.52,
           "clasificacion": "dust",
           "accion": "ignorar (<$5)"
@@ -6315,7 +6447,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 68729.5,
           "pnl_pct": 5.8,
@@ -6325,7 +6457,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 82.11,
           "pnl_pct": 6.32,
@@ -6561,12 +6693,12 @@
       "posiciones_post_cierre": [
         {
           "symbol": "BTCUSD",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "mv": 0.39
         },
         {
           "symbol": "SOLUSD",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "mv": 0.002
         }
       ],
@@ -6580,7 +6712,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 78073.491,
           "pnl_pct": 20.19,
@@ -6590,7 +6722,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 95.76,
           "pnl_pct": 23.98,
@@ -6718,7 +6850,7 @@
       "posiciones_detalle": [
         {
           "symbol": "BTCUSD",
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "entry": 64959.1,
           "current": 77674.82,
           "pnl_pct": 19.57,
@@ -6729,7 +6861,7 @@
         },
         {
           "symbol": "SOLUSD",
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "entry": 77.22,
           "current": 104.36,
           "pnl_pct": 35.11,
@@ -6806,12 +6938,12 @@
       "posiciones_dust_crypto": [
         {
           "symbol": "BTCUSD",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "valor_usd": 0.38
         },
         {
           "symbol": "SOLUSD",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "valor_usd": 0.0025
         }
       ],
@@ -7484,7 +7616,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "market_value": 0.3139,
           "pnl_pct": -0.87,
           "pnl_abs": -0.0028,
@@ -7494,7 +7626,7 @@
         {
           "symbol": "SOLUSD",
           "cuenta": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "market_value": 0.0019,
           "pnl_pct": -1.55,
           "pnl_abs": 0,
@@ -7504,7 +7636,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "market_value": 0.5344,
           "pnl_pct": -45.35,
           "pnl_abs": -0.4435,
@@ -7535,7 +7667,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "paper",
-          "qty": 4.874e-06,
+          "qty": 0.000004874,
           "market_value": 0.3156,
           "entry": 64959.1,
           "price_now": 64752.6,
@@ -7548,7 +7680,7 @@
         {
           "symbol": "SOLUSD",
           "cuenta": "paper",
-          "qty": 2.5e-05,
+          "qty": 0.000025,
           "market_value": 0.0019,
           "entry": 77.22,
           "price_now": 77.157360406,
@@ -7561,7 +7693,7 @@
         {
           "symbol": "BTCUSD",
           "cuenta": "real",
-          "qty": 8.299e-06,
+          "qty": 0.000008299,
           "market_value": 0.5374,
           "entry": 117828.22,
           "price_now": 64752.6,
@@ -7599,7 +7731,7 @@
           "price_now": 68258.5,
           "entry_price": 64959.1,
           "stop_actual": 0,
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "source": "bot_autonomo"
         },
         {
@@ -7613,7 +7745,7 @@
           "price_now": 81.8151,
           "entry_price": 77.22,
           "stop_actual": 0,
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "source": "bot_autonomo"
         },
         {
@@ -7627,7 +7759,7 @@
           "price_now": 68258.5,
           "entry_price": 117828.22,
           "stop_actual": 0,
-          "shares": 8.299e-06,
+          "shares": 0.000008299,
           "source": "bot_autonomo"
         }
       ],
@@ -7672,7 +7804,7 @@
           "price_now": 72360.41,
           "entry_price": 64959.1,
           "stop_actual": 0,
-          "shares": 4.874e-06,
+          "shares": 0.000004874,
           "source": "bot_autonomo"
         },
         {
@@ -7686,7 +7818,7 @@
           "price_now": 86.9102,
           "entry_price": 77.22,
           "stop_actual": 0,
-          "shares": 2.5e-05,
+          "shares": 0.000025,
           "source": "bot_autonomo"
         },
         {
@@ -7700,7 +7832,7 @@
           "price_now": 72360.41,
           "entry_price": 117828.22,
           "stop_actual": 0,
-          "shares": 8.299e-06,
+          "shares": 0.000008299,
           "source": "bot_autonomo"
         }
       ],
@@ -15998,132 +16130,80 @@
     }
   },
   "weekly_ew_intel": {
-    "semana": "2026-09-07",
-    "fuente": "EarningsWhispers weekly email 2026-09-05 + yfinance 2026-09-06",
-    "ts_procesado": "2026-09-06T05:09:29.901165+00:00",
-    "top_pick": "CASY",
+    "semana": "2026-09-14",
+    "fuente": "EarningsWhispers /stocks scrape via Chrome + Yahoo enrichment 2026-09-12",
+    "ts_procesado": "2026-09-12T05:11:35.910Z",
+    "modo": "DEGRADADO",
+    "top_pick": "ninguno",
+    "candidatos_escaneados": 15,
     "candidatos_tier1": [],
-    "candidatos_tier2": [
-      {
-        "ticker": "CASY",
-        "score": 7.2,
-        "asim": 3.03
-      },
-      {
-        "ticker": "AEO",
-        "score": 7.2,
-        "asim": 14.29
-      }
-    ],
+    "candidatos_tier2": [],
     "candidatos_tier3": [
       {
-        "ticker": "AVAV",
-        "score": 6.3,
-        "asim": 22.73
+        "ticker": "VRA",
+        "score": 5.4,
+        "asim": 75
       },
       {
-        "ticker": "ORCL",
-        "score": 6,
-        "asim": 2.86
-      },
-      {
-        "ticker": "M",
-        "score": 5.5,
-        "asim": 18.92
+        "ticker": "FPS",
+        "score": 5.4,
+        "asim": 9.09
       }
     ],
     "skip": [
       {
-        "ticker": "KR",
-        "score": 4.2,
-        "razon": "score_bajo"
+        "ticker": "PLAY",
+        "score": 0,
+        "razon": "asim_negativa (-15.8%)"
       },
       {
-        "ticker": "CHWY",
-        "score": 4,
-        "razon": "score_bajo"
+        "ticker": "TCOM",
+        "score": 0,
+        "razon": "asim_negativa (-6.1%)"
       },
       {
-        "ticker": "ABM",
+        "ticker": "LEN",
+        "score": 0,
+        "razon": "asim_negativa (-1.5%)"
+      },
+      {
+        "ticker": "HITI",
+        "score": 1.5,
+        "razon": "sin whisper + 14% bullish + anti_descuento_fallo"
+      },
+      {
+        "ticker": "HAIN",
+        "score": 3,
+        "razon": "sin whisper + revenue -29.4% YoY"
+      },
+      {
+        "ticker": "KMTS",
         "score": 2.8,
-        "razon": "score_bajo"
+        "razon": "sin whisper"
       },
       {
-        "ticker": "ADBE",
-        "score": 0,
-        "razon": "asim_negativa"
+        "ticker": "HYFT",
+        "score": 2.8,
+        "razon": "sin whisper"
       },
       {
-        "ticker": "FLWS",
-        "score": 0,
-        "razon": "asim_negativa"
+        "ticker": "RFIL",
+        "score": 2.4,
+        "razon": "sin whisper"
       },
       {
-        "ticker": "DBI",
-        "score": 0,
-        "razon": "asim_negativa"
+        "ticker": "EPM",
+        "score": 2.1,
+        "razon": "sin whisper"
       }
     ],
-    "sin_whisper_no_scoreables": [
-      "NAVN",
-      "BRZE",
-      "CANG",
-      "ASO",
-      "SIG",
-      "RH",
-      "LOVE",
-      "JILL",
-      "INNV",
-      "SHOE",
-      "MCFT",
-      "VNCE"
-    ],
-    "resultados_semana_pasada": [
-      {
-        "ticker": "AVGO",
-        "resultado": "miss",
-        "eps_actual": 3.32,
-        "eps_whisper": 3.35,
-        "whisper_beat_pct": -0.9
-      },
-      {
-        "ticker": "DELL",
-        "resultado": "beat",
-        "eps_actual": 7.04,
-        "eps_whisper": 4.98,
-        "whisper_beat_pct": 41.37
-      },
-      {
-        "ticker": "CRDO",
-        "resultado": "inline",
-        "eps_actual": 1.2,
-        "eps_whisper": 1.2,
-        "whisper_beat_pct": 0
-      },
-      {
-        "ticker": "PANW",
-        "resultado": "inline",
-        "eps_actual": 1.02,
-        "eps_whisper": 1.02,
-        "whisper_beat_pct": 0
-      },
-      {
-        "ticker": "SNOW",
-        "resultado": "beat",
-        "eps_actual": 0.62,
-        "eps_whisper": 0.51,
-        "whisper_beat_pct": 21.57
-      },
-      {
-        "ticker": "CIEN",
-        "resultado": "beat",
-        "eps_actual": 2.11,
-        "eps_whisper": 1.85,
-        "whisper_beat_pct": 14.05
-      }
-    ],
-    "nota_metodologica": "Email EW en formato narrativo -> extraccion estructurada manual en vez de regex del skill. pct_bullish ausente (web EW paywalled) -> Bloque D=0.5 fijo, scores comprimidos ~1.0. MA200 del email validado contra yfinance (desviacion max 1.0pt).",
-    "cadena_semanal": "Regimen STAGFLATION_SHOCK + HAWKISH_REPRICING con FOMC 16-sep descontando 58% prob. de SUBIDA. Cadena AI (ORCL jue) es el unico motor con demanda verificada; consumo discrecional (CHWY/M/AEO/DBI/LOVE) en deterioro tras el aviso de LULU. Preferencia por setups con anti-descuento sano: AVAV (-32% MA200) y CASY."
+    "cadena_semanal": "Semana 14-18 sep 2026 extremadamente ligera en earnings (hueco entre trimestres): solo 15 reportes, ninguno mega-cap. Sin Tier 1 ni Tier 2. Unicos whispers positivos: VRA (+75% sobre EPS negativo, base pequena) y FPS (+9.1%). PLAY, TCOM y LEN con whisper POR DEBAJO del consenso -> skip automatico. Semana de baja municion: preservar capital y esperar al arranque de la temporada Q3 en octubre.",
+    "limitaciones": [
+      "Email semanal wr@earningswhispers.com (Most Anticipated) NO recibido para la semana del 14-sep; ultimo disponible es del 5-sep (semana del 7).",
+      "EW calendar web no expone whisper/sentiment/IV sin login -> whispers obtenidos uno a uno desde /stocks/<TICKER>.",
+      "pct_bullish, short interest, opciones inusuales y average move NO disponibles -> BLOQUES C/D/E neutralizados, lo que deprime todos los scores ~2-3 puntos.",
+      "Sandbox Python caido: enriquecimiento hecho con Yahoo Finance chart API via navegador en lugar de yfinance."
+    ]
   },
   "resultados_diarios": [
     {
@@ -21169,11 +21249,11 @@
         "earnings_timing": "AMC",
         "score_breakdown": {
           "whisper": -0.61,
-          "beat_rate": 3.0,
-          "reaccion": 0.0,
-          "revisiones": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "beat_rate": 3,
+          "reaccion": 0,
+          "revisiones": -1,
+          "momentum5d": 1,
+          "macro": 1
         }
       },
       {
@@ -21182,21 +21262,21 @@
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
-          "beat_rate": 2.0,
+          "beat_rate": 2,
           "reaccion": 0.39,
-          "revisiones": -1.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "revisiones": -1,
+          "momentum5d": 0,
+          "macro": 1
         }
       },
       {
         "ticker": "LKSP",
-        "score": 2.0,
+        "score": 2,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "momentum5d": 1,
+          "macro": 1
         }
       },
       {
@@ -21205,24 +21285,24 @@
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
-          "beat_rate": -1.0,
+          "beat_rate": -1,
           "reaccion": 0.26,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "revisiones": 0,
+          "momentum5d": 1,
+          "macro": 1
         }
       },
       {
         "ticker": "PTN",
-        "score": 0.0,
+        "score": 0,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
-          "beat_rate": 0.0,
+          "beat_rate": 0,
           "reaccion": -0.5,
-          "revisiones": -1.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "revisiones": -1,
+          "momentum5d": 0,
+          "macro": 1
         }
       }
     ]
@@ -21795,7 +21875,7 @@
         "asimetria_pct": null,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
-        "beat_rate": 75.0,
+        "beat_rate": 75,
         "reaccion_media_pct": 1.04,
         "score": 2.39
       },
@@ -21805,9 +21885,9 @@
         "asimetria_pct": null,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
-        "beat_rate": 50.0,
+        "beat_rate": 50,
         "reaccion_media_pct": -4.35,
-        "score": 0.0
+        "score": 0
       },
       "LKSP": {
         "consenso_eps": null,
@@ -21817,15 +21897,15 @@
         "earnings_timing": "desconocido",
         "beat_rate": null,
         "reaccion_media_pct": null,
-        "score": 2.0
+        "score": 2
       },
       "SA": {
-        "consenso_eps": 999.0,
+        "consenso_eps": 999,
         "whisper": null,
         "asimetria_pct": null,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
-        "beat_rate": 25.0,
+        "beat_rate": 25,
         "reaccion_media_pct": 0.7,
         "score": 1.26
       }
@@ -21837,8 +21917,8 @@
         "eps": 1.09,
         "estimate": 1.05,
         "whisper": 1.07,
-        "revenue": 34621.0,
-        "revenueEstimate": 34690.0,
+        "revenue": 34621,
+        "revenueEstimate": 34690,
         "earningsSurprise": 0.018691588785046728,
         "revenueSurprise": -0.001989045834534448,
         "subject": "The Kroger Beat Expectations"
@@ -21909,7 +21989,7 @@
         "eps": 1.92,
         "estimate": 1.75,
         "whisper": 1.8,
-        "revenue": 19345.0,
+        "revenue": 19345,
         "revenueEstimate": null,
         "earningsSurprise": 0.06666666666666667,
         "revenueSurprise": null,
@@ -21921,7 +22001,7 @@
         "eps": 6.13,
         "estimate": 6.08,
         "whisper": 6.05,
-        "revenue": 6760.0,
+        "revenue": 6760,
         "revenueEstimate": null,
         "earningsSurprise": 0.013223140495867768,
         "revenueSurprise": null,
@@ -22017,7 +22097,7 @@
         "eps": 0.4,
         "estimate": 0.37,
         "whisper": 0.44,
-        "revenue": 5059.0,
+        "revenue": 5059,
         "revenueEstimate": null,
         "earningsSurprise": -0.09090909090909091,
         "revenueSurprise": null,
@@ -22207,7 +22287,7 @@
         "ticker": "NNOX",
         "epsDate": "2026-09-09T08:03:00",
         "eps": -0.79,
-        "estimate": 999.0,
+        "estimate": 999,
         "whisper": 999,
         "revenue": 4.156,
         "revenueEstimate": null,
@@ -22245,7 +22325,7 @@
         "eps": 0.92,
         "estimate": 0.91,
         "whisper": 0.89,
-        "revenue": 2145.0,
+        "revenue": 2145,
         "revenueEstimate": null,
         "earningsSurprise": 0.033707865168539325,
         "revenueSurprise": null,
@@ -22293,7 +22373,7 @@
         "eps": 1.18,
         "estimate": 0.99,
         "whisper": 999,
-        "revenue": 3115.0,
+        "revenue": 3115,
         "revenueEstimate": null,
         "earningsSurprise": 0.1919191919191919,
         "revenueSurprise": null,
