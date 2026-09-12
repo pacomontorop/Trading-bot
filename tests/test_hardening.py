@@ -7,6 +7,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 os.environ.setdefault("APCA_KEY", "PKTEST00000000000000")
 os.environ.setdefault("APCA_SEC", "x")
 
+from unittest.mock import patch  # noqa: E402
+
 import common  # noqa: E402
 import kpi_report  # noqa: E402
 
@@ -309,3 +311,30 @@ def test_momentum_por_barras_reproduce_el_scoring():
     bs2.append({"c": 90.0, "h": 100.0, "v": 500_000})
     s2, _ = f(bs2)
     assert s2 <= -2.0, s2
+
+
+# --- selftest: pre-market no es una avería (12-sep) -------------------------------------------
+
+def test_ref_price_usa_horquilla_y_cierre_previo():
+    """Antes de la apertura IEX puede no tener operaciones: ref_price debe seguir dando precio."""
+    P = common.paper_client()
+    with patch.object(type(P), "data", side_effect=[{}, {"quote": {"bp": 11.0, "ap": 11.2}}]):
+        assert P.ref_price("F") == 11.1                      # medio de la horquilla
+    with patch.object(type(P), "data", side_effect=[{}, {}, {"bars": [{"c": 10.5}]}]):
+        assert P.ref_price("F") == 10.5                      # cierre del día anterior
+    with patch.object(type(P), "data", side_effect=[{}, {}, {}]):
+        assert P.ref_price("F") is None                      # nada disponible → None
+    with patch.object(type(P), "data", return_value={"trade": {"p": 12.34}}):
+        assert P.ref_price("F") == 12.34                     # con operación, manda la operación
+
+
+def test_selftest_clasifica_duro_y_blando():
+    """Una fuente caída avisa pero no rompe el run; que se caigan todas sí."""
+    import selftest
+    src = Path(selftest.__file__).read_text()
+    assert "duro=False" in src and '"avisos": warn' in src
+    # el reloj cerrado (is_open False) ya no es fallo: basta con que la API conteste
+    assert 'check("Reloj de mercado", bool(clock)' in src
+    assert "Fuentes de datos (al menos una viva)" in src
+    # el precio usa ref_price, no latest_price, para la comprobación
+    assert "px = P.ref_price(SYM)" in src
