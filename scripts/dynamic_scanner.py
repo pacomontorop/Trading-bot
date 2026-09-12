@@ -2,8 +2,10 @@
 """
 Dynamic Scanner — GitHub Actions
 Corre cada 30 min en horario de mercado (13:00-22:00 UTC L-V).
-Escanea 80+ tickers, scoring multi-fuente, actualiza candidatos en GitHub.
-Fuentes: yfinance, Alpaca news, SEC EDGAR insiders, Finviz, Unusual Whales (si disponible).
+Universo DINÁMICO: las ~400 acciones más líquidas de Alpaca (>20M$/día) + lista fija.
+Barras en lote (Alpaca, 200 símbolos por llamada); yfinance solo como respaldo.
+Escala honesta: el score se normaliza entre el máximo ALCANZABLE con las fuentes vivas.
+Fuentes: momentum/volumen (Alpaca), Alpaca news, sector ETF, Unusual Whales (si UW_KEY).
 """
 import os, json, base64, urllib.request, urllib.error, sys, time
 from datetime import datetime, timezone, date, timedelta
@@ -40,6 +42,65 @@ def alpaca(path):
         return json.loads(urllib.request.urlopen(
             urllib.request.Request(APCA_BASE + path, headers=H), timeout=10).read())
     except: return {}
+
+# ── DATOS DE MERCADO EN LOTE (Alpaca) ─────────────────────────────────────────
+# yfinance pide 1 llamada por ticker (~1-2 s): con 80 tickers ya iba justo y no
+# permitía ampliar el universo. La API de datos de Alpaca devuelve barras de 200
+# símbolos por llamada, así que el universo puede ser 5x mayor con menos tiempo.
+DATA_BASE = "https://data.alpaca.markets/v2"
+
+def adata(path, timeout=30):
+    try:
+        return json.loads(urllib.request.urlopen(
+            urllib.request.Request(DATA_BASE + path, headers=H), timeout=timeout).read())
+    except Exception as e:
+        print(f"  data {path[:40]}: {type(e).__name__}")
+        return {}
+
+def barras_lote(syms, dias=40):
+    """{sym: [barras diarias]} para muchos símbolos. Trocea en grupos de 200 y pagina."""
+    out, start = {}, (ahora.date() - timedelta(days=dias)).isoformat()
+    for i in range(0, len(syms), 200):
+        grupo, pt = syms[i:i + 200], None
+        for _ in range(12):                        # tope de páginas por grupo
+            q = f"/stocks/bars?symbols={','.join(grupo)}&timeframe=1Day&start={start}&limit=10000&adjustment=split"
+            d = adata(q + (f"&page_token={pt}" if pt else ""))
+            for s, v in (d.get("bars") or {}).items():
+                out.setdefault(s, []).extend(v)
+            pt = d.get("next_page_token")
+            if not pt:
+                break
+    for s in out:
+        out[s].sort(key=lambda b: b["t"])
+    return out
+
+def universo_dinamico(max_tickers=400, min_dolar_vol=20_000_000):
+    """Universo = lista fija ∪ acciones más líquidas de Alpaca (por volumen en dólares).
+    Fail-soft: cualquier fallo devuelve solo la lista fija, el escáner nunca se queda sin universo."""
+    try:
+        assets = json.loads(urllib.request.urlopen(urllib.request.Request(
+            APCA_BASE + "/assets?status=active&asset_class=us_equity", headers=H), timeout=60).read())
+        cand = [a["symbol"] for a in assets
+                if a.get("tradable") and a.get("marginable") and not a.get("symbol", "").count(".")
+                and a.get("exchange") in ("NASDAQ", "NYSE", "ARCA", "AMEX") and len(a["symbol"]) <= 5]
+        print(f"  activos negociables: {len(cand)}")
+        bars = barras_lote(cand, dias=8)           # 1 semana basta para el volumen en dólares
+        liq = []
+        for s, bs in bars.items():
+            if len(bs) < 3:
+                continue
+            dv = sum(b["c"] * b["v"] for b in bs[-3:]) / 3
+            if dv >= min_dolar_vol:
+                liq.append((dv, s))
+        liq.sort(reverse=True)
+        dinamico = [s for _, s in liq[:max_tickers]]
+        print(f"  líquidos (>{min_dolar_vol/1e6:.0f}M$/día): {len(liq)} → uso {len(dinamico)}")
+        if len(dinamico) < 50:
+            return list(UNIVERSE), "fija (universo dinámico insuficiente)"
+        return sorted(set(UNIVERSE) | set(dinamico)), f"dinámica ({len(dinamico)} líquidos + {len(UNIVERSE)} fijos)"
+    except Exception as e:
+        print(f"  universo dinámico falló ({type(e).__name__}) → lista fija")
+        return list(UNIVERSE), "fija (fallo al construir el universo dinámico)"
 
 # ── LEER / ESCRIBIR LOG ───────────────────────────────────────────────────────
 def read_log():
@@ -142,6 +203,36 @@ def score_momentum(ticker):
     except Exception as e:
         return 0, {}
 
+MOM_MAX = 9.5   # 2.0 (1d) + 1.5 (5d) + 1.0 (20d) + 2.5 (volumen) + 1.0 (medias) + 1.5 (máx. 21d)
+
+def puntua_momentum_barras(bs):
+    """Mismo scoring que score_momentum pero sobre barras ya descargadas en lote (Alpaca).
+    bs: lista de barras diarias ordenadas; se usan las últimas 21 sesiones."""
+    if not bs or len(bs) < 21:
+        return 0, {}
+    bs = bs[-21:]
+    cl = [b["c"] for b in bs]; vo = [b["v"] for b in bs]; hi = [b["h"] for b in bs]
+    price = cl[-1]
+    ret1d = (cl[-1] - cl[-2]) / cl[-2] * 100
+    ret5d = (cl[-1] - cl[-5]) / cl[-5] * 100
+    ret20d = (cl[-1] - cl[-20]) / cl[-20] * 100
+    vol_avg = sum(vo[-20:-1]) / 19
+    vol_ratio = vo[-1] / vol_avg if vol_avg else 1
+    score = 0
+    score += 2.0 if ret1d > 3 else 1.0 if ret1d > 1 else 0.3 if ret1d > 0 else -2.0 if ret1d < -3 else -1.0 if ret1d < -1 else 0
+    score += 1.5 if ret5d > 5 else 0.8 if ret5d > 2 else -1.5 if ret5d < -5 else 0
+    score += 1.0 if ret20d > 10 else 0.5 if ret20d > 5 else -1.0 if ret20d < -10 else 0
+    score += 2.5 if vol_ratio > 3 else 1.5 if vol_ratio > 2 else 0.8 if vol_ratio > 1.5 else 0.3 if vol_ratio > 1.2 else 0
+    ma5 = sum(cl[-5:]) / 5; ma20 = sum(cl[-20:]) / 20
+    score += 1.0 if price > ma5 > ma20 else 0.5 if price > ma20 else 0
+    alto = max(hi)                      # máximo de 21 sesiones (proxy de ruptura, no 52 semanas)
+    pct_desde_alto = (alto - price) / alto * 100
+    score += 1.5 if pct_desde_alto < 5 else 0.5 if pct_desde_alto < 10 else 0
+    return score, {"price": round(price, 2), "ret1d": round(ret1d, 2), "ret5d": round(ret5d, 2),
+                   "ret20d": round(ret20d, 2), "vol_ratio": round(vol_ratio, 2),
+                   "pct_from_21d_high": round(pct_desde_alto, 1)}
+
+
 # ── FUENTE 2: NEWS SENTIMENT (Alpaca) ────────────────────────────────────────
 NEWS_POS = ["upgrade","beat","raise","buyback","record","breakthrough","approval","partnership",
             "call sweep","unusual options","activist","acquired","merger","special dividend"]
@@ -230,8 +321,9 @@ def get_sector_bonus(ticker):
     etf = SECTOR_ETFS.get(sector)
     if not etf: return 0
     try:
-        h = yf.Ticker(etf).history(period="2d")
-        ret = (float(h["Close"].iloc[-1]) - float(h["Close"].iloc[-2])) / float(h["Close"].iloc[-2]) * 100
+        bs = BARRAS.get(etf) or barras_lote([etf], dias=8).get(etf) or []
+        if len(bs) < 2: return 0
+        ret = (bs[-1]["c"] - bs[-2]["c"]) / bs[-2]["c"] * 100
         bonus = 0.5 if ret > 1 else (0.2 if ret > 0 else (-0.3 if ret < -1 else 0))
         _sector_score_cache[sector] = bonus
         return bonus
@@ -246,31 +338,44 @@ clock = alpaca("/clock")
 is_open = clock.get("is_open", False)
 print(f"Mercado: {'ABIERTO' if is_open else 'CERRADO (pre/post-market scan)'}")
 
-# Run scan
+# Universo dinámico por liquidez (fail-soft a la lista fija) + barras en lote
+ESCANEADO, origen_universo = universo_dinamico()
+print(f"Universo: {len(ESCANEADO)} tickers — {origen_universo}")
+BARRAS = barras_lote(ESCANEADO, dias=45)
+print(f"Barras recibidas: {len(BARRAS)}/{len(ESCANEADO)} tickers")
+
+# Run scan: momentum para todos (barato), y las fuentes caras (news/UW) solo para
+# los mejores por momentum — así el universo grande no dispara el tiempo del workflow.
+pre = []
+for ticker in ESCANEADO:
+    m, stats = puntua_momentum_barras(BARRAS.get(ticker))
+    if stats and m > -1:
+        pre.append((m, ticker, stats))
+pre.sort(reverse=True)
+print(f"Momentum calculado: {len(pre)} tickers con datos · top bruto {pre[0][0] if pre else 0:.1f}/{MOM_MAX}")
+
 resultados = []
-for i, ticker in enumerate(UNIVERSE):
+for m, ticker, stats in pre[:40]:              # solo los 40 mejores pagan news/UW/sector
     try:
-        mom_score, stats = score_momentum(ticker)
-        if mom_score < -1: continue  # skip clearly bearish
         news_s   = score_news(ticker)
         insider_s= score_insider(ticker)
         uw_s     = score_unusual_whales(ticker)
         sector_s = get_sector_bonus(ticker)
-        total    = mom_score + news_s + insider_s + uw_s + sector_s
+        total    = m + news_s + insider_s + uw_s + sector_s
         if total >= 3.0:  # only keep meaningful scores
             resultados.append({
                 "ticker": total,
                 "sym": ticker,
                 "score": round(total, 2),
-                "momentum": round(mom_score, 2),
+                "momentum": round(m, 2),
                 "news": round(news_s, 2),
                 "insider": round(insider_s, 2),
                 "uw": round(uw_s, 2),
                 "sector": round(sector_s, 2),
                 "stats": stats
             })
-        if i % 20 == 0: print(f"  [{i}/{len(UNIVERSE)}] procesados...")
-    except: pass
+    except Exception as e:
+        print(f"  {ticker}: {type(e).__name__}")
 
 # Sort by score
 resultados.sort(key=lambda x: x["score"], reverse=True)
@@ -287,9 +392,24 @@ plog, sha = read_log()
 params = plog.get("parametros_activos", {})
 SCORE_MIN = float(params.get("score_min_paper", 8.0))
 
-# Convert raw scores (our internal 0-15 range) → normalized 0-10
-# Our max realistically is ~12, map to 10
-def normalize(s): return round(min(s / 12 * 10, 10.0), 2)
+# ── ESCALA HONESTA (fail-soft) ────────────────────────────────────────────────
+# ANTES: normalize(s) = s/12*10. El 12 asumía que el bloque de opciones (Unusual
+# Whales, máx 5.0) aportaba. Sin secret UW_KEY ese bloque devuelve 0 siempre, así
+# que el techo real era 9.5 (momentum) + 0.8 (news) + 0.5 (sector) = 10.8 → el
+# score normalizado nunca podía pasar de 9.00, y solo con TODO perfecto a la vez.
+# Medido sobre 21.165 observaciones (83 tickers × 255 sesiones): 0 llegaban a 9.0
+# con momentum solo. Efecto: la cuenta real (umbral 9.0) llevaba desde el 29-may
+# sin poder operar, no por falta de oportunidades sino por una regla mal graduada.
+# AHORA: se divide por el máximo ALCANZABLE con las fuentes que estén vivas, así
+# que 9.0 siempre significa "el 90 % de lo que se puede puntuar hoy dijo sí", y la
+# exigencia sube automáticamente cuando se añade una fuente nueva (p.ej. UW_KEY).
+MAX_NEWS, MAX_UW, MAX_SECTOR = 0.8, 5.0, 0.5
+MAX_ALCANZABLE = MOM_MAX + MAX_NEWS + MAX_SECTOR + (MAX_UW if UW_KEY else 0.0)
+BLOQUES_VIVOS = ["momentum", "news", "sector"] + (["opciones_uw"] if UW_KEY else [])
+print(f"Escala: máximo alcanzable {MAX_ALCANZABLE:.1f} con bloques {BLOQUES_VIVOS} "
+      f"(insiders desactivado{'' if UW_KEY else ', opciones sin UW_KEY'})")
+
+def normalize(s): return round(min(s / MAX_ALCANZABLE * 10, 10.0), 2)
 
 # Build new candidatos from top results
 now_iso = ahora.isoformat()
@@ -339,8 +459,10 @@ def _mutate(pl):
                  if c.get("estado") in ("pendiente","pendiente_ew","pendiente_reentrada")}
     pl["candidatos_validados"] = kept + [c for c in new_candidatos if c["ticker"] not in kept_syms]
     hist = pl.setdefault("scanner_history", [])
-    hist.append({"timestamp": now_iso, "tickers_scanned": len(UNIVERSE),
-                 "top_results": [{"sym":r["sym"],"score":r["score"]} for r in top[:5]],
+    hist.append({"timestamp": now_iso, "tickers_scanned": len(ESCANEADO),
+                 "universo": origen_universo, "con_barras": len(BARRAS),
+                 "escala_max_alcanzable": MAX_ALCANZABLE, "bloques_vivos": BLOQUES_VIVOS,
+                 "top_results": [{"sym":r["sym"],"score":r["score"],"norm":normalize(r["score"])} for r in top[:5]],
                  "uw_active": bool(UW_KEY), "market_open": is_open})
     pl["scanner_history"] = hist[-20:]
 

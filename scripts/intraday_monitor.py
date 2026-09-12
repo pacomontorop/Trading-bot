@@ -137,6 +137,19 @@ def manage(alp, plog, M, acciones):
             target = entry + M["lock_r"] * R; why = f"+{gain_r:.1f}R → lock +{M['lock_r']}R"
         elif gain_r >= M["breakeven_at_r"]:
             target = entry * 1.001; why = f"+{gain_r:.1f}R → break-even"
+        # 7 · RATCHET ANCHO: a partir de +4R el stop persigue al precio a 3·R de distancia.
+        #     La distancia NO es cosmética. Backtest 2024-03→2026-09, 396 tickers líquidos,
+        #     reglas reales del sistema (umbral 7.0, stop 1.5·ATR, riesgo 0.5 %, 8 posiciones):
+        #       TP 2R (config actual) ................ PF 1.47 · +72 %  · DD −11.7 %
+        #       TP 10R + trailing 1R ................. corta la cola, PF ~1.8
+        #       TP 10R + trailing 3R (esto) .......... PF 2.09 · +95 %  · DD −16.6 %
+        #     Con trailing a 1R el stop mata a las ganadoras grandes (la mejor del periodo hizo
+        #     +40R); a 3R las deja respirar. Sigue siendo monótono: nunca baja el stop.
+        RATCHET_R = 3.0
+        if gain_r >= RATCHET_R + 1.0:
+            ratchet = price - RATCHET_R * R
+            if ratchet > (target or 0):
+                target = ratchet; why = f"+{gain_r:.1f}R → trailing a {RATCHET_R:.0f}R del precio"
         if target is None:
             continue
         target = round_px(target)
