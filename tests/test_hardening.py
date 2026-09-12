@@ -234,3 +234,73 @@ def test_posicion_ya_en_beneficio_mantiene_el_candado():
     pos = _pos_dell(price="620.00")
     alp, _ = _run(pos, [_stop("PROTECT.DELL.1", sp="600.00")])
     assert not [c for c in alp.calls if c[0] == "PATCH" and float(c[2]["stop_price"]) < 600]
+
+
+def test_ratchet_deja_correr_a_las_ganadoras():
+    # DELL entrada 564.75, R=45.44 (stop del plan 519.31). A +5.3R (precio 805) el stop
+    # persigue a 3R: 805 − 136.32 = 668.7. Ni se congela en +1R ni se pega al precio.
+    pos = _pos_dell(price="805.00")
+    alp, acc = _run(pos, [_stop("GHA-PROTECT-1", sp="610.19")])
+    patch = [c for c in alp.calls if c[0] == "PATCH"]
+    assert len(patch) == 1
+    assert abs(float(patch[0][2]["stop_price"]) - 668.68) < 0.5, patch
+    assert "trailing a 3R" in acc[0]
+
+
+def test_ratchet_no_se_activa_por_debajo_de_4R():
+    # +3.3R: todavía no hay ratchet (umbral 4R); el lock de +1R ya está puesto → nada que hacer.
+    pos = _pos_dell(price="714.00")
+    alp, _ = _run(pos, [_stop("GHA-PROTECT-1", sp="610.19")])
+    assert not [c for c in alp.calls if c[0] == "PATCH"]
+
+
+def test_ratchet_no_baja_el_stop():
+    pos = _pos_dell(price="805.00")
+    alp, _ = _run(pos, [_stop("GHA-PROTECT-1", sp="700.00")])
+    assert not [c for c in alp.calls if c[0] == "PATCH"]
+
+
+def test_lock_normal_sigue_funcionando_por_debajo_del_ratchet():
+    # +2.2R: lock en entrada + 1R = 610.19, todavía sin ratchet.
+    pos = _pos_dell(price="665.00")
+    alp, acc = _run(pos, [_stop("GHA-PROTECT-1", sp="565.00")])
+    patch = [c for c in alp.calls if c[0] == "PATCH"]
+    assert len(patch) == 1 and abs(float(patch[0][2]["stop_price"]) - 610.19) < 0.5, patch
+    assert "lock" in acc[0]
+
+
+def test_escala_honesta_del_scanner():
+    """La normalización del scanner debe dividir por el máximo ALCANZABLE, no por 12 fijo."""
+    src = (Path(__file__).resolve().parent.parent / "scripts" / "dynamic_scanner.py").read_text()
+    assert "MAX_ALCANZABLE" in src and "s / MAX_ALCANZABLE * 10" in src
+    assert "s / 12 * 10" not in src
+    # sin UW_KEY el techo es momentum 9.5 + news 0.8 + sector 0.5 = 10.8 → 10.0 normalizado
+    ns = {"MOM_MAX": 9.5, "UW_KEY": ""}
+    exec("MAX_NEWS, MAX_UW, MAX_SECTOR = 0.8, 5.0, 0.5\n"
+         "MAX_ALCANZABLE = MOM_MAX + MAX_NEWS + MAX_SECTOR + (MAX_UW if UW_KEY else 0.0)", ns)
+    assert ns["MAX_ALCANZABLE"] == 10.8
+    norm = lambda s: round(min(s / ns["MAX_ALCANZABLE"] * 10, 10.0), 2)
+    assert norm(10.8) == 10.0 and norm(9.72) == 9.0
+    assert norm(8.30) == 7.69          # DELL del 11-sep: 6.92 con la escala vieja
+
+
+def test_momentum_por_barras_reproduce_el_scoring():
+    """puntua_momentum_barras debe dar el máximo (9.5) en el caso perfecto y 0 sin datos."""
+    src = (Path(__file__).resolve().parent.parent / "scripts" / "dynamic_scanner.py").read_text()
+    ini = src.index("MOM_MAX = 9.5")
+    fin = src.index("# ── FUENTE 2", ini)
+    ns = {}
+    exec(src[ini:fin], ns)
+    f = ns["puntua_momentum_barras"]
+    assert f(None) == (0, {}) and f([{"c": 1, "h": 1, "v": 1}] * 5) == (0, {})
+    # caso perfecto: tendencia al alza, ruptura del día +6,5 %, volumen x4, en máximos
+    cierres = [100.0] * 16 + [102.0, 104.0, 106.0, 108.0, 115.0]
+    bs = [{"c": c, "h": c, "v": 4_000_000 if i == 20 else 1_000_000} for i, c in enumerate(cierres)]
+    s, st = f(bs)
+    assert s == ns["MOM_MAX"], (s, st)          # 2.0+1.5+1.0+2.5+1.0+1.5
+    assert st["vol_ratio"] == 4.0 and st["pct_from_21d_high"] == 0.0 and st["ret1d"] == 6.48
+    # caída fuerte con volumen bajo → claramente negativo (se descarta en el escaneo)
+    bs2 = [{"c": 100.0, "h": 100.0, "v": 1_000_000} for _ in range(20)]
+    bs2.append({"c": 90.0, "h": 100.0, "v": 500_000})
+    s2, _ = f(bs2)
+    assert s2 <= -2.0, s2
