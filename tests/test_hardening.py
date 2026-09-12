@@ -162,3 +162,75 @@ def test_aprendizaje_por_fuente():
     assert apr["por_senal_extra"]["insiders"]["en_contra"]["net_usd"] == 120.0
     assert apr["solo_entraron_por_fuentes_extra"]["n"] == 1 and apr["solo_entraron_por_fuentes_extra"]["net_usd"] == -60.0
     assert kpi_report.aprendizaje([], 6.0)["n_total"] == 0
+
+
+# --- intraday-monitor · regla 6: soltar stops ajenos pegados al precio ------------------------
+
+class _Alp:
+    """Cliente Alpaca mínimo: registra las llamadas y devuelve OK."""
+    name = "paper"
+
+    def __init__(self, pos, ords):
+        self._p, self._o, self.calls = pos, ords, []
+
+    def positions(self):
+        return self._p
+
+    def open_orders(self):
+        return self._o
+
+    def req(self, path, method="GET", data=None):
+        self.calls.append((method, path, data))
+        return {"id": "x"}
+
+
+def _pos_dell(price="567.30"):
+    return {"symbol": "DELL", "qty": "11", "side": "long", "avg_entry_price": "564.75",
+            "current_price": price, "unrealized_plpc": "0.0045", "market_value": "6240",
+            "asset_class": "us_equity", "qty_available": "11"}
+
+
+def _stop(cid, sp="565.87"):
+    return {"id": "o1", "symbol": "DELL", "side": "sell", "type": "stop_limit",
+            "stop_price": sp, "client_order_id": cid, "status": "new"}
+
+
+PLOG_DELL = {"operaciones": [{"simbolo": "DELL", "estado": "abierta", "precio_stop": 519.31}]}
+M6 = common.load_limits()["management"]
+
+
+def _run(pos, ords, plog=PLOG_DELL):
+    import intraday_monitor as im
+    alp = _Alp([pos], ords)
+    acc = []
+    im.manage(alp, plog, M6, acc)
+    return alp, acc
+
+
+def test_stop_ajeno_pegado_vuelve_al_stop_del_plan():
+    alp, acc = _run(_pos_dell(), [_stop("PROTECT.DELL.5658795.760267")])
+    patch = [c for c in alp.calls if c[0] == "PATCH"]
+    assert len(patch) == 1 and float(patch[0][2]["stop_price"]) == 519.31
+    assert "519.31" in acc[0]
+
+
+def test_no_toca_stops_propios_gha():
+    alp, _ = _run(_pos_dell(), [_stop("GHA-PROTECT-202609111600-DELL")])
+    assert not [c for c in alp.calls if c[0] == "PATCH"]
+
+
+def test_no_toca_stop_de_riesgo_por_debajo_de_la_entrada():
+    alp, _ = _run(_pos_dell(), [_stop("PROTECT.DELL.1", sp="540.00")])
+    assert not [c for c in alp.calls if c[0] == "PATCH"]
+
+
+def test_sin_stop_planificado_no_hace_nada():
+    alp, _ = _run(_pos_dell(), [_stop("PROTECT.DELL.1")], plog={"operaciones": []})
+    assert not [c for c in alp.calls if c[0] == "PATCH"]
+
+
+def test_posicion_ya_en_beneficio_mantiene_el_candado():
+    # +1,2R: el candado es legítimo (lo habría puesto la regla 3/4), no se suelta.
+    pos = _pos_dell(price="620.00")
+    alp, _ = _run(pos, [_stop("PROTECT.DELL.1", sp="600.00")])
+    assert not [c for c in alp.calls if c[0] == "PATCH" and float(c[2]["stop_price"]) < 600]

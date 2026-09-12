@@ -10,6 +10,9 @@ Gestión de riesgo basada en R (R = entrada − stop inicial), paper y real:
      Los stops se MODIFICAN (PATCH) conservando el OCO del bracket, nunca se
      cancelan y recrean (v2 perdía el take-profit al hacerlo).
   5. Cancela entradas GHA sin llenar con más de stale_entry_min minutos.
+  6. Stop AJENO pegado al precio (< 0,25·R) y por encima de la entrada → lo devuelve al stop
+     del plan de entrada. Repara el legado de los stops PROTECT.* del bot de Render, que
+     cerraban swings a +0,1 % (2026-09-11: QCOM, QRVO). Nunca toca stops propios (GHA-*).
 
 Eliminado de v2: la venta parcial al +7% (fallaba siempre porque las acciones
 están retenidas por las patas del bracket) y el break-even al +5% fijo, que
@@ -45,6 +48,18 @@ def initial_risk(sym, entry, cur_stop, plog):
     if cur_stop and cur_stop < entry:
         return entry - cur_stop
     return entry * 0.05
+
+
+def planned_stop(sym, plog):
+    """Stop con el que se abrió la operación (log): el único riesgo que el sistema ya aceptó."""
+    for op in reversed(plog.get("operaciones", [])):
+        if (op.get("simbolo") or op.get("symbol")) == sym and str(op.get("estado", "")).startswith("abiert"):
+            try:
+                s = float(op.get("precio_stop") or op.get("stop_loss"))
+            except (TypeError, ValueError):
+                return None
+            return s if s > 0 else None
+    return None
 
 
 def manage(alp, plog, M, acciones):
@@ -95,6 +110,28 @@ def manage(alp, plog, M, acciones):
         cur = float(so.get("stop_price") or 0)
         R = initial_risk(sym, entry, cur, plog)
         gain_r = (price - entry) / R if R > 0 else 0
+
+        # 6 · stop AJENO pegado al precio (legado del bot de Render: PROTECT.* a +0,2 % de la entrada,
+        #     min_profit_lock_pct). Convierte swings en scalps de +0,1 % y destroza el avg_R.
+        #     Se devuelve al stop planificado en la entrada — riesgo que el sistema ya había aceptado —
+        #     solo si: el stop no lo puso este sistema (GHA-*), está por ENCIMA de la entrada (es un
+        #     candado de beneficio, no un stop de riesgo) y la posición aún no ha ganado el break-even.
+        cid_so = str(so.get("client_order_id") or "").upper()
+        ps = planned_stop(sym, plog)
+        if (not cid_so.startswith("GHA-") and gain_r < M["breakeven_at_r"] and R > 0
+                and cur >= entry * 0.999 and (price - cur) < 0.25 * R
+                and ps and ps < cur and ps < price * 0.98):
+            nuevo = round_px(ps)
+            body = {"stop_price": str(nuevo)}
+            if so.get("type") == "stop_limit":
+                body["limit_price"] = str(round_px(nuevo * 0.995))
+            r = alp.req(f"/orders/{so['id']}", "PATCH", body)
+            if "_error" in r:
+                acciones.append(f"⚠️ {tag}: no se pudo soltar el stop pegado {cur}: {r['_error'][:80]}")
+            else:
+                acciones.append(f"🔧 {tag}: stop ajeno pegado {cur} → {nuevo} (stop del plan de entrada)")
+            continue
+
         target = None
         if gain_r >= M["lock_at_r"]:
             target = entry + M["lock_r"] * R; why = f"+{gain_r:.1f}R → lock +{M['lock_r']}R"
