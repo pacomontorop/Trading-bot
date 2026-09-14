@@ -57,6 +57,12 @@ DATA_BASE = "https://data.alpaca.markets/v2"
 OPEN_ORDER_STATES = {"new", "accepted", "held", "partially_filled", "pending_new",
                      "accepted_for_bidding", "pending_replace", "replaced"}
 
+# Estados en los que una orden SIGUE VIVA en el mercado. "replaced" NO entra: es una orden
+# sustituida (muerta), y colarla haría que el monitor tomara por bueno un stop antiguo — p.ej.
+# DELL habría seguido "protegida" por el stop de 565.87 que la regla 6 ya había reemplazado.
+ESTADOS_VIVOS = {"new", "accepted", "held", "partially_filled", "pending_new",
+                 "accepted_for_bidding", "pending_replace"}
+
 
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
@@ -138,17 +144,24 @@ class Alpaca:
         return self.req("/clock")
 
     def open_orders(self, symbols: str | None = None) -> list:
-        """Órdenes abiertas aplanadas (incluye patas de brackets, p.ej. stop 'held')."""
-        q = "/orders?status=open&nested=true&limit=500"
+        """Órdenes vivas, aplanadas (incluye las patas de stop de los brackets, en estado 'held').
+
+        BUG 14-sep-2026: se pedía `status=open`, y Alpaca NO devuelve ahí la pata de stop de un
+        bracket cuando la entrada ya se llenó — queda en 'held' y solo aparece con `status=all`.
+        Efecto: CRM, NFLX, RBLX y SQQQ (entradas del 14-sep) figuraban SIN STOP aunque sí lo
+        tenían → el watchdog alertaba en falso y, mucho peor, el intraday monitor no veía esos
+        stops y no podía subirlos a break-even ni aplicar el ratchet. Se pide todo y se filtra
+        por estado vivo, que es lo que de verdad significa "orden abierta"."""
+        q = "/orders?status=all&nested=true&limit=500&direction=desc"
         if symbols:
             q += f"&symbols={symbols}"
         r = self.req(q)
-        out = []
+        out, vistos = [], set()
         for o in (r if isinstance(r, list) else []):
-            out.append(o)
-            for leg in (o.get("legs") or []):
-                if leg.get("status") in OPEN_ORDER_STATES:
-                    out.append(leg)
+            for x in [o] + list(o.get("legs") or []):
+                if x.get("status") in ESTADOS_VIVOS and x.get("id") not in vistos:
+                    vistos.add(x.get("id"))
+                    out.append(x)
         return out
 
     def orders_since(self, after_iso: str) -> list:
