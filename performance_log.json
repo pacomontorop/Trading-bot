@@ -21175,7 +21175,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-13T23:27Z",
+    "ts": "2026-09-14T13:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -21211,15 +21211,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 1.17}"
+        "detalle": "{'rel20': 0.93}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 33.3, 'rating': 'fear'}"
+        "detalle": "{'score': 32.6, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 2, 'menciones': 33, 'menciones_24h_antes': 11, 'ratio_24h': 3.0}"
+        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 55, 'menciones_24h_antes': 17, 'ratio_24h': 3.24}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -21227,7 +21227,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.38"
+        "detalle": "C/P 1.62"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -21235,24 +21235,38 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.06, 'rs20': 0.14}"
+        "detalle": "{'etf': 'XLK', 'rs5': -1.23, 'rs20': -1.85}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-13T23:27Z",
+    "ts": "2026-09-14T13:35Z",
     "entrada": "2026-09-14",
     "salida": "2026-09-15",
-    "eventos": 22,
-    "evaluados": 5,
+    "eventos": 21,
+    "evaluados": 6,
     "macro": {
-      "vix": 15.84,
-      "spy_above_ma50": true
+      "vix": 17.66,
+      "spy_above_ma50": false
     },
     "top": [
       {
+        "ticker": "LUXE",
+        "score": 3.0,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "whisper": -1.0,
+          "beat_rate": 2.0,
+          "reaccion": 1.5,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": -0.5
+        }
+      },
+      {
         "ticker": "TCOM",
-        "score": 3.39,
+        "score": 1.89,
         "earnings_fecha": "2026-09-15",
         "earnings_timing": "AMC",
         "score_breakdown": {
@@ -21261,43 +21275,30 @@
           "reaccion": 0.0,
           "revisiones": -1.0,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       },
       {
         "ticker": "ANAB",
-        "score": 2.39,
+        "score": 1.89,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
           "beat_rate": 2.0,
           "reaccion": 0.39,
           "revisiones": -1.0,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "momentum5d": 1.0,
+          "macro": -0.5
         }
       },
       {
         "ticker": "LKSP",
-        "score": 2.0,
+        "score": 0.5,
         "earnings_fecha": "2026-09-16",
         "earnings_timing": "desconocido",
         "score_breakdown": {
           "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "SA",
-        "score": 1.26,
-        "earnings_fecha": "2026-09-16",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "reaccion": 0.26,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       },
       {
@@ -21310,7 +21311,20 @@
           "reaccion": -0.5,
           "revisiones": -1.0,
           "momentum5d": 0.0,
-          "macro": 1.0
+          "macro": -0.5
+        }
+      },
+      {
+        "ticker": "SA",
+        "score": 0.0,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": -1.0,
+          "reaccion": 0.26,
+          "revisiones": 0.0,
+          "momentum5d": 0.0,
+          "macro": -0.5
         }
       }
     ]
@@ -21324,14 +21338,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-13T23:27Z",
+    "ts": "2026-09-14T13:35Z",
     "calendario": {
       "2026-09-14": [
         {
           "ticker": "RFIL",
           "company": "RF Industries Inc.",
           "releaseTime": 1,
-          "total": 9,
+          "total": 11,
           "fuente": "ew"
         },
         {
@@ -21339,6 +21353,13 @@
           "company": "The Hain Celestial Group, Inc.",
           "releaseTime": 1,
           "total": 8,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ABAT",
+          "company": "American Battery Technology Company",
+          "releaseTime": 1,
+          "total": 0,
           "fuente": "ew"
         },
         {
@@ -21356,17 +21377,24 @@
           "fuente": "ew"
         },
         {
+          "ticker": "CTRM",
+          "company": "Castor Maritime Inc.",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
           "ticker": "HITI",
           "company": "High Tide Inc.",
           "releaseTime": 3,
-          "total": 16,
+          "total": 18,
           "fuente": "ew"
         },
         {
           "ticker": "PLAY",
           "company": "Dave & Buster's Entertainment, Inc.",
           "releaseTime": 3,
-          "total": 12,
+          "total": 13,
           "fuente": "ew"
         },
         {
@@ -21380,7 +21408,7 @@
           "ticker": "KMTS",
           "company": "Kestra Medical Technologies, Ltd.",
           "releaseTime": 3,
-          "total": 3,
+          "total": 5,
           "fuente": "ew"
         },
         {
@@ -21445,7 +21473,14 @@
           "ticker": "FPS",
           "company": "Forgent Power Solutions, Inc.",
           "releaseTime": 1,
-          "total": 15,
+          "total": 20,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BIOX",
+          "company": "Bioceres Crop Solutions Corp.",
+          "releaseTime": 1,
+          "total": 3,
           "fuente": "ew"
         },
         {
@@ -21453,13 +21488,6 @@
           "company": "Vera Bradley, Inc.",
           "releaseTime": 1,
           "total": 3,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BIOX",
-          "company": "Bioceres Crop Solutions Corp.",
-          "releaseTime": 1,
-          "total": 2,
           "fuente": "ew"
         },
         {
@@ -21473,7 +21501,7 @@
           "ticker": "TCOM",
           "company": "Trip.com Group Limited",
           "releaseTime": 3,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -21507,13 +21535,6 @@
         {
           "ticker": "ZENA",
           "company": "ZenaTech, Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "AXR",
-          "company": "AMREP Corporation",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -21577,24 +21598,24 @@
       ],
       "2026-09-16": [
         {
-          "ticker": "LUXE",
-          "company": "LuxExperience B.V.",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
           "ticker": "ISPR",
           "company": "Ispire Technology Inc. ",
           "releaseTime": 1,
-          "total": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "LUXE",
+          "company": "LuxExperience B.V.",
+          "releaseTime": 1,
+          "total": 3,
           "fuente": "ew"
         },
         {
           "ticker": "LEN",
           "company": "Lennar Corporation",
           "releaseTime": 3,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
@@ -21650,7 +21671,7 @@
           "ticker": "SANG",
           "company": "Sangoma Technologies Corporation",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -21705,13 +21726,6 @@
         {
           "ticker": "PTN",
           "company": "Palatin Technologies, Inc.",
-          "releaseTime": null,
-          "total": 3,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "PLUR",
-          "company": "Pluri Inc.",
           "releaseTime": null,
           "total": 3,
           "fuente": "nasdaq"
@@ -21854,10 +21868,59 @@
       ],
       "2026-09-18": [
         {
+          "ticker": "NB",
+          "company": "NioCorp Developments Ltd.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "HTLM",
+          "company": "HomesToLife Ltd",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "TRT",
           "company": "Trio-Tech International",
           "releaseTime": null,
-          "total": 0,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ZONE",
+          "company": "Zone Frontier Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "PLCE",
+          "company": "Children's Place, Inc. (The)",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "CELU",
+          "company": "Celularity Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ENLV",
+          "company": "Enlivex Ltd.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "LNAI",
+          "company": "Lunai Bioworks Inc.",
+          "releaseTime": null,
+          "total": 1,
           "fuente": "nasdaq"
         }
       ]
@@ -21871,7 +21934,17 @@
         "earnings_timing": "AMC",
         "beat_rate": 87.5,
         "reaccion_media_pct": -0.51,
-        "score": 3.39
+        "score": 1.89
+      },
+      "LUXE": {
+        "consenso_eps": -0.11,
+        "whisper": -0.14,
+        "asimetria_pct": -27.27,
+        "earnings_fecha": "2026-09-16",
+        "earnings_timing": "BMO",
+        "beat_rate": 75.0,
+        "reaccion_media_pct": 6.17,
+        "score": 3.0
       },
       "ANAB": {
         "consenso_eps": -0.22,
@@ -21881,7 +21954,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 75.0,
         "reaccion_media_pct": 1.04,
-        "score": 2.39
+        "score": 1.89
       },
       "PTN": {
         "consenso_eps": null,
@@ -21901,7 +21974,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": null,
         "reaccion_media_pct": null,
-        "score": 2.0
+        "score": 0.5
       },
       "SA": {
         "consenso_eps": 999.0,
@@ -21911,10 +21984,34 @@
         "earnings_timing": "desconocido",
         "beat_rate": 25.0,
         "reaccion_media_pct": 0.7,
-        "score": 1.26
+        "score": 0.0
       }
     },
     "resultados_hoy": [
+      {
+        "ticker": "RFIL",
+        "epsDate": "2026-09-14T08:00:00",
+        "eps": 0.16,
+        "estimate": 0.18,
+        "whisper": 999,
+        "revenue": 23.96,
+        "revenueEstimate": 23.28,
+        "earningsSurprise": -0.1111111111111111,
+        "revenueSurprise": 0.029209621993127148,
+        "subject": "RF Industries Missed Consensus Estimates"
+      },
+      {
+        "ticker": "HAIN",
+        "epsDate": "2026-09-14T06:48:00",
+        "eps": -0.05,
+        "estimate": -0.03,
+        "whisper": 999,
+        "revenue": 263.069,
+        "revenueEstimate": 256.51,
+        "earningsSurprise": -0.6666666666666666,
+        "revenueSurprise": 0.025570153210401153,
+        "subject": "The Hain Celestial Group Missed Consensus Estimates"
+      },
       {
         "ticker": "KR",
         "epsDate": "2026-09-11T06:46:00",
