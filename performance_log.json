@@ -22845,57 +22845,43 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-14",
-    "hora_utc": "13:37",
-    "min_desde_apertura": 7.6,
+    "hora_utc": "14:37",
+    "min_desde_apertura": 67.2,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
-    "ejecutados": [
-      "NFLX",
-      "RBLX",
-      "CRM",
-      "SQQQ"
-    ],
+    "ejecutados": [],
     "descartados": [
-      "CRWD: runup +7.8%>5%",
-      "COIN: runup +6.9%>5%",
+      "CRWD: runup +11.6%>5%",
       "OKTA: max posiciones paper 8",
-      "ACN: max posiciones paper 8",
-      "TEAM: max posiciones paper 8",
+      "RBLX: ya en cartera paper",
+      "SQQQ: ya en cartera paper",
+      "COIN: max posiciones paper 8",
+      "KR: score 5.9<6.0",
+      "SPOT: score 5.8<6.0",
       "USO: score 5.8<6.0",
-      "FPS: score 5.5<6.0",
-      "QID: score 5.4<6.0",
-      "VRA: score 5.2<6.0"
+      "VRA: score 5.2<6.0",
+      "FPS: score 5.2<6.0"
     ],
     "ajustes_fuentes": {
       "CRWD": {
         "base": 8.75,
-        "paper": 9.35,
+        "paper": 9.6,
         "real": 8.75,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.8,
-          "opciones": 0.25,
+          "opciones": 0.5,
           "sector": -0.15
         }
       },
-      "COIN": {
-        "base": 6.88,
-        "paper": 8.08,
-        "real": 6.88,
+      "OKTA": {
+        "base": 6.48,
+        "paper": 7.38,
+        "real": 6.48,
         "partes": {
           "analistas": 0.8,
           "opciones": 0.25,
-          "sector": 0.15
-        }
-      },
-      "NFLX": {
-        "base": 6.88,
-        "paper": 7.68,
-        "real": 6.88,
-        "partes": {
-          "analistas": 0.15,
-          "opciones": 0.25,
-          "sector": 0.4
+          "sector": -0.15
         }
       },
       "RBLX": {
@@ -22907,16 +22893,6 @@
           "sector": 0.4
         }
       },
-      "CRM": {
-        "base": 6.88,
-        "paper": 7.13,
-        "real": 6.88,
-        "partes": {
-          "analistas": 0.8,
-          "opciones": -0.4,
-          "sector": -0.15
-        }
-      },
       "SQQQ": {
         "base": 6.48,
         "paper": 6.98,
@@ -22925,32 +22901,31 @@
           "opciones": 0.5
         }
       },
-      "OKTA": {
-        "base": 5.83,
-        "paper": 6.48,
-        "real": 5.83,
+      "COIN": {
+        "base": 5.65,
+        "paper": 6.85,
+        "real": 5.65,
         "partes": {
           "analistas": 0.8,
-          "sector": -0.15
-        }
-      },
-      "ACN": {
-        "base": 6.02,
-        "paper": 6.17,
-        "real": 6.02,
-        "partes": {
-          "analistas": 0.05,
           "opciones": 0.25,
-          "sector": -0.15
+          "sector": 0.15
         }
       },
-      "TEAM": {
-        "base": 5.56,
-        "paper": 6.01,
-        "real": 5.56,
+      "KR": {
+        "base": 6.02,
+        "paper": 5.87,
+        "real": 5.87,
         "partes": {
-          "analistas": 0.6,
-          "sector": -0.15
+          "analistas": -0.3,
+          "sector": 0.15
+        }
+      },
+      "SPOT": {
+        "base": 5.37,
+        "paper": 5.77,
+        "real": 5.37,
+        "partes": {
+          "sector": 0.4
         }
       },
       "USO": {
@@ -22961,13 +22936,21 @@
           "social": 0.2
         }
       },
+      "VRA": {
+        "base": 5.4,
+        "paper": 5.25,
+        "real": 5.25,
+        "partes": {
+          "sector": -0.15
+        }
+      },
       "FPS": {
         "base": 5.4,
-        "paper": 5.5,
-        "real": 5.4,
+        "paper": 5.25,
+        "real": 5.25,
         "partes": {
           "analistas": 0.2,
-          "opciones": 0.5,
+          "opciones": 0.25,
           "corto": -0.2,
           "sector": -0.4
         }
@@ -22976,82 +22959,82 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-14T13:37Z",
+    "ts": "2026-09-14T14:37Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.94,
-      "fear_greed": 32.7,
+      "credito_hyg_ief_20": 0.95,
+      "fear_greed": 31.5,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
-      "cnn_fear_greed": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 178,
-        "ultimo_error": null
-      },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 265,
+        "ms": 143,
+        "ultimo_error": null
+      },
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 147,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95545,
+        "ms": 95294,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 2560,
+        "ms": 2227,
         "ultimo_error": null
       },
       "insiders_sec": {
         "ok": 0,
-        "fallos": 12,
+        "fallos": 10,
         "ms": 0,
         "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
       },
       "insiders_nasdaq": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 37693,
+        "ms": 25895,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 1433,
+        "ms": 998,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 2257,
+        "ms": 1983,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 1087,
+        "ms": 338,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 1214,
+        "ms": 901,
         "ultimo_error": null
       }
     }
