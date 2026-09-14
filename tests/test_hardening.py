@@ -338,3 +338,42 @@ def test_selftest_clasifica_duro_y_blando():
     assert "Fuentes de datos (al menos una viva)" in src
     # el precio usa ref_price, no latest_price, para la comprobación
     assert "px = P.ref_price(SYM)" in src
+
+
+# --- patas de stop 'held' de los brackets (bug del 14-sep) ------------------------------------
+
+def test_open_orders_ve_las_patas_held_y_descarta_replaced():
+    """`status=open` no devuelve la pata de stop de un bracket ya lleno: queda en 'held'.
+    Con el bug, CRM/NFLX/RBLX/SQQQ figuraban SIN STOP y el monitor no podía ni subirlos."""
+    P = common.paper_client()
+    respuesta = [
+        {"id": "entrada", "symbol": "CRM", "side": "buy", "type": "limit", "status": "filled",
+         "legs": [{"id": "tp", "symbol": "CRM", "side": "sell", "type": "limit", "status": "new"},
+                  {"id": "sl", "symbol": "CRM", "side": "sell", "type": "stop_limit",
+                   "status": "held", "stop_price": "236.87"}]},
+        {"id": "viejo", "symbol": "DELL", "side": "sell", "type": "stop_limit",
+         "status": "replaced", "stop_price": "565.87"},          # sustituida por la regla 6: muerta
+        {"id": "vivo", "symbol": "DELL", "side": "sell", "type": "stop_limit",
+         "status": "new", "stop_price": "519.31"},
+        {"id": "vieja2", "symbol": "XOM", "side": "sell", "type": "stop_limit", "status": "canceled"},
+    ]
+    consultas = []
+
+    def fake_req(self, path, method="GET", data=None):
+        consultas.append(path)
+        return respuesta
+
+    with patch.object(type(P), "req", fake_req):
+        oo = P.open_orders()
+    assert "status=all" in consultas[0], consultas          # sin esto no aparecen las 'held'
+    ids = [o["id"] for o in oo]
+    assert "sl" in ids and "tp" in ids                      # la pata de stop y la de objetivo
+    assert "entrada" not in ids                             # la entrada ya llena, no
+    assert "viejo" not in ids and "vieja2" not in ids        # sustituida y cancelada, fuera
+    stops = {o["symbol"]: o["stop_price"] for o in oo if o.get("type") == "stop_limit"}
+    assert stops == {"CRM": "236.87", "DELL": "519.31"}
+
+
+def test_estados_vivos_no_incluye_replaced():
+    assert "replaced" not in common.ESTADOS_VIVOS
+    assert {"new", "held", "accepted", "partially_filled"} <= common.ESTADOS_VIVOS
