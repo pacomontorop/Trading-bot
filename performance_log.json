@@ -1858,17 +1858,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-15T10:15",
+      "timestamp": "2026-09-15T11:13",
       "nivel": "alerta",
       "shocks": [],
       "bloquear_entradas": true,
-      "motivo_bloqueo": "FOMC 16-sep + calendario EW vacio",
-      "vix": 16.96,
-      "spy_chg": -0.35,
-      "us10y": 5.0,
-      "wti": 103.37,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0
+      "motivo_bloqueo": "plan_semana_proxima: NO nuevas entradas 15 y 16 sep (vispera y dia FOMC) + macro_calendar 16-sep no_entrar_nuevas_posiciones",
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -1889,16 +1885,17 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-11T20:28:13.621Z",
-    "macro_score": -1.3,
-    "macro_bonus_ew": -0.39,
+    "ts_actualizado": "2026-09-15T11:13",
+    "macro_score": -0.5,
+    "macro_bonus_ew": -0.15,
     "macro_nivel": "alerta",
     "contexto_resumen": [
-      "Futuros ligeramente bajistas (ES -0.43%, NQ +0.04%)",
-      "Yield 10Y alto (4.81%) - presion sobre valuaciones growth",
-      "Petroleo $93.6 WTI / $98.6 Brent subiendo >2% - presion inflacionaria",
-      "Energia lidera sectores (+1.32%); healthcare -2.20% muy debil",
-      "Mercados globales mixtos (Nikkei +2.12%, HSI -0.93%)"
+      "Futuros ES+0.30%/NQ+0.35% (leve alcista) pero YM-0.23%/RTY-0.28% -> mercado estrecho",
+      "Yield 10Y = 5.00% (maximo desde 2007) -> presion severa sobre valoraciones growth",
+      "WTI $104.78 (+3.3%) / Brent ~$107 - oleoducto saudi Este-Oeste offline por ataques con drones + bloqueo iranies GCC via Ormuz",
+      "CNN Fear&Greed 29.8 (fear)",
+      "Sector lider: energy (XLE +1.36%); mas debil: consumer disc (-1.44%). Tech -0.21%",
+      "FOMC 16-sep: mercados descuentan >90% prob. subida 25bp (era 70% el 11-sep) - repricing hawkish"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -1908,17 +1905,15 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": -0.23,
-      "yield_10y": 4.81,
-      "yield_30y": 5.27
+      "tlt_chg": -0.22,
+      "yield_10y": 5.0,
+      "yield_30y": 5.37
     },
     "commodities": {
-      "wti": 93.59,
-      "wti_chg": 2.31,
-      "brent": 98.62,
-      "brent_chg": 2.43,
-      "gold_chg": -0.3,
-      "uup_chg": -0.38
+      "wti": 104.78,
+      "wti_chg": 3.34,
+      "brent": 107.3,
+      "oro_chg": -0.8
     },
     "snapshot_holiday_20260907": {
       "VIX": [
@@ -1965,20 +1960,22 @@
     },
     "sectores_hoy": {
       "lider": "energy",
-      "cambio_lider": 1.32,
-      "tech_chg": 0.48,
+      "cambio_lider": 1.36,
+      "tech_chg": -0.21,
       "all": {
-        "tech": 0.48,
-        "financials": -1.12,
-        "energy": 1.32,
-        "healthcare": -2.2,
-        "industrials": -0.14,
-        "consumer_disc": -0.7,
-        "utilities": 1.29,
-        "materials": -0.56,
-        "realestate": 0.27
+        "tech": -0.21,
+        "fin": -0.84,
+        "energy": 1.36,
+        "health": -0.42,
+        "indu": -0.85,
+        "cons_disc": -1.44,
+        "util": -0.8,
+        "mat": -0.4,
+        "re": -0.14,
+        "comm": -0.7,
+        "staples": -0.76
       },
-      "ts": "15:13"
+      "ts": "11:13"
     },
     "eventos_recientes": [
       {
@@ -2073,10 +2070,10 @@
       }
     ],
     "futuros": {
-      "ES": -0.43,
-      "NQ": 0.04,
-      "YM": -1.15,
-      "RTY": -0.16
+      "ES": 0.3,
+      "NQ": 0.35,
+      "YM": -0.23,
+      "RTY": -0.28
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -2110,7 +2107,8 @@
     },
     "nota_industrials": "industrials bajado +1 -> 0: crudo $100 + aranceles Canada golpean costes de transporte e inputs.",
     "preparacion_semana": "semana del 2026-09-14 — FOMC-driven, sin earnings relevantes",
-    "top_candidatos_lunes": []
+    "top_candidatos_lunes": [],
+    "shock_tipo_regimen": "oil_spike_geopolitico (regimen de fondo, no shock intradia)"
   },
   "operaciones_crypto": [
     {
@@ -13610,6 +13608,20 @@
       "macro_nivel": "alerta",
       "macro_score": -0.9,
       "nota": "Martes 10:10 ET. SIN EJECUCIONES. (1) Calendario EW vacio: Sep16=3BMO/5AMC (LUXE, LEN), Sep17=1BMO; temporada real arranca 24-sep -> 0 senales EW validas. (2) Bloqueo propio de entradas 15-16 sep por FOMC (~70% prob. subida tipos) sigue vigente. (3) Macro: 10Y=5.00% (maximo desde 2007), WTI $103 (+1.95%) por Hormuz/pipeline saudi, energia +1.4% lider, cons_disc -1.1%; VIX 16.96 sin spike, SPY -0.35% -> alerta, no shock. (4) ALERTA ABIERTA: CRM/NFLX/RBLX/SQQQ (~$35.9k, 33% equity paper) sin stop, solo limit TP. Posiciones del bot -> REGLA 2, no se interviene sin emergencia. Cuenta real sin exposicion (solo polvo BTC $0.63). El agente no coloco ordenes: ejecucion de operaciones queda para confirmacion manual del usuario."
+    },
+    {
+      "ts": "2026-09-15T15:13:53.041667+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 17.8,
+      "macro_nivel": "alerta",
+      "macro_score": -0.5,
+      "nota": "Martes 11:11-11:25 ET, vispera FOMC. PASO 1: 10 posiciones paper, TODAS con stop vivo salvo polvo SOLUSD (5.0e-05 sh, $0.00). Cowork=2/4 (XOM +4.00% stop 161.75; CVX +1.15% stop 207.50) - ambas energia, bien posicionadas ante el shock de crudo. Bot: AAPL -1.59%(322.82), CRM +1.39%(236.87), DELL -2.38%(519.31 ya corregido, 5.8% de distancia, resuelta la alerta de 0.22% del 11-sep), NFLX -1.77%(75.61), RBLX +5.74%(44.75), SQQQ -0.67%(38.88). REAL: solo polvo BTCUSD $0.63. PASO 2: 40 noticias sobre 15 tickers, 0 negativas. PASO 3: EarningsWhispers SIGUE CAIDO (4o ciclo) - shell SPA 96KB identica por ticker. Calendario: 7 earnings hoy, todos micro-cap sin whisper; ew_pipeline_gha top score 0.5 (HUBG) -> universo EW vacio, confirma plan_semana_proxima. PASO 3B: momentum plano/debil en toda la cartera, ningun vol_ratio >0.40 (sesion de bajo volumen pre-FOMC). PASO 4B: SIN shock intradia (VIX 17.78 +1.6%/30min, SPY -0.43% desde open, ningun Mag7 >6%), pero regimen de fondo oil_spike: 10Y rompe 5.00% (max desde 2007), WTI $104.78, oleoducto saudi Este-Oeste offline por drones, bloqueo irani GCC en Ormuz; FOMC descuenta >90% subida 25bp (era 70% el 11-sep). PASO 5: 0 ejecuciones - bloqueo por calendario FOMC (regla propia del plan semanal) + 0 candidatos >=8.0. PASO 4C: fuera de ventana AH. Telegram silenciado (sin trade/cierre/shock/EOD).",
+      "ew_scraper_status": "caido_spa_client_side_4o_ciclo",
+      "entradas_bloqueadas": true,
+      "motivo": "vispera FOMC (plan semanal) + universo EW vacio"
     }
   ],
   "momentum_15m": {
@@ -13670,10 +13682,14 @@
       "ts": "10:15"
     },
     "CRM": {
-      "day": 3.78,
-      "mom15m": 0.35,
-      "vs_open": 4.44,
-      "ts": "12:13"
+      "precio": 258.99,
+      "mom_15m": 0.737,
+      "mom_30m": 1.182,
+      "vol_ratio": 0.33,
+      "vwap_dev": 0.574,
+      "rsi": 60.3,
+      "señal": "debil_alcista",
+      "ts": "11:13"
     },
     "BURL": {
       "precio": 294.79,
@@ -13864,15 +13880,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "px": 531.55,
-      "day": 1.41,
-      "m15": 0.4,
-      "m30": -0.11,
-      "vr": 0.83,
-      "vwap_dev": 0.37,
-      "rsi": 62.9,
-      "sig": "debil_alcista",
-      "ts": "14:15"
+      "precio": 551.18,
+      "mom_15m": -0.739,
+      "mom_30m": -1.074,
+      "vol_ratio": 0.27,
+      "vwap_dev": -1.352,
+      "rsi": 25.3,
+      "señal": "debil_bajista",
+      "ts": "11:13"
     },
     "LULU": {
       "px": 119.42,
@@ -14467,24 +14482,24 @@
       "ts": "13:20"
     },
     "CVX": {
-      "precio": 210.77,
-      "mom_15m": -0.076,
-      "mom_30m": 0.062,
-      "vol_ratio": 0.2,
-      "vwap_dev": 0.121,
-      "rsi": 65.2,
-      "señal": "LATERAL",
-      "ts": "15:13"
+      "precio": 215.53,
+      "mom_15m": 0.181,
+      "mom_30m": 0.391,
+      "vol_ratio": 0.19,
+      "vwap_dev": 0.174,
+      "rsi": 52.4,
+      "señal": "debil_alcista",
+      "ts": "11:13"
     },
     "XOM": {
-      "precio": 160.75,
-      "mom_15m": 0.063,
-      "mom_30m": 0.279,
-      "vol_ratio": 0.29,
-      "vwap_dev": 0.353,
-      "rsi": 74.6,
-      "señal": "LATERAL",
-      "ts": "15:13"
+      "precio": 168.07,
+      "mom_15m": 0.203,
+      "mom_30m": 0.629,
+      "vol_ratio": 0.07,
+      "vwap_dev": 0.339,
+      "rsi": 57.1,
+      "señal": "debil_alcista",
+      "ts": "11:13"
     },
     "TQQQ": {
       "px": 72.66,
@@ -14498,25 +14513,24 @@
       "ts": "14:15"
     },
     "XLE": {
-      "px": 64.71,
-      "day": 1.02,
-      "m15": 0.19,
-      "m30": 0.19,
-      "vr": 0.44,
-      "vwap_dev": 0.34,
-      "rsi": 58.7,
-      "sig": "debil_alcista",
-      "ts": "14:15"
+      "precio": 65.38,
+      "mom_15m": 0.123,
+      "mom_30m": 0.5,
+      "vol_ratio": 0.16,
+      "vwap_dev": 0.173,
+      "rsi": 49.0,
+      "señal": "LATERAL",
+      "ts": "11:13"
     },
     "SLB": {
-      "precio": 57.37,
-      "mom_15m": -0.087,
-      "mom_30m": -0.061,
-      "vol_ratio": 0.26,
-      "vwap_dev": 0.024,
-      "rsi": 56.6,
+      "precio": 53.68,
+      "mom_15m": -0.019,
+      "mom_30m": 0.0,
+      "vol_ratio": 0.4,
+      "vwap_dev": 0.036,
+      "rsi": 52.8,
       "señal": "LATERAL",
-      "ts": "15:13"
+      "ts": "11:13"
     },
     "HAL": {
       "precio": 36.94,
@@ -14529,14 +14543,14 @@
       "ts": "15:13"
     },
     "OXY": {
-      "precio": 60.93,
-      "mom_15m": 0,
-      "mom_30m": 0.239,
-      "vol_ratio": 0.21,
-      "vwap_dev": 0.244,
-      "rsi": 73.8,
+      "precio": 63.03,
+      "mom_15m": 0.021,
+      "mom_30m": 0.254,
+      "vol_ratio": 0.14,
+      "vwap_dev": -0.058,
+      "rsi": 48.7,
       "señal": "LATERAL",
-      "ts": "15:13"
+      "ts": "11:13"
     },
     "LMT": {
       "precio": 537.19,
@@ -14607,6 +14621,46 @@
       "rsi": 46.3,
       "señal": "LATERAL",
       "ts": "15:13"
+    },
+    "AAPL": {
+      "precio": 329.21,
+      "mom_15m": -0.165,
+      "mom_30m": -0.096,
+      "vol_ratio": 0.1,
+      "vwap_dev": -0.232,
+      "rsi": 25.8,
+      "señal": "debil_bajista",
+      "ts": "11:13"
+    },
+    "NFLX": {
+      "precio": 78.21,
+      "mom_15m": 0.218,
+      "mom_30m": 0.398,
+      "vol_ratio": 0.37,
+      "vwap_dev": 0.214,
+      "rsi": 52.5,
+      "señal": "debil_alcista",
+      "ts": "11:13"
+    },
+    "RBLX": {
+      "precio": 50.62,
+      "mom_15m": 0.367,
+      "mom_30m": 0.456,
+      "vol_ratio": 0.32,
+      "vwap_dev": 0.201,
+      "rsi": 63.7,
+      "señal": "debil_alcista",
+      "ts": "11:13"
+    },
+    "SQQQ": {
+      "precio": 40.52,
+      "mom_15m": -0.273,
+      "mom_30m": 0.164,
+      "vol_ratio": 0.04,
+      "vwap_dev": 0.651,
+      "rsi": 79.6,
+      "señal": "debil_bajista",
+      "ts": "11:13"
     }
   },
   "sentinel_signals": [
@@ -20689,7 +20743,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-15T15:03:37.456710+00:00",
+  "ultima_actualizacion": "2026-09-15T15:13:53.041673+00:00",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
@@ -21180,6 +21234,11 @@
       "news": 1,
       "unusual_whales": "pendiente_api_key",
       "fallos_yf": []
+    },
+    "earningswhispers_sentinel": {
+      "ts": "2026-09-15T11:13Z",
+      "ok": false,
+      "detalle": "HTTP 200 pero shell SPA client-side de 96.276 bytes IDENTICA para /stocks/aapl, /stocks/dell y /stocks/len -> 0 whisperbox. Scraper headless inoperativo desde al menos 08-sep. Requiere renderer JS o fuente alternativa."
     }
   },
   "ew_pipeline_gha": {
