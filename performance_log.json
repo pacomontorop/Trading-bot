@@ -22692,27 +22692,65 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-15",
-    "hora_utc": "14:38",
-    "min_desde_apertura": 68.4,
+    "hora_utc": "15:37",
+    "min_desde_apertura": 127.6,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
     "ejecutados": [],
     "descartados": [
       "IGV: max posiciones paper 8",
+      "ZS: max posiciones paper 8",
+      "XLC: max posiciones paper 8",
+      "PBR: max posiciones paper 8",
       "VEEA: max posiciones paper 8",
       "DELL: ya en cartera paper",
-      "HPQ: max posiciones paper 8",
+      "NOW: max posiciones paper 8",
       "QCOM: score 5.8<6.0",
-      "IQV: score 5.7<6.0",
+      "QRVO: score 5.8<6.0",
       "USO: score 5.6<6.0",
-      "QRVO: score 4.9<6.0",
       "SWKS: score 4.7<6.0"
     ],
     "ajustes_fuentes": {
+      "IGV": {
+        "base": 8.2,
+        "paper": 8.45,
+        "real": 8.2,
+        "partes": {
+          "opciones": 0.25
+        }
+      },
+      "ZS": {
+        "base": 7.5,
+        "paper": 8.4,
+        "real": 7.5,
+        "partes": {
+          "analistas": 0.8,
+          "opciones": 0.25,
+          "sector": -0.15
+        }
+      },
+      "XLC": {
+        "base": 8.0,
+        "paper": 8.25,
+        "real": 8.0,
+        "partes": {
+          "opciones": 0.25
+        }
+      },
+      "PBR": {
+        "base": 5.83,
+        "paper": 6.88,
+        "real": 5.83,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.5,
+          "sector": 0.4
+        }
+      },
       "VEEA": {
-        "base": 7.87,
-        "paper": 7.32,
-        "real": 7.32,
+        "base": 7.41,
+        "paper": 6.86,
+        "real": 6.86,
         "partes": {
           "corto": -0.4,
           "sector": -0.15
@@ -22729,13 +22767,13 @@
           "sector": -0.15
         }
       },
-      "HPQ": {
+      "NOW": {
         "base": 5.56,
-        "paper": 6.21,
+        "paper": 6.11,
         "real": 5.56,
         "partes": {
-          "analistas": 0.3,
-          "opciones": 0.5,
+          "analistas": 0.45,
+          "opciones": 0.25,
           "sector": -0.15
         }
       },
@@ -22749,18 +22787,10 @@
           "sector": -0.4
         }
       },
-      "IQV": {
-        "base": 5.56,
-        "paper": 5.71,
-        "real": 5.56,
-        "partes": {
-          "sector": 0.15
-        }
-      },
       "QRVO": {
-        "base": 5.56,
-        "paper": 4.86,
-        "real": 4.86,
+        "base": 6.48,
+        "paper": 5.78,
+        "real": 5.78,
         "partes": {
           "analistas": -0.3,
           "sector": -0.4
@@ -22781,82 +22811,82 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-15T14:38Z",
+    "ts": "2026-09-15T15:37Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.96,
-      "fear_greed": 29.8,
+      "credito_hyg_ief_20": 0.85,
+      "fear_greed": 29.1,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
-      "cnn_fear_greed": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 146,
-        "ultimo_error": null
-      },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 230,
+        "ms": 316,
+        "ultimo_error": null
+      },
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 329,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 94955,
+        "ms": 95776,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 1822,
+        "ms": 4348,
         "ultimo_error": null
       },
       "insiders_sec": {
         "ok": 0,
-        "fallos": 9,
+        "fallos": 11,
         "ms": 0,
         "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
       },
       "insiders_nasdaq": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 21540,
+        "ms": 23008,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 922,
+        "ms": 2138,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 1181,
+        "ms": 2583,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 394,
+        "ms": 528,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 9,
+        "ok": 11,
         "fallos": 0,
-        "ms": 1804,
+        "ms": 2049,
         "ultimo_error": null
       }
     }
