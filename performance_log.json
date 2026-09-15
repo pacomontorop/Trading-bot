@@ -23016,40 +23016,43 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-15",
-    "hora_utc": "16:38",
-    "min_desde_apertura": 188.0,
+    "hora_utc": "17:37",
+    "min_desde_apertura": 247.8,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
     "ejecutados": [],
     "descartados": [
-      "IGV: max posiciones paper 8",
       "ZS: max posiciones paper 8",
+      "CRWD: max posiciones paper 8",
       "XLC: max posiciones paper 8",
-      "VEEA: max posiciones paper 8",
-      "NOW: max posiciones paper 8",
+      "IGV: max posiciones paper 8",
       "ILMN: max posiciones paper 8",
+      "VEEA: max posiciones paper 8",
       "MPC: max posiciones paper 8",
       "USO: max posiciones paper 8",
       "GIS: max posiciones paper 8",
       "BWIN: score 5.9<6.0",
+      "SWKS: score 5.9<6.0",
       "QRVO: score 5.8<6.0",
-      "SWKS: score 5.6<6.0",
-      "CRWD: score 5.6<6.0"
+      "DELL: score 5.6<6.0"
     ],
     "ajustes_fuentes": {
-      "IGV": {
-        "base": 8.2,
-        "paper": 8.45,
-        "real": 8.2,
+      "ZS": {
+        "base": 7.8,
+        "paper": 8.95,
+        "real": 7.8,
         "partes": {
-          "opciones": 0.25
+          "analistas": 0.8,
+          "opciones": 0.5,
+          "sector": -0.15
         }
       },
-      "ZS": {
-        "base": 7.5,
-        "paper": 8.4,
-        "real": 7.5,
+      "CRWD": {
+        "base": 8.1,
+        "paper": 8.7,
+        "real": 8.1,
         "partes": {
+          "insiders": -0.3,
           "analistas": 0.8,
           "opciones": 0.25,
           "sector": -0.15
@@ -23057,29 +23060,18 @@
       },
       "XLC": {
         "base": 8.0,
+        "paper": 8.5,
+        "real": 8.0,
+        "partes": {
+          "opciones": 0.5
+        }
+      },
+      "IGV": {
+        "base": 8.0,
         "paper": 8.25,
         "real": 8.0,
         "partes": {
           "opciones": 0.25
-        }
-      },
-      "VEEA": {
-        "base": 7.87,
-        "paper": 7.32,
-        "real": 7.32,
-        "partes": {
-          "corto": -0.4,
-          "sector": -0.15
-        }
-      },
-      "NOW": {
-        "base": 6.48,
-        "paper": 7.03,
-        "real": 6.48,
-        "partes": {
-          "analistas": 0.45,
-          "opciones": 0.25,
-          "sector": -0.15
         }
       },
       "ILMN": {
@@ -23091,6 +23083,15 @@
           "analistas": 0.4,
           "opciones": 0.5,
           "sector": 0.4
+        }
+      },
+      "VEEA": {
+        "base": 7.41,
+        "paper": 6.86,
+        "real": 6.86,
+        "partes": {
+          "corto": -0.4,
+          "sector": -0.15
         }
       },
       "MPC": {
@@ -23119,6 +23120,17 @@
           "sector": 0.15
         }
       },
+      "SWKS": {
+        "base": 6.48,
+        "paper": 5.88,
+        "real": 5.88,
+        "partes": {
+          "analistas": -0.3,
+          "opciones": 0.5,
+          "corto": -0.4,
+          "sector": -0.4
+        }
+      },
       "QRVO": {
         "base": 6.48,
         "paper": 5.78,
@@ -23127,30 +23139,19 @@
           "analistas": -0.3,
           "sector": -0.4
         }
-      },
-      "SWKS": {
-        "base": 6.48,
-        "paper": 5.63,
-        "real": 5.63,
-        "partes": {
-          "analistas": -0.3,
-          "opciones": 0.25,
-          "corto": -0.4,
-          "sector": -0.4
-        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-15T16:38Z",
+    "ts": "2026-09-15T17:37Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.93,
-      "fear_greed": 29.5,
+      "credito_hyg_ief_20": 0.95,
+      "fear_greed": 29.4,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -23158,25 +23159,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 242,
+        "ms": 184,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 441,
+        "ms": 357,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95170,
+        "ms": 95097,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
         "ok": 12,
         "fallos": 0,
-        "ms": 3515,
+        "ms": 2724,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -23194,45 +23195,33 @@
       "insiders": {
         "ok": 12,
         "fallos": 0,
-        "ms": 34322,
+        "ms": 33840,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1806,
+        "ms": 1308,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 12,
         "fallos": 0,
-        "ms": 2480,
+        "ms": 1964,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1627,
+        "ms": 1034,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 12,
         "fallos": 0,
-        "ms": 2971,
+        "ms": 985,
         "ultimo_error": null
       }
-    },
-    "multi_source_intel": {
-      "ts": "2026-09-15T17:05:52.610812+00:00",
-      "yfinance": true,
-      "sec_edgar": true,
-      "yahoo_rss": true,
-      "unusual_whales": false,
-      "news_signals": [
-        "Offshore Oil Stocks Rally While the Broad Market Slips: Transocean Climbs 6%, Valaris Rises 6%, W&amp;T Offshore Gains 6%",
-        "Smartphone Chip Stocks Rally While Large-Cap Technology Slips: Skyworks Jumps 11%, Qorvo Rises 7%, Qualcomm Climbs 4%",
-        "Costco rations Kirkland motor oil, raises price to $57.99"
-      ]
     }
   }
 }
