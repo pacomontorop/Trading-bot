@@ -1940,15 +1940,17 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-08T15:13",
+      "timestamp": "2026-09-15T10:15",
       "nivel": "alerta",
-      "macro_score": -1.3,
       "shocks": [],
-      "bloquear_entradas": false,
+      "bloquear_entradas": true,
+      "motivo_bloqueo": "FOMC 16-sep + calendario EW vacio",
+      "vix": 16.96,
+      "spy_chg": -0.35,
+      "us10y": 5.0,
+      "wti": 103.37,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 8.5,
-      "lectura": "VIX 15.49 (+1.24% dia, +1.24% en 30m), SPY -0.42% dia (+0.11% en 30m) => sin shock intradia. Regimen de fondo oil_spike PERSISTENTE (no nuevo): Brent $98.62 (+2.43%), WTI $93.59 (+2.31%), 6o dia consecutivo de subida tras intercambio de golpes EE.UU.-Iran en Hormuz y ataques houthies a instalaciones saudies (Arabia detuvo operaciones en su region sur). Suma escalada arancelaria EE.UU.-Canada. US10Y 4.81% (+0.50%), US30Y 5.27%. Miedo a subida de tipos de la Fed este mes tras el informe de empleo fuerte del viernes. Sectores: energy +1.32% y utilities +1.29% lideran; healthcare -2.20% y financials -1.12% rezagados; tech +0.48%. Mag7 24h: TSLA +4.28%, NVDA -2.04%, MSFT -1.75% => ninguno supera umbral 6% de earnings-sorpresa. Futuros ES -0.43% / NQ +0.04% / YM -1.15%. Intl: Nikkei +2.12%, HSI -0.93%. Conclusion: alerta, NO shock. Los macro-plays XOM/CVX de las 10:12 ET ya capturan el tema oil; no se reabre playbook.",
-      "shock_tipo_regimen": "oil_spike_persistente"
+      "score_min_real_efectivo": 99.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -13679,6 +13681,17 @@
       "macro_score": -1.3,
       "nota": "Martes 15:15 ET. PASO 1: XOM(6sh,-0.58%) y CVX(5sh,-1.10%) con bracket stop vivo (156.74/206.59) -> sin intervencion. Cripto paper (BTC/ETH/SOL) con stop_limit standalone vivos; tiene_stop da falso negativo porque la posicion se lista como BTCUSD y la orden como BTC/USD -> revisar normalizacion de simbolo. Real: solo BTCUSD $0.65 (<$50, ignorable). PASO 2: 40 noticias, 0 negativas sobre cartera; LMT upgrade UBS a Buy PT $674. PASO 3: EarningsWhispers SIGUE CAIDO 3er ciclo seguido - old.earningswhispers.com hace timeout y www. sirve shell SPA de 96KB identica para /stocks/{tk} y /api/* => 0 senales EW. Fallback WebSearch: earnings de hoy AH CASY y GME, manana SUNB y COO - ninguno en universo y sin whisper no hay asimetria puntuable. PASO 4C: fuera de ventana AH. PASO 5: 0 ejecuciones (0 candidatos >= 7.5; ademas 15:15 ET desaconseja abrir con earnings overnight). Telegram silenciado por politica (sin trade/cierre/shock/EOD).",
       "ew_scraper_status": "caido_spa_client_side"
+    },
+    {
+      "ts": "2026-09-15T14:15:47.308708+00:00",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 0,
+      "vix": 16.96,
+      "macro_nivel": "alerta",
+      "macro_score": -0.9,
+      "nota": "Martes 10:10 ET. SIN EJECUCIONES. (1) Calendario EW vacio: Sep16=3BMO/5AMC (LUXE, LEN), Sep17=1BMO; temporada real arranca 24-sep -> 0 senales EW validas. (2) Bloqueo propio de entradas 15-16 sep por FOMC (~70% prob. subida tipos) sigue vigente. (3) Macro: 10Y=5.00% (maximo desde 2007), WTI $103 (+1.95%) por Hormuz/pipeline saudi, energia +1.4% lider, cons_disc -1.1%; VIX 16.96 sin spike, SPY -0.35% -> alerta, no shock. (4) ALERTA ABIERTA: CRM/NFLX/RBLX/SQQQ (~$35.9k, 33% equity paper) sin stop, solo limit TP. Posiciones del bot -> REGLA 2, no se interviene sin emergencia. Cuenta real sin exposicion (solo polvo BTC $0.63). El agente no coloco ordenes: ejecucion de operaciones queda para confirmacion manual del usuario."
     }
   ],
   "momentum_15m": {
