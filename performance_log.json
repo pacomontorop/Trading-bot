@@ -23081,23 +23081,24 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-15",
-    "hora_utc": "17:37",
-    "min_desde_apertura": 247.8,
+    "hora_utc": "17:48",
+    "min_desde_apertura": 258.2,
     "real_activa": true,
     "real_motivo": "forzado ON en risk_limits.json",
     "ejecutados": [],
     "descartados": [
       "ZS: max posiciones paper 8",
       "CRWD: max posiciones paper 8",
-      "XLC: max posiciones paper 8",
       "IGV: max posiciones paper 8",
+      "XLC: max posiciones paper 8",
       "ILMN: max posiciones paper 8",
       "VEEA: max posiciones paper 8",
-      "MPC: max posiciones paper 8",
+      "VLO: max posiciones paper 8",
       "USO: max posiciones paper 8",
       "GIS: max posiciones paper 8",
       "BWIN: score 5.9<6.0",
       "SWKS: score 5.9<6.0",
+      "MPC: score 5.8<6.0",
       "QRVO: score 5.8<6.0",
       "DELL: score 5.6<6.0"
     ],
@@ -23123,15 +23124,15 @@
           "sector": -0.15
         }
       },
-      "XLC": {
+      "IGV": {
         "base": 8.0,
-        "paper": 8.5,
+        "paper": 8.25,
         "real": 8.0,
         "partes": {
-          "opciones": 0.5
+          "opciones": 0.25
         }
       },
-      "IGV": {
+      "XLC": {
         "base": 8.0,
         "paper": 8.25,
         "real": 8.0,
@@ -23159,7 +23160,7 @@
           "sector": -0.15
         }
       },
-      "MPC": {
+      "VLO": {
         "base": 5.83,
         "paper": 6.68,
         "real": 5.83,
@@ -23170,9 +23171,10 @@
       },
       "GIS": {
         "base": 6.0,
-        "paper": 6.15,
+        "paper": 6.4,
         "real": 6.0,
         "partes": {
+          "opciones": 0.25,
           "sector": 0.15
         }
       },
@@ -23195,27 +23197,18 @@
           "corto": -0.4,
           "sector": -0.4
         }
-      },
-      "QRVO": {
-        "base": 6.48,
-        "paper": 5.78,
-        "real": 5.78,
-        "partes": {
-          "analistas": -0.3,
-          "sector": -0.4
-        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-15T17:37Z",
+    "ts": "2026-09-15T17:48Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.95,
+      "credito_hyg_ief_20": 0.94,
       "fear_greed": 29.4,
       "regimen": "neutral",
       "ajuste": 0.0
@@ -23224,25 +23217,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 184,
+        "ms": 222,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 357,
+        "ms": 523,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95097,
+        "ms": 95280,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
         "ok": 12,
         "fallos": 0,
-        "ms": 2724,
+        "ms": 3665,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -23260,31 +23253,31 @@
       "insiders": {
         "ok": 12,
         "fallos": 0,
-        "ms": 33840,
+        "ms": 26963,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1308,
+        "ms": 1932,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1964,
+        "ms": 2321,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1034,
+        "ms": 1636,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 12,
         "fallos": 0,
-        "ms": 985,
+        "ms": 2372,
         "ultimo_error": null
       }
     }
