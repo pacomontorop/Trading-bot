@@ -13877,6 +13877,26 @@
       "nota": "Sentinel en modo solo-lectura: sin ordenes ejecutadas. Todas las posiciones con stop activo. Bloqueo de nuevas entradas por FOMC 16-sep. Earnings relevantes: solo LEN 16-sep AH.",
       "equity_paper": 107761.19,
       "equity_real": 4548.11
+    },
+    {
+      "ts": "2026-09-15T20:12:00.108876+00:00",
+      "ts_et": "2026-09-15T16:12",
+      "modo": "standby_mercado_cerrado",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": null,
+      "equity_paper": 107638.07,
+      "equity_real": 4548.11,
+      "posiciones_bot_sin_stop": [
+        "CRM",
+        "NFLX",
+        "RBLX",
+        "SQQQ"
+      ],
+      "telegram_enviado": false,
+      "nota": "Martes 16:10-16:15 ET, MERCADO CERRADO (cierre 16:00). Ciclo en STANDBY por diseno del PASO 0 (no weekend, no pre-open) -> sin ejecucion de pasos intraday. Auditoria de solo lectura realizada igualmente. PAPER equity $107,638.07 (vs $107,761.19 a 13:30 ET, -0.11% en la tarde), 10 posiciones. Stops vivos: AAPL 322.82, CVX 207.50, DELL 519.31, XOM 164.86 (trail de esta manana intacto). SIN stop de proteccion: CRM, NFLX, RBLX, SQQQ -> las 4 son del BOT y solo tienen limit de take-profit vivo (CRM 438.13, NFLX 119.39, RBLX 78.33, SQQQ 60.20); REGLA 2 = sin intervencion, pero queda registrado como riesgo overnight recurrente (4 posiciones bot ~$36k sin stop). ETHUSD/SOLUSD polvo sin valor. REAL: solo BTCUSD $0.63 (<$50), 0 ordenes abiertas, sin riesgo. COWORK abiertas=2 (XOM +4.77%, CVX +2.17%); DELL -3.52% ahora clasificado como bot por ausencia de client_order_id COWORK en ordenes vivas. PASO 4C AH: calendario EW 15-sep solo 6 tickers, AMC = TCOM y EPM (micro/foreign, fuera de universo) -> 0 continuation plays. 16-sep: LEN AMC (cons 1.29 / whisper 1.28, asimetria -0.78% NEGATIVA, descartado), resto micro-caps. Temporada EW sigue vacia hasta 23-24 sep (GIS 23-sep BMO +2.78%, COST 24-sep AMC +0.93%). 0 ordenes enviadas. Telegram silenciado (sin trade, sin cierre, sin shock, fuera de ventana EOD 16:40-17:05). Recordatorio: bloqueo de nuevas entradas por FOMC vence tras la decision de manana 16-sep 14:00 ET."
     }
   ],
   "momentum_15m": {
