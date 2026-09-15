@@ -18650,6 +18650,104 @@
         "avgEPSMove viene None en getstocksdata para todos los tickers -> BLOQUE C calculado con yfinance (media |move| D+1 de los ultimos 8 earnings).",
         "Ejecucion automatica de ordenes NO realizada por decision del operador de la sesion; el scan entrega analisis y registro. Ninguna senal superaba el umbral, por lo que no hay divergencia de resultado."
       ]
+    },
+    {
+      "fecha": "2026-09-15",
+      "ts": "2026-09-15T14:26:25Z",
+      "tarea": "pre-market-earnings-scan",
+      "modo": "HEADLESS",
+      "mercado": "abierto, ~10:25 ET al inicio del scan",
+      "macro": {
+        "vix": 17.1,
+        "vix_chg_1d": 0.05,
+        "spy": 757.27,
+        "spy_5d_pct": -0.67,
+        "macro_score": 0.0,
+        "macro_bonus": 0.0,
+        "regimen": "BULL_CONSOLIDACION",
+        "sectores_1d_pct": {
+          "XLK": -0.08,
+          "XLF": -0.64,
+          "XLV": -0.56,
+          "XLE": 1.51,
+          "XLY": -1.21,
+          "XLI": -0.56,
+          "XLU": -0.24,
+          "XLB": -0.14,
+          "XLRE": -0.25,
+          "XLC": -0.96,
+          "IGV": -1.39
+        }
+      },
+      "cuentas": {
+        "paper_equity": 107645.34,
+        "paper_cash": 52620.59,
+        "paper_posiciones": 10,
+        "paper_ordenes_abiertas": 9,
+        "real_equity": 4548.11,
+        "real_cash": 4547.48,
+        "real_posiciones": 1
+      },
+      "universo": {
+        "fuente_calendario": "Nasdaq API (EW headless devuelve pagina generica sin whisper -> inutilizable)",
+        "hoy_15sep": 17,
+        "manana_16sep": 23,
+        "d2_17sep": 14,
+        "liquidos_evaluados": [
+          "TCOM",
+          "LEN",
+          "HUBG",
+          "VFS"
+        ],
+        "nota": "Ventana muerta del calendario entre Q2 y Q3. Ningun large-cap relevante."
+      },
+      "candidatos_puntuados": [
+        {
+          "ticker": "TCOM",
+          "earnings": "2026-09-15 AH",
+          "mcap_bn": 24.7,
+          "beat_rate": 75,
+          "rec": "buy",
+          "skip": "REGLA_D1_earnings_AH_hoy"
+        },
+        {
+          "ticker": "LEN",
+          "earnings": "2026-09-16 AH",
+          "mcap_bn": 19.1,
+          "beat_rate": 25,
+          "rec": "hold",
+          "skip": "beat_rate_25pct_<60pct (3 de 4 ultimos quarters con miss)"
+        },
+        {
+          "ticker": "HUBG",
+          "earnings": "2026-09-17",
+          "mcap_bn": 2.0,
+          "beat_rate": 100,
+          "rec": "buy",
+          "skip": "no_es_D-1 + sin whisper EW + sector XLI -0.56%"
+        },
+        {
+          "ticker": "VFS",
+          "earnings": "2026-09-17",
+          "mcap_bn": 7.3,
+          "beat_rate": 0,
+          "rec": "none",
+          "skip": "beat_rate_0pct + 4 misses consecutivos"
+        }
+      ],
+      "candidatos_finales": [],
+      "ordenes_ejecutadas": {
+        "paper": 0,
+        "real": 0
+      },
+      "bloqueos_aplicados": [
+        "bloqueo_nuevas_entradas_fechas incluye 2026-09-15 y 2026-09-16 (FOMC, ~70% prob. subida de tipos)",
+        "macro_calendar 2026-09-16 FOMC inicio -> no_entrar_nuevas_posiciones; reanudar tras decision 2026-09-17",
+        "paper con 10 posiciones abiertas > max_posiciones_paper_para_nuevas_entradas=2 (y > max_simultaneas=4)",
+        "sin candidatos con whisper_asymmetry medible (fuente EW caida)"
+      ],
+      "nota": "Cero entradas. Triple bloqueo independiente: calendario macro FOMC, capacidad de cartera excedida, y ausencia de setups EW validos. Sobreexposicion paper (10 pos.) a revisar: excede el limite propio de 4 simultaneas. Reanudar pipeline el 2026-09-17 post-decision Fed.",
+      "ejecutado_por": "Cowork (scan y reporte; ejecucion de ordenes no realizada)"
     }
   ],
   "acciones_pendientes_manana": [
@@ -20673,7 +20771,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-15T13:03:44.840541+00:00",
+  "ultima_actualizacion": "2026-09-15T14:26:25Z",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
