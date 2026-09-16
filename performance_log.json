@@ -18450,6 +18450,78 @@
         "TMO"
       ],
       "nota": "Sin earnings en 14d (temporada arranca fin de octubre). Desempate de momentum por retorno 5d en vez de orden del universo."
+    },
+    {
+      "ts": "2026-09-16T09:06:05.188733+00:00",
+      "fecha": "2026-09-16",
+      "tarea": "multi-source-intel",
+      "run": "2da ejecucion del dia",
+      "universo": 85,
+      "fallos_descarga": 0,
+      "earnings_14d_detectados": {
+        "COST": "2026-09-24"
+      },
+      "earnings_candidatos_validos": 0,
+      "motivo_earnings_0": "COST unico con earnings <=14d pero bajo MA20 y MA50 (px 901.35, 5d -0.1%, 1d -1.9%) -> no pasa filtro above_ma50",
+      "momentum_score>=5": [
+        "CRWD",
+        "QCOM",
+        "AAPL",
+        "NOW",
+        "ZS",
+        "PANW",
+        "TEAM",
+        "DXCM",
+        "DOCS",
+        "SPOT",
+        "RBLX",
+        "DUOL",
+        "XOM",
+        "OXY",
+        "SQQQ"
+      ],
+      "sector_top3": [
+        [
+          "XLC",
+          "Comm",
+          4,
+          2.89
+        ],
+        [
+          "IGV",
+          "Software",
+          4,
+          3.65
+        ],
+        [
+          "XLE",
+          "Energy",
+          3,
+          0.95
+        ]
+      ],
+      "edgar_form4_3d": 100,
+      "edgar_matches_universo": 0,
+      "edgar_nota": "100 Form4 en ventana 3d pero todos micro/small-cap fuera del universo (Blue Dolphin, Evergy, RGC, PetVivo...). Sin senal accionable. Unica nota: Cascade/Gates en Republic Services (RSG) y Gelsinger en Gloo Holdings.",
+      "news_rss": {
+        "titulos": 22,
+        "con_catalizador": 0,
+        "nota": "Yahoo RSS SPY/QQQ sin titulares con keywords earnings/beat/guidance/upgrade"
+      },
+      "unusual_whales": "pendiente API key",
+      "candidatos_nuevos": 0,
+      "decision": "NO-CHURN. El scan reprodujo exactamente XLC(8.0) y QCOM(7.8), que la ejecucion de las 07:06 UTC de hoy ya genero y podo por cap-8 (ver candidatos_descartados_hoy). Re-anadirlos habria expulsado a CRWD(adj 7.1) e IGV(adj 7.0) sin informacion nueva. Se mantiene el book de 8 intacto y solo se refresca regimen_mercado.",
+      "book_sin_cambios": [
+        "RBLX",
+        "PANW",
+        "GIS",
+        "USO",
+        "QRVO",
+        "SWKS",
+        "CRWD",
+        "IGV"
+      ],
+      "telegram_enviado": false
     }
   ],
   "pre_market_scan_log": [
@@ -21600,7 +21672,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-16T07:06:45.809331+00:00",
+  "ultima_actualizacion": "2026-09-16T09:06:05.188733+00:00",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
@@ -21742,8 +21814,8 @@
     "sector_lider": "XLC",
     "score_sector_lider": 4,
     "breadth_sectores_positivos": "3/11",
-    "nota": "Semis debiles (SOXX -6.2% 5d, SMH -5.6%); liderazgo estrecho en Comm/Software. Breadth flojo.",
-    "actualizado": "2026-09-16T07:06:45.809331+00:00"
+    "nota": "Liderazgo estrecho: solo XLC(4) e IGV(4) con score>=4; XLE(3) por energia. Semis debiles (SOXX -6.2% 5d, SMH -5.6%). ALERTA BREADTH: SQQQ con momentum 5/7 (+5.1% 5d) — no se anade como LARGO pero indica presion bajista subyacente.",
+    "actualizado": "2026-09-16T09:06:05.188733+00:00"
   },
   "estudios_cuantitativos": [
     {
