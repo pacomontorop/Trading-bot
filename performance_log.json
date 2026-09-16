@@ -2082,13 +2082,21 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-16T09:15",
+      "timestamp": "2026-09-16T12:16",
       "nivel": "normal",
+      "macro_score": -0.2,
       "shocks": [],
       "bloquear_entradas": true,
-      "motivo": "FOMC 2026-09-16 14:00 ET -- fecha en bloqueo_nuevas_entradas_fechas",
-      "score_min_paper_efectivo": 8.0,
-      "score_min_real_efectivo": 9.0
+      "motivo": "FOMC 14:00 ET 16-sep + politica no-ejecucion",
+      "vix": 16.7,
+      "spy_dia_pct": 0.38,
+      "qqq_dia_pct": 0.79,
+      "wti": 102.25,
+      "brent": 105.34,
+      "yield_10y": 4.96,
+      "sector_lider": "XLK +0.95%",
+      "sector_debil": "XLE -1.96%",
+      "lectura": "Sin shock intradia. Regimen de fondo: guerra EEUU-Iran / Hormuz + pipeline East-West saudi cerrado sigue sosteniendo el crudo, pero HOY hay retroceso (-3.4% WTI) y XLE es el peor sector: la tesis oil_spike que sostiene XOM/CVX se esta enfriando. Yields en maximos desde 2007 (10Y 4.96%, toco 5.00%). Todo el mercado en compas de espera ante el FOMC de las 14:00 ET con dot plot."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2341,7 +2349,13 @@
     "nota_industrials": "industrials bajado +1 -> 0: crudo $100 + aranceles Canada golpean costes de transporte e inputs.",
     "preparacion_semana": "semana del 2026-09-14 — FOMC-driven, sin earnings relevantes",
     "top_candidatos_lunes": [],
-    "shock_tipo_regimen": "oil_spike_geopolitico (regimen de fondo, no shock intradia)"
+    "shock_tipo_regimen": "oil_spike_geopolitico (regimen de fondo, no shock intradia)",
+    "ew_scraper": {
+      "estado": "caido",
+      "ciclos_consecutivos": 5,
+      "detalle": "old.earningswhispers.com timeout; www.* es SPA client-side sin datos en HTML",
+      "ts": "2026-09-16T12:16"
+    }
   },
   "operaciones_crypto": [
     {
@@ -14345,6 +14359,27 @@
       "motivo_bloqueo": "bloqueo_nuevas_entradas_fechas=2026-09-16 (FOMC 14:00 ET, ~93% prob. subida 25pb) + pre-apertura",
       "ew_scraper_status": "caido_spa_client_side_4o_ciclo",
       "nota": "Miercoles 16-sep 09:15-09:25 ET (PRE-APERTURA, mercado abre 09:30). PASO 0: paper equity $107.576, real $4.548. PASO 1: 10 posiciones paper -- AAPL(bot,stop 322.82), CRM(bot,bracket 236.87), CVX(cowork,stop 207.50,+1.07%), DELL(cowork,stop 519.31,-2.44%), NFLX(bot,bracket 75.61), RBLX(bot,bracket 44.75,+5.12%), SQQQ(bot,bracket 38.88), XOM(cowork,stop 164.86,+3.84%) TODAS CON STOP VIVO. Solo dust crypto sin stop (ETHUSD $0.15, SOLUSD $0.00) y REAL BTCUSD $0.63 -- <$50, ignorables. cowork_abiertas=3/4. Earnings check: ninguna posicion tiene earnings hoy ni manana (proximas AAPL/RBLX/QCOM 29-oct, CVX/XOM 30-oct) -> 0 riesgo de gap overnight por resultados. PASO 2: 50 noticias, 0 negativas sobre cartera. Tema dominante: crudo $106 (maximo 5 meses, guerra Iran), diesel en record, 10y toco 5,04% (maximo desde 2007). POS: RBLX subidas de precio objetivo; CVX/XOM/USO 'como operar la crisis del petroleo'. PASO 3: EarningsWhispers CAIDO por 4o ciclo consecutivo -- old.earningswhispers.com y www. devuelven la MISMA shell SPA de 96KB para cualquier ruta (/stocks/{tk}, /calendar, /api/*); 0 whisper extraible. Scraper headless inservible hasta rediseno. PASO 3B: momentum premarket plano (volumen x1.0, sin señal util); nada ALCISTA ni BAJISTA confirmado. PASO 4 WebSearch: FOMC HOY 14:00 ET, ~93% probabilidad de SUBIDA de 25pb a 3,75-4,00% -- primera subida desde 2023; rueda de prensa 14:30. Solo 10 earnings en todo el dia (semana vacia). PASO 4B: macro NORMAL. Futuros ES +1,13% NQ +1,44% YM +0,95% RTY +0,94%; SPY premarket +0,32%, QQQ +0,54%; VIX 16,72 (-2,8%, muy por debajo del bloqueo 28); oro +1,28% ($4.389); crudo RETROCEDE -1,82% a $103,90; 10y 4,98%; XLE -1,2% (energia corrige con el crudo). Sin shock: ningun Mag7 >6%, sin spike VIX, sin caida SPY. macro_score=+0,80. PASO 5: 0 EJECUCIONES -- DECISION CORRECTA Y DOBLEMENTE MOTIVADA: (1) bloqueo_nuevas_entradas_fechas incluye explicitamente 2026-09-16 por FOMC, regla 'dia de CPI o FOMC: prohibido abrir antes de la publicacion'; (2) pre-apertura = modo scan sin ejecucion. Ademas 0 candidatos EW por scraper caido. Riesgo real de la sesion: no es direccional sino de volatilidad post-14:00. Las 3 cowork (XOM/CVX energia + DELL) llevan stop vivo; XOM tiene el stop en 164,86 = +2% sobre entrada (break-even bloqueado), a solo 1,8% del precio -- si el crudo sigue corrigiendo puede saltar hoy, salida limpia en verde. Telegram silenciado por politica (sin trade/cierre/shock/EOD/real-sin-stop)."
+    },
+    {
+      "ts": "2026-09-16T16:16:11.141059+00:00",
+      "ts_et": "2026-09-16T12:16",
+      "alertas": 3,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "vix": 16.7,
+      "macro_nivel": "normal",
+      "macro_score": -0.2,
+      "modo": "intradia_mercado_abierto",
+      "ejecucion_bloqueada": true,
+      "motivo_bloqueo": "bloqueo_nuevas_entradas_fechas=2026-09-16 (FOMC 14:00 ET, ~92% prob subida 25pb a 3.75-4.00%) + politica agente no-ejecucion",
+      "ew_scraper_status": "caido_spa_client_side_5o_ciclo",
+      "equity_paper": 107210.27,
+      "equity_real": 4548.11,
+      "telegram_enviado": true,
+      "hallazgo_critico": "regresion_stops_barrido_uuid: XOM 164.86->156.74 (16-sep 14:06Z, bajo entry 161.59); DELL 565.87->519.31 (14-sep 13:35Z). Falta guardia monotonica de stops.",
+      "falso_positivo_resuelto": "CRM/NFLX/RBLX/SQQQ tienen stop vivo (pata OCO en status=held), no estan desprotegidas",
+      "nota": "Miercoles 16-sep 12:10-12:35 ET. MERCADO ABIERTO. SIN EJECUCIONES (bloqueo propio pre-FOMC). PASO 0: paper equity $107.210,27 (cash 53.567), real $4.548,11 (sin posiciones, solo polvo). PASO 1: 10 posiciones paper, 8 con equity real + 2 polvo crypto (ETHUSD/SOLUSD qty~0, $0.00). TODAS con stop vivo: AAPL 322.82(PROTECT), CRM 236.87(leg held), CVX 207.50, DELL 519.31, NFLX 75.61(leg held), RBLX 44.75(leg held), SQQQ 38.88(leg held), XOM 156.74. ACLARACION vs auditoria 15-sep EOD: CRM/NFLX/RBLX/SQQQ NO estan sin stop -- son brackets OCO GHA-20260914-* cuya pata stop_limit figura en status=held (viva); el falso positivo vino de consultar solo status=open. Cowork=2/4 (XOM cid COWORK-MACRO-OIL_SP-B-20260908, CVX); DELL reclasificada BOT (cid GHA-20260911-DELL), no consume slot Cowork. *** HALLAZGO CRITICO -- REGRESION DE STOPS *** Una rutina de barrido (ordenes con cid UUID plano) esta SOBRESCRIBIENDO HACIA ABAJO los stops ya trailed: (a) XOM historial 158 -> 161.75 -> 164.86 (trail Cowork 15-sep 16:16Z, +0.67R bloqueado) y HOY 16-sep 14:06Z reemplazado por 156.74, es decir -8.12 y POR DEBAJO del entry 161.59; con precio 164.74 (+1.95%) se ha regalado la proteccion de ~$49 y el trade puede pasar de +1.95% a -3.0%. (b) DELL 565.87 (PROTECT 11-sep 19:59Z) -> 519.31 (14-sep 13:35Z), stop 8% ancho sobre una posicion en +1.08% con entry 564.75. Conviven dos gestores de stop en conflicto: PROTECT.* (aprieta) vs barrido UUID (ensancha). ACCION RECOMENDADA AL USUARIO (no ejecutada por politica): restaurar XOM a 164.86 y DELL a ~565 antes de las 14:00 ET, y anadir guardia monotonica (nunca bajar un stop existente). PASO 2: 40 noticias / 15 tickers, 0 criticas negativas sobre posiciones. Contexto: crudo en retroceso (WTI 102.25 -3.38%, Brent 105.34 -3.14%, USO -3.31%) tras el pico del 15-sep; XLE -1.96% peor sector -> la tesis oil_spike de XOM/CVX se enfria, vigilar. PASO 3: 0 senales EW. Scraper EarningsWhispers CAIDO 5o ciclo consecutivo (old.* timeout; www.* devuelve SPA client-side 114KB sin whisperbox ni tweeturl). Calendario off-cycle: solo 7 empresas hoy (LEN, LUXE, ISPR, ALMU, RZLT AMC) -- ningun candidato liquido. Ninguna posicion abierta tiene earnings hoy/manana -> sin riesgo de gap overnight. Temporada real arranca 24-sep (COST). PASO 3B: momentum plano y volumen seco pre-FOMC (vol x0.2-0.5 en todo el libro): AAPL/CRM/RBLX/SPY/QQQ LATERAL, CVX/XOM/XLE/SQQQ debil_alcista, DELL/NFLX debil_bajista. Ninguna senal de timing. PASO 4B: SIN SHOCK. VIX 16.70 (-2.91% dia, -0.12% en 30m), SPY +0.38% (-0.04% en 30m), QQQ +0.79%. Mag7 24h todas dentro de +-2% (META +1.74%, NVDA +1.58%, TSLA +1.30%, MSFT -1.12%). macro_nivel=normal. EVENTO BINARIO HOY: FOMC 14:00 ET + dot plot + rueda de prensa 14:30 ET, con ~92-93% probabilidad de subida de 25pb a 3,75-4,00% (giro hawkish de Warsh en Jackson Hole 28-ago + empleo solido de agosto). 10Y 4.96% tras tocar 5.00% ayer, maximo desde 2007. Bloqueo de nuevas entradas fecha 2026-09-16 CONFIRMADO Y MANTENIDO. PASO 6B: macro_score -0.2 (futuros/tech +0.8; TLT +0.50% y 10Y>4.5% -0.8; oro +1.17% -0.2; intl -0.05% neutro). Sectores: XLK +0.95% lider, XLI +0.87%, XLE -1.96% farolillo rojo. Intl: DAX +0.53%, FTSE +0.28%, Nikkei -0.01%, HSI -1.00%. PASO 5/7: 0 ordenes enviadas. Politica del agente: no ejecuto ordenes (ni paper ni real) ni en cuenta real; reporto senales para ejecucion manual. Telegram ENVIADO por la regresion de stops (evento accionable y con ventana temporal antes del FOMC)."
     }
   ],
   "momentum_15m": {
