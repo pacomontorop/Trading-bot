@@ -53,8 +53,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-15",
-    "motivo_actualizacion": "Post-market 2026-09-15: (1) causa raiz de 4 posiciones desnudas — el TP limit por el 100% del qty bloquea el stop; se exige OCO y verificacion de stop a los 5 min del fill. (2) El hard gate de score 7.5 no se aplica al scanner GHA: 6/8 entradas por debajo. (3) El bonus macro ya no puede desbloquear el runup override.",
+    "ultima_actualizacion": "2026-09-16",
+    "motivo_actualizacion": "Post-market 2026-09-16: (1) NUEVO filtro_liquidez_calidad — pre-filtro duro precio>=$5 y $volumen>=5M/dia, tras detectar MEDS(8,15) y RETO(7,41) puntuados como candidatos fuertes siendo pump-and-dumps sub-$1; RETO -46,9% hoy. (2) Regimen macro a HAWKISH_FED_TIGHTENING_CONFIRMED tras subida de 25pb de la Fed. (3) Detectado earnings desert hasta octubre: el motor EW no tiene combustible, se prohibe rebajar el gate para compensar.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -251,10 +251,7 @@
     "kpi_universo_equity_only": true,
     "stop_min_dist_atr_mult": 1,
     "stop_min_dist_regla": "Ningun stop puede estar a <1.0xATR14 del precio mientras R_actual<1.0. Break-even solo tras 1.0R. Trailing ceñido solo tras 1.5R.",
-    "bloqueo_nuevas_entradas_fechas": [
-      "2026-09-15",
-      "2026-09-16"
-    ],
+    "bloqueo_nuevas_entradas_fechas": [],
     "tp_order_class_requerido": "oco",
     "prohibido_tp_limit_full_qty": true,
     "regla_tp_no_bloquea_stop": "PROHIBIDO enviar una orden sell LIMIT de take-profit por el 100% del qty de una posicion sin stop asociado. Alpaca reserva el qty en la orden abierta y rechaza cualquier stop posterior por qty insuficiente, dejando la posicion desnuda. El TP y el SL deben ir SIEMPRE juntos: bracket en la entrada, u order_class='oco' (take_profit+stop_loss) despues del fill. Si una posicion ya tiene un TP limit huerfano: cancelar el TP, colocar el OCO completo.",
@@ -271,7 +268,36 @@
     "gate_score_bloqueo_duro_todas_las_fuentes": true,
     "_evidencia_gate_2026_09_15": "6 de 8 entradas del 11-14 sep se ejecutaron por debajo del hard_gate_score_minimo_entrada=7.5: QCOM=6.75, AAPL=6.32, QRVO=6.05, RBLX=7.33, CRM=7.13, SQQQ=6.98. Tier <7.0 en las ultimas 20 cerradas: n=15, WR 33,3%, P&L medio -0,74%. sizing_por_conviction.tier_bajo_7.5 ya marca multiplicador 0 (PROHIBIDO) — el bot no lo lee.",
     "macro_bonus_no_cuenta_para_runup_override": true,
-    "_evidencia_runup_override": "USO 15-sep: score bruto 7,22 (momentum) + bonus energia +2 = 9,22 ajustado, por encima de score_runup_override=8,5, lo que habilitaria la entrada pese a un runup 5d de +10,9% (limite 8%). El override debe medirse sobre el score bruto, no sobre el score con bonus sectorial."
+    "_evidencia_runup_override": "USO 15-sep: score bruto 7,22 (momentum) + bonus energia +2 = 9,22 ajustado, por encima de score_runup_override=8,5, lo que habilitaria la entrada pese a un runup 5d de +10,9% (limite 8%). El override debe medirse sobre el score bruto, no sobre el score con bonus sectorial.",
+    "filtro_liquidez_calidad": {
+      "activado": true,
+      "implementado": "2026-09-16",
+      "regla": "PRE-FILTRO DURO, se aplica ANTES de cualquier scoring y en TODAS las fuentes (EW, sentinel, scanner GHA, pre-market, market-open). Si un ticker incumple cualquiera de estos criterios se DESCARTA sin puntuar:",
+      "criterios": {
+        "precio_minimo_usd": 5.0,
+        "dollar_volume_mediano_20d_minimo_usd": 5000000,
+        "volumen_acciones_mediano_20d_minimo": 300000,
+        "max_runup_5d_pct": 80,
+        "prohibido_si_volumen_dia_supera_x_mediana": 10
+      },
+      "evidencia": "2026-09-16: el scanner puntuo MEDS 8,15 y RETO 7,41 como 'candidatos fuertes' con accion 'entrar_apertura'. MEDS cotizaba a $0,92 con 595 acciones/dia de volumen medio; RETO a $0,37 con ~3.000 acciones/dia. RESULTADO REAL 16-sep: RETO abrio en $4,28, marco maximo $20,85 y cerro en $1,81 (-46,9% sobre el cierre previo, -91,3% desde el maximo intradia). Una entrada en apertura habria perdido -57,7% en una sesion. MEDS: de $0,92 a maximo $12,31 y cierre $6,07 — mismo patron de pump. Ambos son pump-and-dump de micro-cap sub-$5 sin liquidez. El sistema NO los ejecuto solo porque 'bloqueo_nuevas_entradas_fechas' cubria el 15 y 16 de septiembre por el FOMC. Fue suerte, no control de riesgo.",
+      "impacto_esperado": "Elimina la clase de riesgo de ruina (-50% en una sesion) del universo de candidatos. Coste: cero senales legitimas perdidas — ningun ganador historico del sistema estaba por debajo de $5 o de 300k acciones/dia.",
+      "aplica_a": [
+        "cowork",
+        "sentinel",
+        "pre-market-scan",
+        "market-open-execution",
+        "dynamic_scanner_gha",
+        "live_open_scan",
+        "post-market-review"
+      ]
+    },
+    "prohibido_rebajar_gate_por_falta_de_candidatos": {
+      "activado": true,
+      "implementado": "2026-09-16",
+      "regla": "Durante un earnings desert (0 candidatos con datos EW completos en el calendario de manana) esta PROHIBIDO bajar hard_gate_score_minimo_entrada, min_signal_score o score_min_paper para 'tener algo que operar'. La ausencia de senal es una senal: no operar.",
+      "motivo": "El sesgo de accion es el modo de fallo mas caro de un sistema diario. Un dia sin trade tiene coste 0; un trade forzado tiene esperanza negativa (tier<7,5: n=5, WR 20%, -1,86% medio)."
+    }
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -324,34 +350,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-09-04",
-      "titulo": "Large cap post-earnings: upside topado, downside abierto",
-      "descripcion": "Estudio de 38 earnings liquidos (24-ago/3-sep): large caps >=$10B n=8, media -5.00%, MEJOR resultado de los ocho +3.74%, peor -19.93%. Small caps <$2B n=15, media +0.30%, y contienen la cola ganadora completa (+44.7%, +22.2%, +18.9%). El drift largo post-earnings tiene expectativa negativa en large cap en este regimen.",
-      "accion_correctiva": "Penalizar -1.5 pts a candidatos earnings-drift con mcap>=$10B. Revisar al llegar a n=20.",
-      "tarea_afectada": "pre-market-earnings-scan | sentinel",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-09-04",
-      "titulo": "R0 es el componente que genera el alfa del sistema, no la entrada",
-      "descripcion": "Verificacion de hoy: GWRE cerrada por R0 a 200.84 el 3-sep cerro hoy a 162.42. La regla evito -$1.076 y convirtio -$803 en +$271. AMBA evito $256. Total $1.332 en dos posiciones que NUNCA debieron abrirse (scores 5.5 y 6.0 < umbral 7.5). El sistema gana dinero por su disciplina de SALIDA mientras su gobernanza de ENTRADA sigue rota.",
-      "accion_correctiva": "Mantener R0 inviolable. La prioridad de ingenieria es el gate de entrada del sentinel.",
-      "tarea_afectada": "pre-close-manager | sentinel",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-09-06",
-      "tipo": "RESULTADO",
-      "titulo": "DELL: BEAT +41.4% vs whisper -> sistema confirmado",
-      "descripcion": "Whisper 4.98 vs actual 7.04 (+41.4%)."
-    },
-    {
-      "fecha": "2026-09-06",
-      "tipo": "RESULTADO",
-      "titulo": "SNOW: BEAT +21.6% vs whisper -> sistema confirmado",
-      "descripcion": "Whisper 0.51 vs actual 0.62 (+21.6%)."
-    },
     {
       "fecha": "2026-09-06",
       "tipo": "RESULTADO",
@@ -593,6 +591,38 @@
       "descripcion": "El 10y toco 5,041% (max. desde 2007) y la probabilidad implicita de subida paso de ~70% (11-sep) a ~93%. El VIX solo subio a 17,28: el mercado no esta pagando por cubrirse de un evento binario con rueda de prensa. Asimetria de riesgo desfavorable para abrir direccional.",
       "accion_correctiva": "Mantener bloqueo de entradas el 16-sep. Reabrir el 17-sep con la reaccion ya conocida.",
       "tarea_afectada": "multiple",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "titulo": "CRITICO — El scoring premia pump-and-dumps de micro-cap: MEDS 8,15 y RETO 7,41",
+      "descripcion": "MEDS ($0,92, 595 acc/dia) y RETO ($0,37, 3.000 acc/dia) entraron en candidatos_validados como 'candidatos fuertes' con accion entrar_apertura. Hoy RETO cerro -46,9% (-91,3% desde su maximo intradia de $20,85) y MEDS -50,7% desde su maximo de $12,31. Una entrada en apertura de RETO habria perdido -57,7% en un dia. No se ejecutaron por el bloqueo FOMC del 15-16 sep — suerte, no control de riesgo. Causa raiz: el scoring mide asimetria porcentual y momentum sin ningun filtro de liquidez o precio minimo, y los porcentajes explotan precisamente en los valores manipulables.",
+      "accion_correctiva": "Implementado params['filtro_liquidez_calidad'] — pre-filtro DURO antes de puntuar: precio>=$5, $vol mediano 20d>=$5M, vol>=300k acc, runup 5d<=80%. Aplica a TODAS las fuentes.",
+      "tarea_afectada": "pre-market-earnings-scan | market-open-execution | sentinel | dynamic_scanner_gha",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "titulo": "El scoring infravalora el guidance: FPS puntuo 6,3 con una subida de guia del +20-28% y cerro +11,1%",
+      "descripcion": "Forgent Power Solutions (FPS) reporto el 15-sep AH: EPS $0,24 vs whisper $0,24 (en linea) pero revenue $461,7M vs $425,6M de consenso y guia FY27 de $1,26-$1,40 frente a un consenso de $1,09 (+15% a +28%). Reservo >$1.500M de pedidos en el trimestre, mas que TODA su facturacion anual. Equipamiento electrico para data centers — el tema AI-power. El sistema le dio 6,3 (por debajo del gate 7,5) porque los BLOQUES 1-3 miden asimetria de EPS y el EPS estuvo EN LINEA. Cerro +11,13% hoy con volumen 900k. Espejo exacto del caso MEDS: el scoring recompensa la asimetria de EPS de un penny-stock y castiga una revision de guia del +28% en una empresa real.",
+      "accion_correctiva": "Anadir al scoring un BLOQUE de GUIDANCE con peso propio: revision de guia FY sobre consenso >=+15% -> +2,0 pts; +5 a +15% -> +1,0 pt; guia por debajo de consenso -> -2,0 pts. Fuente: email diario epsguidance@earningswhispers.com (seccion 'Positive Guidance'), ya disponible en Gmail. NO implementado hoy: requiere tocar el bloque de scoring (>5 lineas) y hay 1 solo caso. Recoger 2 casos mas antes de cambiar pesos.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-16",
+      "titulo": "Earnings desert hasta octubre — el motor EW se queda sin combustible ~3 semanas",
+      "descripcion": "Calendario EW verificado via navegador: 17-sep solo IPHA (pre, sin estimaciones) y UPXI (AH, sin estimaciones); 18-sep ninguna; 21-sep ninguna; 22-sep AH solo KBH y WOR; 23-sep ninguna. Con 0 earnings con datos, los BLOQUES 1-3 del scoring (asimetria, beat rate, reaccion historica) puntuan 0 y es estructuralmente imposible que un candidato alcance el hard gate de 7,5.",
+      "accion_correctiva": "Modo preservacion de capital: gestionar las 8 posiciones abiertas, NO forzar entradas. Implementado params['prohibido_rebajar_gate_por_falta_de_candidatos'] para blindar el umbral contra el sesgo de accion. Los dias sin senal se reportan como 'sin senal', no se rellenan.",
+      "tarea_afectada": "multiple",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "titulo": "VALIDADO — La regla OCO evita posiciones desnudas, pero nadie la aplico a las 4 posiciones ya abiertas",
+      "descripcion": "La leccion del 15-sep ('el TP limit por el 100% del qty bloquea el stop') se documento y se anadio regla_tp_no_bloquea_stop, pero las 4 posiciones que YA tenian el TP huerfano (NFLX, CRM, RBLX, SQQQ) siguieron desnudas 24h mas, incluyendo la sesion del FOMC. NFLX llego a -3,87%. Leccion meta: documentar una regla no repara el estado existente. Toda regla nueva necesita un paso de remediacion retroactiva.",
+      "accion_correctiva": "Hoy se remediaron las 4: cancelado el TP limit huerfano y colocado OCO (TP + stop_limit GTC) en cada una. Anadir a intraday-monitor un barrido diario de 'posiciones sin pierna stop viva' en lugar de solo comprobarlo tras un fill.",
+      "tarea_afectada": "intraday-monitor | post-market-review",
       "aplicada": true
     }
   ],
@@ -1626,7 +1656,7 @@
     {
       "ticker": "PANW",
       "symbol": "PANW",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 2,
       "score": 7.5,
       "score_ajustado": 7.5,
@@ -1643,12 +1673,14 @@
       "earnings_date": "2026-11-19",
       "entrada_diferida": true,
       "evento_riesgo": "FOMC 2026-09-16 18:00 UTC",
-      "created_at": "2026-09-16T17:06:37.363087+00:00"
+      "created_at": "2026-09-16T17:06:37.363087+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "DOCS",
       "symbol": "DOCS",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 2,
       "score": 7.5,
       "score_ajustado": 7.5,
@@ -1665,12 +1697,14 @@
       "earnings_date": "2026-11-05",
       "entrada_diferida": true,
       "evento_riesgo": "FOMC 2026-09-16 18:00 UTC",
-      "created_at": "2026-09-16T17:06:37.363087+00:00"
+      "created_at": "2026-09-16T17:06:37.363087+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "CRWD",
       "symbol": "CRWD",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 1,
       "score": 8.1,
       "score_ajustado": 8.1,
@@ -1687,7 +1721,7 @@
       "created_at": "2026-09-15T17:05:03.449639+00:00",
       "sector": "technology",
       "score_macro_bonus": -1,
-      "notas": "| Sector technology prioridad -1 -> score_ajustado 7.1 (2026-09-15)",
+      "notas": "| Sector technology prioridad -1 -> score_ajustado 7.1 (2026-09-15) | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia.",
       "bloqueo_fomc": true,
       "nota_bloqueo": "NO EJECUTAR el 2026-09-16: bloqueo_nuevas_entradas_fechas incluye 2026-09-16 (FOMC ~93% prob. subida). Reevaluar el 17-sep con la reaccion ya conocida.",
       "metricas": {
@@ -1698,12 +1732,13 @@
         "vol_ratio": 1.52
       },
       "refreshed_at": "2026-09-16T11:06:53.256141+00:00",
-      "datos_de": "cierre 2026-09-15 (scan pre-market 07:03 ET)"
+      "datos_de": "cierre 2026-09-15 (scan pre-market 07:03 ET)",
+      "expira": "2026-09-19T20:31:47.214667Z"
     },
     {
       "ticker": "IGV",
       "symbol": "IGV",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 3,
       "score": 8.0,
       "score_ajustado": 8.0,
@@ -1718,12 +1753,14 @@
         "sector_momentum_yfinance"
       ],
       "evento_riesgo": "FOMC_2026-09-17",
-      "created_at": "2026-09-16T15:04:59.657505+00:00"
+      "created_at": "2026-09-16T15:04:59.657505+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "XLC",
       "symbol": "XLC",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 2,
       "score": 8.0,
       "score_ajustado": 8.0,
@@ -1737,12 +1774,14 @@
       "fuentes": [
         "sector_momentum_yfinance"
       ],
-      "created_at": "2026-09-16T13:03:52.260681+00:00"
+      "created_at": "2026-09-16T13:03:52.260681+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "ISRG",
       "symbol": "ISRG",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 3,
       "score": 7.8,
       "score_ajustado": 7.8,
@@ -1757,12 +1796,14 @@
         "momentum_yfinance"
       ],
       "evento_riesgo": "FOMC_2026-09-17",
-      "created_at": "2026-09-16T15:04:59.657505+00:00"
+      "created_at": "2026-09-16T15:04:59.657505+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "QCOM",
       "symbol": "QCOM",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "prioridad": 2,
       "score": 7.8,
       "score_ajustado": 7.8,
@@ -1776,212 +1817,14 @@
       "fuentes": [
         "momentum_yfinance"
       ],
-      "created_at": "2026-09-16T13:03:52.260681+00:00"
+      "created_at": "2026-09-16T13:03:52.260681+00:00",
+      "expira": "2026-09-19T20:31:47.214667Z",
+      "notas": " | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "MEDS",
       "symbol": "MEDS",
-      "estado": "expirado",
-      "score": 8.15,
-      "score_ajustado": 8.15,
-      "score_raw": 8.8,
-      "score_breakdown": {
-        "momentum": 8.0,
-        "news": 0.8,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 5.87,
-      "stop_pct": 0.04,
-      "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+262.4% vol=41.5x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). MEDS: ademas blow-off reversal -4.3%/15min con vol x2.4 -> descarte tecnico correcto."
-    },
-    {
-      "ticker": "RETO",
-      "symbol": "RETO",
-      "estado": "expirado",
-      "score": 7.41,
-      "score_ajustado": 7.41,
-      "score_raw": 8.0,
-      "score_breakdown": {
-        "momentum": 8.0,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 10.27,
-      "stop_pct": 0.04,
-      "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+266.8% vol=8.7x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "DELL",
-      "symbol": "DELL",
-      "estado": "expirado",
-      "score": 6.67,
-      "score_ajustado": 6.67,
-      "score_raw": 7.2,
-      "score_breakdown": {
-        "momentum": 7.0,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0.2
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 565.22,
-      "stop_pct": 0.04,
-      "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+4.0% vol=0.9x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "SMTC",
-      "symbol": "SMTC",
-      "estado": "expirado",
-      "score": 6.48,
-      "score_ajustado": 6.48,
-      "score_raw": 7.0,
-      "score_breakdown": {
-        "momentum": 7.0,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 169.26,
-      "stop_pct": 0.04,
-      "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+12.2% vol=0.7x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "RVTY",
-      "symbol": "RVTY",
-      "estado": "expirado",
-      "score": 6.48,
-      "score_ajustado": 6.48,
-      "score_raw": 7.0,
-      "score_breakdown": {
-        "momentum": 7.0,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 146.24,
-      "stop_pct": 0.04,
-      "tp_pct": 0.08,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+4.3% vol=0.9x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "AMD",
-      "symbol": "AMD",
-      "estado": "expirado",
-      "score": 6.3,
-      "score_ajustado": 6.3,
-      "score_raw": 6.8,
-      "score_breakdown": {
-        "momentum": 6.3,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0.5
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 521.88,
-      "stop_pct": 0.05,
-      "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+3.5% vol=0.7x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "TEM",
-      "symbol": "TEM",
-      "estado": "expirado",
-      "score": 6.02,
-      "score_ajustado": 6.02,
-      "score_raw": 6.5,
-      "score_breakdown": {
-        "momentum": 6.5,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 70.92,
-      "stop_pct": 0.05,
-      "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+3.0% vol=0.6x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "ILMN",
-      "symbol": "ILMN",
-      "estado": "expirado",
-      "score": 6.02,
-      "score_ajustado": 6.02,
-      "score_raw": 6.5,
-      "score_breakdown": {
-        "momentum": 6.5,
-        "news": 0,
-        "insider": 0,
-        "uw": 0,
-        "sector": 0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 230.64,
-      "stop_pct": 0.05,
-      "tp_pct": 0.1,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-16T23:44:52Z",
-      "fuente": "dynamic_scanner_gha",
-      "fecha_scan": "2026-09-16T17:44:52.855682+00:00",
-      "notas": "1d=+3.8% vol=0.9x 52h_dist=0.0%",
-      "motivo_expiracion": "No ejecutado 2026-09-16: gate de max posiciones paper (8 abiertas vs 2 permitidas para nuevas entradas). "
-    },
-    {
-      "ticker": "MEDS",
-      "symbol": "MEDS",
-      "estado": "pendiente",
+      "estado": "descartado_filtro_liquidez",
       "score": 8.15,
       "score_ajustado": 8.15,
       "score_raw": 8.8,
@@ -2000,12 +1843,13 @@
       "expira": "2026-09-17T00:36:55Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+271.6% vol=43.5x 52h_dist=0.0%"
+      "notas": "1d=+271.6% vol=43.5x 52h_dist=0.0% | DESCARTADO 2026-09-16 por filtro_liquidez_calidad (precio<$5, volumen mediano <300k acc). Resultado real 16-sep: cierre $6.065 tras maximo intradia $12.31 (274.38% en el dia). Pump-and-dump.",
+      "fecha_descarte": "2026-09-16"
     },
     {
       "ticker": "RETO",
       "symbol": "RETO",
-      "estado": "pendiente",
+      "estado": "descartado_filtro_liquidez",
       "score": 7.41,
       "score_ajustado": 7.41,
       "score_raw": 8.0,
@@ -2024,12 +1868,13 @@
       "expira": "2026-09-17T00:36:55Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+117.1% vol=9.2x 52h_dist=0.0%"
+      "notas": "1d=+117.1% vol=9.2x 52h_dist=0.0% | DESCARTADO 2026-09-16 por filtro_liquidez_calidad (precio<$5, volumen mediano <300k acc). Resultado real 16-sep: cierre $1.81 tras maximo intradia $20.85 (-46.92% en el dia). Pump-and-dump.",
+      "fecha_descarte": "2026-09-16"
     },
     {
       "ticker": "DELL",
       "symbol": "DELL",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "score": 6.67,
       "score_ajustado": 6.67,
       "score_raw": 7.2,
@@ -2045,17 +1890,17 @@
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+3.5% vol=1.0x 52h_dist=0.0%"
+      "notas": "1d=+3.5% vol=1.0x 52h_dist=0.0% | 2026-09-16: reevaluado bajo regimen HAWKISH_FED_TIGHTENING; sin catalizador de earnings -> degradado a vigilancia."
     },
     {
       "ticker": "SMTC",
       "symbol": "SMTC",
-      "estado": "pendiente",
-      "score": 6.48,
-      "score_ajustado": 6.48,
+      "estado": "vigilar_cauteloso",
+      "score": 6.6,
+      "score_ajustado": 6.6,
       "score_raw": 7.0,
       "score_breakdown": {
         "momentum": 7.0,
@@ -2064,22 +1909,33 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
       "precio_referencia": 169.64,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+12.4% vol=0.8x 52h_dist=0.0%"
+      "notas": "Unico candidato que pasa el gate de runup. Pero +11% en el dia y sin catalizador identificado: vigilar apertura, exigir consolidacion >0,5% sobre apertura a los 15 min. | Reevaluado 2026-09-16: sin earnings, score de fuerza relativa, por debajo del hard gate 7,5 -> NO ejecutable.",
+      "score_total": 6.6,
+      "fecha_reevaluacion": "2026-09-16",
+      "sector": "technology",
+      "argumento": "Semis/data center. +11,13% hoy con volumen 1,7x, y sin embargo runup 5d de solo +2,2% (paso lateral previo) — el unico nombre fuerte que NO viola el gate de runup 5d.",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "solo pullback a MA10 con confirmacion de volumen",
+      "stop_tipo": "ATR x1,5",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     },
     {
       "ticker": "RVTY",
       "symbol": "RVTY",
-      "estado": "pendiente",
-      "score": 6.48,
-      "score_ajustado": 6.48,
+      "estado": "vigilar_cauteloso",
+      "score": 7.0,
+      "score_ajustado": 7.0,
       "score_raw": 7.0,
       "score_breakdown": {
         "momentum": 7.0,
@@ -2088,22 +1944,33 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
       "precio_referencia": 146.57,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+4.5% vol=1.0x 52h_dist=0.0%"
+      "notas": "Runup 5d +17,8% supera max_5day_momentum_pct=10 -> NO entrar en apertura. Solo pullback a MA10 con volumen decreciente. | Reevaluado 2026-09-16: sin earnings, score de fuerza relativa, por debajo del hard gate 7,5 -> NO ejecutable.",
+      "score_total": 7.0,
+      "fecha_reevaluacion": "2026-09-16",
+      "sector": "healthcare",
+      "argumento": "Life-science tools. +4,09% hoy con SPY -0,44% (RS +4,5pp) y +17,8% en 5d con volumen 2,4x la mediana. Rotacion defensiva de crecimiento: XLV fue uno de los dos unicos sectores en verde tras la subida de la Fed.",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "solo pullback a MA10 con confirmacion de volumen",
+      "stop_tipo": "ATR x1,5",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     },
     {
       "ticker": "FPS",
       "symbol": "FPS",
-      "estado": "pendiente",
-      "score": 6.3,
-      "score_ajustado": 6.3,
+      "estado": "vigilar_cauteloso",
+      "score": 6.5,
+      "score_ajustado": 6.5,
       "score_raw": 6.8,
       "score_breakdown": {
         "momentum": 6.0,
@@ -2112,22 +1979,33 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
       "precio_referencia": 35.34,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+12.7% vol=2.0x 52h_dist=0.0%"
+      "notas": "Post-earnings drift de calidad pero extendido. Entrada solo en retroceso a ~$32 (MA10) manteniendo el gap. NO perseguir. | Reevaluado 2026-09-16: sin earnings, score de fuerza relativa, por debajo del hard gate 7,5 -> NO ejecutable.",
+      "score_total": 6.5,
+      "fecha_reevaluacion": "2026-09-16",
+      "sector": "industrials",
+      "argumento": "Forgent Power Solutions: guia FY27 $1,26-1,40 vs consenso $1,09 y >$1.500M de pedidos en el trimestre (mas que su facturacion anual). Equipamiento electrico para data centers. La mejor TESIS del dia, pero +11,13% hoy y +12,4% en 5d.",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "solo pullback a MA10 con confirmacion de volumen",
+      "stop_tipo": "ATR x1,5",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     },
     {
       "ticker": "ILMN",
       "symbol": "ILMN",
-      "estado": "pendiente",
-      "score": 6.02,
-      "score_ajustado": 6.02,
+      "estado": "vigilar_cauteloso",
+      "score": 6.8,
+      "score_ajustado": 6.8,
       "score_raw": 6.5,
       "score_breakdown": {
         "momentum": 6.5,
@@ -2136,22 +2014,33 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
       "precio_referencia": 229.5,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+3.2% vol=1.0x 52h_dist=0.0%"
+      "notas": "Runup 5d +11,7% > 10% -> bloqueado por el gate de runup. Vigilar pullback. | Reevaluado 2026-09-16: sin earnings, score de fuerza relativa, por debajo del hard gate 7,5 -> NO ejecutable.",
+      "score_total": 6.8,
+      "fecha_reevaluacion": "2026-09-16",
+      "sector": "healthcare",
+      "argumento": "Genomica. +3,04% hoy, +11,7% en 5d, volumen 1,7x. Mismo tema de rotacion que RVTY, un escalon por detras en fuerza.",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "solo pullback a MA10 con confirmacion de volumen",
+      "stop_tipo": "ATR x1,5",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     },
     {
       "ticker": "INTC",
       "symbol": "INTC",
-      "estado": "pendiente",
-      "score": 5.83,
-      "score_ajustado": 5.83,
+      "estado": "vigilar_cauteloso",
+      "score": 5.8,
+      "score_ajustado": 5.8,
       "score_raw": 6.3,
       "score_breakdown": {
         "momentum": 5.0,
@@ -2160,27 +2049,38 @@
         "uw": 0,
         "sector": 0.5
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
       "precio_referencia": 102.06,
       "stop_pct": 0.05,
       "tp_pct": 0.1,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-17T00:36:55Z",
+      "expira": "2026-09-19T20:31:47.214667Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-16T18:36:55.941233+00:00",
-      "notas": "1d=+5.1% vol=0.9x 52h_dist=0.0%"
+      "notas": "Sin tesis propia. Descartar salvo catalizador. | Reevaluado 2026-09-16: sin earnings, score de fuerza relativa, por debajo del hard gate 7,5 -> NO ejecutable.",
+      "score_total": 5.8,
+      "fecha_reevaluacion": "2026-09-16",
+      "sector": "technology",
+      "argumento": "+4,02% hoy con volumen normal, pero -4,91% en 5d. Rebote dentro de rango, no tendencia.",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "solo pullback a MA10 con confirmacion de volumen",
+      "stop_tipo": "ATR x1,5",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-15",
+    "fecha_actualizacion": "2026-09-16",
     "semana": "2026-W38",
-    "regimen": "DEFENSIVE_MODE + HAWKISH_FED_HIKE_IMMINENT",
+    "regimen": "HAWKISH_FED_TIGHTENING_CONFIRMED",
     "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "vix": 17.28,
+    "vix": 17.2,
     "yield_spread_10y2y": 0.41,
     "us10y": 5.041,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-15: sesion de espera pre-FOMC con sesgo vendedor. Dow -0.63% (52.093), S&P500 -0.45% (7.585,73), Nasdaq -0.78% (25.981,57). El dato del dia no fue macro sino el tipo largo: el 10y toco 5,041%, maximo desde 2007. El mercado descuenta ~93% de probabilidad de SUBIDA de 25pb en el FOMC de manana (16-sep, 14:00 ET, rueda de prensa 14:30) — sube desde el ~70% del 11-sep y el 59% del 10-sep. VIX 17,28 (+1,05%): el mercado no cubre el evento, lo que amplifica el riesgo de movimiento brusco post-decision. Energia unico sector claramente verde (XLE +2,17%, XOM +2,56%, CVX +2,62%, USO +3,36%) con el crudo sostenido en triple digito. Software/ciber siguen fuertes en relativo (CRWD +3,03%, ZS +1,13%) pero contra un 10y en maximos de 18 anos. Calendario de earnings practicamente vacio: manana solo LEN (AMC), el mismo dia que la decision de tipos.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-16: La Fed SUBIO tipos 25pb a 3,75-4,00% por unanimidad (12-0) — primera subida en mas de tres anos. El dot plot muestra que 16 de 18 miembros esperan OTRA subida este ano. Warsh mantuvo un tono duro sobre inflacion en la rueda de prensa y el mercado giro a la baja durante la misma. Dow -1,07%, S&P500 -0,45%, Nasdaq -0,06%, Russell2000 +0,08%. El 10y vuelve a superar el 5%. Financieras lideraron las caidas (XLF -1,6%); energia se desplomo (XLE -2,87%) pese al contexto geopolitico. Unicos sectores en verde: XLK +0,15% y XLV +0,07%. IMPLICACION: el regimen pasa de 'riesgo de subida' a 'ciclo de subidas confirmado con sesgo a mas'. Duracion larga penalizada; el mercado ya no descuenta recortes. VIX 17,2 — sorprendentemente contenido, lo que sugiere complacencia mas que miedo.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -2194,36 +2094,34 @@
       "WebSearch 2026-09-10: cierre mercado, PPI agosto, KR preview, BKR drop",
       "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos",
       "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)",
-      "WebSearch post-market 2026-09-15 (CNBC/Yahoo/TheStreet/Alphastreet) — Gmail NO disponible (aprobacion denegada), EarningsWhispers NO disponible (navegador sin aprobacion)"
+      "WebSearch post-market 2026-09-15 (CNBC/Yahoo/TheStreet/Alphastreet) — Gmail NO disponible (aprobacion denegada), EarningsWhispers NO disponible (navegador sin aprobacion)",
+      "Gmail post-market 2026-09-16: 16 emails (Bloomberg x10, TipRanks x2, EarningsWhispers, InsiderFinance) + EW calendar web + WebSearch x3"
     ],
     "sector_prioridades": {
-      "energy": 2,
-      "materials": 1,
+      "energy": 0,
+      "materials": 0,
       "industrials": 0,
       "healthcare": 1,
-      "financials": 1,
-      "technology": -1,
-      "communication": -1,
+      "financials": -1,
+      "technology": 0,
+      "communication": 0,
       "utilities": -1,
-      "consumer_discretionary": -2,
-      "consumer_staples": -2,
-      "real_estate": -2,
+      "consumer_discretionary": -1,
+      "consumer_staples": 0,
+      "real_estate": -1,
       "energy_services": -1,
-      "energy_refiners": 1
+      "energy_refiners": 1,
+      "biotech": 1
     },
     "sectores_a_vigilar_esta_semana": [
-      "energy",
-      "materials",
       "healthcare",
-      "financials",
-      "energy_refiners"
+      "energy_refiners",
+      "biotech"
     ],
     "sectores_a_evitar_esta_semana": [
-      "technology",
-      "communication",
+      "financials",
       "utilities",
       "consumer_discretionary",
-      "consumer_staples",
       "real_estate",
       "energy_services"
     ],
@@ -2471,6 +2369,19 @@
           "financials"
         ],
         "fuente": "CNBC/Yahoo Finance/TheStreet"
+      },
+      {
+        "fecha": "2026-09-16",
+        "evento": "FOMC sube tipos 25pb a 3,75-4,00% (unanime 12-0). Dot plot: 16/18 esperan otra subida en 2026. Warsh hawkish en rueda de prensa. 10y >5%.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "financials",
+          "real_estate",
+          "utilities",
+          "consumer_discretionary",
+          "technology"
+        ],
+        "fuente": "Bloomberg / CNBC / Yahoo Finance"
       }
     ],
     "futuros": {
@@ -2563,6 +2474,12 @@
         "estado": "conflicto US-Iran activo; pipeline saudi East-West offline",
         "brent": "~105.5 (-3% hoy, +16% en el mes)"
       }
+    },
+    "earnings_desert": {
+      "detectado": "2026-09-16",
+      "descripcion": "Calendario EW vacio hasta primeros de octubre. 17-sep: solo IPHA (pre, sin estimaciones) y UPXI (AH, sin estimaciones). 18-sep: ninguna. 21-sep: ninguna. 22-sep AH: KBH y WOR. 23-sep: ninguna.",
+      "implicacion": "El motor EW-drift no tiene combustible ~2-3 semanas. Sin catalizador de earnings el scoring BLOQUES 1-3 puntua 0 y ningun candidato puede alcanzar el hard gate 7,5 por via de earnings.",
+      "accion": "Modo preservacion de capital + gestion de posiciones abiertas. NO forzar entradas rebajando el umbral."
     }
   },
   "operaciones_crypto": [
@@ -5331,12 +5248,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-15",
+    "_ultima_actualizacion": "2026-09-16",
     "rendimiento_global": {
-      "equity_paper_actual": 107636.05,
+      "equity_paper_actual": 107060.5,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2136.05,
-      "pnl_total_paper_pct": 2.02,
+      "pnl_total_paper_dolares": 1560.5,
+      "pnl_total_paper_pct": 1.48,
       "equity_real_actual": 4548.11,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.12,
@@ -5473,9 +5390,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 2.08,
+      "max_drawdown_paper_pct": 2.61,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-09-15",
+      "max_drawdown_paper_fecha": "2026-09-16",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4548.13,
@@ -6054,6 +5971,16 @@
         "avg_r_acumulado": -0.13,
         "operaciones_acumuladas": 29,
         "vix": 17.28
+      },
+      {
+        "fecha": "2026-09-16",
+        "equity_paper": 107060.5,
+        "equity_real": 4548.11,
+        "pnl_dia_paper": -507.31,
+        "win_rate_acumulado": 37.9,
+        "avg_r_acumulado": -0.13,
+        "operaciones_acumuladas": 29,
+        "vix": 17.2
       }
     ],
     "objetivos": {
@@ -9028,6 +8955,18 @@
       ],
       "evento_clave": "10y en 5,041% (max. desde 2007); probabilidad de subida de tipos en el FOMC de manana sube a ~93%. Energia el unico sector verde.",
       "leccion": "Cuatro posiciones del bot quedaron desnudas porque la orden de take-profit ocupa el 100% del qty y bloquea la colocacion del stop. Un TP sin OCO no es proteccion: es una reserva de inventario que impide protegerse."
+    },
+    {
+      "fecha": "2026-09-16",
+      "dia": "Miercoles",
+      "equity_paper_cierre": 107066.92,
+      "variacion_dia": -500.89,
+      "variacion_pct": -0.466,
+      "vix": 17.2,
+      "regimen_macro": "HAWKISH_FED_TIGHTENING_CONFIRMED",
+      "trades_paper": [],
+      "evento_clave": "La Fed sube tipos 25pb a 3,75-4,00% por unanimidad (primera subida en 3 anos); 16 de 18 miembros del dot plot esperan otra este ano. Warsh hawkish, 10y >5%, Dow -1,07%.",
+      "leccion": "El scoring premiaba pump-and-dumps sub-$1 (MEDS 8,15, RETO 7,41 -> RETO -46,9% hoy) y castigaba una subida de guia del +28% en una empresa real (FPS 6,3 -> +11,1%). Implementado filtro de liquidez; el bloque de guidance queda propuesto."
     }
   ],
   "alertas_criticas": [
@@ -9774,6 +9713,42 @@
       "archivo_modificado": "performance_log/parametros_activos",
       "impacto_esperado": "Evita perseguir extensiones ya realizadas.",
       "implementada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "tipo": "filtro_nuevo",
+      "descripcion": "filtro_liquidez_calidad: pre-filtro duro (precio>=$5, $vol mediano 20d>=$5M, vol>=300k acc, runup 5d<=80%) aplicado antes del scoring en todas las fuentes",
+      "evidencia": "MEDS 8,15 y RETO 7,41 puntuados como candidatos fuertes siendo pumps sub-$1; RETO -46,9% hoy, -91,3% desde maximo intradia",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Elimina el riesgo de ruina (-50% en sesion) del universo; coste esperado 0 senales legitimas",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "tipo": "regla_anadida",
+      "descripcion": "prohibido_rebajar_gate_por_falta_de_candidatos: blindaje del hard gate durante earnings deserts",
+      "evidencia": "Earnings desert confirmado hasta octubre; historicamente tier<7,5 da WR 20% y -1,86% medio",
+      "archivo_modificado": "performance_log/parametros_activos",
+      "impacto_esperado": "Evita trades forzados de esperanza negativa en semanas sin catalizador",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "tipo": "bug_corregido",
+      "descripcion": "Remediacion retroactiva: 4 posiciones desnudas (NFLX, CRM, RBLX, SQQQ) reparadas cancelando el TP limit huerfano y colocando OCO con stop_limit GTC",
+      "evidencia": "La regla del 15-sep se documento pero no reparo el estado existente; 24h mas sin stop incluyendo sesion FOMC",
+      "archivo_modificado": "cuenta paper Alpaca",
+      "impacto_esperado": "8/8 posiciones de renta variable protegidas",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-16",
+      "tipo": "parametro_ajustado",
+      "descripcion": "BLOQUE GUIDANCE propuesto para el scoring (+2,0 si revision de guia FY >=+15% sobre consenso)",
+      "evidencia": "FPS: guia FY27 $1,26-1,40 vs consenso $1,09, $1.500M de pedidos en el trimestre; scoring le dio 6,3 y cerro +11,1%",
+      "archivo_modificado": "pre-market-earnings-scan/SKILL.md",
+      "impacto_esperado": "Capturar beat-and-raise cuando el EPS esta en linea pero la guia explota",
+      "implementada": false
     }
   ],
   "industry_intelligence": {
@@ -11944,6 +11919,15 @@
       "score_sistema": 5.0,
       "parametros_version": "2026-09-15",
       "mejora_hoy": "TP obligatoriamente OCO + verificacion de stop a los 5 min del fill (causa raiz de 4 posiciones desnudas)"
+    },
+    {
+      "fecha": "2026-09-16",
+      "lecciones_acumuladas": 35,
+      "mejoras_acumuladas": 50,
+      "candidatos_activos": 13,
+      "bugs_pendientes": 4,
+      "parametros_version": "2026-09-16",
+      "mejora_hoy": "filtro_liquidez_calidad — pre-filtro duro precio>=$5 / $vol>=5M antes del scoring en todas las fuentes"
     }
   ],
   "motor_alpha_diario": {
@@ -20223,6 +20207,54 @@
         "pre-close-manager",
         "reconciliacion-log"
       ]
+    },
+    {
+      "fecha": "2026-09-16",
+      "score_sistema": 7.5,
+      "tareas": {
+        "pre-market-earnings-scan": {
+          "ok": false,
+          "score": 3,
+          "issues": [
+            "Puntuo MEDS 8,15 y RETO 7,41 (pumps sub-$1 sin liquidez) como candidatos fuertes",
+            "Puntuo FPS 6,3 pese a subida de guia del +28% — cerro +11,1%"
+          ]
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "0 entradas — correcto: bloqueo_nuevas_entradas_fechas cubria el 16-sep por el FOMC. Decision validada: el mercado cerro en rojo y RETO -46,9%."
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "score": 4,
+          "issues": [
+            "4 posiciones (NFLX, CRM, RBLX, SQQQ) llevaban >24h sin pierna stop viva y no se detecto durante la sesion"
+          ]
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Ninguna posicion con earnings AH hoy — nada que cerrar por R0."
+        },
+        "sentinel": {
+          "ok": true,
+          "score": 8,
+          "issues": [],
+          "nota": "Sin escalados — coherente con el bloqueo por FOMC."
+        },
+        "post-market-review": {
+          "ok": true,
+          "score": 10,
+          "issues": []
+        }
+      },
+      "tareas_con_issues": [
+        "pre-market-earnings-scan",
+        "intraday-monitor"
+      ]
     }
   ],
   "_last_ew_daily_run": {
@@ -20900,6 +20932,56 @@
         }
       ],
       "comentario": "El coste de los stops PROTECT (~$258) es un fallo del sistema. El coste del bloqueo FOMC es una decision de riesgo consciente."
+    },
+    {
+      "fecha": "2026-09-16",
+      "n_oportunidades": 7,
+      "coste_total_estimado": 3877.0,
+      "detalle": [
+        {
+          "ticker": "FPS",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 11.13,
+          "coste_est_dolares": 1113.0
+        },
+        {
+          "ticker": "SMTC",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 11.13,
+          "coste_est_dolares": 1113.0
+        },
+        {
+          "ticker": "RVTY",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 4.09,
+          "coste_est_dolares": 409.0
+        },
+        {
+          "ticker": "ILMN",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 3.04,
+          "coste_est_dolares": 304.0
+        },
+        {
+          "ticker": "INTC",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 4.02,
+          "coste_est_dolares": 402.0
+        },
+        {
+          "ticker": "DELL",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 3.67,
+          "coste_est_dolares": 367.0
+        },
+        {
+          "ticker": "TEM",
+          "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+          "movimiento_real": 1.69,
+          "coste_est_dolares": 169.0
+        }
+      ],
+      "nota": "Estimacion sobre nocional hipotetico de $10.000 por posicion. El bloqueo por FOMC evito 2 desastres (MEDS/RETO) a cambio de dejar pasar estos. Neto claramente favorable."
     }
   ],
   "incidencias_sistema": [
@@ -21366,7 +21448,7 @@
       "recomendacion": "Migrar a fuente alternativa (Nasdaq earnings calendar API, StockAnalysis, Benzinga, o navegador headless con JS) o reconstruir la asimetria whisper-vs-consensus desde otro proveedor. Prioridad ALTA antes de la temporada de resultados de octubre."
     }
   ],
-  "ultima_actualizacion": "2026-09-16T14:20 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-16T20:32:31.729609+00:00",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
@@ -23711,5 +23793,61 @@
       "registrado": "2026-09-16T17:06:37.363087+00:00",
       "nota": "Compra abierta insider. Tecnico: px 28.76, 20d -3.8%, MA20=0 MA50=0"
     }
-  ]
+  ],
+  "_pm_summary_20260916": {
+    "equity": 107060.5,
+    "var_dia": -507.31,
+    "sin_stop": [],
+    "score_sistema": 7.5,
+    "coste_oportunidad": 3877.0,
+    "opp": [
+      {
+        "ticker": "FPS",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 11.13,
+        "coste_est_dolares": 1113.0
+      },
+      {
+        "ticker": "SMTC",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 11.13,
+        "coste_est_dolares": 1113.0
+      },
+      {
+        "ticker": "RVTY",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 4.09,
+        "coste_est_dolares": 409.0
+      },
+      {
+        "ticker": "ILMN",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 3.04,
+        "coste_est_dolares": 304.0
+      },
+      {
+        "ticker": "INTC",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 4.02,
+        "coste_est_dolares": 402.0
+      },
+      {
+        "ticker": "DELL",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 3.67,
+        "coste_est_dolares": 367.0
+      },
+      {
+        "ticker": "TEM",
+        "motivo_descarte": "bloqueo_FOMC + gate score 7,5",
+        "movimiento_real": 1.69,
+        "coste_est_dolares": 169.0
+      }
+    ],
+    "wr": 37.9,
+    "avg_r": -0.13,
+    "pf": 2.62,
+    "n": 29,
+    "equity_r": 4548.11
+  }
 }
