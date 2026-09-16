@@ -1624,6 +1624,44 @@
   ],
   "candidatos_validados": [
     {
+      "ticker": "XLC",
+      "symbol": "XLC",
+      "estado": "pendiente",
+      "prioridad": 2,
+      "score": 8.0,
+      "score_ajustado": 8.0,
+      "accion_recomendada": "LARGO",
+      "argumento": "Sector Comm lider: score 4/5 | 5d=+2.9% | 1d=-0.9%",
+      "precio_referencia": 114.03,
+      "stop_pct": 0.05,
+      "tp_pct": 0.08,
+      "shares_paper": 52,
+      "shares_real": 0,
+      "fuentes": [
+        "sector_momentum_yfinance"
+      ],
+      "created_at": "2026-09-16T13:03:52.260681+00:00"
+    },
+    {
+      "ticker": "QCOM",
+      "symbol": "QCOM",
+      "estado": "pendiente",
+      "prioridad": 2,
+      "score": 7.8,
+      "score_ajustado": 7.8,
+      "accion_recomendada": "LARGO",
+      "argumento": "Momentum score 6/7 | 5d=+6.5% | vol ratio=1.2x",
+      "precio_referencia": 187.8,
+      "stop_pct": 0.05,
+      "tp_pct": 0.07,
+      "shares_paper": 26,
+      "shares_real": 0,
+      "fuentes": [
+        "momentum_yfinance"
+      ],
+      "created_at": "2026-09-16T13:03:52.260681+00:00"
+    },
+    {
       "ticker": "CRWD",
       "symbol": "CRWD",
       "estado": "pendiente",
@@ -1842,57 +1880,6 @@
       },
       "refreshed_at": "2026-09-16T11:06:53.256141+00:00",
       "datos_de": "cierre 2026-09-15 (scan pre-market 07:03 ET)"
-    },
-    {
-      "ticker": "PANW",
-      "symbol": "PANW",
-      "estado": "pendiente",
-      "prioridad": 2,
-      "score": 7.5,
-      "score_ajustado": 7.5,
-      "accion_recomendada": "LARGO",
-      "argumento": "Momentum 5/7 | 1d=+0.3% 5d=+11.9% 20d=+0.2% | vol 1.01x | >MA20/MA50. 20d plano: rebote dentro de rango, no ruptura.",
-      "precio_referencia": 375.09,
-      "stop_pct": 0.05,
-      "tp_pct": 0.07,
-      "shares_paper": 13,
-      "shares_real": 0,
-      "fuentes": [
-        "momentum_yfinance"
-      ],
-      "created_at": "2026-09-16T07:06:45.809331+00:00",
-      "metricas": {
-        "mscore": 5,
-        "ret_1d": 0.31,
-        "ret_5d": 11.93,
-        "ret_20d": 0.25,
-        "vol_ratio": 1.01
-      },
-      "refreshed_at": "2026-09-16T11:06:53.256141+00:00",
-      "datos_de": "cierre 2026-09-15 (scan pre-market 07:03 ET)"
-    },
-    {
-      "ticker": "GIS",
-      "score": 6.0,
-      "score_ajustado": 6.0,
-      "estado": "pendiente_ew",
-      "asimetria_pct": 2.78,
-      "whisper": 0.74,
-      "consensus": 0.72,
-      "earnings_fecha": "2026-09-23",
-      "earnings_timing": "pre-market",
-      "accion_recomendada": "revisar_premarket_22sep",
-      "ventana_entrada": "2026-09-22 (vispera, BMO 23-sep)",
-      "detectado_por": "sentinel-ew-api",
-      "fecha_deteccion": "2026-09-15",
-      "expira": "2026-09-23T20:00:00Z",
-      "notas": "Primer candidato EW real tras restaurar la API. Asimetria +2.78% supera min 2.5%. Revalidar whisper el 22-sep (puede moverse) y completar scoring (beat_rate, momentum) antes de ejecutar. | Sector consumer_staples prioridad -2 -> score_ajustado 4.0 (2026-09-15)",
-      "sector": "consumer_staples",
-      "score_macro_bonus": -2,
-      "bloqueo_fomc": true,
-      "nota_bloqueo": "NO EJECUTAR el 2026-09-16: bloqueo_nuevas_entradas_fechas incluye 2026-09-16 (FOMC ~93% prob. subida). Reevaluar el 17-sep con la reaccion ya conocida.",
-      "nota_intel": "Refresco 2026-09-16: bajo MA20 y MA50, momentum 0/7 (5d -1.4%, 20d -3.9%). Se mantiene solo por pipeline EW.",
-      "refreshed_at": "2026-09-16T11:06:53.256141+00:00"
     }
   ],
   "macro_context": {
@@ -21923,23 +21910,10 @@
     "nota": "Sentinel pre-apertura 2026-09-08. Hard gates aplicados a CV. EW headless NO disponible (timeout desde sandbox)."
   },
   "regimen_mercado": {
-    "tipo": "BULL_CONSOLIDACION_FRAGIL",
+    "tipo": "BULL_CONSOLIDACION",
     "sector_lider": "XLC",
     "score_sector_lider": 4,
-    "breadth_sectores_5d_positivos": "4/11",
-    "macro": {
-      "spy_1d": -0.46,
-      "spy_5d": -0.66,
-      "qqq_5d": -1.64,
-      "iwm_5d": -1.64,
-      "vix": 16.97,
-      "us10y": 5.0,
-      "us10y_5d_pct": 3.29,
-      "tlt_5d": -1.25
-    },
-    "nota": "Liderazgo estrecho: solo XLC(4/5) e IGV(4/5); XLE(3/5) por petroleo. Semis por ETF muy debiles (SOXX -6.2% 5d, SMH -5.6%) pese a QRVO/SWKS disparados -> movimiento idiosincratico RF, no rotacion sectorial. 10y en 5.00% (+3.3% en 5d, maximo desde 2007) y FOMC inminente con subida de 25pb ampliamente descontada: riesgo de shock de tipos por encima de cualquier senal de momentum. SPY/QQQ/IWM los tres negativos a 5d. Recomendacion del modulo: NO abrir nuevos LARGOS antes del FOMC; los candidatos quedan en vigilancia.",
-    "riesgo_evento": "FOMC (subida 25pb descontada ~93% segun macro_context 2026-09-15)",
-    "actualizado": "2026-09-16T11:06:53.256141+00:00"
+    "actualizado": "2026-09-16T13:03:52.260681+00:00"
   },
   "estudios_cuantitativos": [
     {
