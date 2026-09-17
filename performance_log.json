@@ -53,8 +53,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-16",
-    "motivo_actualizacion": "Post-market 2026-09-16: (1) NUEVO filtro_liquidez_calidad — pre-filtro duro precio>=$5 y $volumen>=5M/dia, tras detectar MEDS(8,15) y RETO(7,41) puntuados como candidatos fuertes siendo pump-and-dumps sub-$1; RETO -46,9% hoy. (2) Regimen macro a HAWKISH_FED_TIGHTENING_CONFIRMED tras subida de 25pb de la Fed. (3) Detectado earnings desert hasta octubre: el motor EW no tiene combustible, se prohibe rebajar el gate para compensar.",
+    "ultima_actualizacion": "2026-09-17",
+    "motivo_actualizacion": "Post-market 2026-09-17: nueva validacion tp_validacion_R (1,5R-4,0R) tras detectar que las patas de beneficio de las 4 OCO del 16-sep estaban a 6,9-8,8R y nunca se ejecutarian. Nuevas prioridades sectoriales: agriculture/fertilizers +1 (tesis food-inflation), energy_refiners 1->2, technology 0->1.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -297,7 +297,15 @@
       "implementado": "2026-09-16",
       "regla": "Durante un earnings desert (0 candidatos con datos EW completos en el calendario de manana) esta PROHIBIDO bajar hard_gate_score_minimo_entrada, min_signal_score o score_min_paper para 'tener algo que operar'. La ausencia de senal es una senal: no operar.",
       "motivo": "El sesgo de accion es el modo de fallo mas caro de un sistema diario. Un dia sin trade tiene coste 0; un trade forzado tiene esperanza negativa (tier<7,5: n=5, WR 20%, -1,86% medio)."
-    }
+    },
+    "tp_validacion_R": {
+      "min": 1.5,
+      "max": 4.0,
+      "default": 2.0,
+      "regla": "Antes de enviar un OCO/bracket: R_tp=(tp-entry)/(entry-stop). Si R_tp<1.5 o R_tp>4.0 -> tp=entry+2.0*(entry-stop).",
+      "motivo": "Post-market 2026-09-17: las 4 OCO del 16-sep tenian TP a 6,9-8,8R (inalcanzables)."
+    },
+    "cobertura_evento_caduca_con_el_evento": true
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -623,6 +631,38 @@
       "descripcion": "La leccion del 15-sep ('el TP limit por el 100% del qty bloquea el stop') se documento y se anadio regla_tp_no_bloquea_stop, pero las 4 posiciones que YA tenian el TP huerfano (NFLX, CRM, RBLX, SQQQ) siguieron desnudas 24h mas, incluyendo la sesion del FOMC. NFLX llego a -3,87%. Leccion meta: documentar una regla no repara el estado existente. Toda regla nueva necesita un paso de remediacion retroactiva.",
       "accion_correctiva": "Hoy se remediaron las 4: cancelado el TP limit huerfano y colocado OCO (TP + stop_limit GTC) en cada una. Anadir a intraday-monitor un barrido diario de 'posiciones sin pierna stop viva' en lugar de solo comprobarlo tras un fill.",
       "tarea_afectada": "intraday-monitor | post-market-review",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-17",
+      "titulo": "BUG — Las patas TP de los OCO colocados el 16-sep estan a 6,9-8,8R: son inalcanzables y el OCO degenera en stop-only",
+      "descripcion": "Auditoria de las 4 OCO remediadas ayer (NFLX, CRM, RBLX, SQQQ). Las patas stop son correctas (~ATRx2 = 1R), pero las patas limit de beneficio estan a NFLX 119,39 (8,8R sobre entrada 79,61), CRM 438,13 (7,5R), RBLX 78,33 (6,9R), SQQQ 60,20 (7,2R). Con r_ratio_minimo=2 y tp_atr_mult_ew_drift=3 el TP deberia estar en 2R (~ATRx4). Efecto practico: la pata de beneficio NUNCA se ejecuta, el OCO solo puede resolverse por stop, y el sistema pierde la salida asimetrica que justifica la operacion. Es el error simetrico al de QCOM/QRVO (stops a 0,1%): alli el stop mataba la operacion al instante, aqui el TP no la cierra nunca.",
+      "accion_correctiva": "Validacion dura antes de enviar cualquier OCO/bracket: tp_price debe cumplir 1.5R <= (tp-entry)/(entry-stop) <= 4.0R. Si queda fuera, recalcular tp = entry + 2*(entry-stop). Anadido params['tp_validacion_R']={'min':1.5,'max':4.0,'default':2.0}. TPs corregidos a aplicar: NFLX 88,61 | CRM 304,32 | RBLX 56,69 | SQQQ 46,19.",
+      "tarea_afectada": "intraday-monitor / market-open-execution (colocacion de OCO)",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-17",
+      "titulo": "NFLX a 0,32% del stop y SQQQ a 1,24%: dos stop-outs muy probables manana en dia de vencimiento trimestral",
+      "descripcion": "NFLX cierra a 75,35 con stop 75,11 (0,32% = 0,05R de margen) y R actual -0,95. SQQQ cierra a 38,63 con stop 38,15 (1,24%) y R -0,82, y el mercado va en su contra (QQQ +1,7% hoy). El 18-sep es cuadruple witching: el volumen y el ruido de apertura son maximos justo cuando estos dos stops estan a menos de 1 ATR-intradia.",
+      "accion_correctiva": "No mover los stops (son la proteccion y ya estan en -1R). Asumir el stop-out como escenario base y NO reentrar el mismo dia (dias_cooldown_mismo_ticker=3). Registrar la perdida como coste del ciclo FOMC. Para el futuro: no dejar correr hasta -0,95R una posicion cuya tesis (cobertura de evento) ya ha caducado.",
+      "tarea_afectada": "intraday-monitor / pre-close-manager",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-17",
+      "titulo": "VALIDADO — El filtro de runup (max_5day_momentum_pct=10) bloqueo hoy todo el complejo de ciberseguridad",
+      "descripcion": "ZS +20,8% en 5d, CRWD +17,7%, S +17,0%, PANW +10,8%. Los cuatro estaban o estan en candidatos_validados con scores 7,5-8,1 y los cuatro quedan bloqueados por el filtro de momentum. Es exactamente el caso de uso del filtro: entrar en CRWD a 245,74 tras +21,9% en 20 sesiones es comprar la extension, no la asimetria.",
+      "accion_correctiva": "Mantener el filtro sin excepciones. Reevaluar el complejo si consolida 5 sesiones con 5d entre -3% y +3%.",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-17",
+      "titulo": "CONFIRMADO — Desierto de earnings: 0 nombres el 18-sep (pre y post), 0 el 21-sep, solo THO/MLKN/AZO el 22-sep",
+      "descripcion": "Verificado directamente en el calendario de EarningsWhispers con sesion activa. El motor EW se queda literalmente sin combustible hasta el 22-sep, y la primera tanda relevante no llega hasta octubre. El alpha de las proximas sesiones NO puede venir de earnings.",
+      "accion_correctiva": "Sustituir temporalmente la fuente de alpha: (a) tesis macro-tematicas con catalizador fechado, (b) fuerza relativa vs SPY sin extension, (c) contagio de cadena de suministro. Mantener el gate en 7,5 (prohibido_rebajar_gate_por_falta_de_candidatos=True) y aceptar dias sin entradas.",
+      "tarea_afectada": "multiple",
       "aplicada": true
     }
   ],
@@ -2193,9 +2233,9 @@
     {
       "ticker": "PSX",
       "symbol": "PSX",
-      "estado": "pendiente",
-      "score": 6.48,
-      "score_ajustado": 6.48,
+      "estado": "vigilar_cauteloso",
+      "score": 7.3,
+      "score_ajustado": 7.3,
       "score_raw": 7.0,
       "score_breakdown": {
         "momentum": 7.0,
@@ -2204,15 +2244,32 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
-      "precio_referencia": 273.06,
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "precio_referencia": 273.98,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-18T00:36:38Z",
+      "expira": "2026-09-18T18:30:43.128253Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-17T18:36:38.042977+00:00",
-      "notas": "1d=+3.2% vol=0.6x 52h_dist=0.0%"
+      "notas": "Menos extendido que VLO (5d +6,0% vs +7,0%) y con mejor ATR relativo (2,7%). Correlacionado con XOM/CVX que ya estan en cartera — concentracion en energia si se anade.",
+      "score_total": 7.3,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 11.10 (4.0%)",
+      "atr14": 7.4,
+      "rs20_vs_spy": 13.96,
+      "momentum_5d_pct": 6.03,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "Refinero puro con la prioridad sectorial mas alta del log (energy_refiners subido hoy de +1 a +2). Brent cayo -1,5% a 104,25$ mientras los productos aguantan: el crack spread se expande, que es exactamente la mecanica que ha llevado a VLO +19%, MPC +17% y PSX +13% en 20 sesiones. Hoy +3,54% con 1,25x volumen y cierre en maximo de 20 sesiones.",
+      "sector": "energy_refiners",
+      "score_macro_bonus": 2,
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
     },
     {
       "ticker": "NTRA",
@@ -2261,18 +2318,153 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-17T18:36:38.042977+00:00",
       "notas": "1d=+5.8% vol=1.0x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "NTR",
+      "score": 7.2,
+      "score_ajustado": 7.2,
+      "score_total": 7.2,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 3.30 (4.2%)",
+      "precio_referencia": 78.95,
+      "atr14": 2.2,
+      "rs20_vs_spy": 12.82,
+      "momentum_5d_pct": 0.18,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "Fertilizante con la tesis macro mas fresca del dia: Bloomberg publico HOY dos piezas independientes sobre inflacion alimentaria y escasez de fertilizantes ('el proximo shock de oferta sera alimentario', 'dominant macro theme' para los hedge funds) y explicitamente NO esta en precio. Tecnicamente: +12,0% en 20d pero PLANO en 5d (+0,2%) — pasa el filtro de runup, consolidacion sana a 97,7% del maximo de 20 sesiones.",
+      "sector": "fertilizers",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-09-18T18:30:43.128253Z",
+      "score_macro_bonus": 1,
+      "notas": "Sin earnings hasta noviembre. ATR 2,8% — stop comodo. El riesgo es que la tesis tarde meses en materializarse.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
+    },
+    {
+      "ticker": "ADM",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_total": 7.0,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 3.83 (4.4%)",
+      "precio_referencia": 88.08,
+      "atr14": 2.56,
+      "rs20_vs_spy": 9.87,
+      "momentum_5d_pct": 1.36,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "La otra pata de la tesis alimentaria: procesador agricola, cierre en maximo de 20 sesiones (+3,57% hoy), +9,0% en 20d con solo +1,4% en 5d. Beneficiario directo de precios agricolas al alza y de la volatilidad de la cadena alimentaria.",
+      "sector": "agriculture",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-09-18T18:30:43.128253Z",
+      "score_macro_bonus": 1,
+      "notas": "Margenes de crush pueden comprimirse si suben los inputs — la tesis no es simetrica al 100%.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
+    },
+    {
+      "ticker": "MOS",
+      "score": 7.0,
+      "score_ajustado": 7.0,
+      "score_total": 7.0,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 1.61 (6.4%)",
+      "precio_referencia": 25.38,
+      "atr14": 1.07,
+      "rs20_vs_spy": 14.91,
+      "momentum_5d_pct": -0.12,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "Fertilizante de fosfato. +14,1% en 20d, -0,1% en 5d (consolidacion perfecta para el filtro de runup). Misma tesis que NTR con mas beta (ATR 4,2%).",
+      "sector": "fertilizers",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-09-18T18:30:43.128253Z",
+      "score_macro_bonus": 1,
+      "notas": "Volumen bajo (0,51x) — falta confirmacion institucional. Mas especulativo que NTR.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
+    },
+    {
+      "ticker": "ETN",
+      "score": 6.8,
+      "score_ajustado": 6.8,
+      "score_total": 6.8,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 22.08 (5.4%)",
+      "precio_referencia": 409.54,
+      "atr14": 14.72,
+      "rs20_vs_spy": -2.7,
+      "momentum_5d_pct": 0.06,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "Contagio de cadena de suministro NO propagado: Generac +18,4% (4,3x volumen) por hasta 8.000M$ de generadores para centros de datos de Amazon, pero el resto del complejo electrico apenas se movio (PWR -0,4%, POWL -0,5%, VRT +0,7%). ETN subio +2,95% con 2,10x volumen — el dinero institucional ya esta entrando. -3,5% en 20d: NO esta extendido.",
+      "sector": "industrials",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-09-18T18:30:43.128253Z",
+      "score_macro_bonus": 0,
+      "notas": "Riesgo real: el contrato de GNRC puede ser suma cero (lo que gana GNRC lo pierde un competidor), no un read-through de capex sectorial. Score deliberadamente bajo por esa ambiguedad.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
+    },
+    {
+      "ticker": "DE",
+      "score": 6.8,
+      "score_ajustado": 6.8,
+      "score_total": 6.8,
+      "fecha_deteccion": "2026-09-17",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": "sin_earnings",
+      "accion_recomendada": "vigilar_no_entrar_en_apertura",
+      "ventana_entrada": "2026-09-18 10:15-13:00 ET (evitar 09:30-10:15 por el vencimiento trimestral)",
+      "stop_tipo": "ATRx1.5 = 24.74 (3.6%)",
+      "precio_referencia": 685.58,
+      "atr14": 16.49,
+      "rs20_vs_spy": 18.91,
+      "momentum_5d_pct": 1.11,
+      "sizing": "0.5x — dia de vencimiento trimestral, sin catalizador propio",
+      "argumento": "Maquinaria agricola, +18,1% en 20d y solo +1,1% en 5d. Palanca de segundo orden sobre la tesis de precios agricolas al alza (mas renta agricola -> mas capex en maquinaria).",
+      "sector": "agriculture",
+      "estado": "vigilar_cauteloso",
+      "expira": "2026-09-18T18:30:43.128253Z",
+      "score_macro_bonus": 1,
+      "notas": "Volumen 0,54x, muy flojo. Tesis de 2o orden y horizonte largo: no es un trade de una sesion.",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0.0,
+      "bloqueado_por": "score < score_min_paper 7.5 (hard gate) Y max_posiciones_paper_para_nuevas_entradas=2 con 10 posiciones abiertas"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-16",
+    "fecha_actualizacion": "2026-09-17",
     "semana": "2026-W38",
-    "regimen": "HAWKISH_FED_TIGHTENING_CONFIRMED",
+    "regimen": "POST_HIKE_RELIEF_RALLY_CON_SESGO_RESTRICTIVO",
     "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "vix": 15.5600004196167,
+    "vix": 17.62,
     "yield_spread_10y2y": 0.41,
     "us10y": 5.041,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-16: La Fed SUBIO tipos 25pb a 3,75-4,00% por unanimidad (12-0) — primera subida en mas de tres anos. El dot plot muestra que 16 de 18 miembros esperan OTRA subida este ano. Warsh mantuvo un tono duro sobre inflacion en la rueda de prensa y el mercado giro a la baja durante la misma. Dow -1,07%, S&P500 -0,45%, Nasdaq -0,06%, Russell2000 +0,08%. El 10y vuelve a superar el 5%. Financieras lideraron las caidas (XLF -1,6%); energia se desplomo (XLE -2,87%) pese al contexto geopolitico. Unicos sectores en verde: XLK +0,15% y XLV +0,07%. IMPLICACION: el regimen pasa de 'riesgo de subida' a 'ciclo de subidas confirmado con sesgo a mas'. Duracion larga penalizada; el mercado ya no descuenta recortes. VIX 17,2 — sorprendentemente contenido, lo que sugiere complacencia mas que miedo.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-17: el mercado REVIRTIO el veredicto del dia del FOMC y aplaudio a Warsh. Los bonos globales recuperaron y el 10y volvio por debajo del 5% (4,99%, -3pb); SPY +1,1%, QQQ +1,7%, XLK +2,2%. La lectura dominante es 'Fed creible': subir ahora para no tener que subir mas despues. Brent -1,5% a 104,25$ (bueno para refino: el crack se expande), oro +1,1% a 4.311$, VIX ~17,6. DOS NOTICIAS NUEVAS CON VALOR DE TESIS: (1) Bloomberg publica hoy DOS piezas sobre el mismo tema — el proximo shock de oferta sera ALIMENTARIO (super El Nino, fertilizantes escasos, ataques al transporte maritimo, verano record en Europa) y los hedge funds ya lo persiguen como 'dominant macro theme'; no esta en precio. (2) Generac +18,4% (4,3x volumen) tras firmar hasta 8.000M$ de generadores para centros de datos de Amazon — sus comparables electricos NO repreciaron (PWR -0,4%, POWL -0,5%, VRT +0,7%), aunque ETN y HUBB movieron volumen (2,1x y 1,7x). Riesgos: Trump amenaza con aranceles a la UE; Yardeni recorta su objetivo del S&P a 7.900. Manana 18-sep es VENCIMIENTO TRIMESTRAL (cuadruple witching) + Produccion Industrial, y CERO earnings en el calendario EW.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -2287,31 +2479,36 @@
       "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos",
       "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)",
       "WebSearch post-market 2026-09-15 (CNBC/Yahoo/TheStreet/Alphastreet) — Gmail NO disponible (aprobacion denegada), EarningsWhispers NO disponible (navegador sin aprobacion)",
-      "Gmail post-market 2026-09-16: 16 emails (Bloomberg x10, TipRanks x2, EarningsWhispers, InsiderFinance) + EW calendar web + WebSearch x3"
+      "Gmail post-market 2026-09-16: 16 emails (Bloomberg x10, TipRanks x2, EarningsWhispers, InsiderFinance) + EW calendar web + WebSearch x3",
+      "Gmail post-market 2026-09-17: 12 hilos (Bloomberg x6, TipRanks x2, EW, InsiderFinance) + EW calendar 18/21/22-sep via Chrome + Alpaca bars (110 tickers)"
     ],
     "sector_prioridades": {
       "energy": 0,
       "materials": 0,
       "industrials": 0,
       "healthcare": 1,
-      "financials": -1,
-      "technology": 0,
+      "financials": 0,
+      "technology": 1,
       "communication": 0,
       "utilities": -1,
       "consumer_discretionary": -1,
       "consumer_staples": 0,
       "real_estate": -1,
       "energy_services": -1,
-      "energy_refiners": 1,
-      "biotech": 1
+      "energy_refiners": 2,
+      "biotech": 1,
+      "agriculture": 1,
+      "fertilizers": 1
     },
     "sectores_a_vigilar_esta_semana": [
       "healthcare",
+      "technology",
       "energy_refiners",
-      "biotech"
+      "biotech",
+      "agriculture",
+      "fertilizers"
     ],
     "sectores_a_evitar_esta_semana": [
-      "financials",
       "utilities",
       "consumer_discretionary",
       "real_estate",
@@ -2577,6 +2774,20 @@
           "technology"
         ],
         "fuente": "Bloomberg / CNBC / Yahoo Finance"
+      },
+      {
+        "fecha": "2026-09-17",
+        "evento": "Rally de alivio post-subida: el 10y vuelve por debajo del 5% y las bolsas suben. Bloomberg lanza la tesis de inflacion alimentaria (El Nino). Generac +18,4% por contrato de 8.000M$ con Amazon para centros de datos.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "agriculture",
+          "fertilizers",
+          "energy_refiners",
+          "industrials",
+          "utilities"
+        ],
+        "fuente": "Bloomberg Markets Daily + Energy Daily + Alpaca market data"
       }
     ],
     "futuros": {
@@ -2683,7 +2894,12 @@
     "qqq_day": 1.66,
     "evento_clave": "FOMC 2026-09-16: +25bp a 3.75-4.00%, primera subida desde jul-2023, unanime; dot plot apunta a otra subida en 2026. Hoy rebote de alivio liderado por semis/tech.",
     "nota_juicio": "Score mecanico +0.5 subestima el tono real. VIX -12%, tech +2.35% y yields cediendo describen un regimen risk-on claro (~+1.5 cualitativo). La penalizacion mecanica por TLT+ y 10Y>4.5% esta mal firmada en este contexto: TLT sube porque el mercado da por buena la credibilidad antiinflacion de Warsh, no por huida a refugio.",
-    "sentinel_ultimo_check_prev_nivel": "normal"
+    "sentinel_ultimo_check_prev_nivel": "normal",
+    "proximo_evento_riesgo": {
+      "fecha": "2026-09-18",
+      "evento": "Cuadruple witching (vencimiento trimestral) + Produccion Industrial 09:15 ET",
+      "impacto": "MEDIO-ALTO (volumen y ruido, no direccion)"
+    }
   },
   "operaciones_crypto": [
     {
@@ -5410,6 +5626,22 @@
         ]
       },
       "motivo": "Stops PROTECT a 0.02R scalpean posiciones (QCOM +$7 en 32min, QRVO +$14 en 27min, DELL stop a 0.22%); FOMC 16-sep con 70% prob. de hike."
+    },
+    {
+      "fecha": "2026-09-17",
+      "parametros": {
+        "tp_validacion_R": {
+          "min": 1.5,
+          "max": 4.0,
+          "default": 2.0
+        },
+        "sector_prioridades.agriculture": 1,
+        "sector_prioridades.fertilizers": 1,
+        "sector_prioridades.energy_refiners": 2,
+        "sector_prioridades.technology": 1,
+        "sector_prioridades.financials": 0
+      },
+      "motivo": "TPs de OCO inalcanzables (evidencia: 4 de 4 posiciones con TP entre 6,9R y 8,8R). Rotacion macro tras el rally de alivio post-FOMC y la tesis de inflacion alimentaria de Bloomberg."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -5451,13 +5683,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-16",
+    "_ultima_actualizacion": "2026-09-17",
     "rendimiento_global": {
-      "equity_paper_actual": 107060.5,
+      "equity_paper_actual": 106618.77,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 1560.5,
-      "pnl_total_paper_pct": 1.48,
-      "equity_real_actual": 4548.11,
+      "pnl_total_paper_dolares": 1118.77,
+      "pnl_total_paper_pct": 1.06,
+      "equity_real_actual": 4548.12,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.12,
       "pnl_total_real_pct": 1.07,
@@ -5593,9 +5825,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 2.61,
+      "max_drawdown_paper_pct": 3.01,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-09-16",
+      "max_drawdown_paper_fecha": "2026-09-17",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4548.13,
@@ -5605,7 +5837,8 @@
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
       "max_drawdown_paper_actual_pct": 2.08,
-      "drawdown_actual_pct": 1.92
+      "drawdown_actual_pct": 1.92,
+      "exposicion_bruta_actual_pct": 49.8
     },
     "bot_metricas": {
       "paper": {
@@ -6184,6 +6417,16 @@
         "avg_r_acumulado": -0.13,
         "operaciones_acumuladas": 29,
         "vix": 17.2
+      },
+      {
+        "fecha": "2026-09-17",
+        "equity_paper": 106618.77,
+        "equity_real": 4548.12,
+        "pnl_dia_paper": -318.86,
+        "win_rate_acumulado": 37.9,
+        "avg_r_acumulado": -0.13,
+        "operaciones_acumuladas": 29,
+        "vix": 17.62
       }
     ],
     "objetivos": {
@@ -9170,6 +9413,21 @@
       "trades_paper": [],
       "evento_clave": "La Fed sube tipos 25pb a 3,75-4,00% por unanimidad (primera subida en 3 anos); 16 de 18 miembros del dot plot esperan otra este ano. Warsh hawkish, 10y >5%, Dow -1,07%.",
       "leccion": "El scoring premiaba pump-and-dumps sub-$1 (MEDS 8,15, RETO 7,41 -> RETO -46,9% hoy) y castigaba una subida de guia del +28% en una empresa real (FPS 6,3 -> +11,1%). Implementado filtro de liquidez; el bloque de guidance queda propuesto."
+    },
+    {
+      "fecha": "2026-09-17",
+      "dia": "Thursday",
+      "equity_paper_cierre": 106618.77,
+      "variacion_dia": -318.86,
+      "variacion_pct": -0.3,
+      "equity_real_cierre": 4548.12,
+      "vix": 17.62,
+      "regimen_macro": "POST_HIKE_RELIEF_RALLY_CON_SESGO_RESTRICTIVO",
+      "trades_paper": [],
+      "spy_dia_pct": 1.14,
+      "qqq_dia_pct": 1.73,
+      "evento_clave": "El mercado revierte el veredicto del FOMC y aplaude a Warsh: 10y por debajo del 5%, SPY +1,1%, QQQ +1,7%. La cartera pierde -0,30% por ir corta via SQQQ (-5,0%) y por CRM (-3,1%).",
+      "leccion": "Con 10 posiciones abiertas y una cobertura SQQQ del 9,4% del equity, la cartera esta estructuralmente corta de beta: en un rally del +1,1% de SPY perdio -0,30%. El coste de la cobertura del FOMC ya no se justifica con el evento pasado."
     }
   ],
   "alertas_criticas": [
@@ -9483,6 +9741,23 @@
       "tipo": "limite_posiciones",
       "detalle": "7 posiciones Cowork abiertas (CRM,CVX,DELL,NFLX,RBLX,SQQQ,XOM) vs max_cowork_positions=4. Sin nuevas entradas hasta reducir.",
       "estado": "abierta"
+    },
+    {
+      "fecha": "2026-09-17",
+      "tipo": "TP_OCO_INALCANZABLE",
+      "urgencia": "MEDIA",
+      "mensaje": "4 OCO con TP entre 6,9R y 8,8R. TPs corregidos (2R): NFLX 88,61 | CRM 304,32 | RBLX 56,69 | SQQQ 46,19.",
+      "accion_requerida": "Sustituir la pata limit de cada OCO por el TP corregido (requiere cancelar y reenviar el OCO completo para no dejar la posicion desnuda).",
+      "accion_tomada": "Solo documentado y notificado. El post-market NO envia ordenes.",
+      "resuelto": false
+    },
+    {
+      "fecha": "2026-09-17",
+      "tipo": "STOP_A_DISTANCIA_MINIMA",
+      "urgencia": "ALTA",
+      "mensaje": "NFLX 75,35 vs stop 75,11 (0,32%) y SQQQ 38,63 vs stop 38,15 (1,24%) en visperas del cuadruple witching del 18-sep.",
+      "accion_requerida": "No tocar los stops. Esperar la resolucion; si saltan, respetar cooldown de 3 dias antes de reentrar.",
+      "resuelto": false
     }
   ],
   "mejoras_sistema": [
@@ -9960,6 +10235,15 @@
       "archivo_modificado": "pre-market-earnings-scan/SKILL.md",
       "impacto_esperado": "Capturar beat-and-raise cuando el EPS esta en linea pero la guia explota",
       "implementada": false
+    },
+    {
+      "fecha": "2026-09-17",
+      "tipo": "regla_anadida + bug_corregido",
+      "descripcion": "tp_validacion_R: toda pata de beneficio de un OCO/bracket debe quedar entre 1,5R y 4,0R; fuera de rango se recalcula a 2,0R.",
+      "evidencia": "NFLX TP a 8,8R, CRM 7,5R, RBLX 6,9R, SQQQ 7,2R — las 4 OCO colocadas el 16-sep eran stop-only de facto.",
+      "archivo_modificado": "performance_log.parametros_activos",
+      "impacto_esperado": "Recupera la salida asimetrica: sin TP alcanzable el sistema solo puede perder 1R o salir a mano. Con TP a 2R, un win rate del 38% ya es rentable.",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -12139,6 +12423,15 @@
       "bugs_pendientes": 4,
       "parametros_version": "2026-09-16",
       "mejora_hoy": "filtro_liquidez_calidad — pre-filtro duro precio>=$5 / $vol>=5M antes del scoring en todas las fuentes"
+    },
+    {
+      "fecha": "2026-09-17",
+      "lecciones_acumuladas": 39,
+      "mejoras_acumuladas": 51,
+      "candidatos_activos": 26,
+      "score_sistema": 8.2,
+      "parametros_version": "2026-09-17",
+      "mejora_hoy": "tp_validacion_R (1,5R-4,0R) — corrige las 4 OCO con TP inalcanzable"
     }
   ],
   "motor_alpha_diario": {
@@ -20571,6 +20864,51 @@
         "pre-market-earnings-scan",
         "intraday-monitor"
       ]
+    },
+    {
+      "fecha": "2026-09-17",
+      "score_sistema": 8.2,
+      "tareas": {
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "0 candidatos EW correctamente: calendario vacio verificado (18-sep pre/post, 21-sep pre)."
+        },
+        "market-open-execution": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "0 entradas — coherente con gate 7,5 y 10 posiciones abiertas."
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "score": 6,
+          "issues": [
+            "Sin log propio de hoy en intraday_monitor_log (solo sentinel escribio).",
+            "No detecto los TP de OCO a 6,9-8,8R pese a barrer las 4 posiciones."
+          ],
+          "nota": "Stops verificados OK, pero falta el barrido de coherencia del TP."
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "score": 10,
+          "issues": [],
+          "nota": "Sin earnings AH hoy: nada que cerrar por R0. Correcto."
+        },
+        "sentinel": {
+          "ok": false,
+          "score": 5,
+          "issues": [
+            "Solo 5 ciclos hoy (esperado >=10)."
+          ],
+          "nota": "Cobertura parcial de la sesion."
+        }
+      },
+      "tareas_con_issues": [
+        "intraday-monitor",
+        "sentinel"
+      ]
     }
   ],
   "_last_ew_daily_run": {
@@ -21779,7 +22117,7 @@
       "detalle": "EW headless devuelve 0 whispers en 8/8 tickers (warmup 200 OK, cookies=1). Parser whisperbox/mainitem sin match. Revisar selectores o usar fuente alternativa."
     }
   ],
-  "ultima_actualizacion": "2026-09-17T15:15",
+  "ultima_actualizacion": "2026-09-17T20:30",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
