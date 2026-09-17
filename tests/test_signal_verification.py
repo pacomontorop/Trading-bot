@@ -319,14 +319,19 @@ class TestQuiverEndpointParsing:
 
     # --- housetrading (Congress) ---
     def test_house_purchase_counted(self):
-        # Use ReportDate (API field) — freshness is measured from disclosure, not transaction
+        # Use ReportDate (API field) — freshness is measured from disclosure, not transaction.
+        # La ventana la fija config/policy.yaml (freshness_days_congress, hoy 5 d). El test la LEE
+        # en vez de asumir un número: si la política se ajusta, el test sigue midiendo lo que
+        # importa (que se cuenten todas las compras dentro de la ventana) y no se queda obsoleto.
+        from signals.quiver_utils import _freshness_days_congress
+        w = _freshness_days_congress()
         payload = {"housetrading": [
-            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(3), "Date": self._recent_date(45)},
-            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(5), "Date": self._recent_date(50)},
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(0), "Date": self._recent_date(45)},
+            {"Ticker": "AAPL", "Transaction": "Purchase", "ReportDate": self._recent_date(max(1, w - 1)), "Date": self._recent_date(50)},
         ]}
         f = self._run_utils(payload)
         assert f["quiver_house_purchase_count"] == 2, \
-            f"Expected 2 congressional purchases, got {f['quiver_house_purchase_count']}"
+            f"Expected 2 congressional purchases inside the {w}d window, got {f['quiver_house_purchase_count']}"
 
     def test_house_purchase_stale_transaction_but_fresh_report_counted(self):
         # STOCK Act scenario: trade happened 41 days ago, but disclosed TODAY → must be counted
