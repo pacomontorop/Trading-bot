@@ -23720,42 +23720,31 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-17",
-    "hora_utc": "14:39",
-    "min_desde_apertura": 69.2,
+    "hora_utc": "15:38",
+    "min_desde_apertura": 128.8,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "INTC: max posiciones paper 8",
-      "CRWD: max posiciones paper 8",
       "FPS: max posiciones paper 8",
-      "SMCI: runup +9.1%>5%",
-      "NET: max posiciones paper 8",
+      "AMD: max posiciones paper 8",
       "SMTC: max posiciones paper 8",
+      "GNRC: max posiciones paper 8",
       "DELL: ya en cartera paper",
       "ILMN: max posiciones paper 8",
-      "NTRA: score 5.9<6.0",
-      "TEM: score 5.9<6.0"
+      "TEM: max posiciones paper 8",
+      "NTRA: score 5.9<6.0"
     ],
     "ajustes_fuentes": {
       "INTC": {
         "base": 6.94,
-        "paper": 7.74,
+        "paper": 7.94,
         "real": 6.94,
         "partes": {
           "analistas": 0.4,
-          "opciones": 0.25,
+          "opciones": 0.45,
           "sector": 0.15
-        }
-      },
-      "CRWD": {
-        "base": 6.94,
-        "paper": 7.54,
-        "real": 6.94,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
-          "sector": 0.4
         }
       },
       "FPS": {
@@ -23769,24 +23758,14 @@
           "sector": -0.4
         }
       },
-      "SMCI": {
-        "base": 6.88,
-        "paper": 7.33,
-        "real": 6.88,
-        "partes": {
-          "opciones": 0.25,
-          "corto": -0.2,
-          "sector": 0.4
-        }
-      },
-      "NET": {
+      "AMD": {
         "base": 6.94,
-        "paper": 7.19,
+        "paper": 7.34,
         "real": 6.94,
         "partes": {
           "insiders": -0.3,
-          "analistas": 0.15,
-          "sector": 0.4
+          "analistas": 0.55,
+          "sector": 0.15
         }
       },
       "SMTC": {
@@ -23796,6 +23775,16 @@
         "partes": {
           "opciones": 0.5,
           "sector": 0.15
+        }
+      },
+      "GNRC": {
+        "base": 6.48,
+        "paper": 6.68,
+        "real": 6.48,
+        "partes": {
+          "analistas": 0.35,
+          "opciones": 0.25,
+          "sector": -0.4
         }
       },
       "DELL": {
@@ -23818,6 +23807,17 @@
           "sector": -0.4
         }
       },
+      "TEM": {
+        "base": 6.76,
+        "paper": 6.16,
+        "real": 6.16,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": 0.5,
+          "corto": -0.4,
+          "sector": -0.4
+        }
+      },
       "NTRA": {
         "base": 6.48,
         "paper": 5.93,
@@ -23827,30 +23827,19 @@
           "analistas": 0.15,
           "sector": -0.4
         }
-      },
-      "TEM": {
-        "base": 6.48,
-        "paper": 5.88,
-        "real": 5.88,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
-          "corto": -0.4,
-          "sector": -0.4
-        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-17T14:39Z",
+    "ts": "2026-09-17T15:38Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 1.34,
-      "fear_greed": 29.7,
+      "credito_hyg_ief_20": 1.28,
+      "fear_greed": 29.3,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -23858,67 +23847,61 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 222,
+        "ms": 80,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 435,
+        "ms": 112,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95144,
+        "ms": 94936,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 3250,
+        "ms": 1582,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 0,
-        "fallos": 10,
-        "ms": 0,
-        "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
-      },
-      "insiders_nasdaq": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 29237,
+        "ms": 31759,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 900,
+        "ms": 582,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 2078,
+        "ms": 1363,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1042,
+        "ms": 249,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1270,
+        "ms": 798,
         "ultimo_error": null
       }
     }
