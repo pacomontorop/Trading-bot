@@ -2340,12 +2340,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-16T15:28",
-      "nivel": "alerta",
+      "timestamp": "2026-09-17T09:19",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 8,
-      "score_min_real_efectivo": 9
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0,
+      "modo": "pre_apertura"
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2366,18 +2367,18 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-16T15:28",
-    "macro_score": -0.3,
-    "macro_bonus_ew": -0.09,
-    "macro_nivel": "alerta",
+    "ts_actualizado": "2026-09-17T09:19",
+    "macro_score": 0.2,
+    "macro_bonus_ew": 0.06,
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros ligeramente alcistas (+0.42%)",
-      "Yield 10Y en 5.01% - presion severa sobre valuaciones growth",
-      "Dolar fuerte (+0.66%) - headwind exportadoras",
-      "Petroleo $102 (-3.2%) - alivio Hormuz, XLE -3.3%",
-      "CNN Fear&Greed=29 (Fear) - sentimiento defensivo",
-      "FOMC 16-sep: +25bp a 3.75-4.00% (12-0), primer alza desde 2023; dot plot 16/18 esperan otra mas",
-      "Sector lider=healthcare(-0.05%) rezagado=energy(-3.25%)"
+      "Futuros fuertes tras subida 25bp Fed 16-sep: ES +2.12%, NQ +2.63%, YM +1.99%, RTY +2.14% (rebote de alivio)",
+      "VIX 15.4 (-12.9%) — sin estres",
+      "Yield 10Y 4.95% (-1.1%) — nivel alto, presion sobre valoraciones growth (-0.3)",
+      "Dolar fuerte UUP +0.64% (-0.3)",
+      "WTI $100.02 (-2.35%) — petroleo caro pero corrigiendo; XLE -2.88% ayer",
+      "Fear&Greed ~27 (fear) (-0.2)",
+      "Fed: Warsh sube tipos a 3.75-4%, primera subida en 3+ anos; proyeccion mediana 1-2 subidas mas este ano"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -2387,9 +2388,9 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": 0.223,
-      "yield_10y": 5.006,
-      "yield_30y": 5.349
+      "tlt_chg": 0.21,
+      "yield_10y": 4.95,
+      "yield_30y": 5.31
     },
     "commodities": {
       "oro_chg": 1.28,
@@ -2577,10 +2578,10 @@
       }
     ],
     "futuros": {
-      "ES": 0.145,
-      "NQ": 0.702,
-      "YM": -0.587,
-      "RTY": -0.24
+      "ES": 2.12,
+      "NQ": 2.63,
+      "YM": 1.99,
+      "RTY": 2.14
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -9466,6 +9467,14 @@
       "tipo": "fuente_datos_caida",
       "detalle": "EarningsWhispers (old. y www.) devuelve la misma pagina de 96.276 chars para cualquier ticker: sin whisperbox/epsconsensus/tweeturl. El scraper headless del PASO 3 no puede extraer whisper ni fecha de earnings. Afecta a sentinel, pre-market scan y weekend scan.",
       "accion_sugerida": "Revisar si EW pasó a render client-side o bloquea por UA/cookies. Considerar fallback a Nasdaq/Zacks/Benzinga earnings calendar + estimates de yfinance para asimetria."
+    },
+    {
+      "fecha": "2026-09-17",
+      "ts": "2026-09-17T09:19:33.265762+00:00",
+      "origen": "sentinel",
+      "tipo": "limite_posiciones",
+      "detalle": "7 posiciones Cowork abiertas (CRM,CVX,DELL,NFLX,RBLX,SQQQ,XOM) vs max_cowork_positions=4. Sin nuevas entradas hasta reducir.",
+      "estado": "abierta"
     }
   ],
   "mejoras_sistema": [
@@ -14809,6 +14818,18 @@
       "macro_score": -0.3,
       "spy_chg": -0.903,
       "nota": "EW scraper devuelve shell generico (0 tickers parseados) - fuente EW caida este ciclo. 0 ejecuciones. Todas las posiciones con stop salvo dust crypto."
+    },
+    {
+      "ts": "2026-09-17T09:19:33.265762+00:00",
+      "modo": "pre_apertura",
+      "alertas": 1,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 7,
+      "vix": 15.4,
+      "macro_nivel": "normal",
+      "macro_score": 0.2,
+      "nota": "Sin candidatos EW: calendario 17-18 sep solo micro-caps (IPHA,IH,LEN.B,UPXI,HUBG,DAVA...). Cowork 7/4 sobre limite. Todas las posiciones equity con stop activo."
     }
   ],
   "momentum_15m": {
@@ -21640,9 +21661,18 @@
       "descripcion": "EarningsWhispers inservible por 4o ciclo consecutivo. old.earningswhispers.com y www.earningswhispers.com devuelven la misma shell SPA (~96KB) para /stocks/{ticker}, /calendar y /api/* -- render 100% client-side, sin whisperbox ni tweeturl en el HTML. Endpoints /api/calendar, /api/getdata/{tk}, /api/stocks/{tk} devuelven HTML, no JSON. api.earningswhispers.com no resuelve.",
       "impacto": "PASO 3 del sentinel y el pre-market scan producen 0 senales EW. El pipeline de earnings esta ciego.",
       "recomendacion": "Migrar a fuente alternativa (Nasdaq earnings calendar API, StockAnalysis, Benzinga, o navegador headless con JS) o reconstruir la asimetria whisper-vs-consensus desde otro proveedor. Prioridad ALTA antes de la temporada de resultados de octubre."
+    },
+    {
+      "fecha": "2026-09-17",
+      "ts": "2026-09-17T09:19:33.265762+00:00",
+      "origen": "sentinel",
+      "severidad": "media",
+      "titulo": "Scraper EW headless roto + bug fast_info en macro",
+      "detalle": "1) old.earningswhispers.com/stocks/<tk> ahora devuelve la HOMEPAGE (mismo contenido, 96276 bytes) en lugar de la ficha; www.earningswhispers.com/stocks/<tk> es SPA renderizada por JS sin IDs whisperbox/epsconsensus/earningsdate. get_ew_headless() del sentinel no puede extraer whisper. FALLBACK QUE FUNCIONA: plog[\"ew_cache\"][\"calendario\"] (poblado por GitHub Actions con Referer). 2) PASO 6B usa yf fast_info.get(\"regular_market_previous_close\") y .get(\"last_price\") (snake_case) — las claves reales son camelCase (\"regularMarketPreviousClose\",\"lastPrice\"), por lo que TODO el bloque macro devolvia 0.00% silenciosamente. Corregir ambos en la SKILL.",
+      "accion": "pendiente_correccion_skill"
     }
   ],
-  "ultima_actualizacion": "2026-09-16T20:32:31.729609+00:00",
+  "ultima_actualizacion": "2026-09-17T09:19:33.265762+00:00",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
