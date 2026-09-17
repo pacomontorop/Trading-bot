@@ -39,13 +39,11 @@ BOT_ENABLED = os.environ.get("RENDER_BOT_ENABLED", "0") == "1"
 
 def _start_scheduler() -> None:
     if not BOT_ENABLED:
+        # 2026-09-17: sin aviso por Telegram. Render reinicia el proceso con frecuencia
+        # (deploys, healthchecks, reciclado de instancia) y el mensaje se repetía en cada
+        # arranque sin aportar nada: que el bot está apagado es un hecho fijo y conocido.
+        # El estado sigue consultable en el healthcheck ("bot": "disabled") y en stderr.
         sys.stderr.write("Render bot DESACTIVADO (RENDER_BOT_ENABLED != 1): scheduler no arrancado.\n")
-        try:
-            from utils.telegram_alert import send_telegram_alert
-            send_telegram_alert("⏸️ Bot de Render desactivado por código (RENDER_BOT_ENABLED≠1). "
-                                "Opera solo el sistema de GitHub Actions.")
-        except Exception:
-            pass
         return
     thread = threading.Thread(
         target=equity_scheduler_loop,
