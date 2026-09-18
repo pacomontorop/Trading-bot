@@ -15,7 +15,7 @@
       "THRESHOLD_INALCANZABLE_SIN_EW"
     ],
     "total_candidatos_validados": 33,
-    "ultima_actualizacion_ew_daily": "2026-08-15T20:58:42.911258+00:00",
+    "ultima_actualizacion_ew_daily": "2026-09-18T21:41:35.985756+00:00",
     "ultima_actualizacion": "2026-09-12T05:11:35.910Z",
     "pendiente_fix": "update_scheduled_task pre-market-earnings-scan SKILL.md — path canónico en Python _PATH_CANDIDATES. Requires fresh supervised session.",
     "ultima_tarea": "post-market-review",
@@ -546,6 +546,32 @@
       "accion_correctiva": "Alinear el umbral del scanner GHA con min_signal_score=7.5 del performance_log.",
       "tarea_afectada": "bot GHA",
       "aplicada": false
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "MISS_RESULTADO",
+      "titulo": "LEN: miss -3.91% vs whisper + recorte de guia -9% (16-sep-2026)",
+      "descripcion": "EPS adj $1.23 vs whisper $1.28 vs consenso $1.29. Revenue $8.05B (-8.67% YoY) vs consenso $8.33B. Guia Q4 homebuilding $8.14-8.74B vs consenso $9.38B. New orders -9% YoY, net earnings -52% YoY. El propio CEO reconocio deterioro del entorno desde la call anterior.",
+      "accion_futura": "Homebuilders en regimen de tipos al alza (Fed subio en sep): tratar LEN/DHI/PHM/KBH como sector con beat_rate estructuralmente deteriorado. No generar candidatos de earnings en constructoras hasta ver 2 trimestres consecutivos de guia al alza.",
+      "impacto_score": -0.2
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "CLUSTER_GUIDANCE_NEGATIVA",
+      "titulo": "Cluster de guia negativa ciclica 16-17 sep: STLD, NUE (acero) + LEN (vivienda)",
+      "descripcion": "STLD guia Q3 $5.34-5.38 vs cons $5.87 (-8.9%); NUE $5.55-5.65 vs cons $6.04 (-7.3%); LEN recorta rev Q4 -9% vs consenso. Tres nombres ciclicos industriales/vivienda recortando el mismo ciclo. BCBP ademas guia perdida de -$7.86/accion vs -$0.05 consenso (shock idiosincratico bancario). Contrapunto: AS sube guia (consumo deportivo premium); REXR/INTU/YETI reafirman.",
+      "accion_futura": "Marcar acero y construccion residencial como sectores con pre-anuncio negativo activo para el ciclo Q3-2026. Exigir +1.0 de score extra a cualquier candidato de earnings en esos sectores hasta el 31-oct-2026. El shock de oferta petrolera + Fed hawkish esta pasando a los margenes industriales.",
+      "impacto_score": -0.3,
+      "generada_autonomamente": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "CALENDARIO_SIN_ALPHA",
+      "titulo": "Semana 14-18 sep sin alpha de earnings: 0 beats explotables en 3 sesiones",
+      "descripcion": "16-sep: LEN miss. 17-sep: solo IPHA (perdida, sin consenso ni whisper -> no parseable). 18-sep (triple witching): cero reportes relevantes; el Evening Edge del dia no menciona ni un earnings. Confirma la leccion ya registrada el 18-sep sobre la semana 21-25 sep.",
+      "accion_futura": "Ventana 14-sep a 9-oct = hueco estructural entre temporadas. No esperar candidatos de earnings; reasignar el riesgo a las tesis macro vivas (energia XOM/CVX) y al bloque cripto. Reactivar el pipeline EW a partir del inicio de la temporada Q3 (~13-oct con los bancos).",
+      "impacto_score": 0.0,
+      "generada_autonomamente": true
     }
   ],
   "operaciones": [
@@ -8415,6 +8441,11 @@
       "realizado_hoy_dolares": -1695.99,
       "evento_clave": "Primera subida de tipos de la Fed en 3 anos (3.75-4.00%, 16-sep) ya digerida: 10y de vuelta sobre 5.00% y VIX hundido a 15.44. Dow cierra su peor semana desde marzo.",
       "leccion": "El bot no puede proteger lo que compra: su orden LIMIT de take-profit por el 100% de las acciones retiene el inventario y hace fisicamente imposible anadir un stop (403 de Alpaca). 4 posiciones, 26% del equity, entran al fin de semana desnudas. NFLX ya pago la factura hoy: -1.96R en una salida a mercado."
+    },
+    {
+      "fecha": "2026-09-18",
+      "tarea": "ew-daily-results",
+      "nota": "Email EW del 18-sep no habia llegado a las 21:39 UTC (el del 17 llego 21:30 UTC). Procesados los emails EW pendientes del 16 y 17 sep, que no constaban en el log. 2 resultados registrados (LEN miss, IPHA sin datos), 7 guidance, 0 continuation plays, 0 candidatos de cartera afectados (los 10 candidatos_validados estan expirados). Escritura al filesystem local imposible (sin mount Scheduled) -> persistido en GitHub."
     }
   ],
   "alertas_criticas": [
@@ -17517,6 +17548,37 @@
         }
       ],
       "veredicto": "4 de 4 descartes acertados y 1 cierre R0 acertado. El sistema NO perdio dinero hoy por ninguna decision propia: los +$105.56 vienen de XOM/CVX, que son exactamente la posicion correcta para un regimen de shock de oferta petrolera. Dia de maxima calidad defensiva."
+    },
+    {
+      "ticker": "LEN",
+      "fecha": "2026-09-16",
+      "resultado": "miss",
+      "eps_actual": 1.23,
+      "eps_consensus": 1.29,
+      "eps_whisper": 1.28,
+      "revenue_actual_b": 8.05,
+      "revenue_consensus_b": 8.33,
+      "revenue_growth_yoy": -8.67,
+      "reaccion_ah_pct": 0.0,
+      "fuente_datos": "gmail_ew",
+      "guidance_proximo": "Q4 homebuilding rev $8.14B-$8.74B vs consenso $9.38B (recorte ~-9%)",
+      "nota": "EPS adj $1.23 (GAAP $1.19). New orders -9% YoY, deliveries -3% YoY, GM homes 15.8%. Accion cayo el 17-sep (magnitud exacta no confirmada).",
+      "whisper_beat_pct": -3.91,
+      "consensus_beat_pct": -4.65
+    },
+    {
+      "ticker": "IPHA",
+      "fecha": "2026-09-17",
+      "resultado": "sin_datos",
+      "eps_actual": -0.24,
+      "eps_consensus": null,
+      "eps_whisper": null,
+      "revenue_growth_yoy": null,
+      "reaccion_ah_pct": 0.0,
+      "fuente_datos": "gmail_ew",
+      "nota": "Perdida de $0.24/accion Q2 jun-2026. Sin consenso ni whisper publicados -> no explotable.",
+      "whisper_beat_pct": 0.0,
+      "consensus_beat_pct": 0.0
     }
   ],
   "kpis_actuales": {
@@ -23062,5 +23124,49 @@
         "ultimo_error": null
       }
     }
-  }
+  },
+  "guidance_log": [
+    {
+      "ticker": "STLD",
+      "tipo": "negativa",
+      "fecha": "2026-09-17",
+      "detalle": "Q3 EPS guia $5.34-5.38 vs consenso $5.87 (-8.9%)"
+    },
+    {
+      "ticker": "NUE",
+      "tipo": "negativa",
+      "fecha": "2026-09-17",
+      "detalle": "Q3 EPS guia $5.55-5.65 vs consenso $6.04 (-7.3%)"
+    },
+    {
+      "ticker": "BCBP",
+      "tipo": "negativa",
+      "fecha": "2026-09-16",
+      "detalle": "Q3 perdida $7.29-7.86/accion vs consenso -$0.05. Shock contable."
+    },
+    {
+      "ticker": "AS",
+      "tipo": "positiva",
+      "fecha": "2026-09-16",
+      "detalle": "Sube guia Q3 rev a $2.11-2.14B (antes $2.07-2.11B)"
+    },
+    {
+      "ticker": "REXR",
+      "tipo": "reafirma",
+      "fecha": "2026-09-17",
+      "detalle": "Reafirma"
+    },
+    {
+      "ticker": "INTU",
+      "tipo": "reafirma",
+      "fecha": "2026-09-17",
+      "detalle": "Reafirma"
+    },
+    {
+      "ticker": "YETI",
+      "tipo": "reafirma",
+      "fecha": "2026-09-17",
+      "detalle": "Reafirma"
+    }
+  ]
 }
