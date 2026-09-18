@@ -1396,7 +1396,7 @@
       "simbolo": "XOM",
       "qty": 6,
       "precio_entrada": 161.59,
-      "stop_loss": 156.74,
+      "stop_loss": 157.02,
       "take_profit": 169.67,
       "sector": "energy",
       "atr14": 3.339,
@@ -1419,8 +1419,10 @@
       "pnl_latente_abs": 16.09,
       "R_actual": 0.55,
       "stop_verificado_2026-09-09": true,
-      "stop_activo": 164.86,
-      "ultima_revision": "2026-09-15"
+      "stop_activo": 157.02,
+      "ultima_revision": "2026-09-15",
+      "stop_tier_overnight": "overnight_break_even",
+      "stop_overnight_updated_at": "2026-09-18T18:42:13.670989+00:00"
     },
     {
       "id": "COWORK-MACRO-OIL_SP-20260908-CVX",
@@ -9106,6 +9108,139 @@
       ],
       "infra": "/sessions al 100% de disco -> yfinance no instalable; se uso Alpaca Data API (barras 1D, IEX) para ATR14 y earningswhispers API para R0. Lectura y escritura del log via GitHub (ruta canonica de filesystem no montada).",
       "nota": "Pre-cierre limpio en decisiones: 0 cierres (R0 no aplica a ninguna posicion). El hallazgo relevante del dia es de infraestructura, no de gestion: el 66% del market value paper duerme sin stop por un fallo del scanner GHA, no por decision de Cowork. Cowork solo gestiona XOM y CVX (macro-oil 8-sep), ambas en verde y con stop activo."
+    },
+    {
+      "timestamp": "2026-09-18T18:42:13.670989+00:00",
+      "tarea": "pre-close-manager",
+      "hora_et": "2026-09-18 14:42 ET",
+      "evaluaciones": [
+        {
+          "symbol": "XOM",
+          "decision": "mantener",
+          "razon": "cowork_macro_oil sin earnings proximos; pnl +0.71%; stop overnight subido 156.74->157.02 (overnight_break_even, ATR14=3.82 x1.5)",
+          "pnl_pct": 0.71,
+          "dias": 10,
+          "source": "cowork-macro-oil"
+        },
+        {
+          "symbol": "CVX",
+          "decision": "mantener",
+          "razon": "cowork_macro_oil; pnl -1.26% (no alcanza R2 -2%); stop 207.50 ya mas ceñido que el optimo overnight 206.59 -> sin cambio",
+          "pnl_pct": -1.26,
+          "dias": 10,
+          "source": "cowork-macro-oil"
+        },
+        {
+          "symbol": "AAPL",
+          "decision": "mantener",
+          "razon": "bot_autonomo (live_open_scan) - solo R0; sin earnings hasta 29-oct; stop_limit 322.82 vivo",
+          "pnl_pct": 0.25,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "COHR",
+          "decision": "mantener",
+          "razon": "bot_autonomo - entrada HOY 14:39 ET; bracket leg held @284.08; ANOMALIA: score_entrada 6.62 < hard_gate 7.5",
+          "pnl_pct": -0.02,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "CRM",
+          "decision": "mantener",
+          "razon": "bot_autonomo - hands-off; OCO leg held @230.94; P&L -6.44% pero no es posicion Cowork",
+          "pnl_pct": -6.44,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "DELL",
+          "decision": "mantener",
+          "razon": "bot_autonomo; sin earnings hasta 27-nov; stop_limit 519.31 vivo",
+          "pnl_pct": 1.31,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "MSTR",
+          "decision": "mantener",
+          "razon": "bot_autonomo - entrada HOY 14:39 ET score 8.03; bracket leg held @134.24",
+          "pnl_pct": 4.08,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "RBLX",
+          "decision": "mantener",
+          "razon": "bot_autonomo; OCO leg held @43.43; sin earnings hasta 29-oct",
+          "pnl_pct": -1.02,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "ETHUSD",
+          "decision": "mantener",
+          "razon": "dust crypto paper ($0.17) - sin gestion",
+          "pnl_pct": 5.2,
+          "source": "bot_autonomo"
+        },
+        {
+          "symbol": "SOLUSD",
+          "decision": "mantener",
+          "razon": "dust crypto paper ($0.006) - sin gestion",
+          "pnl_pct": 7.27,
+          "source": "bot_autonomo"
+        }
+      ],
+      "posiciones_cerrar": 0,
+      "posiciones_mantener": 10,
+      "cierres_ejecutados": [],
+      "cierres_fallidos": [],
+      "stops_overnight": [
+        {
+          "symbol": "XOM",
+          "old_stop": 156.74,
+          "new_stop": 157.02,
+          "pnl_pct": 0.71,
+          "tier": "overnight_break_even",
+          "atr": 3.815
+        },
+        {
+          "symbol": "CVX",
+          "old_stop": 207.5,
+          "new_stop": 207.5,
+          "pnl_pct": -1.26,
+          "tier": "sin_cambio_ya_optimo",
+          "atr": 4.601
+        }
+      ],
+      "cobertura_stop": "8/8 posiciones equity con stop vivo (4 top-level 'new', 4 legs bracket/OCO 'held'). 0 posiciones desnudas.",
+      "r0_evaluacion": "Ningun ticker con earnings AH hoy ni pre-market el proximo dia habil (lunes 21-sep). Proximos: AAPL/MSTR/RBLX 29-oct, CVX/XOM 30-oct, COHR 4-nov, DELL 27-nov, CRM 2-dic. R0 y R0-EXTENDED no se activan.",
+      "pnl_dia_realizado": -1695.99,
+      "cierres_del_dia_por_el_bot": [
+        {
+          "symbol": "NFLX",
+          "qty": 127,
+          "entrada": 79.61,
+          "salida": 71.76,
+          "pnl_abs": -996.95,
+          "pnl_pct": -9.86,
+          "score_entrada": 7.68,
+          "hora": "14:05 ET"
+        },
+        {
+          "symbol": "SQQQ",
+          "qty": 260,
+          "entrada": 40.8286,
+          "salida": 38.14,
+          "pnl_abs": -699.04,
+          "pnl_pct": -6.58,
+          "score_entrada": 6.98,
+          "hora": "13:40 ET"
+        }
+      ],
+      "anomalias": [
+        "SQQQ cerrada hoy -6.58% (-$699): score_entrada 6.98 < hard_gate 7.5 Y es ETF apalancado con bloqueo_etf_apalancado=True. Doble violacion de gate por el scanner GHA.",
+        "COHR abierta HOY 14:39 ET con score_entrada 6.62 < hard_gate_score_minimo_entrada 7.5. Tercera violacion del gate por dynamic_scanner_gha en 8 dias (ya documentado en _evidencia_gate_2026_09_15).",
+        "Entradas del bot a 80 min del cierre (MSTR y COHR a las 14:39 ET) - sin ventana para verificacion de stop post-fill antes del close.",
+        "El SKILL de pre-close usa op.get('symbol') pero performance_log['operaciones'] usa la clave 'simbolo' -> el matching Cowork/bot falla silencionamente y todo se clasifica bot_autonomo. Ejecucion de hoy hecha con matching manual sobre ambas claves.",
+        "performance_log no existe en el filesystem de esta sesion (/sessions/*/mnt/Scheduled/ ausente); lectura via GitHub y escritura via GitHub API."
+      ]
     }
   ],
   "historial_diario_notas": [
@@ -22638,7 +22773,7 @@
       "accion_requerida": "Reescribir get_ew_headless() en sentinel, pre-market-scan y ew-daily-results para usar /api/caldata + /api/epsdetails en vez de BeautifulSoup sobre old.earningswhispers.com"
     }
   ],
-  "ultima_actualizacion": "2026-09-18T14:17 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-18T18:42:13.670989+00:00",
   "ew_calendario_proximo": {
     "ts": "2026-09-18T14:17",
     "fuente": "api/caldata",
