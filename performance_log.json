@@ -647,7 +647,8 @@
       "descripcion": "NFLX cierra a 75,35 con stop 75,11 (0,32% = 0,05R de margen) y R actual -0,95. SQQQ cierra a 38,63 con stop 38,15 (1,24%) y R -0,82, y el mercado va en su contra (QQQ +1,7% hoy). El 18-sep es cuadruple witching: el volumen y el ruido de apertura son maximos justo cuando estos dos stops estan a menos de 1 ATR-intradia.",
       "accion_correctiva": "No mover los stops (son la proteccion y ya estan en -1R). Asumir el stop-out como escenario base y NO reentrar el mismo dia (dias_cooldown_mismo_ticker=3). Registrar la perdida como coste del ciclo FOMC. Para el futuro: no dejar correr hasta -0,95R una posicion cuya tesis (cobertura de evento) ya ha caducado.",
       "tarea_afectada": "intraday-monitor / pre-close-manager",
-      "aplicada": false
+      "aplicada": true,
+      "resultado_validacion": "CONFIRMADO 18-sep: ambos stop-outs ocurrieron. SQQQ 09:40 ET @38.14 (-6.58%, -698.88 USD) y NFLX 10:05 ET @71.76 (-9.86%, -996.95 USD). No se reentró en ninguno. Total realizado -1.695,83 USD."
     },
     {
       "fecha": "2026-09-17",
@@ -663,6 +664,14 @@
       "descripcion": "Verificado directamente en el calendario de EarningsWhispers con sesion activa. El motor EW se queda literalmente sin combustible hasta el 22-sep, y la primera tanda relevante no llega hasta octubre. El alpha de las proximas sesiones NO puede venir de earnings.",
       "accion_correctiva": "Sustituir temporalmente la fuente de alpha: (a) tesis macro-tematicas con catalizador fechado, (b) fuerza relativa vs SPY sin extension, (c) contagio de cadena de suministro. Mantener el gate en 7,5 (prohibido_rebajar_gate_por_falta_de_candidatos=True) y aceptar dias sin entradas.",
       "tarea_afectada": "multiple",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "titulo": "La regla de TP 1.5R-4.0R se aplicó solo a órdenes nuevas — 4 OCO ya abiertos seguían a 6,9-9,9R",
+      "descripcion": "Mismo patrón que la lección del 16-sep sobre la regla OCO: la corrección se incorpora al flujo de colocación pero nadie barre las posiciones ya vivas. A las 12:30 ET del 18-sep, COHR tenía TP a 9,91R ($555,80), MSTR a 9,93R ($262,65), CRM a 7,47R ($438,13) y RBLX a 6,90R ($78,33). Con TP inalcanzable el OCO degenera en stop-only y toda la salida queda a merced del stop.",
+      "accion_correctiva": "El intraday-monitor incorpora un barrido diario de patas TP: para cada posición con stop vivo, recalcular R=(tp-entry)/(entry-stop) y si queda fuera de [1.5, 4.0] hacer PATCH del limit a entry+2*(entry-stop), verificando el stop vivo <=5s después del replace. Hoy se corrigieron los 4 (358,81 / 169,49 / 304,32 / 56,69) sin dejar ninguna posición desnuda.",
+      "tarea_afectada": "intraday-monitor",
       "aplicada": true
     }
   ],
@@ -1591,15 +1600,20 @@
       "rr": 10.0,
       "qty": 127,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "b6665f0c-2383-46c0-a39c-0969af93e819",
       "cuenta": "paper",
       "pnl_abs": -209.55,
-      "pnl_pct": -2.073,
+      "pnl_pct": -9.86,
       "pnl_r": -0.413,
       "precio_actual": 77.96,
       "stop_activo": null,
-      "ultima_revision": "2026-09-15"
+      "ultima_revision": "2026-09-15",
+      "exit_price": 71.76,
+      "pnl_usd": -996.95,
+      "fecha_cierre": "2026-09-18T16:36:45.461245+00:00",
+      "motivo_cierre": "stop_out/cierre_emergencia_gha",
+      "cerrada_por": "intraday-monitor-reconciliacion-alpaca"
     },
     {
       "id": "GHA-20260914-RBLX",
@@ -1681,15 +1695,20 @@
       "rr": 10.0,
       "qty": 260,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "315b35aa-4c1d-41da-a053-4536a9281016",
       "cuenta": "paper",
       "pnl_abs": -85.44,
-      "pnl_pct": -0.805,
+      "pnl_pct": -6.58,
       "pnl_r": -0.169,
       "precio_actual": 40.5,
       "stop_activo": null,
-      "ultima_revision": "2026-09-15"
+      "ultima_revision": "2026-09-15",
+      "exit_price": 38.14,
+      "pnl_usd": -698.88,
+      "fecha_cierre": "2026-09-18T16:36:45.461245+00:00",
+      "motivo_cierre": "stop_out_stop_limit",
+      "cerrada_por": "intraday-monitor-reconciliacion-alpaca"
     },
     {
       "id": "GHA-20260918-MSTR",
@@ -8187,6 +8206,157 @@
       "acciones": [
         "🚨 [PAPER] NFLX: cierre emergencia -9.8% "
       ]
+    },
+    {
+      "ts": "2026-09-18T16:36Z",
+      "fuente": "cowork-intraday-monitor",
+      "acciones": [
+        "✅ TP recalculado COHR: $555.80 (9.91R) → $358.81 (2.0R)",
+        "✅ TP recalculado CRM: $438.13 (7.47R) → $304.32 (2.0R)",
+        "✅ TP recalculado MSTR: $262.65 (9.93R) → $169.49 (2.0R)",
+        "✅ TP recalculado RBLX: $78.33 (6.9R) → $56.69 (2.0R)",
+        "✅ AUDIT stops: 8/8 posiciones equity protegidas, 0 desnudas",
+        "ℹ️ Trailing: 0 movimientos (todos los stops vigentes ya más ajustados que el ATR-trailing)",
+        "🔒 Cierres reconciliados: NFLX -996.95 USD, SQQQ -698.88 USD"
+      ],
+      "posiciones_abiertas": 8,
+      "posiciones_detalle": [
+        {
+          "symbol": "AAPL",
+          "shares": 30,
+          "entry": 334.59,
+          "current": 334.76,
+          "pnl_pct": 0.05,
+          "stop": 322.82,
+          "stop_source": "stop_top_level"
+        },
+        {
+          "symbol": "COHR",
+          "shares": 20,
+          "entry": 308.99,
+          "current": 308.41,
+          "pnl_pct": -0.19,
+          "stop": 284.08,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "CRM",
+          "shares": 28,
+          "entry": 255.4,
+          "current": 238.87,
+          "pnl_pct": -6.47,
+          "stop": 230.94,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "CVX",
+          "shares": 5,
+          "entry": 213.01,
+          "current": 210.96,
+          "pnl_pct": -0.96,
+          "stop": 207.5,
+          "stop_source": "stop_top_level"
+        },
+        {
+          "symbol": "DELL",
+          "shares": 11,
+          "entry": 564.75,
+          "current": 578.65,
+          "pnl_pct": 2.46,
+          "stop": 519.31,
+          "stop_source": "stop_top_level"
+        },
+        {
+          "symbol": "MSTR",
+          "shares": 43,
+          "entry": 145.99,
+          "current": 150.62,
+          "pnl_pct": 3.17,
+          "stop": 134.24,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "RBLX",
+          "shares": 168,
+          "entry": 47.85,
+          "current": 47.03,
+          "pnl_pct": -1.71,
+          "stop": 43.43,
+          "stop_source": "stop_bracket_leg"
+        },
+        {
+          "symbol": "XOM",
+          "shares": 6,
+          "entry": 161.59,
+          "current": 162.83,
+          "pnl_pct": 0.77,
+          "stop": 156.74,
+          "stop_source": "stop_top_level"
+        }
+      ],
+      "posiciones_sin_stop": [],
+      "stops_actualizados": [],
+      "stops_fallidos": [],
+      "tp_recalculados": [
+        {
+          "symbol": "COHR",
+          "tp_old": 555.8,
+          "tp_new": 358.81,
+          "r_old": 9.91,
+          "stop_ok": true
+        },
+        {
+          "symbol": "CRM",
+          "tp_old": 438.13,
+          "tp_new": 304.32,
+          "r_old": 7.47,
+          "stop_ok": true
+        },
+        {
+          "symbol": "MSTR",
+          "tp_old": 262.65,
+          "tp_new": 169.49,
+          "r_old": 9.93,
+          "stop_ok": true
+        },
+        {
+          "symbol": "RBLX",
+          "tp_old": 78.33,
+          "tp_new": 56.69,
+          "r_old": 6.9,
+          "stop_ok": true
+        }
+      ],
+      "cierres_reconciliados": [
+        {
+          "simbolo": "NFLX",
+          "entry": 79.61,
+          "exit": 71.76,
+          "qty": 127,
+          "pnl": -996.95,
+          "pnl_pct": -9.86,
+          "motivo": "stop_out/cierre_emergencia_gha"
+        },
+        {
+          "simbolo": "SQQQ",
+          "entry": 40.828,
+          "exit": 38.14,
+          "qty": 260,
+          "pnl": -698.88,
+          "pnl_pct": -6.58,
+          "motivo": "stop_out_stop_limit"
+        }
+      ],
+      "parciales_ejecutados": [],
+      "nuevas_entradas": [],
+      "motivo_no_entradas": "8 posiciones abiertas > max_posiciones_paper_simultaneas=4 y > max_posiciones_paper_para_nuevas_entradas=2",
+      "mercado": {
+        "spy_intraday_pct": -0.27,
+        "vix": 20.0,
+        "modo_dip": false
+      },
+      "earnings_ah_hoy": [],
+      "urgency_cierres": []
     }
   ],
   "pre_close_log": [
@@ -18435,6 +18605,15 @@
       "notional_usd": 36252.15,
       "resumen": "4 posiciones del scanner GHA (lote 14-sep) overnight sin stop en Alpaca; TP limits a distancia irreal. Revisar colocacion de stops del bot.",
       "estado": "abierta"
+    },
+    {
+      "fecha": "2026-09-18",
+      "fuente": "cowork-intraday-monitor",
+      "anomalias": [
+        "8 posiciones equity abiertas frente a max_posiciones_paper_simultaneas=4 — el bot GHA siguió abriendo (COHR y MSTR hoy 10:39 ET) por encima del límite del log. Revisar si el GHA lee parametros_activos.",
+        "AAPL, CVX, DELL y XOM son stop-only (sin pata TP). No es una posición desnuda, pero incumple la regla 'TP y SL siempre juntos' del 15-sep. No se añadió TP para no romper la protección existente con órdenes no enlazadas: requiere recolocar como OCO desde la tarea de apertura.",
+        "ETHUSD y SOLUSD figuran como posiciones con qty fraccional ~0 y sin stop: residuos de cripto sin valor material (P&L +0,01 USD). Conviene barrerlos."
+      ]
     }
   ],
   "w20_pivot": {
@@ -22372,7 +22551,7 @@
       "accion_sugerida": "Revisar selector/estructura de old.earningswhispers.com o usar fuente alternativa (yfinance earnings_dates + consensus, o API EW)."
     }
   ],
-  "ultima_actualizacion": "2026-09-18T10:16 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-18T16:36:45.461245+00:00",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
