@@ -2679,13 +2679,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-18T13:14",
+      "timestamp": "2026-09-18T14:17",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
+      "motivo_no_entradas": "cowork_abiertas=4/4 MAX_COWORK",
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0,
-      "nota": "Sin shock: VIX -0.19% (15.41), SPY -0.45%, ningun umbral de shock activado. Caida del petroleo es des-escalada de oferta, no shock de riesgo."
+      "score_min_real_efectivo": 99.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2706,17 +2706,18 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-18T13:14",
-    "macro_score": -0.3,
-    "macro_bonus_ew": -0.09,
+    "ts_actualizado": "2026-09-18T14:17",
+    "macro_score": -0.8,
+    "macro_bonus_ew": -0.24,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "US10Y en 5.00% (+1.03%) - presion sobre duracion y growth; utilities -1.39% y materiales -1.30% son los rezagados",
-      "WTI -5.74% a $96 (Arabia Saudi restaura ~50% del oleoducto East-West en dias) - la tesis oil_spike que justifico CVX/XOM esta ROTA",
-      "Bitcoin +5.72% a $80.8k - MSTR (bot) se beneficia, +2.64% no realizado",
-      "Fed subio 25pb el 16-sep (primera subida desde 2023); reaccion de mercado contenida, VIX 15.41",
-      "Europa debil (DAX -1.60%, FTSE -1.45%); Asia mixta",
-      "Triple witching: los % de futuros (ES +0.64%, NQ +0.95%) estan distorsionados por el roll de contrato - se descartan como senal"
+      "Fed subio tipos (primera subida en 3 anos) — regimen hawkish confirmado",
+      "10Y en 5.00% (+1.0%) — presion maxima sobre valoraciones growth",
+      "WTI -5.87% a $95.9 — alivio inflacionista parcial; guerra Iran ~7 meses",
+      "VIX 15.2 (-1.3%) — sin estres de volatilidad pese al regimen de tipos",
+      "Europa debil: DAX -1.60%, FTSE -1.45%; Asia mixta",
+      "Rotacion defensiva: XLU -1.13%, XLB -1.31%, XLY -0.43%; XLK +0.03% plano",
+      "Triple witching — volumenes intradia distorsionados (vol ratios 0.2-0.7x)"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -2727,15 +2728,12 @@
     ],
     "bonos": {
       "tlt_chg": -0.7,
-      "yield_10y": 5.0,
-      "yield_30y": 5.33
+      "yield_10y": 5.0
     },
     "commodities": {
-      "wti": 96.06,
-      "wti_chg": -5.74,
-      "oro_chg": 0.48,
-      "btc": 80776,
-      "btc_chg": 5.72
+      "wti": 95.93,
+      "wti_chg": -5.87,
+      "gold": 4430.9
     },
     "snapshot_holiday_20260907": {
       "VIX": [
@@ -2931,8 +2929,9 @@
       }
     ],
     "futuros": {
-      "ES": 0.6,
-      "NQ": 0.94
+      "SPY_pct": -0.37,
+      "QQQ_pct": 0.05,
+      "IWM_pct": -0.72
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -15519,40 +15518,58 @@
       "macro_nivel": "normal",
       "macro_score": -0.3,
       "nota": "Viernes 13:15 ET (triple witching). 4/4 slots Cowork ocupados (CRM,CVX,RBLX,XOM) -> sin nuevas entradas por diseno. Todas las posiciones de acciones (8) con stop vivo en paper; cuenta REAL vacia (0 posiciones, $4.548). EW scraper caido -> 0 senales EW. Calendario de earnings vacio lun-mar; proximos: CTAS/GIS/PAYX 23-sep BMO, COST 24-sep AMC, MU 30-sep AMC. ALERTA DE TESIS: WTI -5.74% a $96 por restauracion del oleoducto saudi -> el macro-play oil_spike (CVX 5sh, XOM 6sh) ha perdido su catalizador; revisar en post-market si se mantienen o se cierran."
+    },
+    {
+      "ts": "2026-09-18T14:17:55.164888+00:00",
+      "alertas": 0,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 4,
+      "vix": 15.24,
+      "macro_nivel": "normal",
+      "nota": "EW scraper roto — 0 candidatos posibles; slots Cowork llenos 4/4"
     }
   ],
   "momentum_15m": {
     "AAPL": {
-      "precio": 334.88,
-      "mom_15m": 0.09,
-      "vol_ratio": 0.11,
-      "rsi": 52.3,
+      "precio": 335.55,
+      "mom_15m": -0.013,
+      "mom_30m": 0.039,
+      "vol_ratio": 0.24,
+      "vwap_dev": 0.14,
+      "rsi": 73.1,
       "señal": "LATERAL",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "CRM": {
-      "precio": 239.03,
-      "mom_15m": 0.02,
-      "vol_ratio": 0.28,
-      "rsi": 25.4,
+      "precio": 238.19,
+      "mom_15m": -0.036,
+      "mom_30m": -0.172,
+      "vol_ratio": 0.39,
+      "vwap_dev": -0.134,
+      "rsi": 23.8,
       "señal": "LATERAL",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "CVX": {
-      "precio": 210.66,
-      "mom_15m": -0.07,
-      "vol_ratio": 0.16,
-      "rsi": 34.8,
+      "precio": 210.71,
+      "mom_15m": -0.059,
+      "mom_30m": -0.04,
+      "vol_ratio": 0.42,
+      "vwap_dev": -0.015,
+      "rsi": 45.3,
       "señal": "LATERAL",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "DELL": {
-      "precio": 579.77,
-      "mom_15m": 0.11,
-      "vol_ratio": 0.22,
-      "rsi": 36.8,
-      "señal": "LATERAL",
-      "ts": "13:14"
+      "precio": 576.53,
+      "mom_15m": -0.187,
+      "mom_30m": -0.411,
+      "vol_ratio": 0.69,
+      "vwap_dev": -0.354,
+      "rsi": 33.2,
+      "señal": "debil_bajista",
+      "ts": "14:17"
     },
     "NFLX": {
       "precio": 75.5,
@@ -15565,12 +15582,14 @@
       "ts": "15:15"
     },
     "RBLX": {
-      "precio": 47.46,
-      "mom_15m": 0.85,
-      "vol_ratio": 0.26,
-      "rsi": 71.2,
+      "precio": 47.52,
+      "mom_15m": 0.211,
+      "mom_30m": 0.38,
+      "vol_ratio": 0.44,
+      "vwap_dev": 0.449,
+      "rsi": 68.8,
       "señal": "debil_alcista",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "SQQQ": {
       "precio": 38.57,
@@ -15583,82 +15602,84 @@
       "ts": "15:15"
     },
     "XOM": {
-      "precio": 162.53,
-      "mom_15m": -0.12,
-      "vol_ratio": 0.11,
-      "rsi": 24.3,
+      "precio": 162.73,
+      "mom_15m": 0.018,
+      "mom_30m": -0.004,
+      "vol_ratio": 0.24,
+      "vwap_dev": 0.021,
+      "rsi": 50.6,
       "señal": "LATERAL",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "PANW": {
-      "precio": 374.88,
-      "mom_15m": -0.087,
-      "mom_30m": -0.081,
-      "vol_ratio": 0.74,
-      "vwap_dev": -0.221,
-      "rsi": 42.6,
+      "precio": 363.07,
+      "mom_15m": -0.019,
+      "mom_30m": -0.026,
+      "vol_ratio": 0.32,
+      "vwap_dev": 0.319,
+      "rsi": 71.1,
       "señal": "LATERAL",
-      "ts": "13:18"
+      "ts": "14:17"
     },
     "DOCS": {
-      "precio": 25.9,
-      "mom_15m": -0.69,
-      "mom_30m": -1.183,
-      "vol_ratio": 0.65,
-      "vwap_dev": -1.023,
-      "rsi": 28.9,
-      "señal": "debil_bajista",
-      "ts": "15:28"
+      "precio": 26.32,
+      "mom_15m": -0.095,
+      "mom_30m": -0.076,
+      "vol_ratio": 0.12,
+      "vwap_dev": -0.205,
+      "rsi": 36.6,
+      "señal": "LATERAL",
+      "ts": "14:17"
     },
     "CRWD": {
-      "precio": 246.82,
-      "mom_15m": -0.162,
-      "mom_30m": -0.134,
-      "vol_ratio": 0.6,
-      "vwap_dev": 0.188,
-      "rsi": 56.5,
-      "señal": "debil_bajista",
-      "ts": "13:18"
+      "precio": 238.48,
+      "mom_15m": -0.021,
+      "mom_30m": -0.288,
+      "vol_ratio": 0.22,
+      "vwap_dev": 0.204,
+      "rsi": 58.5,
+      "señal": "LATERAL",
+      "ts": "14:17"
     },
     "IGV": {
-      "precio": 104.24,
-      "mom_15m": -0.368,
-      "mom_30m": -0.752,
-      "vol_ratio": 0.32,
-      "vwap_dev": -0.881,
-      "rsi": 28.9,
-      "señal": "debil_bajista",
-      "ts": "15:28"
+      "precio": 104.36,
+      "mom_15m": 0.005,
+      "mom_30m": -0.014,
+      "vol_ratio": 0.29,
+      "vwap_dev": 0.114,
+      "rsi": 68.6,
+      "señal": "LATERAL",
+      "ts": "14:17"
     },
     "XLC": {
-      "precio": 112.52,
-      "mom_15m": -0.416,
-      "mom_30m": -0.662,
-      "vol_ratio": 0.65,
-      "vwap_dev": -0.885,
-      "rsi": 22.6,
-      "señal": "debil_bajista",
-      "ts": "15:28"
+      "precio": 111.28,
+      "mom_15m": 0.018,
+      "mom_30m": 0.013,
+      "vol_ratio": 0.22,
+      "vwap_dev": 0.032,
+      "rsi": 49.6,
+      "señal": "LATERAL",
+      "ts": "14:17"
     },
     "ISRG": {
-      "precio": 385.48,
-      "mom_15m": 0.208,
-      "mom_30m": 0.607,
-      "vol_ratio": 0.76,
-      "vwap_dev": 0.651,
-      "rsi": 92.7,
-      "señal": "debil_alcista",
-      "ts": "13:18"
+      "precio": 390.74,
+      "mom_15m": -0.309,
+      "mom_30m": -0.41,
+      "vol_ratio": 0.38,
+      "vwap_dev": -0.417,
+      "rsi": 31.7,
+      "señal": "debil_bajista",
+      "ts": "14:17"
     },
     "QCOM": {
-      "precio": 191.14,
-      "mom_15m": -0.146,
-      "mom_30m": 0.555,
-      "vol_ratio": 0.47,
-      "vwap_dev": 0.509,
-      "rsi": 65.2,
+      "precio": 178.23,
+      "mom_15m": -0.045,
+      "mom_30m": -0.146,
+      "vol_ratio": 0.25,
+      "vwap_dev": 0.298,
+      "rsi": 61.8,
       "señal": "LATERAL",
-      "ts": "13:18"
+      "ts": "14:17"
     },
     "MEDS": {
       "precio": 4.94,
@@ -15681,24 +15702,24 @@
       "ts": "15:28"
     },
     "SMTC": {
-      "precio": 181.5,
-      "mom_15m": 0.226,
-      "mom_30m": -1.251,
-      "vol_ratio": 0.34,
-      "vwap_dev": 0.71,
-      "rsi": 68.7,
-      "señal": "debil_alcista",
-      "ts": "10:16"
+      "precio": 182.07,
+      "mom_15m": -0.448,
+      "mom_30m": -0.648,
+      "vol_ratio": 0.68,
+      "vwap_dev": -0.325,
+      "rsi": 51.8,
+      "señal": "debil_bajista",
+      "ts": "14:17"
     },
     "RVTY": {
-      "precio": 145.85,
-      "mom_15m": 0.075,
-      "mom_30m": 0.434,
-      "vol_ratio": 0.34,
-      "vwap_dev": -0.113,
-      "rsi": 36.4,
-      "señal": "LATERAL",
-      "ts": "15:28"
+      "precio": 143.18,
+      "mom_15m": -0.348,
+      "mom_30m": -0.39,
+      "vol_ratio": 1.06,
+      "vwap_dev": -0.595,
+      "rsi": 14.7,
+      "señal": "debil_bajista",
+      "ts": "14:17"
     },
     "AMD": {
       "precio": 545.54,
@@ -15721,14 +15742,14 @@
       "ts": "15:15"
     },
     "ILMN": {
-      "precio": 243.27,
-      "mom_15m": 0.18,
-      "mom_30m": 0.3,
-      "vol_ratio": 0.7,
-      "vwap_dev": -0.09,
-      "rsi": 42,
-      "señal": "debil_alcista",
-      "ts": "15:15"
+      "precio": 236.96,
+      "mom_15m": -0.194,
+      "mom_30m": -0.169,
+      "vol_ratio": 0.28,
+      "vwap_dev": -0.713,
+      "rsi": 15.8,
+      "señal": "debil_bajista",
+      "ts": "14:17"
     },
     "ANET": {
       "precio": 199.78,
@@ -15741,24 +15762,24 @@
       "ts": "14:20"
     },
     "FPS": {
-      "precio": 38.1,
-      "mom_15m": -0.717,
-      "mom_30m": -2.719,
+      "precio": 39.14,
+      "mom_15m": -0.051,
+      "mom_30m": 0.118,
       "vol_ratio": 0.16,
-      "vwap_dev": -0.409,
-      "rsi": 59.1,
-      "señal": "debil_bajista",
-      "ts": "10:16"
+      "vwap_dev": 0.052,
+      "rsi": 65.9,
+      "señal": "LATERAL",
+      "ts": "14:17"
     },
     "INTC": {
-      "precio": 108.1,
-      "mom_15m": -0.855,
-      "mom_30m": -1.478,
-      "vol_ratio": 0.34,
-      "vwap_dev": -1.037,
-      "rsi": 30.8,
+      "precio": 106.69,
+      "mom_15m": -0.229,
+      "mom_30m": -0.387,
+      "vol_ratio": 0.32,
+      "vwap_dev": -0.207,
+      "rsi": 40.0,
       "señal": "debil_bajista",
-      "ts": "10:16"
+      "ts": "14:17"
     },
     "GNRC": {
       "precio": 207.96,
@@ -15781,14 +15802,14 @@
       "ts": "15:15"
     },
     "PSX": {
-      "precio": 273.29,
-      "mom_15m": 0.14,
-      "mom_30m": 0.19,
-      "vol_ratio": 0.6,
-      "vwap_dev": 0.12,
-      "rsi": 56,
+      "precio": 271.55,
+      "mom_15m": -0.121,
+      "mom_30m": -0.063,
+      "vol_ratio": 0.16,
+      "vwap_dev": -0.232,
+      "rsi": 36.7,
       "señal": "LATERAL",
-      "ts": "15:15"
+      "ts": "14:17"
     },
     "CLS": {
       "precio": 334.01,
@@ -15801,12 +15822,14 @@
       "ts": "10:16"
     },
     "COHR": {
-      "precio": 307.98,
-      "mom_15m": -0.25,
-      "vol_ratio": 0.32,
-      "rsi": 37.6,
+      "precio": 308.0,
+      "mom_15m": -0.196,
+      "mom_30m": -0.133,
+      "vol_ratio": 0.29,
+      "vwap_dev": -0.204,
+      "rsi": 39.7,
       "señal": "debil_bajista",
-      "ts": "13:14"
+      "ts": "14:17"
     },
     "MARA": {
       "precio": 12.38,
@@ -15819,12 +15842,64 @@
       "ts": "10:16"
     },
     "MSTR": {
-      "precio": 149.87,
-      "mom_15m": -0.23,
-      "vol_ratio": 0.1,
-      "rsi": 59.9,
+      "precio": 151.35,
+      "mom_15m": -0.349,
+      "mom_30m": 0.351,
+      "vol_ratio": 0.39,
+      "vwap_dev": 0.455,
+      "rsi": 64.0,
       "señal": "debil_bajista",
-      "ts": "13:14"
+      "ts": "14:17"
+    },
+    "NTR": {
+      "precio": 77.17,
+      "mom_15m": -0.162,
+      "mom_30m": 0.097,
+      "vol_ratio": 0.54,
+      "vwap_dev": -0.067,
+      "rsi": 47.6,
+      "señal": "debil_bajista",
+      "ts": "14:17"
+    },
+    "ADM": {
+      "precio": 84.89,
+      "mom_15m": -0.035,
+      "mom_30m": 0.029,
+      "vol_ratio": 0.53,
+      "vwap_dev": -0.374,
+      "rsi": 31.5,
+      "señal": "LATERAL",
+      "ts": "14:17"
+    },
+    "MOS": {
+      "precio": 24.85,
+      "mom_15m": 0.081,
+      "mom_30m": 0.323,
+      "vol_ratio": 0.51,
+      "vwap_dev": 0.087,
+      "rsi": 48.7,
+      "señal": "LATERAL",
+      "ts": "14:17"
+    },
+    "ETN": {
+      "precio": 421.14,
+      "mom_15m": 0.053,
+      "mom_30m": 0.119,
+      "vol_ratio": 0.69,
+      "vwap_dev": 0.176,
+      "rsi": 69.8,
+      "señal": "LATERAL",
+      "ts": "14:17"
+    },
+    "DE": {
+      "precio": 680.22,
+      "mom_15m": -0.115,
+      "mom_30m": -0.15,
+      "vol_ratio": 1.37,
+      "vwap_dev": -0.112,
+      "rsi": 39.3,
+      "señal": "LATERAL",
+      "ts": "14:17"
     }
   },
   "sentinel_signals": [
@@ -22545,137 +22620,68 @@
       "incidencia": "EarningsWhispers scraping devuelve 0 datos en 32 tickers (homepage 200 OK, paginas /stocks/<tk> sin whisperbox). Posible bloqueo anti-bot o cambio de layout.",
       "impacto": "PASO 3 sin candidatos nuevos; pipeline EW ciego hasta reparar.",
       "accion_sugerida": "Revisar selector/estructura de old.earningswhispers.com o usar fuente alternativa (yfinance earnings_dates + consensus, o API EW)."
+    },
+    {
+      "fecha": "2026-09-18",
+      "ts": "2026-09-18T14:17",
+      "severidad": "ALTA",
+      "detectado_por": "sentinel",
+      "titulo": "EarningsWhispers scraping HTML ROTO — migrar a API JSON",
+      "detalle": "old.earningswhispers.com/stocks/{tkr} devuelve soft-404 (pagina Doh!). www.earningswhispers.com/stocks/{TKR} carga 200 pero el contenido es client-side (JS): no existen #whisperbox, #consensus ni var tweeturl en el HTML crudo. get_ew_headless() devuelve None para el 100% del universo -> PASO 3 del sentinel, pre-market scan y cualquier tarea que dependa del scraper llevan generando 0 candidatos EW silenciosamente.",
+      "fix_verificado": {
+        "calendario": "GET https://www.earningswhispers.com/api/caldata/{YYYYMMDD} -> JSON lista [{ticker, company, nextEPSDate, releaseTime(1=BMO?/3=AMC?), q1EstEPS, q1RevEst, confirmDate, quarterDate}]",
+        "detalle_resultado": "GET https://www.earningswhispers.com/api/epsdetails/{TICKER} -> JSON {whisper, estimate, eps, revenue, revenueEstimate, earningsSurprise, epsDate, subject, status} — OJO: corresponde al ULTIMO trimestre REPORTADO, no al proximo",
+        "resultados_dia": "GET https://www.earningswhispers.com/api/todaysresults -> JSON de todos los reportes del dia (ideal para PASO 4C beat detection)",
+        "headers": "User-Agent navegador + Referer https://www.earningswhispers.com/stocks/{TKR}; sin login",
+        "limitacion": "El whisper PROSPECTIVO (proximo trimestre) NO se expone sin autenticacion: probados /api/whisperdata, /api/whispernumber, /api/nextepsdetails, /api/getwhisper, /api/epspreview -> todos devuelven HTML. Alternativas: (a) renderizar la pagina con navegador, (b) cuenta EW logueada, (c) usar q1EstEPS de caldata como consensus y derivar asimetria de otra fuente."
+      },
+      "accion_requerida": "Reescribir get_ew_headless() en sentinel, pre-market-scan y ew-daily-results para usar /api/caldata + /api/epsdetails en vez de BeautifulSoup sobre old.earningswhispers.com"
     }
   ],
-  "ultima_actualizacion": "2026-09-18T13:14 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-18T14:17 ET (sentinel)",
   "ew_calendario_proximo": {
-    "ts": "2026-09-15T12:17",
-    "fuente": "api/getstocksdata",
-    "universo_escaneado": 99,
-    "con_whisper": [
-      {
-        "t": "COST",
-        "next": "2026-09-24",
-        "rt": 3,
-        "cons": 6.48,
-        "whis": 6.54,
-        "sect": "Retail-Wholesale"
-      },
-      {
-        "t": "GIS",
-        "next": "2026-09-23",
-        "rt": 1,
-        "cons": 0.72,
-        "whis": 0.74,
-        "sect": "Staples"
-      },
-      {
-        "t": "LEN",
-        "next": "2026-09-16",
-        "rt": 3,
-        "cons": 1.29,
-        "whis": 1.28,
-        "sect": "Construction"
-      }
-    ],
-    "proximos_30d": [
-      {
-        "t": "LEN",
-        "next": "2026-09-16",
-        "rt": 3,
-        "cons": 1.29,
-        "whis": 1.28,
-        "sect": "Construction"
-      },
-      {
-        "t": "GIS",
-        "next": "2026-09-23",
-        "rt": 1,
-        "cons": 0.72,
-        "whis": 0.74,
-        "sect": "Staples"
-      },
-      {
-        "t": "COST",
-        "next": "2026-09-24",
-        "rt": 3,
-        "cons": 6.48,
-        "whis": 6.54,
-        "sect": "Retail-Wholesale"
-      },
-      {
-        "t": "KMX",
-        "next": "2026-09-29",
-        "rt": 1,
-        "cons": 0.68,
-        "whis": null,
-        "sect": "Retail-Wholesale"
-      },
-      {
-        "t": "MU",
-        "next": "2026-09-30",
-        "rt": 3,
-        "cons": 31.17,
-        "whis": null,
-        "sect": "Technology"
-      },
-      {
-        "t": "NKE",
-        "next": "2026-10-01",
-        "rt": 3,
-        "cons": 0.45,
-        "whis": null,
-        "sect": "Discretionary"
-      },
-      {
-        "t": "DAL",
-        "next": "2026-10-12",
-        "rt": 1,
-        "cons": 2.03,
-        "whis": null,
-        "sect": "Transportation"
-      },
-      {
-        "t": "GS",
-        "next": "2026-10-13",
-        "rt": 1,
-        "cons": 15.62,
-        "whis": null,
-        "sect": "Financials"
-      },
-      {
-        "t": "JNJ",
-        "next": "2026-10-13",
-        "rt": 1,
-        "cons": 2.95,
-        "whis": null,
-        "sect": "Healthcare"
-      },
-      {
-        "t": "JPM",
-        "next": "2026-10-13",
-        "rt": 1,
-        "cons": 5.84,
-        "whis": null,
-        "sect": "Financials"
-      },
-      {
-        "t": "BAC",
-        "next": "2026-10-14",
-        "rt": 1,
-        "cons": 1.16,
-        "whis": null,
-        "sect": "Financials"
-      },
-      {
-        "t": "MS",
-        "next": "2026-10-14",
-        "rt": 1,
-        "cons": 3.01,
-        "whis": null,
-        "sect": "Financials"
-      }
-    ]
+    "ts": "2026-09-18T14:17",
+    "fuente": "api/caldata",
+    "semana": "2026-09-21/25",
+    "por_dia": {
+      "20260918": [
+        "TRT"
+      ],
+      "20260921": [
+        "ABVX"
+      ],
+      "20260922": [
+        "THO",
+        "MLKN",
+        "AZO",
+        "HERE",
+        "KBH",
+        "WOR",
+        "AYTU"
+      ],
+      "20260923": [
+        "CBRL",
+        "GIS",
+        "PAYX",
+        "CTAS",
+        "MANU",
+        "FUL",
+        "SFIX",
+        "NEOV"
+      ],
+      "20260924": [
+        "BB",
+        "DRI",
+        "SNX",
+        "MITQ",
+        "UXIN",
+        "COST",
+        "LGCY",
+        "SCHL"
+      ],
+      "20260925": []
+    },
+    "nota": "Semana MUERTA de earnings (hueco entre Q2 y Q3). Solo 24 reportes en toda la semana. Relevantes: AZO/KBH (22), GIS/PAYX/CTAS (23), COST/DRI (24). Sin mega-caps."
   },
   "sentinel_ultimo_check": {
     "timestamp": "2026-09-16T14:20",
