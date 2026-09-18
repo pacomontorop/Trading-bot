@@ -2484,7 +2484,7 @@
     "semana": "2026-W38",
     "regimen": "POST_HIKE_RELIEF_RALLY_CON_SESGO_RESTRICTIVO",
     "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "vix": 17.62,
+    "vix": 15.44,
     "yield_spread_10y2y": 0.41,
     "us10y": 5.041,
     "us2y": 4.34,
@@ -2912,7 +2912,7 @@
       "implicacion": "El motor EW-drift no tiene combustible ~2-3 semanas. Sin catalizador de earnings el scoring BLOQUES 1-3 puntua 0 y ningun candidato puede alcanzar el hard gate 7,5 por via de earnings.",
       "accion": "Modo preservacion de capital + gestion de posiciones abiertas. NO forzar entradas rebajando el umbral."
     },
-    "ts_health_check": "2026-09-17T06:08",
+    "ts_health_check": "2026-09-18T06:08Z",
     "restricciones_activas": [],
     "spy_day": 1.14,
     "qqq_day": 1.66,
@@ -2923,7 +2923,8 @@
       "fecha": "2026-09-18",
       "evento": "Cuadruple witching (vencimiento trimestral) + Produccion Industrial 09:15 ET",
       "impacto": "MEDIO-ALTO (volumen y ruido, no direccion)"
-    }
+    },
+    "vix_updated": "2026-09-18"
   },
   "operaciones_crypto": [
     {
@@ -21228,6 +21229,70 @@
       ],
       "fixes": [],
       "nota": "Primer dia de la semana W36 (31-ago a 4-sep, 5 sesiones; Labor Day cae el 7-sep). VIX 14.43 estable. Sin restricciones activas: sistema habilitado para operar. Contents API funciono (no hizo falta blobs API). Deteccion de tareas: se excluyen los commits system-health-check del matching para evitar falsos positivos por menciones de otras tareas en el propio mensaje del health check (bug que ocultaba la inactividad de pre-close-manager)."
+    },
+    {
+      "fecha": "2026-09-18",
+      "ts": "2026-09-18T06:08Z",
+      "estado": "AMARILLO",
+      "vix": 15.44,
+      "vix_log_previo": 17.62,
+      "vix_accion": "actualizado (diff 2.18 > 1.5)",
+      "restricciones_activas": 0,
+      "restricciones_eliminadas": 0,
+      "regimen": "POST_HIKE_RELIEF_RALLY_CON_SESGO_RESTRICTIVO",
+      "nota_regimen": "VIX 15.44 < 16 pero regimen 'POST_HIKE_RELIEF_RALLY_CON_SESGO_RESTRICTIVO' no esta en la lista de cambio automatico (DEFENSIVE_VIX_RECOVERY/VOLATILITY_SPIKE) -> NO se cambia regimen, decision para post-market.",
+      "alpaca_paper": {
+        "ok": true,
+        "equity": 106551.67,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "account_blocked": false,
+        "n_pos": 10,
+        "pos": [
+          "AAPL",
+          "CRM",
+          "CVX",
+          "DELL",
+          "ETHUSD",
+          "NFLX",
+          "RBLX",
+          "SOLUSD",
+          "SQQQ",
+          "XOM"
+        ]
+      },
+      "alpaca_real": {
+        "ok": true,
+        "equity": 4548.12,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "account_blocked": false,
+        "n_pos": 1,
+        "pos": [
+          "BTCUSD"
+        ]
+      },
+      "tareas": {
+        "pre-market-earnings-scan": "sin commits/200",
+        "market-open-execution": "2026-09-17 (1d)",
+        "intraday-monitor": "2026-09-16 (2d)",
+        "post-market-review": "2026-09-17 (1d)",
+        "ew-daily-results": "2026-09-15 (3d)",
+        "sentinel": "2026-09-17 (1d)",
+        "pre-close-manager": "2026-09-15 (3d)",
+        "system-health-check": "2026-09-17 (1d)",
+        "weekly-performance-review": "sin commits/200"
+      },
+      "tareas_nota": "pre-market-earnings-scan commitea como 'auto: pre-market-scan'; patron de deteccion del SKILL no lo captura (falso MISSING). weekly-performance-review tampoco tiene patron de commit detectable.",
+      "alertas": [
+        "pre-market-earnings-scan: ultimo commit 2026-09-15 (3d lab). NO corrio el 16 ni el 17-sep; cobertura parcial via dynamic-scanner/multi-source-intel.",
+        "weekly-performance-review: sin commits en 200. Ultimo resumen semanal = 2026-W36 (cerro 04-sep); FALTA W37. Review de W38 vence manana 19/20-sep.",
+        "Entorno sandbox: filesystem /sessions al 100% (0 bytes libres) — las tareas que escriban en el home de sesion pueden fallar. Workaround usado hoy: /tmp."
+      ],
+      "fixes": [
+        "VIX actualizado 17.62 -> 15.44 (cierre 17-sep verificado en serie diaria)"
+      ],
+      "evento_mercado": "18-sep: vencimiento trimestral (cuadruple witching) + Produccion Industrial. 0 earnings en calendario EW."
     }
   ],
   "historial_oportunidades_perdidas": [
@@ -22141,7 +22206,7 @@
       "detalle": "EW headless devuelve 0 whispers en 8/8 tickers (warmup 200 OK, cookies=1). Parser whisperbox/mainitem sin match. Revisar selectores o usar fuente alternativa."
     }
   ],
-  "ultima_actualizacion": "2026-09-17T20:30",
+  "ultima_actualizacion": "2026-09-18T06:08Z health-check",
   "ew_calendario_proximo": {
     "ts": "2026-09-15T12:17",
     "fuente": "api/getstocksdata",
