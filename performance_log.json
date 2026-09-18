@@ -53,8 +53,8 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-11",
-    "motivo_actualizacion": "Post-market 2026-09-11: nuevo stop_min_dist_atr_mult=1.0 tras detectar que los stops PROTECT.* del bot se colocan a ~0.2% (0.02R) y scalpean las posiciones (QCOM/QRVO hoy). Ademas bloqueo de nuevas entradas 15-16 sep por FOMC con ~70% prob. de subida de tipos.",
+    "ultima_actualizacion": "2026-09-18",
+    "motivo_actualizacion": "Post-market 2026-09-18: nuevos tp_limit_gtc_max_pct_posicion=0.5, stop_obligatorio_antes_de_tp=true y orden_salida_order_class='oco' tras demostrar con 4 rechazos 403 de Alpaca que un TP limit GTC por el 100% de la qty bloquea fisicamente la colocacion de stops. Evidencia directa: NFLX salio a -1.96R sin stop frente a SQQQ a -1.38R con stop.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
     "max_exposicion_total_equity_pct": 0.75,
@@ -254,7 +254,10 @@
     "bloqueo_nuevas_entradas_fechas": [
       "2026-09-15",
       "2026-09-16"
-    ]
+    ],
+    "tp_limit_gtc_max_pct_posicion": 0.5,
+    "stop_obligatorio_antes_de_tp": true,
+    "orden_salida_order_class": "oco"
   },
   "filosofia_decision": {
     "_version": "2.0",
@@ -307,78 +310,6 @@
     }
   },
   "lecciones_sistema": [
-    {
-      "fecha": "2026-09-03",
-      "origen": "post-market-review",
-      "severidad": "media",
-      "titulo": "VALIDADO — el veto por momentum vale mas que la asimetria del whisper",
-      "descripcion": "CIEN: asimetria +6.94%, beat_rate 4/4, reporto +22% de sorpresa Y subio guia FY26 -> -10.36%. Fue descartado unicamente por momentum (-12.25% 5d, precio < MA10). Tercer beat-and-fade del dia junto a AVGO y VSXY, con SPY +1.04% y VIX 14.32.",
-      "accion_correctiva": "Mantener el veto por momentum como filtro DURO, no como resta de puntos. En este regimen ningun nivel de asimetria compensa precio < MA10 con 5d < -8%.",
-      "tarea_afectada": "pre-market-earnings-scan | sentinel",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-09-03",
-      "origen": "post-market-review",
-      "severidad": "media",
-      "titulo": "El valor del sistema esta en la SALIDA (R0), no en la entrada",
-      "descripcion": "Las dos unicas operaciones del dia entraron por debajo del umbral (GWRE 5.5, AMBA 6.0) y aun asi el dia cerro +221.16$ realizado. Descomposicion: GWRE +0.81R por drift, AMBA -0.13R. AMBA cerro 63.38 tras salir a 66.09: la regla R0 evito -4.1% adicional ANTES del print.",
-      "accion_correctiva": "No confundir el resultado positivo con validacion de la entrada. Umbral 7.5 intacto.",
-      "tarea_afectada": "sentinel",
-      "aplicada": true
-    },
-    {
-      "fecha": "2026-09-04",
-      "id": "L41-BEAT-EPS-NO-ES-SENAL",
-      "titulo": "Un beat de EPS de titular NO es senal de continuacion: verificar ingresos, guidance y partidas no recurrentes",
-      "evidencia": "2026-09-03 AH, 3 beats de EPS -> 2 se desplomaron en la apertura siguiente. LULU: EPS 2.92 vs 1.79 est (+63% titular) pero $0.86/accion era devolucion de aranceles no recurrente (EPS subyacente ~2.06); ingresos -4% a $2.42B (miss vs $2.46B); comparables -10%; guidance FY recortada por 2a vez (ingresos $11.0-11.15B -> $10.35-10.50B; EPS $10.95-11.15 -> $9.48-9.73). Premarket 97.15 vs cierre 121.77 = -20.2%. ZS: EPS 1.19 vs 1.09 beat pero guidance ARR FY27 desacelera a 16-17% -> premarket -5.2%. DOCU: beat 1.16 vs 1.09 y guidance limpia -> premarket +1.4%, unico con seguimiento positivo.",
-      "regla": "Antes de crear cualquier post_earnings_continuation exigir las 3 confirmaciones: (1) ingresos baten o al menos cumplen, (2) guidance mantenida o subida, (3) beat sin partidas extraordinarias. Si falta cualquiera -> descartar aunque el EPS bata. Y siempre validar contra la reaccion real de precio en after-hours/premarket ANTES de puntuar, no solo contra el EPS.",
-      "aplicabilidad": "PASO 4C post-earnings beat detection del sentinel y post-market-review",
-      "coste_evitado": "LULU ya estaba descartado_score=3.0 por post-market-review -> el filtro funciono. Esta leccion lo codifica de forma explicita."
-    },
-    {
-      "fecha": "2026-09-04",
-      "id": "L42-EW-CAIDA-4o-CICLO",
-      "origen": "pre-market-earnings-scan",
-      "severidad": "alta",
-      "titulo": "EarningsWhispers lleva 4 ciclos caido: el BLOQUE A (3.0 pts, 30% del score) no tiene datos",
-      "evidencia": "old.earningswhispers.com/stocks?d=20260904, /stocks/NVDA y /stocks/KNOP devuelven los tres exactamente 96.276 bytes (shell SPA). www.earningswhispers.com/calendar devuelve 107.972 bytes, tambien shell. Sin datos por ticker por via headless.",
-      "regla": "Mientras EW este caido, la asimetria del whisper es 0.0 para todos los tickers y el score maximo alcanzable cae de 10.0 a ~7.0. Un umbral de 7.5 se vuelve practicamente inalcanzable — que es el comportamiento SEGURO y debe mantenerse. NO bajar el umbral para compensar la falta de datos: eso convertiria el pipeline en un comprador de earnings a ciegas justo en regimen beat-and-fade.",
-      "accion": "Buscar fuente alternativa de whisper (Estimize, Benzinga, api de Nasdaq) antes del 08-sep, o marcar el pipeline EW como degradado."
-    },
-    {
-      "fecha": "2026-09-04",
-      "id": "L43-BUGS-EJECUCION-SKILL",
-      "origen": "pre-market-earnings-scan",
-      "severidad": "critica",
-      "titulo": "El skill pre-market-earnings-scan tiene 3 bugs que pueden enviar una orden por el ticker equivocado",
-      "evidencia": "(1) PASO 3 hace enriched.append({... 'live_news_bonus': live_news_bonus ...}) pero esa variable no se define hasta PASO 3.5, que se ejecuta DESPUES -> NameError en el primer append, el pipeline muere antes de generar candidatos. (2) PASO 4 nunca hace candidatos_finales.append(...): la lista queda vacia siempre, asi que PASO 7 no escribe nada. (3) PASOS 5 y 6 (sizing y envio de orden) NO estan dentro de ningun bucle: operan sobre las variables sueltas 'ticker'/'score'/'target' que quedaron del ultimo giro del bucle del PASO 3. Si el flujo llegara ahi, dimensionaria y enviaria UNA orden sobre un ticker residual, no sobre el candidato ganador.",
-      "riesgo": "Bug (3) es de dinero real: la cuenta REAL esta activa con umbral 9.0 y envio automatico.",
-      "accion": "Envolver PASOS 5-6 en 'for cand in candidatos_finales:', poblar candidatos_finales en PASO 4, y mover el calculo de noticias en vivo ANTES del append del PASO 3. No re-armar la ejecucion automatica hasta corregirlo.",
-      "aplicada": false
-    },
-    {
-      "fecha": "2026-09-04",
-      "id": "L44-NFP-HAWKISH",
-      "origen": "pre-market-earnings-scan",
-      "severidad": "media",
-      "titulo": "NFP agosto 162K vs 53K esperado: giro hawkish, probabilidad de subida 15-16 sep ~65%",
-      "evidencia": "Mayor alza mensual desde marzo, paro 4.1% estable. Yields y dolar al alza; SPY solo -0.28% y VIX 14.05. La renta variable no ha repreciado el riesgo de tipos.",
-      "regla": "Cualquier hold de earnings del 8-10 sep (ORCL, ADBE incluidos) queda expuesto a la reunion de la Fed del 15-16. Considerar el evento Fed como riesgo de salida en el sizing de la proxima semana."
-    },
-    {
-      "fecha": "2026-09-04",
-      "origen": "sentinel",
-      "leccion": "La asimetria whisper-vs-consensus en % es inutilizable cuando el consensus es cercano a cero (NAVN +50% con cons=0.04, HOFT +150% con cons=-0.02, LOVE +23% con cons=-0.39). Anadir filtro: exigir abs(consensus) >= 0.15 USD, o usar la diferencia absoluta en centavos normalizada por el movimiento historico medio post-earnings en lugar del %."
-    },
-    {
-      "fecha": "2026-09-04",
-      "titulo": "FIX — EarningsWhispers: el scraper HTML esta muerto, la API JSON funciona",
-      "descripcion": "3 dias de alertas CRITICAS por 'EW caido'. La causa no es bloqueo ni red: old.earningswhispers.com/stocks/<t> devuelve 302->404 y www..../epsdetails/<t> sirve HTML renderizado por JS. Verificado hoy desde el sandbox: https://www.earningswhispers.com/api/caldata/YYYYMMDD devuelve el calendario completo en JSON (200 OK, 13/29/22 tickers para 8/9/10-sep) y /api/getstocksdata/<TICKER> devuelve consensusEst, revenueEst, releaseTime (1=BMO, 3=AMC), sector y confirmDate. LIMITE: el campo 'whisper' vuelve null sin sesion premium — el whisper sigue requiriendo navegador logueado.",
-      "accion_correctiva": "Usar /api/caldata/<YYYYMMDD> y /api/getstocksdata/<TICKER>. Abandonar el scraping HTML de old.*.",
-      "tarea_afectada": "sentinel | pre-market-earnings-scan",
-      "aplicada": true
-    },
     {
       "fecha": "2026-09-04",
       "titulo": "La asimetria whisper alta NO predice batir el whisper (2 casos en 3 dias)",
@@ -583,6 +514,38 @@
       "tipo": "RESULTADO",
       "titulo": "MNY miss -50% vs consenso",
       "descripcion": "MoneyHero -0.03 vs consenso -0.02, revenue -12.6% YoY."
+    },
+    {
+      "fecha": "2026-09-18",
+      "titulo": "BUG CRITICO — el take-profit LIMIT GTC del bot retiene el 100% del inventario y hace IMPOSIBLE colocar un stop",
+      "descripcion": "Intento de colocar stops GTC en COHR/CRM/MSTR/RBLX -> Alpaca devuelve 403 40310000 'insufficient qty available (requested: N, available: 0)' con held_for_orders = qty completa. Correlacion perfecta en las 8 posiciones: las 4 que tienen stop (AAPL, CVX, DELL, XOM) no tienen TP limit; las 4 que tienen TP limit (COHR, CRM, MSTR, RBLX) no tienen stop. El bot coloca O take-profit O stop, nunca ambos, porque no usa order_class bracket/oco. Resultado: cada posicion con TP entra desnuda al fin de semana. Hoy son $27.631 = 26% del equity.",
+      "accion_correctiva": "REGLA: antes de colocar un take-profit LIMIT GTC hay que tener stop. Secuencia correcta en cualquier tarea que abra posicion: (1) entrada, (2) stop GTC por el 100% de la qty, (3) TP opcional por como MUCHO el 50% de la qty. Para intraday-monitor y pre-close: si detectan una posicion con TP limit por el 100% y sin stop, deben CANCELAR ese TP, colocar el stop, y reponer TP solo al 50%. Fix definitivo en el repo del bot: order_class='bracket' en la entrada o 'oco' en la salida.",
+      "tarea_afectada": "multiple (bot GHA, intraday-monitor, pre-close-manager)",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "titulo": "NFLX salio a -1.96R: sin stop, la salida fue a mercado DESPUES del dano",
+      "descripcion": "NFLX entro a 79.61 el 14-sep con precio_stop planificado de 75.61 (-1.0R). Ese stop nunca existio como orden en Alpaca (bloqueado por el TP limit). La posicion se cerro hoy a 71.76 con una orden MARKET: -996.95$, -9.86%, -1.96R. El doble de la perdida disenada. SQQQ, que SI tenia stop_limit real, salio a -1.38R. La diferencia entre tener stop y no tenerlo fue ~0.6R en un solo dia.",
+      "accion_correctiva": "Cuantificar el coste del bug: cada salida sin stop cuesta ~1R extra. Prioridad maxima al fix de order_class.",
+      "tarea_afectada": "bot GHA",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "titulo": "Semana 21-25 sep sin alpha de earnings: 0 candidatos sobre umbral en 6 tickers analizados",
+      "descripcion": "Lunes 21: calendario pre-market VACIO, solo ABVX after-hours (biotech francesa en perdidas). Martes 22: THO (+4.2% asimetria), MLKN (+5.7%), AZO (-1.3%), KBH (-3.4%), WOR (sin whisper). Los dos con asimetria positiva son consumer_discretionary (prioridad -2 con el 10y sobre 5%) y el score no llega a 5. Ningun candidato pasa filtro.",
+      "accion_correctiva": "Semana de gestion, no de entrada: proteger lo abierto y no forzar operaciones. Si el sistema quiere alpha esta semana debe venir de momentum/relative-strength, no de earnings.",
+      "tarea_afectada": "pre-market-earnings-scan, market-open-execution",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "titulo": "El bot GHA opera por debajo del umbral: tier score<7.0 con WR=20% en 5 trades",
+      "descripcion": "Calibracion sobre las ultimas 20 cerradas: {\"<7.0\": {\"n\": 5, \"wr\": 20.0, \"avg_pnl_pct\": -1.45}, \"7.0-7.5\": {\"n\": 1, \"wr\": 0.0, \"avg_pnl_pct\": -4.92}, \"7.5-8.0\": {\"n\": 1, \"wr\": 0.0, \"avg_pnl_pct\": -9.86}, \"8.0+\": {\"n\": 4, \"wr\": 25.0, \"avg_pnl_pct\": 0.8}}. min_signal_score del sistema es 7.5 pero el bot ejecuta a 6.0-7.3.",
+      "accion_correctiva": "Alinear el umbral del scanner GHA con min_signal_score=7.5 del performance_log.",
+      "tarea_afectada": "bot GHA",
+      "aplicada": false
     }
   ],
   "operaciones": [
@@ -1405,9 +1368,11 @@
       "rr": 2,
       "qty": 51,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "cbe06d0c-9bae-48af-9071-da8ba398e7d3",
-      "cuenta": "paper"
+      "cuenta": "paper",
+      "motivo_cierre": "reconciliacion 2026-09-18: no existe en Alpaca (cerrada en sesion anterior sin registrar)",
+      "nota_reconciliacion": "Marcada cerrada por post-market 2026-09-18. P&L no reconstruible desde la API (fuera de ventana de 100 ordenes)."
     },
     {
       "id": "GHA-20260911-AAPL",
@@ -1453,9 +1418,11 @@
       "rr": 2,
       "qty": 89,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "a2d6acb1-32f7-4ea9-9487-843f2fe6f2f2",
-      "cuenta": "paper"
+      "cuenta": "paper",
+      "motivo_cierre": "reconciliacion 2026-09-18: no existe en Alpaca (cerrada en sesion anterior sin registrar)",
+      "nota_reconciliacion": "Marcada cerrada por post-market 2026-09-18. P&L no reconstruible desde la API (fuera de ventana de 100 ordenes)."
     },
     {
       "id": "GHA-20260914-NFLX",
@@ -1478,9 +1445,15 @@
       "rr": 10.0,
       "qty": 127,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "b6665f0c-2383-46c0-a39c-0969af93e819",
-      "cuenta": "paper"
+      "cuenta": "paper",
+      "precio_salida": 71.76,
+      "pnl_abs": -996.95,
+      "pnl_pct": -9.86,
+      "pnl_r": -1.96,
+      "closed_at": "2026-09-18T14:05:54.075585Z",
+      "motivo_cierre": "stop/market 2026-09-18"
     },
     {
       "id": "GHA-20260914-RBLX",
@@ -1550,16 +1523,48 @@
       "rr": 10.0,
       "qty": 260,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "315b35aa-4c1d-41da-a053-4536a9281016",
-      "cuenta": "paper"
+      "cuenta": "paper",
+      "precio_salida": 38.14,
+      "pnl_abs": -699.04,
+      "pnl_pct": -6.59,
+      "pnl_r": -1.38,
+      "closed_at": "2026-09-18T13:40:46.434916Z",
+      "motivo_cierre": "stop/stop_limit 2026-09-18"
+    },
+    {
+      "id": "GHA-20260918-MSTR",
+      "simbolo": "MSTR",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "fecha_entrada": "2026-09-18",
+      "precio_entrada": 145.99,
+      "qty": 43,
+      "estado": "abierta",
+      "stop_loss": 0,
+      "source": "bot_autonomo",
+      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
+    },
+    {
+      "id": "GHA-20260918-COHR",
+      "simbolo": "COHR",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "fecha_entrada": "2026-09-18",
+      "precio_entrada": 308.99,
+      "qty": 20,
+      "estado": "abierta",
+      "stop_loss": 0,
+      "source": "bot_autonomo",
+      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
     }
   ],
   "candidatos_validados": [
     {
       "ticker": "IGV",
       "symbol": "IGV",
-      "estado": "pendiente",
+      "estado": "expirado",
       "prioridad": 2,
       "score": 8.2,
       "score_ajustado": 8.2,
@@ -1573,7 +1578,8 @@
       "fuentes": [
         "sector_momentum_yfinance"
       ],
-      "created_at": "2026-09-15T13:03:44.840541+00:00"
+      "created_at": "2026-09-15T13:03:44.840541+00:00",
+      "notas": " | Auto-expirado 2026-09-18: ventana de entrada vencida sin ejecutar"
     },
     {
       "ticker": "VRA",
@@ -1581,7 +1587,7 @@
       "earnings_timing": "pre-market",
       "score": 5.4,
       "score_ajustado": 5.4,
-      "estado": "pendiente",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 75,
       "whisper": -0.02,
@@ -1622,7 +1628,8 @@
         "asimetria calculada sobre EPS negativo (-0.08 -> -0.02): el +75% esta inflado por base pequena",
         "sin datos de pct_bullish / IV / opciones (EW web con paywall) -> D asumido 60% por defecto",
         "sector XLY -3.0% en 5d: momentum sectorial adverso"
-      ]
+      ],
+      "notas": " | Auto-expirado 2026-09-18: ventana de entrada vencida sin ejecutar"
     },
     {
       "ticker": "FPS",
@@ -1630,7 +1637,7 @@
       "earnings_timing": "pre-market",
       "score": 5.4,
       "score_ajustado": 5.4,
-      "estado": "pendiente",
+      "estado": "expirado",
       "accion_recomendada": "estudiar_antes_entrar",
       "asimetria_pct": 9.09,
       "whisper": 0.24,
@@ -1671,12 +1678,13 @@
         "sin datos de pct_bullish / IV / opciones (EW web con paywall) -> D asumido 60% por defecto",
         "ticker de historia corta: verificar liquidez y spread antes de entrar",
         "vol 30d 66% anualizada: sizing reducido"
-      ]
+      ],
+      "notas": " | Auto-expirado 2026-09-18: ventana de entrada vencida sin ejecutar"
     },
     {
       "ticker": "RIOT",
       "symbol": "RIOT",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 7.5,
       "score_ajustado": 7.5,
       "score_raw": 8.1,
@@ -1695,12 +1703,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+8.4% vol=1.2x 52h_dist=0.0%"
+      "notas": "1d=+8.4% vol=1.2x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "MSTR",
       "symbol": "MSTR",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 7.22,
       "score_ajustado": 7.22,
       "score_raw": 7.8,
@@ -1719,12 +1727,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+16.4% vol=1.6x 52h_dist=0.0%"
+      "notas": "1d=+16.4% vol=1.6x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "MARA",
       "symbol": "MARA",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 7.22,
       "score_ajustado": 7.22,
       "score_raw": 7.8,
@@ -1743,12 +1751,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+13.7% vol=1.5x 52h_dist=0.0%"
+      "notas": "1d=+13.7% vol=1.5x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "HUT",
       "symbol": "HUT",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 7.22,
       "score_ajustado": 7.22,
       "score_raw": 7.8,
@@ -1767,12 +1775,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+8.6% vol=1.0x 52h_dist=0.0%"
+      "notas": "1d=+8.6% vol=1.0x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "SNDK",
       "symbol": "SNDK",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 6.76,
       "score_ajustado": 6.76,
       "score_raw": 7.3,
@@ -1791,12 +1799,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+10.9% vol=1.3x 52h_dist=0.0%"
+      "notas": "1d=+10.9% vol=1.3x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "TWST",
       "symbol": "TWST",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 6.48,
       "score_ajustado": 6.48,
       "score_raw": 7.0,
@@ -1815,12 +1823,12 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+7.3% vol=1.0x 52h_dist=0.0%"
+      "notas": "1d=+7.3% vol=1.0x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     },
     {
       "ticker": "SMTC",
       "symbol": "SMTC",
-      "estado": "pendiente",
+      "estado": "expirado",
       "score": 6.48,
       "score_ajustado": 6.48,
       "score_raw": 7.0,
@@ -1839,19 +1847,19 @@
       "expira": "2026-09-19T01:57:02Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-18T19:57:02.880864+00:00",
-      "notas": "1d=+3.8% vol=1.1x 52h_dist=0.0%"
+      "notas": "1d=+3.8% vol=1.1x 52h_dist=0.0% | Expirado 2026-09-18: ventana muere antes de la apertura del lunes 2026-09-21"
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-11",
+    "fecha_actualizacion": "2026-09-18",
     "semana": "2026-W37",
-    "regimen": "POST_FOMC_HIKE + OIL_RISK_PREMIUM_UNWIND + LOW_VOL",
+    "regimen": "POST_FOMC_HIKE_CONFIRMED + HAWKISH_HOLD + RATES_ABOVE_5PCT + VOL_CRUSH",
     "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "vix": 14.98,
+    "vix": 15.44,
     "yield_spread_10y2y": 0.41,
     "us10y": 5.0,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-11: CPI agosto +0.4% m/m, 3.4% a/a (en linea); core +0.3% m/m (0.1pp por encima de consenso), core anual 2.4%. Reaccion clave NO fue el dato sino los tipos: el 2y saltó ~15pb a maximo de 2+ años y el mercado pasó a descontar ~70% de probabilidad de SUBIDA de tipos en el FOMC del 16-sep. Petroleo en triple digito mantiene la presion de costes. VIX 18.82 (cerró >17 por primera vez en 28 sesiones el 10-sep). Indices cerraron en negativo. Implicacion: repricing hawkish real, no ruido — duracion y growth penalizados, energia y financieras favorecidas, consumo discrecional e inmobiliario muy expuestos. Semana del 14-sep dominada por el FOMC: calendario de earnings practicamente vacio (solo micro-caps sin whisper number).",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-18: La Fed SUBIO 25pb el 16-sep a 3.75-4.00% (12-0, primera subida desde 2023) y Warsh reafirmo el compromiso antiinflacionista; 16 de 18 participantes esperan otra subida mas. El mercado pasa de 'una subida y alivio' a 'una subida mas y hold largo'. El 10y volvio sobre 5.00% (5.004%, +5pb), 2y 4.743%, 30y 5.336%. Viernes mixto: SPX +0.11%, Nasdaq +0.39%, Dow -0.13% (peor semana del Dow desde marzo). VIX se desploma a 15.44 desde 18.82 del 11-sep: vol crush post-evento, no risk-on. Petroleo sigue subiendo (Trump puede imponer aranceles de hasta 100% a compradores de crudo ruso). STLD y NUE guian AMBOS por debajo de consenso -> margenes del acero comprimiendose. VW recorta guidance por China. Buffett cede la presidencia de Berkshire a su hijo Howard. Implicacion operativa: tipos al 5% penalizan duracion, inmobiliario y consumo discrecional de ticket alto; financieras y energia siguen favorecidas; materiales pierden el bonus por el guidance del acero.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -1864,17 +1872,18 @@
       "Gmail post-market 2026-09-10: 12 emails revisados, sin resultados de earnings de posiciones Cowork",
       "WebSearch 2026-09-10: cierre mercado, PPI agosto, KR preview, BKR drop",
       "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos",
-      "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)"
+      "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)",
+      "Gmail post-market 2026-09-18: 25 hilos (Bloomberg/EW/InsiderFinance) + EW web + WebSearch x4"
     ],
     "sector_prioridades": {
       "energy": 2,
-      "materials": 1,
+      "materials": 0,
       "industrials": 0,
       "healthcare": 1,
       "financials": 1,
-      "technology": -1,
+      "technology": 0,
       "communication": -1,
-      "utilities": 0,
+      "utilities": -1,
       "consumer_discretionary": -2,
       "consumer_staples": -2,
       "real_estate": -2,
@@ -1883,14 +1892,13 @@
     },
     "sectores_a_vigilar_esta_semana": [
       "energy",
-      "materials",
       "healthcare",
       "financials",
       "energy_refiners"
     ],
     "sectores_a_evitar_esta_semana": [
-      "technology",
       "communication",
+      "utilities",
       "consumer_discretionary",
       "consumer_staples",
       "real_estate",
@@ -2118,6 +2126,28 @@
           "financials"
         ],
         "fuente": "WebSearch/Yahoo Finance/Vantage/Schwab"
+      },
+      {
+        "fecha": "2026-09-18",
+        "evento": "Fed sube 25pb a 3.75-4.00% (16-sep, primera desde 2023); 10y recupera 5.00%; VIX colapsa a 15.44",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "real_estate",
+          "consumer_discretionary",
+          "financials",
+          "technology",
+          "utilities"
+        ],
+        "fuente": "CNBC/Bloomberg/Yahoo Finance"
+      },
+      {
+        "fecha": "2026-09-18",
+        "evento": "STLD y NUE guian por debajo de consenso (Q3): margenes del acero comprimiendose",
+        "impacto": "MEDIO",
+        "sectores_afectados": [
+          "materials"
+        ],
+        "fuente": "EarningsWhispers daily summary"
       }
     ],
     "futuros": {
@@ -2157,9 +2187,12 @@
       "nota": "Ninguno con whisper number ni sentiment publicado. Universo sin liquidez ni asimetria — semana SIN candidatos earnings validos."
     },
     "nota_industrials": "industrials bajado +1 -> 0: crudo $100 + aranceles Canada golpean costes de transporte e inputs.",
-    "preparacion_semana": "semana del 2026-09-14 — FOMC-driven, sin earnings relevantes",
+    "preparacion_semana": "semana del 2026-09-21",
     "top_candidatos_lunes": [],
-    "evento_semana": "FOMC 16-sep 2026: PRIMERA SUBIDA DE TIPOS EN 3 ANOS confirmada. Mercado reacciono al alza (jue 17-sep) — hike ya descontado. 10Y en 5.00% (vs 4.84% el 11-sep). WTI -6.4% a ~$95-101: desmontaje de la prima de riesgo geopolitico tras acuerdo de Arabia Saudi para reencaminar crudo por Ormuz y recuperar el oleoducto Este-Oeste. Conflicto Saudi-Houthi sigue activo pero el mercado lo descuenta a la baja. VIX 14.98 (desde 18.82 el 11-sep) — regimen mucho mas calmado de lo previsto."
+    "evento_semana": "FOMC 16-sep 2026: PRIMERA SUBIDA DE TIPOS EN 3 ANOS confirmada. Mercado reacciono al alza (jue 17-sep) — hike ya descontado. 10Y en 5.00% (vs 4.84% el 11-sep). WTI -6.4% a ~$95-101: desmontaje de la prima de riesgo geopolitico tras acuerdo de Arabia Saudi para reencaminar crudo por Ormuz y recuperar el oleoducto Este-Oeste. Conflicto Saudi-Houthi sigue activo pero el mercado lo descuenta a la baja. VIX 14.98 (desde 18.82 el 11-sep) — regimen mucho mas calmado de lo previsto.",
+    "preparado_en": "2026-09-18",
+    "num_candidatos_semana": 0,
+    "nota_semana": "Semana de GESTION, no de entrada. Lunes 21 sin earnings pre-market. Martes 22 concentra AZO/THO/MLKN (pre) y KBH/WOR (AH), todos en sectores penalizados por tipos al 5%. Miercoles 23: GIS, PAYX, CTAS. Prioridad absoluta: resolver el bug de stops antes de abrir nada nuevo."
   },
   "operaciones_crypto": [
     {
@@ -4886,6 +4919,15 @@
         ]
       },
       "motivo": "Stops PROTECT a 0.02R scalpean posiciones (QCOM +$7 en 32min, QRVO +$14 en 27min, DELL stop a 0.22%); FOMC 16-sep con 70% prob. de hike."
+    },
+    {
+      "fecha": "2026-09-18",
+      "parametros": {
+        "tp_limit_gtc_max_pct_posicion": 0.5,
+        "stop_obligatorio_antes_de_tp": true,
+        "orden_salida_order_class": "oco"
+      },
+      "motivo": "TP limit GTC al 100% retiene inventario y impide stops (403 40310000 x4). Coste medido: ~1R extra por salida sin stop."
     }
   ],
   "reglas_coordinacion_bot": {
@@ -4927,13 +4969,13 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-11",
+    "_ultima_actualizacion": "2026-09-18",
     "rendimiento_global": {
-      "equity_paper_actual": 107818.97,
+      "equity_paper_actual": 106149.89,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2318.97,
-      "pnl_total_paper_pct": 2.2,
-      "equity_real_actual": 4548.12,
+      "pnl_total_paper_dolares": 649.89,
+      "pnl_total_paper_pct": 0.62,
+      "equity_real_actual": 4548.15,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.12,
       "pnl_total_real_pct": 1.07,
@@ -4942,30 +4984,30 @@
       "alpha_real_vs_spy_pct": -11.75,
       "dias_activo_sistema": 28,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": 106.13,
+      "pnl_dia_paper_dolares": -310.45,
       "pnl_dia_real_dolares": 0,
       "equity_paper_peak": 109924.64,
       "_nota_spy": "Sobrescrito por kpi_report.py con datos Alpaca (SPY ajustado, mismo periodo)."
     },
     "cowork_trading": {
-      "operaciones_totales": 28,
-      "operaciones_cerradas": 26,
-      "operaciones_ganadoras": 8,
-      "operaciones_perdedoras": 18,
+      "operaciones_totales": 42,
+      "operaciones_cerradas": 29,
+      "operaciones_ganadoras": 9,
+      "operaciones_perdedoras": 20,
       "operaciones_break_even": 0,
-      "win_rate_pct": 30.8,
-      "avg_r_logrado": -0.15,
-      "profit_factor": 1.51,
-      "avg_pnl_por_operacion_dolares": 66.15,
+      "win_rate_pct": 31.0,
+      "avg_r_logrado": -0.28,
+      "profit_factor": 1.05,
+      "avg_pnl_por_operacion_dolares": 5.38,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1264.65,
-      "mayor_perdida_dolares": -253.44,
+      "mayor_perdida_dolares": -996.95,
       "racha_ganadora_actual": 0,
-      "racha_perdedora_actual": 1,
-      "racha_ganadora_max": 4,
+      "racha_perdedora_actual": 3,
+      "racha_ganadora_max": 3,
       "racha_perdedora_max": 6,
       "_nota": "Se actualiza al cerrar cada operación en post-market-review PASO 5B",
-      "operaciones_abiertas_actuales": 1,
+      "operaciones_abiertas_actuales": 8,
       "_comentario_W17": "MSFT entrada 24-abr abierta — earnings 29-abr AH (W18). KPIs Cowork pendientes hasta cierre.",
       "_comentario_bot_protect": "MSFT cerrado por bot PROTECT +$8.28. Primera op Cowork cerrada.",
       "_comentario_w18": "W18 cerrada con 3/7 ganadoras. Crypto DOGE +$1264 dominando. 3 ops Tipo C (cierre pre-earnings, beats perdidos).",
@@ -5067,9 +5109,9 @@
       "avg_entry_vs_expected_pct": null
     },
     "riesgo": {
-      "max_drawdown_paper_pct": 1.93,
+      "max_drawdown_paper_pct": 3.43,
       "max_drawdown_real_pct": 0,
-      "max_drawdown_paper_fecha": "2026-09-10",
+      "max_drawdown_paper_fecha": "2026-09-18",
       "max_drawdown_real_fecha": null,
       "equity_paper_peak": 109924.64,
       "equity_real_peak": 4548.13,
@@ -5638,6 +5680,16 @@
         "operaciones_acumuladas": 26,
         "vix": 18.82,
         "drawdown_pct": 1.92
+      },
+      {
+        "fecha": "2026-09-18",
+        "equity_paper": 106149.89,
+        "equity_real": 4548.15,
+        "pnl_dia_paper": -310.45,
+        "win_rate_acumulado": 31.0,
+        "avg_r_acumulado": -0.28,
+        "operaciones_acumuladas": 29,
+        "vix": 15.44
       }
     ],
     "objetivos": {
@@ -8330,6 +8382,24 @@
       "trades_cowork": [],
       "evento_clave": "CPI en linea pero el 2y salta 15pb a maximo de 2 años y el mercado descuenta ~70% de probabilidad de SUBIDA de tipos en el FOMC del 16-sep.",
       "leccion": "Los stops PROTECT del bot a ~0.2% del precio (0.02R) convierten swings de earnings en scalps de +0.1%: QCOM y QRVO cerrados en menos de 35 minutos por +$21 combinados."
+    },
+    {
+      "fecha": "2026-09-18",
+      "dia": "Friday",
+      "equity_paper_cierre": 106149.89,
+      "variacion_dia": -310.45,
+      "variacion_pct": -0.29,
+      "vix": 15.44,
+      "regimen_macro": "POST_FOMC_HIKE_CONFIRMED + HAWKISH_HOLD + RATES_ABOVE_5PCT + VOL_CRUSH",
+      "trades_paper": [
+        "COHR buy 20 @ $308.99",
+        "MSTR buy 43 @ $145.99",
+        "NFLX sell 127 @ $71.76",
+        "SQQQ sell 260 @ $38.14"
+      ],
+      "realizado_hoy_dolares": -1695.99,
+      "evento_clave": "Primera subida de tipos de la Fed en 3 anos (3.75-4.00%, 16-sep) ya digerida: 10y de vuelta sobre 5.00% y VIX hundido a 15.44. Dow cierra su peor semana desde marzo.",
+      "leccion": "El bot no puede proteger lo que compra: su orden LIMIT de take-profit por el 100% de las acciones retiene el inventario y hace fisicamente imposible anadir un stop (403 de Alpaca). 4 posiciones, 26% del equity, entran al fin de semana desnudas. NFLX ya pago la factura hoy: -1.96R en una salida a mercado."
     }
   ],
   "alertas_criticas": [
@@ -8610,6 +8680,24 @@
       ],
       "urgencia": "ALTA",
       "accion_requerida": "Posicion del bot — no se modifica automaticamente (regla de no-interferencia). Revisar manualmente.",
+      "resuelto": false
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "BUG_ESTRUCTURAL_TP_BLOQUEA_STOP",
+      "urgencia": "MAXIMA",
+      "mensaje": "Las 4 posiciones sin stop (['COHR', 'CRM', 'MSTR', 'RBLX'], $27,631 = 26% del equity) NO pueden protegerse: el bot GHA deja una orden LIMIT de take-profit GTC por el 100% de las acciones, que retiene el inventario (held_for_orders = qty completa). Alpaca devuelve HTTP 403 40310000 'insufficient qty available' a cualquier intento de anadir un stop.",
+      "evidencia": "Correlacion 100%: AAPL/CVX/DELL/XOM tienen stop y NINGUN TP limit; COHR/CRM/MSTR/RBLX tienen TP limit y NINGUN stop. El bot coloca O take-profit O stop, nunca ambos, porque no usa order_class bracket/oco.",
+      "accion_tomada": "Intento de colocar 4 stops GTC -> rechazados por Alpaca (403). Documentado, no resuelto.",
+      "accion_requerida": "En el repo del bot: usar order_class='oco' (o 'bracket' en la entrada) para que take_profit y stop_loss coexistan. Alternativa provisional: no colocar TP limit GTC, solo stop.",
+      "resuelto": false
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "STOP_MICRO_DISTANCIA",
+      "urgencia": "MEDIA",
+      "mensaje": "CVX stop 207.50 vs precio 208.94 = 0.32xATR14 (ATR=4.54). Viola la regla de 1.0xATR minimo con R<1.0 (leccion 2026-09-11). Stop coherente: ~204.40.",
+      "accion_tomada": "Solo alerta — modificar un stop existente del bot esta prohibido en PASO 3.",
       "resuelto": false
     }
   ],
@@ -9000,6 +9088,15 @@
       "evidencia": "QCOM y QRVO stopeados en <35 min por +0.1%; DELL con stop a 0.02R (ATR 32.21, stop a 1.26$)",
       "archivo_modificado": "performance_log/parametros_activos",
       "impacto_esperado": "Permitir que el drift post-earnings madure hasta 1.5-3R en vez de cortar a 0.1R. Deberia subir avg_R desde -0.15 hacia positivo sin tocar el win rate.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-18",
+      "tipo": "bug_corregido + regla_anadida",
+      "descripcion": "Regla de precedencia stop-antes-que-TP y limite del TP limit GTC al 50% de la posicion, mas order_class='oco' como estandar de salida",
+      "evidencia": "4 rechazos HTTP 403 40310000 de Alpaca al intentar proteger COHR/CRM/MSTR/RBLX; correlacion 100% TP-limit <-> sin-stop en las 8 posiciones",
+      "archivo_modificado": "performance_log.parametros_activos + lecciones_sistema",
+      "impacto_esperado": "Elimina la exposicion desnuda overnight/fin de semana (hoy 26% del equity) y recupera ~1R por operacion perdedora",
       "implementada": true
     }
   ],
@@ -10148,6 +10245,21 @@
           "trades_cerrados_hoy": 2,
           "pnl_realizado_hoy": 21.38,
           "anomalia": "stops PROTECT a 0.02R — ver leccion 2026-09-11"
+        },
+        {
+          "fecha": "2026-09-18",
+          "bot_positions": 8,
+          "bot_sin_stop": 4,
+          "tickers_sin_stop": [
+            "COHR",
+            "CRM",
+            "MSTR",
+            "RBLX"
+          ],
+          "bot_pnl_latente_pct": 1.19,
+          "stops_intentados": 4,
+          "stops_colocados": 0,
+          "motivo_fallo": "held_for_orders por TP limit GTC (403 40310000)"
         }
       ]
     },
@@ -10717,7 +10829,18 @@
       "implementadas": 0,
       "impacto_pnl_estimado_mensual": "desconocido — calcular tras 2 semanas de tracking",
       "criticas_abiertas": 2
-    }
+    },
+    "items": [
+      {
+        "fecha": "2026-09-18",
+        "prioridad": "P0",
+        "repo": "pacomontorop/Trading-bot",
+        "issue": "Las ordenes de salida no usan order_class; el TP limit GTC retiene el inventario y bloquea el stop",
+        "fix_propuesto": "En la entrada usar order_class='bracket' con take_profit{limit_price} y stop_loss{stop_price}; o tras el fill usar order_class='oco'.",
+        "evidencia": "HTTP 403 40310000 held_for_orders=qty completa en COHR/CRM/MSTR/RBLX (2026-09-18)",
+        "estado": "abierto"
+      }
+    ]
   },
   "real_account_escalation": {
     "_version": "1.0",
@@ -11113,6 +11236,16 @@
       "parametros_version": "2026-09-11",
       "mejora_hoy": "stop_min_dist_atr_mult=1.0 (suelo de stop en 1xATR mientras R<1.0)",
       "score_sistema": 5.7
+    },
+    {
+      "fecha": "2026-09-18",
+      "lecciones_acumuladas": 31,
+      "mejoras_acumuladas": 43,
+      "candidatos_activos": 0,
+      "bugs_pendientes": 6,
+      "score_sistema": 3.5,
+      "parametros_version": "2026-09-18",
+      "mejora_hoy": "Regla de precedencia stop-antes-que-TP y limite del TP limit GTC al 50% de la posicion, mas order_class='oco' como estandar de salida"
     }
   ],
   "motor_alpha_diario": {
@@ -17590,7 +17723,81 @@
         "ticker": "AAPL",
         "motivo": "-0.15R, tecnologia con prioridad macro -1 tras repricing hawkish; stop 322.82 a 2.84%"
       }
-    ]
+    ],
+    "2026-09-21": {
+      "fecha_preparacion": "2026-09-18",
+      "regimen": "POST_FOMC_HIKE_CONFIRMED + HAWKISH_HOLD + RATES_ABOVE_5PCT + VOL_CRUSH",
+      "vix_referencia": 15.44,
+      "modo": "GESTION_DEFENSIVA",
+      "prioridad_1": "Resolver exposicion sin stop: cancelar TP limit al 100% en COHR/CRM/MSTR/RBLX y colocar stops (279.26 / 224.52 / 133.99 / 43.29)",
+      "prioridad_2": "CVX: stop a 0.32xATR viola la regla de 1.0xATR — reubicar a ~204.40",
+      "prioridad_3": "Sin candidatos de earnings. No forzar entradas.",
+      "candidatos": [],
+      "descartados": [
+        {
+          "ticker": "ABVX",
+          "score": 0.0,
+          "asimetria": null,
+          "sector": "healthcare",
+          "earnings_fecha": "2026-09-21",
+          "earnings_timing": "after-hours",
+          "motivo_descarte": "Sin whisper number publicado. Biotech frances en perdidas, sin whisper, sin liquidez US relevante"
+        },
+        {
+          "ticker": "THO",
+          "score": 0.0,
+          "asimetria": 4.21,
+          "sector": "consumer_discretionary",
+          "earnings_fecha": "2026-09-22",
+          "earnings_timing": "pre-market",
+          "score_macro_bonus": -2,
+          "argumento": "Asimetria whisper/consenso +4.21% (0.99 vs 0.95). Sector consumer_discretionary prioridad -2. RV maker; ultimo trimestre in-line",
+          "motivo_descarte": "Score 0.0 <5: asimetria +4.2% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+        },
+        {
+          "ticker": "MLKN",
+          "score": 1.0,
+          "asimetria": 5.71,
+          "sector": "consumer_discretionary",
+          "earnings_fecha": "2026-09-22",
+          "earnings_timing": "pre-market",
+          "score_macro_bonus": -2,
+          "argumento": "Asimetria whisper/consenso +5.71% (0.37 vs 0.35). Sector consumer_discretionary prioridad -2. Mobiliario oficina small-cap; batio consenso ultimo Q",
+          "motivo_descarte": "Score 1.0 <5: asimetria +5.7% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+        },
+        {
+          "ticker": "AZO",
+          "score": -2.0,
+          "asimetria": -1.29,
+          "sector": "consumer_discretionary",
+          "earnings_fecha": "2026-09-22",
+          "earnings_timing": "pre-market",
+          "score_macro_bonus": -2,
+          "argumento": "Asimetria whisper/consenso -1.29% (54.26 vs 54.97). Sector consumer_discretionary prioridad -2. Whisper POR DEBAJO del consenso",
+          "motivo_descarte": "Score -2.0 <5: asimetria -1.3% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+        },
+        {
+          "ticker": "KBH",
+          "score": -3.0,
+          "asimetria": -3.41,
+          "sector": "real_estate",
+          "earnings_fecha": "2026-09-22",
+          "earnings_timing": "after-hours",
+          "score_macro_bonus": -2,
+          "argumento": "Asimetria whisper/consenso -3.41% (0.85 vs 0.88). Sector real_estate prioridad -2. Homebuilder; whisper por debajo; 10y >5%",
+          "motivo_descarte": "Score -3.0 <5: asimetria -3.4% insuficiente para compensar sector real_estate (-2) con tipos al 5%"
+        },
+        {
+          "ticker": "WOR",
+          "score": 0.0,
+          "asimetria": null,
+          "sector": "materials",
+          "earnings_fecha": "2026-09-22",
+          "earnings_timing": "after-hours",
+          "motivo_descarte": "Sin whisper number publicado. Sin whisper publicado"
+        }
+      ]
+    }
   },
   "scan_history": [
     {
@@ -19716,6 +19923,61 @@
         "intraday-monitor",
         "sentinel"
       ]
+    },
+    {
+      "fecha": "2026-09-18",
+      "score_sistema": 3.5,
+      "tareas": {
+        "market-open-execution": {
+          "ok": false,
+          "issues": [
+            "10 candidatos expiraron sin ejecutar ni descartar explicitamente: ['IGV', 'VRA', 'FPS', 'RIOT', 'MSTR', 'MARA', 'HUT', 'SNDK', 'TWST', 'SMTC']"
+          ],
+          "score": 0
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "candidatos_detectados": 0,
+          "issues": [
+            "0 candidatos, pero justificado: calendario de earnings vacio la semana que viene"
+          ],
+          "score": 7
+        },
+        "sentinel": {
+          "ok": false,
+          "ciclos_hoy": 1,
+          "issues": [
+            "Solo 1 ciclos hoy (esperado >=10)"
+          ],
+          "score": 1
+        },
+        "pre-close-manager": {
+          "ok": true,
+          "issues": [],
+          "score": 10
+        },
+        "intraday-monitor": {
+          "ok": false,
+          "issues": [
+            "4 posiciones sin stop llegaron al cierre sin alerta previa: ['COHR', 'CRM', 'MSTR', 'RBLX']"
+          ],
+          "score": 3
+        },
+        "bot-gha": {
+          "ok": false,
+          "issues": [
+            "BUG P0: TP limit GTC al 100% bloquea stops (403 x4)",
+            "NFLX cerrado a -1.96R sin stop"
+          ],
+          "score": 0
+        }
+      },
+      "tareas_con_issues": [
+        "market-open-execution",
+        "sentinel",
+        "intraday-monitor",
+        "bot-gha"
+      ]
     }
   ],
   "_last_ew_daily_run": "2026-09-07T14:28:48Z",
@@ -20314,6 +20576,13 @@
         }
       ],
       "compensacion": "Frente a $211 de coste, los descartes de BRZE/TTAN/CHWY/AVAV evitaron una perdida estimada de $1.000-1.400 sobre posiciones tipo. Ratio favorable ~5:1."
+    },
+    {
+      "fecha": "2026-09-18",
+      "n_oportunidades": 0,
+      "coste_total_estimado": 0,
+      "detalle": [],
+      "nota": "Ningun descartado de hoy tenia score >=5; los 6 tickers de la semana no superan filtro. Sin coste de oportunidad medible."
     }
   ],
   "incidencias_sistema": [
@@ -20768,7 +21037,7 @@
       "detectado_por": "sentinel 2026-09-18"
     }
   ],
-  "ultima_actualizacion": "2026-09-18T15:28",
+  "ultima_actualizacion": "2026-09-18T20:30:00Z",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
@@ -21070,47 +21339,76 @@
     ],
     "actualizado": "2026-09-08T11:38:51.837792+00:00"
   },
-  "candidatos_descartados_hoy": {
-    "fecha": "2026-09-09",
-    "lista": [
-      {
-        "ticker": "ORCL",
-        "earnings": "2026-09-10 AH",
-        "score": 4,
-        "motivo": "HARD GATE max_5day_momentum_pct=10.0 violado: +14.37% en 5d y +15.18% sobre MA50. El mercado ya descuenta el beat de cloud/RPO. Reaccion historica media +4.19% pero |reaccion| 12.51% = riesgo simetrico alto."
-      },
-      {
-        "ticker": "ADBE",
-        "earnings": "2026-09-10 AH",
-        "score": 2,
-        "motivo": "CASO LIBRO DE BEAT-AND-FADE: beat rate 95.8% (bate casi siempre) pero reaccion media -6.74%. Batir no mueve el precio al alza en ADBE. Ademas -10.91% en 5d (momentum roto)."
-      },
-      {
-        "ticker": "RH",
-        "earnings": "2026-09-10 AH",
-        "score": 1,
-        "motivo": "Beat rate 62.5% con sorpresa media NEGATIVA (-3.92%) y reaccion media -1.61% con |reaccion| 15.4% (volatilidad sin direccion). Sector consumer_discretionary = -2 con crudo a $100. Descarte claro."
-      },
-      {
-        "ticker": "TEN",
-        "earnings": "2026-09-10 BMO",
-        "score": 2.5,
-        "motivo": "Beat rate 66.7% pero reaccion media +0.84% y |reaccion| 2.6%: aunque bata, NO se mueve. Sin edge explotable. Baja el score preliminar 7.4 del 5-sep, que no incorporaba reaccion historica."
-      },
-      {
-        "ticker": "KR",
-        "earnings": "2026-09-11 BMO",
-        "score": 2,
-        "motivo": "Beat rate 91.7% y sorpresa +10% pero reaccion media solo +1.15%. Reporta el MISMO dia del CPI. consumer_staples = -1. Riesgo macro > edge."
-      },
-      {
-        "ticker": "CHWY",
-        "earnings": "reportado 2026-09-09 BMO",
-        "score": null,
-        "motivo": "VALIDACION: descartado el 7-sep por beat_rate 25%. Hoy -10.83%. El filtro de beat rate funciono."
-      }
-    ]
-  },
+  "candidatos_descartados_hoy": [
+    {
+      "fecha": "2026-09-18",
+      "ticker": "ABVX",
+      "score": 0.0,
+      "asimetria": null,
+      "sector": "healthcare",
+      "earnings_fecha": "2026-09-21",
+      "earnings_timing": "after-hours",
+      "motivo_descarte": "Sin whisper number publicado. Biotech frances en perdidas, sin whisper, sin liquidez US relevante"
+    },
+    {
+      "fecha": "2026-09-18",
+      "ticker": "THO",
+      "score": 0.0,
+      "asimetria": 4.21,
+      "sector": "consumer_discretionary",
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "score_macro_bonus": -2,
+      "argumento": "Asimetria whisper/consenso +4.21% (0.99 vs 0.95). Sector consumer_discretionary prioridad -2. RV maker; ultimo trimestre in-line",
+      "motivo_descarte": "Score 0.0 <5: asimetria +4.2% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+    },
+    {
+      "fecha": "2026-09-18",
+      "ticker": "MLKN",
+      "score": 1.0,
+      "asimetria": 5.71,
+      "sector": "consumer_discretionary",
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "score_macro_bonus": -2,
+      "argumento": "Asimetria whisper/consenso +5.71% (0.37 vs 0.35). Sector consumer_discretionary prioridad -2. Mobiliario oficina small-cap; batio consenso ultimo Q",
+      "motivo_descarte": "Score 1.0 <5: asimetria +5.7% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+    },
+    {
+      "fecha": "2026-09-18",
+      "ticker": "AZO",
+      "score": -2.0,
+      "asimetria": -1.29,
+      "sector": "consumer_discretionary",
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "score_macro_bonus": -2,
+      "argumento": "Asimetria whisper/consenso -1.29% (54.26 vs 54.97). Sector consumer_discretionary prioridad -2. Whisper POR DEBAJO del consenso",
+      "motivo_descarte": "Score -2.0 <5: asimetria -1.3% insuficiente para compensar sector consumer_discretionary (-2) con tipos al 5%"
+    },
+    {
+      "fecha": "2026-09-18",
+      "ticker": "KBH",
+      "score": -3.0,
+      "asimetria": -3.41,
+      "sector": "real_estate",
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "after-hours",
+      "score_macro_bonus": -2,
+      "argumento": "Asimetria whisper/consenso -3.41% (0.85 vs 0.88). Sector real_estate prioridad -2. Homebuilder; whisper por debajo; 10y >5%",
+      "motivo_descarte": "Score -3.0 <5: asimetria -3.4% insuficiente para compensar sector real_estate (-2) con tipos al 5%"
+    },
+    {
+      "fecha": "2026-09-18",
+      "ticker": "WOR",
+      "score": 0.0,
+      "asimetria": null,
+      "sector": "materials",
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "after-hours",
+      "motivo_descarte": "Sin whisper number publicado. Sin whisper publicado"
+    }
+  ],
   "ew_proxy_module": {
     "version": "1.0",
     "fecha_creacion": "2026-09-08",
@@ -21160,6 +21458,31 @@
         }
       },
       "decision": "Sin cambio de umbrales: muestra por tier < 5 operaciones. Se requiere n>=5 por tier."
+    },
+    {
+      "fecha": "2026-09-18",
+      "tiers": {
+        "<7.0": {
+          "n": 5,
+          "wr": 20.0,
+          "avg_pnl_pct": -1.45
+        },
+        "7.0-7.5": {
+          "n": 1,
+          "wr": 0.0,
+          "avg_pnl_pct": -4.92
+        },
+        "7.5-8.0": {
+          "n": 1,
+          "wr": 0.0,
+          "avg_pnl_pct": -9.86
+        },
+        "8.0+": {
+          "n": 4,
+          "wr": 25.0,
+          "avg_pnl_pct": 0.8
+        }
+      }
     }
   ],
   "nota_miercoles": "[CORREGIDO 2026-09-09] NO hubo CPI hoy. PPI manana 10-sep 08:30 ET, CPI viernes 11-sep 08:30 ET. Ninguna entrada agresiva pre-PPI.",
