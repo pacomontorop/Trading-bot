@@ -377,3 +377,25 @@ def test_open_orders_ve_las_patas_held_y_descarta_replaced():
 def test_estados_vivos_no_incluye_replaced():
     assert "replaced" not in common.ESTADOS_VIVOS
     assert {"new", "held", "accepted", "partially_filled"} <= common.ESTADOS_VIVOS
+
+
+def test_pata_de_stop_va_a_mercado():
+    """La pata de stop del bracket no lleva limit_price: un stop con límite puede no llenarse.
+
+    Regresión de la pérdida de NFLX del 18-sep (1,96R con el stop puesto en 1,0R): con
+    `stop_limit` a stop×0,995 un hueco de 0,5 % deja la orden sin ejecutar.
+    """
+    enviados = []
+
+    class _Alp:
+        def req(self, path, method="GET", data=None):
+            enviados.append((path, method, data))
+            return {"id": "ok"}
+
+    lv = {"stop": 90.0, "stop_limit": 89.55, "tp": 130.0}
+    common.place_bracket_entry(_Alp(), "TEST", 10, 100.0, lv, "GHA-TEST")
+    _, _, body = enviados[0]
+    assert body["order_class"] == "bracket"
+    assert body["stop_loss"]["stop_price"] == "90.0"
+    assert "limit_price" not in body["stop_loss"], body["stop_loss"]
+    assert body["take_profit"]["limit_price"] == "130.0"
