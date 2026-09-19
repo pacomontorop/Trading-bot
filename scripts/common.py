@@ -393,12 +393,24 @@ def size_by_risk(equity: float, price: float, risk_per_share: float, risk_pct: f
 
 
 def place_bracket_entry(alp: Alpaca, sym: str, qty: int, limit_px: float, lv: dict, cid: str) -> dict:
+    """Entrada limitada con bracket. La pata de stop va A MERCADO (sin limit_price).
+
+    2026-09-19: medido sobre las 16 perdedoras cerradas del log, 4 (el 25 %) atravesaron su
+    stop y costaron **4,34R de más**. El caso del 18-sep: NFLX entró a 79,61 con stop en
+    75,61 (1R = 4,00) y cerró a 71,76 — 1,96R, casi el doble de lo aceptado. Causa: la pata
+    era `stop_limit` con el límite en stop×0,995, una banda de solo 0,5 %. Cuando el precio
+    atraviesa esa banda de un salto, la orden NO se ejecuta, la posición se queda sin
+    protección efectiva y baja hasta que salta el corte de emergencia del −8 %.
+
+    Un stop de mercado siempre llena. Un precio de salida malo es preferible a una pérdida
+    sin tope: el propósito de un stop es salir, no salir a un precio bonito.
+    """
     return alp.req("/orders", "POST", {
         "symbol": sym, "qty": str(qty), "side": "buy", "type": "limit",
         "limit_price": str(round_px(limit_px)), "time_in_force": "gtc",
         "order_class": "bracket", "client_order_id": cid[:48],
         "take_profit": {"limit_price": str(lv["tp"])},
-        "stop_loss": {"stop_price": str(lv["stop"]), "limit_price": str(lv["stop_limit"])},
+        "stop_loss": {"stop_price": str(lv["stop"])},
     })
 
 
