@@ -12,11 +12,25 @@ services:
     # numInstances must ALWAYS be 1. Never enable autoscaling.
     numInstances: 1
 
+    # 2026-09-19: DESPLIEGUE AUTOMATICO DESACTIVADO.
+    # El bot de Render esta apagado por codigo desde el 11-sep (RENDER_BOT_ENABLED!=1 en
+    # start.py): no escanea, no opera, no coloca stops. El sistema que opera es GitHub
+    # Actions. Pero el SERVICIO de Render seguia existiendo y seguia construyendo en cada
+    # push que tocara un fichero fuera de buildFilter — p.ej. start.py el 17-sep — y cada
+    # build fallido mandaba un correo a Paco por algo que ya no forma parte del sistema.
+    # Con autoDeploy: false no se construye nada salvo que alguien lo lance a mano.
+    # Para reactivar el bot algun dia: autoDeploy: true + RENDER_BOT_ENABLED=1.
+    autoDeploy: false
+
     # FIX 2026-09-10: las tareas Cowork/GHA hacen decenas de commits diarios al
     # performance_log.json. Sin este filtro, CADA commit redespliega y reinicia
-    # el bot (stateful). Solo se redespliega si cambia código del bot.
+    # el bot (stateful). Se conserva como segunda linea de defensa por si alguien
+    # vuelve a poner autoDeploy en true.
     buildFilter:
       ignoredPaths:
+        - start.py
+        - signals/**
+        - config/policy.yaml
         - performance_log.json
         - performance_log_archive_*.json
         - scripts/**
