@@ -2148,13 +2148,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-21T15:22",
+      "timestamp": "2026-09-21T16:16",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.0,
       "score_min_real_efectivo": 9.0,
-      "nota": "META +11.9% supera umbral mecanico 6% de Mag7 pero verificado por WebSearch: upgrade analista + producto IA, no earnings. Clasificado normal."
+      "nota": "Cierre 21-sep risk-on record (QQQ +2.77%, primer record desde junio) por caida del crudo -8.3% y rally de semis. Sin shock."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -9367,6 +9367,14 @@
       "archivo_modificado": "performance_log.parametros_activos + lecciones_sistema",
       "impacto_esperado": "Elimina la exposicion desnuda overnight/fin de semana (hoy 26% del equity) y recupera ~1R por operacion perdedora",
       "implementada": true
+    },
+    {
+      "fecha": "2026-09-21",
+      "prioridad": "alta",
+      "origen": "sentinel 16:15 ET",
+      "problema": "Clasificador cowork/bot cuenta como Cowork cualquier simbolo con alguna orden cid COWORK-*, incluidas las protectoras OCOFIX/PROTECT sobre posiciones del bot.",
+      "efecto": "cowork_abiertas inflado (6 vs 1 real) -> entradas bloqueadas por falso limite en 4 ciclos del 21-sep.",
+      "fix": "En tiene_stop/clasificacion usar solo la orden de ENTRADA: buscar en /orders?status=closed la ultima orden side=buy filled del simbolo y mirar su client_order_id. GHA-* = bot, COWORK-* = cowork. Ignorar cids COWORK-SENT-OCOFIX / COWORK-FAILSAFE / PROTECT.* para la clasificacion de propiedad."
     }
   ],
   "industry_intelligence": {
@@ -14150,6 +14158,27 @@
       "macro_nivel": "normal",
       "macro_score": 0.5,
       "nota": "Sin entradas: cowork 5/4 (sobre limite). EW source caida. Sin earnings overnight en cartera. AAPL[bot] 10.2k sin stop (no se toca, regla bot). Cuenta real vacia."
+    },
+    {
+      "ts": "2026-09-21T20:16:30.711732+00:00",
+      "alertas": 4,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 1,
+      "cowork_abiertas_reportado_por_clasificador": 6,
+      "vix": 14.8,
+      "macro_nivel": "normal",
+      "macro_score": 1.8,
+      "modo": "read_only_report_post_close",
+      "nota": "Ciclo 16:15 ET (mercado CERRADO desde 16:00; el codigo del skill hace sys.exit en este punto -> ejecutado en modo read-only + PASO 4C AH). PASO 1: 8/8 posiciones equity con stop VIVO confirmado leyendo legs OCO (INTC 116.05, MSTR 153.29, COHR 309.30, CRM 230.94, RBLX 47.90 como legs held; AAPL 322.82, DELL 519.31, XOM 157.02 standalone). BTC/USD stop 78126.72. Solo ETH/SOL dust (<$0.20) sin stop. Cuenta REAL: solo BTCUSD dust $0.72, sin posiciones materiales -> sin alerta. BUG CRITICO DETECTADO: el clasificador cowork/bot marca como COWORK cualquier simbolo que tenga ALGUNA orden con cid COWORK-*, incluidas las ordenes protectoras COWORK-SENT-OCOFIX del 21-sep 10:17 colocadas sobre posiciones del BOT. Verificado contra las ordenes de ENTRADA (buy filled): COHR/CRM/INTC/MSTR/RBLX/AAPL/DELL son todas GHA-* (bot); la unica posicion Cowork real es XOM (COWORK-MACRO-OIL_SP-B-20260908). cowork_abiertas REAL = 1/4, no 5-7/4. Los ciclos de 12:20, 13:22, 14:18 y 15:22 bloquearon entradas por 'limite excedido' con un conteo inflado. No se perdio ninguna entrada porque no hubo candidatos >=8.0, pero hay que corregir tiene_cowork(): clasificar por el cid de la orden de entrada (side=buy, filled), no por cualquier orden del simbolo. PASO 2: 50 noticias, 0 negativas sobre cartera (AMD titular 'Nvidia earnings miss' es opinion VanEck sobre NVDA, no sobre AMD). PASO 3/4C: EW API operativa. Calendario: HOY 21-sep AMC solo ABVX (sin whisper). 22-sep BMO THO/AZO/MLKN, AMC KBH/WOR/AYTU. 23-sep BMO CBRL/GIS/PAYX/CTAS. Ningun whisper publicado todavia y ninguno en perfil EW liquido -> 0 candidatos, 0 continuation plays. PASO 4B/6: sin shock. Cierre risk-on record: SPY +1.55% 773.51, QQQ +2.77% 741.47 (primer cierre record desde junio), XLK +2.77%, VIX 14.80, TNX 4.96 (-0.70%), WTI 92.00 (-8.28%) por restauracion de la mitad del pipeline East-West saudi + diplomacia AGNU, XLE -2.88%, XLU -1.07%, oro -0.99%. Motor del dia: semis (INTC +11%, AMD +8% a 1T market cap, QCOM +8%). PASO 5: 0 ejecuciones (mercado cerrado, 0 candidatos sobre umbral). Telegram silenciado (fuera de ventana EOD 16:40-17:05, sin trade/shock).",
+      "alertas_detalle": [
+        "XOM (COWORK) px 158.30 vs stop 157.02 = colchon 0.81%. Con XLE -2.88% y WTI -8.28% dos sesiones seguidas, probabilidad alta de salto de stop en la apertura del 22-sep. Decidir: asumir la salida o bajar stop a ~155.5 (bajo el minimo de 5 sesiones).",
+        "INTC TP limit 208.40 con px 121.78 (+71%) sigue abierto desde el OCO-fix de las 10:17. Inalcanzable: la posicion tiene stop pero no salida de beneficio realista. Revisar el calculo de TP del OCO-fix (parece usar un ATR o un precio de referencia erroneo). Sugerido TP ~131-134 (1.5-2x ATR sobre 121.78).",
+        "MSTR TP limit 169.49 con px 168.50 (+0.6%): salta manana casi seguro. Es el comportamiento deseado tras +16% pero conviene saber que la posicion se cierra sola.",
+        "cowork_abiertas mal contado (ver nota) -> 4 ciclos con entradas bloqueadas por un limite que no se estaba superando."
+      ],
+      "ew_scraper_status": "api_ok_quickcaldata",
+      "nota_ejecucion": "Sin colocacion de ordenes: mercado cerrado y 0 candidatos sobre umbral. Ordenes en cuenta REAL no ejecutadas por politica de seguridad del agente."
     }
   ],
   "momentum_15m": {
