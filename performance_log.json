@@ -2148,13 +2148,14 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-21T12:20",
+      "timestamp": "2026-09-21T13:22",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 99.0,
-      "nota": "Sin shock macro. Tape risk-on por distension Iran. Sentinel en modo read-only: sin ordenes ejecutadas este ciclo."
+      "macro_score": 0.5,
+      "resumen": "RISK-ON amplio: QQQ +2.43%, NQ fut +3.60%, SPY +1.45%, VIX 15.0. WTI -8.66% a $91.6 y Brent -7.96% por desmontaje de la prima Hormuz (trafico maritimo estabilizado, Saudi aumenta cargas via Oman, inventarios al alza). XLE -2.68% unico sector claramente negativo. XLC +3.57% liderado por META +9.25% (lanzamiento agente AI Muse + suscripcion tiered, catalizador idiosincratico, NO earnings). US10Y 4.96% (-0.82%), TLT +0.58%, oro -0.99%."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2249,12 +2250,22 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "tech",
-      "cambio_lider": 2.1413488543756265,
-      "tech_chg": 2.1413488543756265,
-      "rezagado": "energy",
-      "cambio_rezagado": -2.643441164327982,
-      "ts": "12:20"
+      "lider": "comm",
+      "cambio_lider": 3.57,
+      "tech_chg": 2.29,
+      "all": {
+        "tech": 2.29,
+        "fin": 0.26,
+        "energy": -2.68,
+        "health": 0.3,
+        "indus": 0.38,
+        "cons_disc": 1.03,
+        "util": -0.49,
+        "mat": -0.09,
+        "reit": 0.01,
+        "comm": 3.57
+      },
+      "ts": "13:22"
     },
     "eventos_recientes": [
       {
@@ -8951,6 +8962,14 @@
       "mensaje": "CVX stop 207.50 vs precio 208.94 = 0.32xATR14 (ATR=4.54). Viola la regla de 1.0xATR minimo con R<1.0 (leccion 2026-09-11). Stop coherente: ~204.40.",
       "accion_tomada": "Solo alerta — modificar un stop existente del bot esta prohibido en PASO 3.",
       "resuelto": false
+    },
+    {
+      "fecha": "2026-09-21",
+      "ts": "13:22",
+      "nivel": "medio",
+      "ticker": "XOM",
+      "origen": "sentinel",
+      "detalle": "XOM (posicion BOT) a $158.16, stop_limit en 157.02 (0.72% de margen). Crudo -8.66%, XLE -2.68%. Alta probabilidad de ejecucion del stop. Regla 5: solo alerta, no se toca posicion del bot."
     }
   ],
   "mejoras_sistema": [
@@ -14102,6 +14121,17 @@
         "EarningsWhispers inaccesible desde sandbox (connect timeout) -> scan EW headless fallido este ciclo",
         "Todas las posiciones equity con stop activo; sin earnings AH hoy en cartera"
       ]
+    },
+    {
+      "ts": "2026-09-21T13:22:20.201448+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 5,
+      "vix": 15.0,
+      "macro_nivel": "normal",
+      "macro_score": 0.5,
+      "nota": "Ciclo 13:15 ET. Sin ejecuciones: (1) cowork 5/4 por encima del limite, (2) sin earnings hoy AH; manana 22-sep solo AZO/WOR/MLKN (BMO, fuera de perfil EW liquido), (3) EarningsWhispers INACCESIBLE desde el sandbox (DNS/allowlist) -> scan EW headless sin datos este ciclo. Stops: todas las posiciones materiales protegidas (AAPL stop_limit 322.82 via PROTECT.*, BTC/USD 78126.72; el detector tiene_stop() dio falso negativo por limit=100 en /orders y por mismatch BTCUSD vs BTC/USD). Riesgo: XOM (BOT) a 0.7% de su stop 157.02 con XLE -2.68% y crudo -8.66%; CRM (COWORK) -6.93% a 2.8% del stop 230.94."
     }
   ],
   "momentum_15m": {
@@ -14162,14 +14192,14 @@
       "ts": "10:15"
     },
     "CRM": {
-      "precio": 238.0,
-      "mom_15m": -0.09,
-      "mom_30m": -0.113,
-      "vol_ratio": 0.63,
-      "vwap_dev": -0.177,
-      "rsi": 33.4,
-      "señal": "LATERAL",
-      "ts": "12:20"
+      "px": 237.6,
+      "m15": -0.12,
+      "m30": -0.23,
+      "vr": 0.37,
+      "vwap": -0.13,
+      "rsi": 39.6,
+      "sig": "LATERAL",
+      "ts": "13:22"
     },
     "BURL": {
       "precio": 294.79,
@@ -14360,14 +14390,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 575.29,
-      "mom_15m": -0.555,
-      "mom_30m": 0.14,
-      "vol_ratio": 0.69,
-      "vwap_dev": -0.063,
-      "rsi": 56.9,
-      "señal": "debil_baj",
-      "ts": "12:20"
+      "px": 574.64,
+      "m15": 0.59,
+      "m30": 0.64,
+      "vr": 0.4,
+      "vwap": -0.01,
+      "rsi": 37.6,
+      "sig": "debil_alcista",
+      "ts": "13:22"
     },
     "LULU": {
       "px": 119.42,
@@ -14930,14 +14960,14 @@
       "ts": "15:24"
     },
     "SOXL": {
-      "precio": 139.26,
-      "mom_15m": 0.274,
-      "mom_30m": -0.183,
-      "vol_ratio": 0.52,
-      "vwap_dev": 0.62,
-      "rsi": 70.7,
-      "señal": "debil_alc",
-      "ts": "12:20"
+      "px": 139.81,
+      "m15": -0.28,
+      "m30": 0.11,
+      "vr": 0.51,
+      "vwap": 0.13,
+      "rsi": 63.7,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "KFY": {
       "px": 81.85,
@@ -14971,24 +15001,24 @@
       "ts": "15:28"
     },
     "XOM": {
-      "precio": 158.51,
-      "mom_15m": -0.408,
-      "mom_30m": -0.452,
-      "vol_ratio": 0.79,
-      "vwap_dev": -0.391,
-      "rsi": 35.9,
-      "señal": "debil_baj",
-      "ts": "12:20"
+      "px": 158.16,
+      "m15": -0.16,
+      "m30": -0.09,
+      "vr": 0.88,
+      "vwap": -0.3,
+      "rsi": 20.1,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "TQQQ": {
-      "precio": 77.93,
-      "mom_15m": 0.361,
-      "mom_30m": 0.322,
-      "vol_ratio": 1.27,
-      "vwap_dev": 0.622,
-      "rsi": 81.3,
-      "señal": "ALCISTA",
-      "ts": "12:20"
+      "px": 78.22,
+      "m15": 0.07,
+      "m30": 0.17,
+      "vr": 0.38,
+      "vwap": 0.34,
+      "rsi": 75.4,
+      "sig": "LATERAL",
+      "ts": "13:22"
     },
     "XLE": {
       "px": 64.71,
@@ -15102,14 +15132,14 @@
       "ts": "15:13"
     },
     "AAPL": {
-      "precio": 338.59,
-      "mom_15m": 0.255,
-      "mom_30m": 0.212,
-      "vol_ratio": 0.77,
-      "vwap_dev": 0.311,
-      "rsi": 68.2,
-      "señal": "debil_alc",
-      "ts": "12:20"
+      "px": 339.03,
+      "m15": 0.09,
+      "m30": 0.01,
+      "vr": 0.53,
+      "vwap": 0.16,
+      "rsi": 68.1,
+      "sig": "LATERAL",
+      "ts": "13:22"
     },
     "ACVA": {
       "precio": 10.45,
@@ -15122,14 +15152,14 @@
       "ts": "15:28"
     },
     "COHR": {
-      "precio": 329.12,
-      "mom_15m": -0.138,
-      "mom_30m": -0.817,
-      "vol_ratio": 0.5,
-      "vwap_dev": -0.037,
-      "rsi": 64.9,
-      "señal": "LATERAL",
-      "ts": "12:20"
+      "px": 326.48,
+      "m15": -0.4,
+      "m30": -0.84,
+      "vr": 0.48,
+      "vwap": -0.93,
+      "rsi": 23.5,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "FPS": {
       "precio": 39.47,
@@ -15152,14 +15182,14 @@
       "ts": "15:28"
     },
     "MSTR": {
-      "precio": 165.51,
-      "mom_15m": -0.492,
-      "mom_30m": -0.69,
-      "vol_ratio": 0.72,
-      "vwap_dev": -0.672,
-      "rsi": 39.6,
-      "señal": "debil_baj",
-      "ts": "12:20"
+      "px": 166.74,
+      "m15": -0.19,
+      "m30": 0.14,
+      "vr": 0.35,
+      "vwap": 0.19,
+      "rsi": 54.0,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "QCOM": {
       "precio": 178.88,
@@ -15182,14 +15212,14 @@
       "ts": "15:28"
     },
     "RBLX": {
-      "precio": 51.24,
-      "mom_15m": 0.747,
-      "mom_30m": 0.609,
-      "vol_ratio": 1.17,
-      "vwap_dev": 0.735,
-      "rsi": 78.6,
-      "señal": "debil_alc",
-      "ts": "12:20"
+      "px": 50.88,
+      "m15": -0.61,
+      "m30": -0.85,
+      "vr": 0.67,
+      "vwap": -0.5,
+      "rsi": 50.8,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "SWKS": {
       "precio": 88.42,
@@ -15222,24 +15252,24 @@
       "ts": "15:28"
     },
     "INTC": {
-      "precio": 123.28,
-      "mom_15m": -0.541,
-      "mom_30m": -1.091,
-      "vol_ratio": 0.62,
-      "vwap_dev": 0.185,
-      "rsi": 61.2,
-      "señal": "debil_baj",
-      "ts": "12:20"
+      "px": 121.91,
+      "m15": -0.55,
+      "m30": -0.53,
+      "vr": 0.62,
+      "vwap": -1.21,
+      "rsi": 23.2,
+      "sig": "debil_bajista",
+      "ts": "13:22"
     },
     "WBD": {
-      "precio": 30.57,
-      "mom_15m": 0.072,
-      "mom_30m": 0.115,
-      "vol_ratio": 0.36,
-      "vwap_dev": -0.136,
-      "rsi": 35.6,
-      "señal": "LATERAL",
-      "ts": "12:20"
+      "px": 30.84,
+      "m15": 0.24,
+      "m30": 0.82,
+      "vr": 1.18,
+      "vwap": 0.59,
+      "rsi": 76.0,
+      "sig": "debil_alcista",
+      "ts": "13:22"
     },
     "AMD": {
       "precio": 611.43,
@@ -15252,44 +15282,54 @@
       "ts": "12:20"
     },
     "ARM": {
-      "precio": 318.79,
-      "mom_15m": 0.099,
-      "mom_30m": 0.598,
-      "vol_ratio": 0.71,
-      "vwap_dev": 1.09,
-      "rsi": 72.6,
-      "señal": "LATERAL",
-      "ts": "12:20"
+      "px": 319.1,
+      "m15": -0.1,
+      "m30": -0.09,
+      "vr": 0.48,
+      "vwap": 0.22,
+      "rsi": 54.4,
+      "sig": "LATERAL",
+      "ts": "13:22"
     },
     "SMCI": {
-      "precio": 40.98,
-      "mom_15m": -0.365,
-      "mom_30m": 0.024,
-      "vol_ratio": 0.38,
-      "vwap_dev": -0.171,
-      "rsi": 44.0,
-      "señal": "debil_baj",
-      "ts": "12:20"
+      "px": 41.33,
+      "m15": 0.95,
+      "m30": 1.4,
+      "vr": 1.26,
+      "vwap": 0.66,
+      "rsi": 56.2,
+      "sig": "ALCISTA",
+      "ts": "13:22"
     },
     "NET": {
-      "precio": 346.24,
-      "mom_15m": 0.069,
-      "mom_30m": 0.197,
-      "vol_ratio": 0.54,
-      "vwap_dev": 0.511,
-      "rsi": 61.9,
-      "señal": "LATERAL",
-      "ts": "12:20"
+      "px": 346.62,
+      "m15": 0.01,
+      "m30": 0.04,
+      "vr": 0.21,
+      "vwap": 0.12,
+      "rsi": 56.1,
+      "sig": "LATERAL",
+      "ts": "13:22"
     },
     "CBRL": {
-      "precio": 45.12,
-      "mom_15m": -0.606,
-      "mom_30m": -0.77,
-      "vol_ratio": 4.63,
-      "vwap_dev": -0.382,
-      "rsi": 40.8,
-      "señal": "BAJISTA",
-      "ts": "12:20"
+      "px": 44.54,
+      "m15": -0.38,
+      "m30": -0.2,
+      "vr": 0.14,
+      "vwap": -1.27,
+      "rsi": 22.1,
+      "sig": "debil_bajista",
+      "ts": "13:22"
+    },
+    "META": {
+      "px": 734.69,
+      "m15": 0.8,
+      "m30": 0.95,
+      "vr": 0.82,
+      "vwap": 1.25,
+      "rsi": 91.1,
+      "sig": "debil_alcista",
+      "ts": "13:22"
     }
   },
   "sentinel_signals": [
@@ -21423,9 +21463,16 @@
       "accion_correctiva": "Sustituir get_ew_headless() del SKILL.md de sentinel por llamadas a la API. Mismo cambio aplicable a cualquier tarea que aun scrapee HTML de EW.",
       "severidad": "alta",
       "estado": "abierta"
+    },
+    {
+      "fecha": "2026-09-21",
+      "ts": "13:22",
+      "tipo": "fuente_datos",
+      "detalle": "EarningsWhispers no alcanzable desde el runtime del sentinel; whisper/asimetria no disponibles este ciclo.",
+      "accion": "Usado yfinance calendar como fallback. Revisar allowlist de red o migrar a proxy EW (ew_proxy_module)."
     }
   ],
-  "ultima_actualizacion": "2026-09-21T12:20",
+  "ultima_actualizacion": "2026-09-21T13:22 ET (sentinel)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
@@ -21902,8 +21949,11 @@
   "fuentes_estado": {
     "ts": "2026-09-21T16:35Z",
     "earningswhispers": {
-      "ok": true,
-      "detalle": "HTTP 200"
+      "estado": "INACCESIBLE",
+      "ts": "2026-09-21T13:22",
+      "error": "HTTPSConnectionPool old.earningswhispers.com Max retries exceeded (sin resolucion/allowlist en sandbox)",
+      "impacto": "PASO 3 scan EW headless sin datos. Fallback usado: yfinance calendar (earnings dates + consensus, sin whisper).",
+      "fallback_resultado": "Manana 2026-09-22: AZO, WOR, MLKN. 2026-09-23: CBRL, GIS, PAYX, FUL."
     },
     "nasdaq_calendar": {
       "ok": true,
