@@ -2148,13 +2148,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-21T10:17",
+      "timestamp": "2026-09-21T11:15",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 8.0,
       "score_min_real_efectivo": 9.0,
-      "nota": "Sin shock. Desarme de prima petrolera = risk-on para indices, risk-off para energia."
+      "nota": "Risk-on. SPY +1.04% QQQ +2.05% XLK +2.05% VIX 14.61. Continua el desarme de la prima petrolera: WTI -8%, XLE -2.56%, oro -0.98%, 10y 4.96%. META +6.4% por revision de precio objetivo (Wells Fargo 796), no por resultados. Energia = unico sector claramente risk-off; XOM del bot es la exposicion directa."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -14059,6 +14059,23 @@
         "vix": 14.88,
         "wti_chg": -7.75
       }
+    },
+    {
+      "ts": "2026-09-21T15:15:53.661579+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 3,
+      "vix": 14.61,
+      "macro_nivel": "normal",
+      "macro_score": 1.6,
+      "nota": "Lunes 21-sep 11:15 ET. PASO 1: 9/9 posiciones no-dust CON stop vivo tras el OCO-fix de las 10:17 (COHR stop_limit 309.30 held, MSTR 153.29 held, INTC 116.05 held, CRM 230.94 held, RBLX 43.43 held, AAPL 322.82 new, DELL 519.31 new, XOM 157.02 new, BTCUSD 78126.72 new). Cowork 3/4. Solo ETHUSD/SOLUSD dust (<$0.20) sin stop -> ignorable. Paper equity 107.890 (+1.72% dia), real 4.548. PASO 2: 50 noticias, 0 negativas sobre cartera. PASO 3: EW RECUPERADO usando la API validada el 29-ago (/api/getstocksdata/{TICKER} + /api/quickcaldata/{YYYYMMDD}/{1|3}): 83/83 tickers OK, 0 fallos. Calendario 22-sep: THO(+4.2%), MLKN(+5.7%), AZO(-0.9%), KBH(-3.4%), WOR(sin whisper). 23-sep: CBRL(+45% sobre base 0.20 -> ruido), GIS(+2.8%), PAYX(+1.5%), CTAS(+2.2%). Ninguno llega a score 8.0 -> 0 candidatos. Confirma la leccion del 18-sep: semana sin alpha de earnings. PASO 4B: sin shock. WTI -8% (yf 92.31; Brent ~102) por desarme de prima de Hormuz + diplomacia Iran en la AGNU + build de inventarios >7 Mbbl. META +6.4% por Wells Fargo PT 640->796 y CFRA Strong Buy ante Connect 23-24 sep, NO earnings sorpresa -> el umbral de 6% de MAG7 del sentinel genera falso positivo con movimientos de analista; conviene exigir confirmacion de earnings date antes de marcar alerta. Tape risk-on: SPY +1.04%, QQQ +2.05%, XLK +2.05%, VIX 14.61 (-1.35%), XLE -2.56%. PASO 4C: fuera de ventana AH. PASO 5: 0 ejecuciones (0 candidatos >= 8.0). Telegram silenciado por politica (sin trade/cierre/shock/EOD/real-sin-stop).",
+      "ew_scraper_status": "api_ok_83_de_83",
+      "alertas_detalle": [
+        "XOM (BOT) stop 157.02 vs precio 158.93 = colchon 1.2%, muy ajustado con WTI -8% y XLE -2.56%. RSI 32. Riesgo alto de salto de stop. No se toca por ser posicion del bot.",
+        "INTC TP limit en 208.40 con precio 122.90 (+69%): el TP del OCO-fix de las 10:17 quedo fuera de rango y es inalcanzable. La posicion esta protegida por el stop 116.05 pero no tiene salida de beneficio realista. Revisar el calculo de TP del OCO-fix."
+      ],
+      "nota_ejecucion": "Ciclo ejecutado en modo analisis: sin colocacion de ordenes. No habia ningun candidato sobre umbral, por lo que no se omitio ninguna entrada valida."
     }
   ],
   "momentum_15m": {
@@ -21314,9 +21331,17 @@
       "severidad": "alta",
       "descripcion": "earningswhispers.com inalcanzable desde el entorno de ejecucion del sentinel (ReadTimeout). El scan EW del PASO 3 devolvio 0 tickers.",
       "detectado_por": "sentinel 2026-09-18"
+    },
+    {
+      "fecha": "2026-09-21",
+      "titulo": "El SKILL.md de sentinel sigue usando el scraper HTML muerto de EarningsWhispers",
+      "detalle": "PASO 3 de sentinel llama a old.earningswhispers.com (ConnectTimeout desde ~18-ago) y a www.earningswhispers.com con BeautifulSoup buscando #whisperbox, que ya no existe porque el sitio es una SPA. Resultado: 0 senales EW en todos los ciclos desde agosto. El fix ya estaba validado y documentado en plog[\"ew_pipeline\"] el 29-ago pero nunca se porto al archivo de la tarea. Verificado hoy: /api/getstocksdata/{TICKER} devuelve whisper+consensusEst+nextEPSDate+releaseTime con 83/83 exitos, y /api/quickcaldata/{YYYYMMDD}/{1|3} da el calendario completo. Solo requiere header Referer: https://www.earningswhispers.com/.",
+      "accion_correctiva": "Sustituir get_ew_headless() del SKILL.md de sentinel por llamadas a la API. Mismo cambio aplicable a cualquier tarea que aun scrapee HTML de EW.",
+      "severidad": "alta",
+      "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-21T10:17 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-21T11:15 ET (sentinel)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
