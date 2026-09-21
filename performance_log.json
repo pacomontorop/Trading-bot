@@ -2148,14 +2148,18 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-21T13:22",
+      "timestamp": "2026-09-21T14:18",
       "nivel": "normal",
       "shocks": [],
-      "bloquear_entradas": false,
+      "bloquear_entradas": true,
+      "motivo_bloqueo": "limite_posiciones_cowork_excedido",
+      "vix": 15.05,
+      "spy_dia": 0.91,
+      "meta_1d": 11.7,
+      "crude_1d": -8.13,
+      "yield_10y": 4.97,
       "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 99.0,
-      "macro_score": 0.5,
-      "resumen": "RISK-ON amplio: QQQ +2.43%, NQ fut +3.60%, SPY +1.45%, VIX 15.0. WTI -8.66% a $91.6 y Brent -7.96% por desmontaje de la prima Hormuz (trafico maritimo estabilizado, Saudi aumenta cargas via Oman, inventarios al alza). XLE -2.68% unico sector claramente negativo. XLC +3.57% liderado por META +9.25% (lanzamiento agente AI Muse + suscripcion tiered, catalizador idiosincratico, NO earnings). US10Y 4.96% (-0.82%), TLT +0.58%, oro -0.99%."
+      "score_min_real_efectivo": 99.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -14132,6 +14136,15 @@
       "macro_nivel": "normal",
       "macro_score": 0.5,
       "nota": "Ciclo 13:15 ET. Sin ejecuciones: (1) cowork 5/4 por encima del limite, (2) sin earnings hoy AH; manana 22-sep solo AZO/WOR/MLKN (BMO, fuera de perfil EW liquido), (3) EarningsWhispers INACCESIBLE desde el sandbox (DNS/allowlist) -> scan EW headless sin datos este ciclo. Stops: todas las posiciones materiales protegidas (AAPL stop_limit 322.82 via PROTECT.*, BTC/USD 78126.72; el detector tiene_stop() dio falso negativo por limit=100 en /orders y por mismatch BTCUSD vs BTC/USD). Riesgo: XOM (BOT) a 0.7% de su stop 157.02 con XLE -2.68% y crudo -8.66%; CRM (COWORK) -6.93% a 2.8% del stop 230.94."
+    },
+    {
+      "ts": "2026-09-21T14:18:25.470983+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 7,
+      "vix": 15.1,
+      "nota": "Cowork 7/4 posiciones y 39.7% exposicion (max 30%) -> limites excedidos, entradas nuevas bloqueadas. Todas las posiciones equity con stop activo, riesgo agregado 2.75% equity. EW scan no ejecutable: old.earningswhispers.com inalcanzable desde sandbox (ConnectTimeout); calendario via websearch: MU 23-sep, ACN/NKE 24-sep, CBRL 23-sep BMO (score 6.32<7.5). Sin earnings hoy AH ni manana BMO. Ordenes NO ejecutadas en cuenta real por politica de seguridad del agente."
     }
   ],
   "momentum_15m": {
