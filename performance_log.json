@@ -1591,6 +1591,30 @@
       "stop_loss": 0,
       "source": "bot_autonomo",
       "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
+    },
+    {
+      "id": "GHA-20260921-INTC",
+      "simbolo": "INTC",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 7.74,
+      "score_base": 6.94,
+      "ajuste_fuentes": 0.8,
+      "fuentes_extra": {
+        "analistas": 0.4,
+        "sector": 0.4
+      },
+      "fecha_entrada": "2026-09-21",
+      "precio_entrada": 115.93,
+      "precio_stop": 106.58,
+      "precio_tp": 208.4,
+      "stop_pct": 7.99,
+      "rr": 10.0,
+      "qty": 55,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "3c44b305-3cfe-4da8-8d40-846b02d9eeb9",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -2028,7 +2052,7 @@
     {
       "ticker": "INTC",
       "symbol": "INTC",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.94,
       "score_ajustado": 6.94,
       "score_raw": 7.5,
@@ -2047,7 +2071,8 @@
       "expira": "2026-09-21T19:37:27Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-21T13:37:27.932895+00:00",
-      "notas": "1d=+7.5% vol=0.2x 52h_dist=0.0%"
+      "notas": "1d=+7.5% vol=0.2x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-21 13:38"
     },
     {
       "ticker": "AMD",
@@ -23645,93 +23670,142 @@
     }
   ],
   "ejecucion_apertura": {
-    "fecha": "2026-09-15",
+    "fecha": "2026-09-21",
     "hora_utc": "13:38",
     "min_desde_apertura": 8.5,
-    "real_activa": true,
-    "real_motivo": "forzado ON en risk_limits.json",
-    "ejecutados": [],
+    "real_activa": false,
+    "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
+    "ejecutados": [
+      "INTC"
+    ],
     "descartados": [
-      "DELL: ya en cartera paper",
-      "IGV: max posiciones paper 8",
+      "AMD: runup +7.0%>5%",
+      "COIN: paper: no llenó (cancelada)",
+      "MSTR: ya en cartera paper",
+      "SMCI: max posiciones paper 8",
+      "MRNA: max posiciones paper 8",
+      "META: runup +5.1%>5%",
+      "MU: max posiciones paper 8",
+      "TECL: max posiciones paper 8",
+      "MUU: max posiciones paper 8",
       "SOXL: max posiciones paper 8",
-      "QCOM: score 5.6<6.0",
-      "USO: score 5.6<6.0",
-      "OKTA: score 5.6<6.0",
-      "FPS: score 5.5<6.0",
-      "NVDA: score 5.3<6.0",
-      "VRA: score 5.2<6.0",
-      "ACVA: score 4.9<6.0",
-      "OXY: score 4.9<6.0",
-      "QRVO: score 4.9<6.0",
-      "AMD: score 4.8<6.0",
-      "SWKS: score 4.1<6.0"
+      "CBRL: max posiciones paper 8"
     ],
     "ajustes_fuentes": {
-      "DELL": {
+      "AMD": {
         "base": 8.75,
-        "paper": 9.1,
+        "paper": 9.6,
         "real": 8.75,
         "partes": {
           "insiders": -0.3,
-          "analistas": 0.8,
-          "sector": -0.15
+          "analistas": 0.55,
+          "sector": 0.4,
+          "social": 0.2
         }
       },
-      "QCOM": {
-        "base": 5.56,
-        "paper": 5.56,
-        "real": 5.56,
+      "COIN": {
+        "base": 6.88,
+        "paper": 7.78,
+        "real": 6.88,
         "partes": {
-          "analistas": 0.15,
+          "analistas": 0.8,
           "opciones": 0.25,
-          "sector": -0.4
-        }
-      },
-      "OKTA": {
-        "base": 4.91,
-        "paper": 5.56,
-        "real": 4.91,
-        "partes": {
-          "analistas": 0.8,
           "sector": -0.15
         }
       },
-      "FPS": {
-        "base": 5.4,
-        "paper": 5.5,
-        "real": 5.4,
+      "MSTR": {
+        "base": 6.48,
+        "paper": 7.78,
+        "real": 6.48,
         "partes": {
-          "analistas": 0.2,
+          "analistas": 0.65,
+          "opciones": 0.25,
+          "sector": 0.4
+        }
+      },
+      "INTC": {
+        "base": 6.94,
+        "paper": 7.74,
+        "real": 6.94,
+        "partes": {
+          "analistas": 0.4,
+          "sector": 0.4
+        }
+      },
+      "SMCI": {
+        "base": 6.88,
+        "paper": 7.58,
+        "real": 6.88,
+        "partes": {
           "opciones": 0.5,
           "corto": -0.2,
+          "sector": 0.4
+        }
+      },
+      "MRNA": {
+        "base": 6.67,
+        "paper": 7.17,
+        "real": 6.67,
+        "partes": {
+          "analistas": 0.4,
+          "opciones": 0.5,
           "sector": -0.4
         }
       },
-      "NVDA": {
-        "base": 5.0,
-        "paper": 5.3,
-        "real": 5.0,
+      "META": {
+        "base": 6.88,
+        "paper": 6.98,
+        "real": 6.88,
         "partes": {
           "insiders": -0.3,
-          "analistas": 1.0,
-          "sector": -0.4
+          "opciones": 0.25,
+          "sector": 0.15
         }
       },
-      "VRA": {
-        "base": 5.4,
-        "paper": 5.25,
-        "real": 5.25,
+      "MU": {
+        "base": 6.94,
+        "paper": 6.89,
+        "real": 6.89,
         "partes": {
-          "sector": -0.15
+          "insiders": -0.3,
+          "analistas": 0.05,
+          "opciones": -0.4,
+          "sector": 0.4,
+          "social": 0.2
         }
       },
-      "QRVO": {
-        "base": 5.56,
-        "paper": 4.86,
-        "real": 4.86,
+      "TECL": {
+        "base": 6.48,
+        "paper": 6.73,
+        "real": 6.48,
         "partes": {
-          "analistas": -0.3,
+          "opciones": 0.25
+        }
+      },
+      "MUU": {
+        "base": 6.48,
+        "paper": 6.73,
+        "real": 6.48,
+        "partes": {
+          "opciones": 0.25
+        }
+      },
+      "SOXL": {
+        "base": 6.94,
+        "paper": 6.54,
+        "real": 6.54,
+        "partes": {
+          "opciones": -0.4
+        }
+      },
+      "CBRL": {
+        "base": 6.32,
+        "paper": 6.17,
+        "real": 6.17,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.5,
+          "corto": -0.4,
           "sector": -0.4
         }
       }
@@ -23739,14 +23813,14 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-15T13:38Z",
+    "ts": "2026-09-21T13:38Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.97,
-      "fear_greed": 30.9,
+      "credito_hyg_ief_20": 0.81,
+      "fear_greed": 30.5,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -23754,34 +23828,28 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 261,
+        "ms": 130,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 481,
+        "ms": 403,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 96538,
+        "ms": 95546,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
         "ok": 12,
         "fallos": 0,
-        "ms": 3723,
+        "ms": 4528,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 0,
-        "fallos": 12,
-        "ms": 0,
-        "ultimo_error": "RuntimeError: company_tickers.json HTTP 403"
-      },
-      "insiders_nasdaq": {
         "ok": 12,
         "fallos": 0,
         "ms": 0,
@@ -23790,31 +23858,31 @@
       "insiders": {
         "ok": 12,
         "fallos": 0,
-        "ms": 29523,
+        "ms": 20352,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1750,
+        "ms": 1705,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 12,
         "fallos": 0,
-        "ms": 2598,
+        "ms": 3047,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1297,
+        "ms": 1417,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 12,
         "fallos": 0,
-        "ms": 1712,
+        "ms": 1696,
         "ultimo_error": null
       }
     }
