@@ -2029,7 +2029,9 @@
     "dias_riesgo_macro": [
       "2026-09-25"
     ],
-    "notas_adicionales": "Sin CPI esta semana (próximo 14-oct). El PCE cae en sábado 26-sep. El riesgo dominante NO es un dato macro sino la cumbre Trump-Xi: binaria y sin hora fija. BoJ subió tipos al ritmo más rápido desde 1990 → yen a 157.93, presión en el carry trade."
+    "notas_adicionales": "Sin CPI esta semana (próximo 14-oct). El PCE cae en sábado 26-sep. El riesgo dominante NO es un dato macro sino la cumbre Trump-Xi: binaria y sin hora fija. BoJ subió tipos al ritmo más rápido desde 1990 → yen a 157.93, presión en el carry trade.",
+    "restricciones_activas": [],
+    "ts_health_check": "2026-09-21T06:08"
   },
   "operaciones_crypto": [
     {
@@ -20481,6 +20483,72 @@
       ],
       "fixes": [],
       "nota": "Primer dia de la semana W36 (31-ago a 4-sep, 5 sesiones; Labor Day cae el 7-sep). VIX 14.43 estable. Sin restricciones activas: sistema habilitado para operar. Contents API funciono (no hizo falta blobs API). Deteccion de tareas: se excluyen los commits system-health-check del matching para evitar falsos positivos por menciones de otras tareas en el propio mensaje del health check (bug que ocultaba la inactividad de pre-close-manager)."
+    },
+    {
+      "fecha": "2026-09-21",
+      "ts": "2026-09-21T06:08Z",
+      "estado": "AMARILLO",
+      "vix": 14.81,
+      "vix_log": 15.44,
+      "vix_diff": 0.63,
+      "vix_accion": "sin cambio (<1.5pts)",
+      "restricciones_activas": 0,
+      "restricciones_eliminadas": 0,
+      "regimen": "STAGFLATION_HAWKISH",
+      "alpaca_paper": {
+        "ok": true,
+        "equity": 106531.96,
+        "last_equity": 106070.92,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "posiciones": [
+          "AAPL",
+          "BTCUSD",
+          "COHR",
+          "CRM",
+          "CVX",
+          "DELL",
+          "ETHUSD",
+          "MSTR",
+          "RBLX",
+          "SOLUSD",
+          "XOM"
+        ],
+        "mejor": "MSTR +7.14%",
+        "peor": "CRM -6.96%"
+      },
+      "alpaca_real": {
+        "ok": true,
+        "equity": 4548.16,
+        "status": "ACTIVE",
+        "trading_blocked": false,
+        "posiciones": [
+          "BTCUSD"
+        ],
+        "btc_unrealized_pct": -30.7
+      },
+      "tareas": {
+        "pre-market-earnings-scan": "2026-09-15 (4 sesiones)",
+        "market-open-execution": "2026-09-18 (1 sesion)",
+        "intraday-monitor": "2026-09-18 (1 sesion)",
+        "post-market-review": "2026-09-18 (1 sesion)",
+        "ew-daily-results": "2026-09-18 (1 sesion)",
+        "ew-pipeline": "2026-09-20 (0 sesiones)",
+        "sentinel": "2026-09-18 (1 sesion)",
+        "pre-close-manager": "2026-09-18 (1 sesion)",
+        "system-health-check": "2026-09-18 (1 sesion)"
+      },
+      "alertas": [
+        "🚨 pre-market-earnings-scan: ultimo run 2026-09-15 — se saltó 16, 17 y 18-sep (4 sesiones sin correr)",
+        "⚠️ health_check_log llevaba sin escribirse desde 2026-08-31 pese a correr a diario (log desincronizado) → corregido hoy",
+        "⚠️ REAL: BTCUSD con -30.7% no realizado sobre una equity de $4.548 — posicion unica, sin diversificacion"
+      ],
+      "fixes": [
+        "🔧 macro_context.restricciones_activas faltaba → inicializado a [] (evita KeyError en otras tareas)",
+        "📝 health_check_log re-sincronizado (ultima entrada era 2026-08-31, 15 dias de hueco)",
+        "🔎 Deteccion de tareas ampliada: el patron 'pre-market-earnings-scan' no casaba con los commits reales ('auto: pre-market-scan') — falsa alarma de 'sin commits' resuelta"
+      ],
+      "nota": "Lunes W39. Mercado abre 09:30 ET. VIX 14.81 (Yahoo, cierre viernes) vs 15.44 en log: diff 0.63 < umbral 1.5, sin actualizar. Regimen STAGFLATION_HAWKISH se mantiene: VIX<16 pero el regimen no es DEFENSIVE_VIX_RECOVERY ni VOLATILITY_SPIKE, asi que la regla de RISK_ON_RECOVERY no aplica — la complacencia en vol convive con 10Y ~4.96% y Fed hawkish. Riesgo dominante de la semana: cumbre Trump-Xi (sin hora fija, binaria) y datos del jueves 25-sep. Sin restricciones activas: sistema habilitado para operar."
     }
   ],
   "historial_oportunidades_perdidas": [
@@ -21283,7 +21351,7 @@
       "detectado_por": "sentinel 2026-09-18"
     }
   ],
-  "ultima_actualizacion": "2026-09-19T07:13:41Z",
+  "ultima_actualizacion": "2026-09-21T06:08Z",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
