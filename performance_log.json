@@ -1945,6 +1945,69 @@
       "momentum_5d_pct": -1.9,
       "analistas": 4,
       "fecha_scan": "2026-09-20T23:28:33Z"
+    },
+    {
+      "ticker": "MLKN",
+      "score": 5.0,
+      "score_ajustado": 5.0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "asimetria_pct": 5.71,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "precio_ref": 20.66,
+      "atr14": 0.79,
+      "stop_propuesto": 19.48,
+      "tp_propuesto": 23.02,
+      "momentum_5d_pct": -2.5,
+      "beat_rate_4q": 0.75,
+      "expira": "2026-09-22T20:00:00Z",
+      "notas": "Sentinel pre-apertura 2026-09-21T09:20 ET. Score 5.0 < SCORE_MIN_P 7.5 -> NO ejecutable. Pendiente scoring completo pre-market 10:15 ET.",
+      "detectado_por": "sentinel-preopen",
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fuente": "EW /api/getstocksdata"
+    },
+    {
+      "ticker": "THO",
+      "score": 4.5,
+      "score_ajustado": 4.5,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "asimetria_pct": 4.21,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "precio_ref": 67.77,
+      "atr14": 2.51,
+      "stop_propuesto": 64.0,
+      "tp_propuesto": 75.31,
+      "momentum_5d_pct": -6.99,
+      "beat_rate_4q": 0.75,
+      "expira": "2026-09-22T20:00:00Z",
+      "notas": "Sentinel pre-apertura 2026-09-21T09:20 ET. Score 4.5 < SCORE_MIN_P 7.5 -> NO ejecutable. Pendiente scoring completo pre-market 10:15 ET.",
+      "detectado_por": "sentinel-preopen",
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fuente": "EW /api/getstocksdata"
+    },
+    {
+      "ticker": "GIS",
+      "score": 4.0,
+      "score_ajustado": 4.0,
+      "estado": "sentinel_preview",
+      "accion_recomendada": "revisar_premarket",
+      "asimetria_pct": 2.78,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "precio_ref": 36.32,
+      "atr14": 1.13,
+      "stop_propuesto": 34.62,
+      "tp_propuesto": 39.71,
+      "momentum_5d_pct": 1.31,
+      "beat_rate_4q": 0.75,
+      "expira": "2026-09-23T20:00:00Z",
+      "notas": "Sentinel pre-apertura 2026-09-21T09:20 ET. Score 4.0 < SCORE_MIN_P 7.5 -> NO ejecutable. Pendiente scoring completo pre-market 10:15 ET.",
+      "detectado_por": "sentinel-preopen",
+      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "fuente": "EW /api/getstocksdata"
     }
   ],
   "macro_context": {
@@ -2031,7 +2094,23 @@
     ],
     "notas_adicionales": "Sin CPI esta semana (próximo 14-oct). El PCE cae en sábado 26-sep. El riesgo dominante NO es un dato macro sino la cumbre Trump-Xi: binaria y sin hora fija. BoJ subió tipos al ritmo más rápido desde 1990 → yen a 157.93, presión en el carry trade.",
     "restricciones_activas": [],
-    "ts_health_check": "2026-09-21T06:08"
+    "ts_health_check": "2026-09-21T06:08",
+    "sentinel_ultimo_check": {
+      "timestamp": "2026-09-21T09:20",
+      "nivel": "normal",
+      "shocks": [],
+      "bloquear_entradas": false,
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0,
+      "tape": "risk-on: futuros ES+1.4% NQ+2.1%, global +1.0/1.4%, VIX 14.9, BTC $85k +4.9%",
+      "drivers": [
+        "Petroleo retrocede: prima geopolitica post-ataque Riyadh (19-sep) se deshace, exportaciones saudies recuperan via Ormuz",
+        "Anticipacion cumbre Trump-Xi 24-sep (comercio, aranceles, Taiwan, IA)",
+        "Fed subio tipos 18-sep; 10Y toco 5% (max desde 2007), hoy afloja a 4.97%",
+        "Trump emite nueva advertencia a Iran hoy -> cola de riesgo geopolitico sigue viva"
+      ],
+      "riesgo_latente": "Reescalada Oriente Medio revertiria la caida del crudo y golpearia aerolineas/consumo"
+    }
   },
   "operaciones_crypto": [
     {
@@ -13914,6 +13993,17 @@
       "cowork_abiertas": 4,
       "vix": 15.0,
       "nota": "EW headless no alcanzable desde sandbox (egress bloqueado) — scan EW = 0 tickers"
+    },
+    {
+      "ts": "2026-09-21T09:20:14.715622+00:00",
+      "modo": "pre-apertura",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 9,
+      "cowork_abiertas": 5,
+      "max_cowork": 4,
+      "vix": 14.9,
+      "nota": "Sin ejecucion: mercado cerrado (09:10 ET) y Cowork 5/4 sobre limite. Ningun candidato alcanza score 7.5."
     }
   ],
   "momentum_15m": {
@@ -15037,114 +15127,6 @@
     }
   },
   "sentinel_signals": [
-    {
-      "ticker": "SNOW",
-      "score": 3,
-      "tipo": "earnings_ew",
-      "asimetria": 13.333333333333334,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=13.333333333333334% beat=4/4 vsMA200=51.0% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "HPE",
-      "score": 1,
-      "tipo": "earnings_ew",
-      "asimetria": 2.1276595744680873,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=2.1276595744680873% beat=4/4 vsMA200=60.9% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "LULU",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": -1.6759776536312863,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=-1.6759776536312863% beat=4/4 vsMA200=-21.6% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "ZS",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 3.6697247706421847,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=3.6697247706421847% beat=4/4 vsMA200=4.8% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "DOCU",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": 6.422018348623839,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=6.422018348623839% beat=4/4 vsMA200=19.2% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "PATH",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": 20,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=20.0% beat=3/4 vsMA200=41.8% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "ASAN",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": null,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=None% beat=4/4 vsMA200=14.8% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "AI",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": -4.0000000000000036,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=-4.0000000000000036% beat=2/4 vsMA200=-1.7% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "NIO",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": -28.57142857142855,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "pre-market",
-      "razon": "asim=-28.57142857142855% beat=4/4 vsMA200=-17.1% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
     {
       "ticker": "NTAP",
       "score": 0,
@@ -16330,6 +16312,114 @@
       "ts_detected": "2026-09-07T09:17:11.439496+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preopen-20260907"
+    },
+    {
+      "ticker": "MLKN",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 5.71,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+5.71%, beat_rate=0.75, mom5d=-2.5%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "THO",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": 4.21,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+4.21%, beat_rate=0.75, mom5d=-7.0%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "CBRL",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 45.0,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+45.00%, beat_rate=0.5, mom5d=-8.9%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "CTAS",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.22,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+2.22%, beat_rate=0.75, mom5d=-1.9%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "KBH",
+      "score": 2.0,
+      "tipo": "earnings_ew",
+      "asimetria": -3.41,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "after-hours",
+      "razon": "asim=-3.41%, beat_rate=0.5, mom5d=-4.2%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "AZO",
+      "score": 2.0,
+      "tipo": "earnings_ew",
+      "asimetria": -0.95,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "pre-market",
+      "razon": "asim=-0.95%, beat_rate=0.5, mom5d=-0.8%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "GIS",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.78,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+2.78%, beat_rate=0.75, mom5d=+1.3%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "PAYX",
+      "score": 3.0,
+      "tipo": "earnings_ew",
+      "asimetria": 1.5,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+1.50%, beat_rate=1.0, mom5d=+0.3%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
+    },
+    {
+      "ticker": "SNX",
+      "score": 3.0,
+      "tipo": "earnings_ew",
+      "asimetria": 1.94,
+      "earnings_fecha": "2026-09-24",
+      "earnings_timing": "pre-market",
+      "razon": "asim=+1.94%, beat_rate=1.0, mom5d=-1.1%",
+      "ts_detected": "2026-09-21T09:20:14.715622+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-preopen"
     }
   ],
   "skip_analysis": {
@@ -21349,9 +21439,42 @@
       "severidad": "alta",
       "descripcion": "earningswhispers.com inalcanzable desde el entorno de ejecucion del sentinel (ReadTimeout). El scan EW del PASO 3 devolvio 0 tickers.",
       "detectado_por": "sentinel 2026-09-18"
+    },
+    {
+      "fecha": "2026-09-21",
+      "origen": "sentinel",
+      "severidad": "alta",
+      "estado": "resuelto",
+      "problema": "old.earningswhispers.com INACCESIBLE desde el sandbox (connect timeout). www.earningswhispers.com responde 200 pero es JS-rendered: el HTML estatico no contiene whisper/consensus -> get_ew_headless() devolvio 0/76 tickers.",
+      "solucion": "Usar el endpoint JSON interno de la propia pagina: GET https://www.earningswhispers.com/api/getstocksdata/{TICKER} con headers UA + Referer + X-Requested-With:XMLHttpRequest. Devuelve whisper, consensusEst, revenueEst, nextEPSDate, releaseTime (1=BMO, 2=mid-day, 3=AMC), quarterDate, sectName. Sin login. Validado 194/195 tickers en <60s con 16 hilos.",
+      "accion_requerida": "Reemplazar get_ew_headless() y el scan de fin de semana en SKILL.md por este endpoint."
+    },
+    {
+      "fecha": "2026-09-21",
+      "origen": "sentinel",
+      "severidad": "media",
+      "estado": "workaround",
+      "problema": "yfinance 1.7.0: Ticker.fast_info devuelve 0.0/None en todos los campos -> PASO 6 y 6B calculaban VIX=0 y macro_score falseado a 0.",
+      "solucion": "Usar yf.download(period=\"6d\", interval=\"1d\") y calcular el cambio con los dos ultimos cierres. history() tambien funciona. Evitar fast_info."
+    },
+    {
+      "fecha": "2026-09-21",
+      "origen": "sentinel",
+      "severidad": "media",
+      "estado": "abierto",
+      "problema": "Disco /sessions al 100% (9.8G, 0 libres) -> pip install falla con OSError errno 28.",
+      "solucion": "Workaround: PYTHONPATH=/tmp/pylibs (libs preinstaladas). Requiere limpieza de /sessions."
+    },
+    {
+      "fecha": "2026-09-21",
+      "origen": "sentinel",
+      "severidad": "media",
+      "estado": "abierto",
+      "problema": "Posiciones paper del BOT sin stop: COHR (20sh, +6.09%, $6.556) y MSTR (43sh, +13.78%, $7.142). Regla 2 de coordinacion no aplica (sin earnings hoy, sin shock macro) -> solo alerta.",
+      "solucion": "Revision manual. MSTR expuesta: beta a BTC, +13.8% sin proteccion, BTC +4.9% hoy tras tocar $85k."
     }
   ],
-  "ultima_actualizacion": "2026-09-21T06:08Z",
+  "ultima_actualizacion": "2026-09-21T09:20",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
