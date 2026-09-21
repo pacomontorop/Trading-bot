@@ -2148,13 +2148,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-21T11:15",
+      "timestamp": "2026-09-21T12:20",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 8.0,
-      "score_min_real_efectivo": 9.0,
-      "nota": "Risk-on. SPY +1.04% QQQ +2.05% XLK +2.05% VIX 14.61. Continua el desarme de la prima petrolera: WTI -8%, XLE -2.56%, oro -0.98%, 10y 4.96%. META +6.4% por revision de precio objetivo (Wells Fargo 796), no por resultados. Energia = unico sector claramente risk-off; XOM del bot es la exposicion directa."
+      "score_min_paper_efectivo": 7.5,
+      "score_min_real_efectivo": 99.0,
+      "nota": "Sin shock macro. Tape risk-on por distension Iran. Sentinel en modo read-only: sin ordenes ejecutadas este ciclo."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2175,17 +2175,18 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-21T10:17",
-    "macro_score": 1.5,
-    "macro_bonus_ew": 0.45,
+    "ts_actualizado": "2026-09-21T12:20",
+    "macro_score": 0.5,
+    "macro_bonus_ew": 0.15,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros/indices alcistas (SPY +0.81%, QQQ +1.62%)",
-      "Tech lidera (XLK +1.46%, XLC +2.45%)",
-      "Yield 10Y 4.97% aun >4.5% - presion sobre valuaciones growth",
-      "Mercados globales positivos (avg +1.01%)",
-      "WTI -7.75% a $92.5 / Brent -3.19% a $100.6 - desarme de prima geopolitica (diplomacia Iran en UNGA + recuperacion oferta saudi)",
-      "XLE -2.49% peor sector - impacto directo en XOM"
+      "Futuros muy alcistas (ES +1.96%, NQ +3.42%) -> risk-on",
+      "Tech lidera: XLK +2.14%, NQ-YM spread +2.3pts -> favorece candidatos EW tech",
+      "Petroleo desplomado WTI $91.95 (-8.3%), Brent -7.8%: distension Iran (delegacion en UNGA martes)",
+      "XLE -2.64% peor sector -> XOM long en riesgo (stop a 0.94% del precio)",
+      "Yield 10Y 4.97% (max 2007) tras subida Fed 18-sep -> headwind estructural growth",
+      "VIX 14.89 (+0.54%) sin estres; SPY +1.28%, QQQ +2.31%",
+      "Internacional positivo: Nikkei +1.38%, DAX +1.07%, FTSE +0.75%, HSI +0.60%"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -2195,14 +2196,14 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": -0.6603092731569573,
-      "yield_10y": 5.0
+      "tlt_chg": 0.5723031850961539,
+      "yield_10y": -0.6202508289314784,
+      "yield_30y": -0.5627501527963044
     },
     "commodities": {
-      "dxy": 0.01762180501452589,
-      "oro": 0.45457642821454675,
-      "wti": 95.41000366210938,
-      "wti_chg": -6.378176593488566
+      "wti": -8.325030757184296,
+      "brent": -7.798214969992542,
+      "gold": -0.8113155808278236
     },
     "snapshot_holiday_20260907": {
       "VIX": [
@@ -2248,12 +2249,12 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "comm",
-      "cambio_lider": 2.45,
-      "tech_chg": 1.46,
-      "debil": "energy",
-      "cambio_debil": -2.49,
-      "ts": "10:17"
+      "lider": "tech",
+      "cambio_lider": 2.1413488543756265,
+      "tech_chg": 2.1413488543756265,
+      "rezagado": "energy",
+      "cambio_rezagado": -2.643441164327982,
+      "ts": "12:20"
     },
     "eventos_recientes": [
       {
@@ -2370,10 +2371,10 @@
       }
     ],
     "futuros": {
-      "ES": 0.9031413612565444,
-      "NQ": 1.3312165179518962,
-      "YM": 0.5867932904819813,
-      "RTY": -0.024338509532427267
+      "ES": 1.9641246700968285,
+      "NQ": 3.422642249108375,
+      "YM": 1.1147388960800604,
+      "RTY": 0.9630249601699417
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -14083,6 +14084,24 @@
         "INTC TP limit en 208.40 con precio 122.90 (+69%): el TP del OCO-fix de las 10:17 quedo fuera de rango y es inalcanzable. La posicion esta protegida por el stop 116.05 pero no tiene salida de beneficio realista. Revisar el calculo de TP del OCO-fix."
       ],
       "nota_ejecucion": "Ciclo ejecutado en modo analisis: sin colocacion de ordenes. No habia ningun candidato sobre umbral, por lo que no se omitio ninguna entrada valida."
+    },
+    {
+      "ts": "2026-09-21T12:20:32.485072+00:00",
+      "alertas": 3,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 6,
+      "vix": 14.9,
+      "modo": "read_only_report",
+      "macro_nivel": "normal",
+      "macro_score": 0.5,
+      "notas": [
+        "cowork_abiertas=6 EXCEDE max_cowork_positions=4 -> no nuevas entradas",
+        "XOM stop $157.02 a 0.94% del precio $158.51 con XLE -2.64% y WTI -8.3%",
+        "CBRL en candidatos_validados figura 2026-09-23 BMO pero calendario publico dice HOY 21-sep AMC -> fecha desactualizada",
+        "EarningsWhispers inaccesible desde sandbox (connect timeout) -> scan EW headless fallido este ciclo",
+        "Todas las posiciones equity con stop activo; sin earnings AH hoy en cartera"
+      ]
     }
   ],
   "momentum_15m": {
@@ -14143,14 +14162,14 @@
       "ts": "10:15"
     },
     "CRM": {
-      "px": 239.53,
-      "m15": -0.02,
-      "m30": 0.74,
-      "vr": 0.2,
-      "vwap": 0.59,
-      "rsi": 70.8,
-      "s": "LATERAL",
-      "ts": "10:17"
+      "precio": 238.0,
+      "mom_15m": -0.09,
+      "mom_30m": -0.113,
+      "vol_ratio": 0.63,
+      "vwap_dev": -0.177,
+      "rsi": 33.4,
+      "señal": "LATERAL",
+      "ts": "12:20"
     },
     "BURL": {
       "precio": 294.79,
@@ -14341,14 +14360,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "px": 568.76,
-      "m15": -0.29,
-      "m30": -1.68,
-      "vr": 0.56,
-      "vwap": -0.67,
-      "rsi": 42.8,
-      "s": "debil_bajista",
-      "ts": "10:17"
+      "precio": 575.29,
+      "mom_15m": -0.555,
+      "mom_30m": 0.14,
+      "vol_ratio": 0.69,
+      "vwap_dev": -0.063,
+      "rsi": 56.9,
+      "señal": "debil_baj",
+      "ts": "12:20"
     },
     "LULU": {
       "px": 119.42,
@@ -14911,15 +14930,14 @@
       "ts": "15:24"
     },
     "SOXL": {
-      "px": 125.25,
-      "day": 6.8,
-      "m15": 0.33,
-      "m30": 0.05,
-      "vr": 0.42,
-      "vwap_dev": 0.02,
-      "rsi": 59.6,
-      "sig": "debil_alcista",
-      "ts": "14:15"
+      "precio": 139.26,
+      "mom_15m": 0.274,
+      "mom_30m": -0.183,
+      "vol_ratio": 0.52,
+      "vwap_dev": 0.62,
+      "rsi": 70.7,
+      "señal": "debil_alc",
+      "ts": "12:20"
     },
     "KFY": {
       "px": 81.85,
@@ -14953,25 +14971,24 @@
       "ts": "15:28"
     },
     "XOM": {
-      "px": 159.1,
-      "m15": -0.54,
-      "m30": -0.53,
-      "vr": 0.35,
-      "vwap": -1.76,
-      "rsi": 27.1,
-      "s": "debil_bajista",
-      "ts": "10:17"
+      "precio": 158.51,
+      "mom_15m": -0.408,
+      "mom_30m": -0.452,
+      "vol_ratio": 0.79,
+      "vwap_dev": -0.391,
+      "rsi": 35.9,
+      "señal": "debil_baj",
+      "ts": "12:20"
     },
     "TQQQ": {
-      "px": 72.66,
-      "day": 0.39,
-      "m15": 0.16,
-      "m30": 0.06,
-      "vr": 0.45,
-      "vwap_dev": 0.02,
-      "rsi": 59.6,
-      "sig": "debil_alcista",
-      "ts": "14:15"
+      "precio": 77.93,
+      "mom_15m": 0.361,
+      "mom_30m": 0.322,
+      "vol_ratio": 1.27,
+      "vwap_dev": 0.622,
+      "rsi": 81.3,
+      "señal": "ALCISTA",
+      "ts": "12:20"
     },
     "XLE": {
       "px": 64.71,
@@ -15085,14 +15102,14 @@
       "ts": "15:13"
     },
     "AAPL": {
-      "px": 337.14,
-      "m15": 0.38,
-      "m30": 0.97,
-      "vr": 0.48,
-      "vwap": 0.47,
-      "rsi": 55.9,
-      "s": "debil_alcista",
-      "ts": "10:17"
+      "precio": 338.59,
+      "mom_15m": 0.255,
+      "mom_30m": 0.212,
+      "vol_ratio": 0.77,
+      "vwap_dev": 0.311,
+      "rsi": 68.2,
+      "señal": "debil_alc",
+      "ts": "12:20"
     },
     "ACVA": {
       "precio": 10.45,
@@ -15105,14 +15122,14 @@
       "ts": "15:28"
     },
     "COHR": {
-      "px": 326.65,
-      "m15": 0.21,
-      "m30": 0.46,
-      "vr": 0.48,
-      "vwap": 2.06,
-      "rsi": 80.0,
-      "s": "debil_alcista",
-      "ts": "10:17"
+      "precio": 329.12,
+      "mom_15m": -0.138,
+      "mom_30m": -0.817,
+      "vol_ratio": 0.5,
+      "vwap_dev": -0.037,
+      "rsi": 64.9,
+      "señal": "LATERAL",
+      "ts": "12:20"
     },
     "FPS": {
       "precio": 39.47,
@@ -15135,14 +15152,14 @@
       "ts": "15:28"
     },
     "MSTR": {
-      "px": 165.37,
-      "m15": -1.31,
-      "m30": -0.29,
-      "vr": 0.32,
-      "vwap": 1.35,
-      "rsi": 75.7,
-      "s": "debil_bajista",
-      "ts": "10:17"
+      "precio": 165.51,
+      "mom_15m": -0.492,
+      "mom_30m": -0.69,
+      "vol_ratio": 0.72,
+      "vwap_dev": -0.672,
+      "rsi": 39.6,
+      "señal": "debil_baj",
+      "ts": "12:20"
     },
     "QCOM": {
       "precio": 178.88,
@@ -15165,14 +15182,14 @@
       "ts": "15:28"
     },
     "RBLX": {
-      "px": 50.66,
-      "m15": 1.32,
-      "m30": 0.37,
-      "vr": 0.3,
-      "vwap": 4.07,
-      "rsi": 77.3,
-      "s": "debil_alcista",
-      "ts": "10:17"
+      "precio": 51.24,
+      "mom_15m": 0.747,
+      "mom_30m": 0.609,
+      "vol_ratio": 1.17,
+      "vwap_dev": 0.735,
+      "rsi": 78.6,
+      "señal": "debil_alc",
+      "ts": "12:20"
     },
     "SWKS": {
       "precio": 88.42,
@@ -15205,14 +15222,74 @@
       "ts": "15:28"
     },
     "INTC": {
-      "px": 119.52,
-      "m15": 0.81,
-      "m30": 2.86,
-      "vr": 0.75,
-      "vwap": 4.6,
-      "rsi": 95.2,
-      "s": "debil_alcista",
-      "ts": "10:17"
+      "precio": 123.28,
+      "mom_15m": -0.541,
+      "mom_30m": -1.091,
+      "vol_ratio": 0.62,
+      "vwap_dev": 0.185,
+      "rsi": 61.2,
+      "señal": "debil_baj",
+      "ts": "12:20"
+    },
+    "WBD": {
+      "precio": 30.57,
+      "mom_15m": 0.072,
+      "mom_30m": 0.115,
+      "vol_ratio": 0.36,
+      "vwap_dev": -0.136,
+      "rsi": 35.6,
+      "señal": "LATERAL",
+      "ts": "12:20"
+    },
+    "AMD": {
+      "precio": 611.43,
+      "mom_15m": 0.259,
+      "mom_30m": 0.3,
+      "vol_ratio": 0.6,
+      "vwap_dev": -0.011,
+      "rsi": 35.5,
+      "señal": "debil_alc",
+      "ts": "12:20"
+    },
+    "ARM": {
+      "precio": 318.79,
+      "mom_15m": 0.099,
+      "mom_30m": 0.598,
+      "vol_ratio": 0.71,
+      "vwap_dev": 1.09,
+      "rsi": 72.6,
+      "señal": "LATERAL",
+      "ts": "12:20"
+    },
+    "SMCI": {
+      "precio": 40.98,
+      "mom_15m": -0.365,
+      "mom_30m": 0.024,
+      "vol_ratio": 0.38,
+      "vwap_dev": -0.171,
+      "rsi": 44.0,
+      "señal": "debil_baj",
+      "ts": "12:20"
+    },
+    "NET": {
+      "precio": 346.24,
+      "mom_15m": 0.069,
+      "mom_30m": 0.197,
+      "vol_ratio": 0.54,
+      "vwap_dev": 0.511,
+      "rsi": 61.9,
+      "señal": "LATERAL",
+      "ts": "12:20"
+    },
+    "CBRL": {
+      "precio": 45.12,
+      "mom_15m": -0.606,
+      "mom_30m": -0.77,
+      "vol_ratio": 4.63,
+      "vwap_dev": -0.382,
+      "rsi": 40.8,
+      "señal": "BAJISTA",
+      "ts": "12:20"
     }
   },
   "sentinel_signals": [
@@ -21348,7 +21425,7 @@
       "estado": "abierta"
     }
   ],
-  "ultima_actualizacion": "2026-09-21T11:15 ET (sentinel)",
+  "ultima_actualizacion": "2026-09-21T12:20",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
