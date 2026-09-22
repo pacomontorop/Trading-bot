@@ -53,7 +53,7 @@
     "stop_atr_mult_earnings_premarket_ventana": 2.5,
     "max_posiciones_paper_para_nuevas_entradas": 2,
     "max_posiciones_paper_simultaneas": 4,
-    "ultima_actualizacion": "2026-09-21",
+    "ultima_actualizacion": "2026-09-22",
     "motivo_actualizacion": "Post-market 2026-09-21: SLOT RESERVADO DE ALTA CONVICCION. Evidencia dura: los 7 candidatos puntuados el 18-21 sep (scores 6,94-9,07) subieron HOY entre +2,99% y +227,97% (media ex-GRML +10,4%) y el sistema ejecuto 1 de 7 — y lo ejecuto el bot GHA, no Cowork. El bloqueo NO fue de senal sino de CAPACIDAD (max_cowork_positions=4 con 5-6 abiertas; el sentinel registro literalmente 'Sin entradas: cowork 5/4 (sobre limite)'). Coste de oportunidad $4.259 = 2,39x el P&L real del dia (+$1.780). REGLA NUEVA (conservadora, 1 slot, umbral alto): un candidato con score >= 8.5 puede abrir 1 posicion POR ENCIMA de max_cowork_positions. Solo 1 slot extra simultaneo. WBD (9,07, +10,71%) habria calificado hoy. max_cowork_positions se mantiene en 4 — no se relaja el limite general tras un solo dia de melt-up sectorial.",
     "_nota_filosofia": "Estos parámetros son GUÍAS para Cowork, no reglas rígidas. Cowork usa juicio, no mecánica. Ver seccion filosofia_decision abajo.",
     "max_exposicion_por_simbolo_equity_pct": 0.05,
@@ -541,6 +541,38 @@
       "titulo": "Semana 21-25 sep confirmada sin alpha de earnings — 5 tickers analizados, 0 sobre umbral",
       "descripcion": "Calendario EW 22-sep: THO (whisper 0,99 vs cons 0,95, +4,21% pero reaccion historica NEGATIVA: sorpresa +750% en Q2 FY26 y la accion cayo -5,56%), AZO (whisper 54,26 vs cons 54,78 = asimetria NEGATIVA -0,95%), MLKN y HERE sin whisper. After-hours del 22-sep: vacio. CBRL 6,32 expira. Mejor score del dia: 2,0/10.",
       "accion_correctiva": "Confirmado: el alpha de esta semana viene de momentum/macro (talks EEUU-China, cumbre Trump-Xi), no de earnings. No forzar entradas de earnings hasta GIS (mie) y COST (jue).",
+      "tarea_afectada": "pre-market-earnings-scan",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-22",
+      "titulo": "CAUSA RAIZ del cuello de botella: el bot llena los slots con entradas POR DEBAJO del umbral y bloquea a las de conviccion",
+      "descripcion": "ejecucion_apertura 2026-09-22: ejecutados=[] y 10 descartados, TODOS con motivo 'max posiciones paper 8'. Las 8 plazas estaban ocupadas porque el bot GHA habia llenado 4 esa misma manana (TWLO score CV 6,48; META 5,74; NVDA; ONON) — TWLO y META por DEBAJO de min_signal_score=7,5. Eso bloqueo a VKTX (score paper 9,17) y RMBS (8,60). Resultado del dia: VKTX +9,6% open->close, RMBS +9,8%. Coste estimado solo de esos dos: ~$1.556 con $8k/posicion; los 7 bloqueados sumaban +$2.986 frente a un P&L real de -$1.021. 7/7 candidatos bloqueados subieron. Es el MISMO fallo del 21-sep (7/7 acertados, 1/7 ejecutado): 14/14 en dos dias.",
+      "accion_correctiva": "IMPLEMENTADO HOY en scripts/market_open_execution.py (commit 91721d9d): SLOT_CONVICCION=2 plazas por encima de max_positions para score>=SCORE_CONVICCION=8,5. Con la regla activa VKTX y RMBS habrian entrado hoy. VERIFICAR en el log de mañana la linea 'maxpos=8 (+2 plazas si score>=8.5)'. Pendiente aun: alinear el umbral del scanner GHA con 7,5 para que el bot deje de consumir plazas con senal de peor calidad.",
+      "tarea_afectada": "market-open-execution",
+      "aplicada": true
+    },
+    {
+      "fecha": "2026-09-22",
+      "titulo": "Dos gates en desacuerdo: el sentinel veia '2/4 slots libres' mientras la ejecucion veia '8/8 lleno'",
+      "descripcion": "El sentinel de las 13:15 ET escribio 'Cowork 2/4 con 2 slots libres: el bloqueo HOY fue de SENAL, no de capacidad'. A las 14:38 ET ejecucion_apertura descarto los 10 candidatos por capacidad. El sentinel cuenta solo posiciones etiquetadas Cowork (2); la ejecucion cuenta TODAS las posiciones equity de Alpaca (8, bot incluido). Con dos contadores distintos el diagnostico nocturno fue erroneo y la causa real tardo un dia mas en aparecer.",
+      "accion_correctiva": "Unificar el contador: el sentinel debe reportar ambos numeros ('Cowork 2/4 | equity total 8/8 — gate de ejecucion SATURADO') para no volver a concluir 'bloqueo de senal' cuando es de capacidad.",
+      "tarea_afectada": "sentinel",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-22",
+      "titulo": "Los TP de los brackets del bot GHA salen a +50/+80% sobre la entrada y anulan la toma de beneficios",
+      "descripcion": "Auditoria de ordenes abiertas: INTC TP $208,40 sobre entrada $115,93 (+79,8%), META $1.165,05 sobre $756,32 (+54%), NVDA $343,15 sobre $228,77 (+50%), TWLO $467,91 sobre $285,88 (+64%), ONON $47,23 sobre $30,85 (+53%). Ninguno es alcanzable: las posiciones solo pueden salir por stop. El caso de INTC era ademas peligroso porque su OCO habia perdido la pata de stop y el TP irreal retenia las 55 acciones, impidiendo colocar proteccion. RBLX estaba igualmente desnuda. $15.177 sin stop a cierre.",
+      "accion_correctiva": "CORREGIDO HOY en la cuenta: INTC OCO stop 115,95 / TP 135,40 (entrada+3xATR) y RBLX OCO stop 47,90 / TP 56,69. 11/11 posiciones con stop verificado. Pendiente en codigo: validar en place_bracket_entry que tp <= entrada*1,35, y si no, recalcular como entrada + tp_atr_mult*ATR.",
+      "tarea_afectada": "market-open-execution (place_bracket_entry)",
+      "aplicada": false
+    },
+    {
+      "fecha": "2026-09-22",
+      "titulo": "Tercera confirmacion: la semana 21-25 sep no tiene alpha de earnings — el alpha es tematico",
+      "descripcion": "Calendario EW del 23-sep: pre CBRL/GIS/CTAS/PAYX/MANU, AH SFIX/FUL/NEOV. Ninguno supera 6,0. En cambio el complejo de memoria (MU +18,1% 5d, SNDK +23,2%, RMBS +26,6%, STX +19,2%, WDC +12,8%) cerro casi todo entre el 79% y el 97% del rango diario, con SMH +12,1% en 5d al 93% del rango.",
+      "accion_correctiva": "Dejar de puntuar earnings esta semana y operar el tema: el candidato de mañana sale del complejo de memoria, no del calendario.",
       "tarea_afectada": "pre-market-earnings-scan",
       "aplicada": true
     }
@@ -1270,7 +1302,7 @@
       "take_profit": 169.67,
       "sector": "energy",
       "atr14": 3.339,
-      "estado": "abierta",
+      "estado": "cerrada_reconciliacion",
       "timestamp": "2026-09-08T14:12:58Z",
       "fecha_entrada": "2026-09-08",
       "cuenta": "paper",
@@ -1288,7 +1320,8 @@
       "pnl_latente_pct": 1.66,
       "pnl_latente_abs": 16.09,
       "R_actual": 0.55,
-      "stop_verificado_2026-09-09": true
+      "stop_verificado_2026-09-09": true,
+      "nota_reconciliacion": "Sin posición en Alpaca el 2026-09-22; cerrada fuera del log en fecha anterior. Marcada por post-market."
     },
     {
       "id": "COWORK-MACRO-OIL_SP-20260908-CVX",
@@ -1299,7 +1332,7 @@
       "take_profit": 223.63,
       "sector": "energy",
       "atr14": 3.759,
-      "estado": "abierta",
+      "estado": "cerrada_reconciliacion",
       "timestamp": "2026-09-08T14:12:58Z",
       "fecha_entrada": "2026-09-08",
       "cuenta": "paper",
@@ -1317,7 +1350,8 @@
       "pnl_latente_pct": 0.39,
       "pnl_latente_abs": 4.2,
       "R_actual": 0.13,
-      "stop_verificado_2026-09-09": true
+      "stop_verificado_2026-09-09": true,
+      "nota_reconciliacion": "Sin posición en Alpaca el 2026-09-22; cerrada fuera del log en fecha anterior. Marcada por post-market."
     },
     {
       "id": "GHA-20260911-DELL",
@@ -1497,9 +1531,16 @@
       "rr": 10.0,
       "qty": 28,
       "real_qty": 0,
-      "estado": "abierta",
+      "estado": "cerrada",
       "orden_id": "b7b465ee-7e80-4b00-b8b2-f15fbd077bd6",
-      "cuenta": "paper"
+      "cuenta": "paper",
+      "precio_salida": 232.5,
+      "cantidad": 28,
+      "pnl_pct": -8.97,
+      "pnl_abs": -641.2,
+      "closed_at": "2026-09-22T20:00:00Z",
+      "fecha_cierre": "2026-09-22",
+      "motivo_cierre": "stop/cierre de emergencia intradía"
     },
     {
       "id": "GHA-20260914-SQQQ",
@@ -1538,10 +1579,11 @@
       "fecha_entrada": "2026-09-18",
       "precio_entrada": 145.99,
       "qty": 43,
-      "estado": "abierta",
+      "estado": "cerrada_reconciliacion",
       "stop_loss": 0,
       "source": "bot_autonomo",
-      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
+      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log",
+      "nota_reconciliacion": "Sin posición en Alpaca el 2026-09-22; cerrada fuera del log en fecha anterior. Marcada por post-market."
     },
     {
       "id": "GHA-20260918-COHR",
@@ -1551,10 +1593,17 @@
       "fecha_entrada": "2026-09-18",
       "precio_entrada": 308.99,
       "qty": 20,
-      "estado": "abierta",
+      "estado": "cerrada",
       "stop_loss": 0,
       "source": "bot_autonomo",
-      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
+      "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log",
+      "precio_salida": 308.53,
+      "cantidad": 20,
+      "pnl_pct": -0.15,
+      "pnl_abs": -9.2,
+      "closed_at": "2026-09-22T20:00:00Z",
+      "fecha_cierre": "2026-09-22",
+      "motivo_cierre": "stop_limit ejecutado"
     },
     {
       "id": "GHA-20260922-NVDA",
@@ -1985,7 +2034,7 @@
     {
       "ticker": "WBD",
       "symbol": "WBD",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "score": 9.07,
       "score_ajustado": 9.07,
       "score_raw": 9.8,
@@ -2004,7 +2053,7 @@
       "expira": "2026-09-22T16:36:17.122340Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-21T18:54:42.087235+00:00",
-      "notas": "1d=+10.8% vol=11.0x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 9.1% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura.",
+      "notas": "1d=+10.8% vol=11.0x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 9.1% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura. | Auto-expirado 2026-09-22 sin ejecutar",
       "ventana_entrada": "2026-09-22 10:15-13:00 ET, solo si retrocede a MA10 o consolida sobre el cierre de hoy",
       "stop_tipo": "ATR x1.5"
     },
@@ -2035,7 +2084,7 @@
     {
       "ticker": "META",
       "symbol": "META",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "score": 7.69,
       "score_ajustado": 7.69,
       "score_raw": 8.3,
@@ -2054,14 +2103,14 @@
       "expira": "2026-09-22T16:36:17.122340Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-21T18:54:42.087235+00:00",
-      "notas": "1d=+11.9% vol=1.9x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 8.6% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura.",
+      "notas": "1d=+11.9% vol=1.9x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 8.6% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura. | Auto-expirado 2026-09-22 sin ejecutar",
       "ventana_entrada": "2026-09-22 10:15-13:00 ET, solo si retrocede a MA10 o consolida sobre el cierre de hoy",
       "stop_tipo": "ATR x1.5"
     },
     {
       "ticker": "TSLA",
       "symbol": "TSLA",
-      "estado": "vigilar_cauteloso",
+      "estado": "expirado",
       "score": 7.5,
       "score_ajustado": 7.5,
       "score_raw": 8.1,
@@ -2080,7 +2129,7 @@
       "expira": "2026-09-22T16:36:17.122340Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-21T18:54:42.087235+00:00",
-      "notas": "1d=+3.2% vol=0.7x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 2.5% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura.",
+      "notas": "1d=+3.2% vol=0.7x 52h_dist=0.0% | 2026-09-21: no ejecutado por capacidad pero momentum 5d 2.5% <= 10 -> se mantiene en vigilancia como entrada de PULLBACK, no de apertura. | Auto-expirado 2026-09-22 sin ejecutar",
       "ventana_entrada": "2026-09-22 10:15-13:00 ET, solo si retrocede a MA10 o consolida sobre el cierre de hoy",
       "stop_tipo": "ATR x1.5"
     },
@@ -2231,14 +2280,23 @@
       "earnings_fecha": "2026-09-23",
       "earnings_timing": "pre-market",
       "expira": "2026-09-23T20:00:00Z",
-      "notas": "Sentinel 13:15 ET: asimetria verificada +2.22% (abs $+0.03) < min 2.5% o trivial en $. No operable.",
-      "detectado_por": "sentinel-preopen",
-      "ventana_entrada": "10:15 ET (pre-market scan)",
+      "notas": "Por debajo del umbral 7,5. Solo si el whisper aparece con asimetria >=2,5% en el scan pre-market.",
+      "detectado_por": "post-market-review",
+      "ventana_entrada": "2026-09-23 09:30-10:00 ET",
       "ts_creado": "2026-09-22T13:23:14.324839+00:00",
       "asimetria_abs_usd": 0.03,
       "whisper": 1.38,
       "consensus": 1.35,
-      "verificado_ew_json": "2026-09-22T13:17"
+      "verificado_ew_json": "2026-09-22T13:17",
+      "score_total": 6.0,
+      "fecha_deteccion": "2026-09-22",
+      "stop_tipo": "ATRx2.5 (ventana earnings pre-market)",
+      "sizing": "posicion normal",
+      "argumento": "Earnings 23-sep 08:30 ET, consenso EPS $1,35 / ingresos $2,97B (+9,3%). Cerro al 99% del rango pero plano en 5d (-0,2%). Sin whisper publicado en EW.",
+      "sector": "industrials",
+      "conviction_tier": "no_entry",
+      "sizing_multiplier": 0,
+      "sector_win_rate": 0
     },
     {
       "ticker": "TWLO",
@@ -2318,7 +2376,7 @@
     {
       "ticker": "SNX",
       "symbol": "SNX",
-      "estado": "pendiente_ew",
+      "estado": "expirado",
       "score": 6.29,
       "score_ajustado": 6.29,
       "score_breakdown": {
@@ -2345,14 +2403,15 @@
       "reaccion_media_pct": 1.41,
       "momentum_5d_pct": 7.3,
       "analistas": 9,
-      "fecha_scan": "2026-09-22T18:36:01Z"
+      "fecha_scan": "2026-09-22T18:36:01Z",
+      "notas": " | Auto-expirado 2026-09-22 sin ejecutar"
     },
     {
       "ticker": "VKTX",
       "symbol": "VKTX",
-      "estado": "pendiente",
-      "score": 9.07,
-      "score_ajustado": 9.07,
+      "estado": "vigilar_cauteloso",
+      "score": 7.67,
+      "score_ajustado": 7.67,
       "score_raw": 9.8,
       "score_breakdown": {
         "momentum": 9.0,
@@ -2361,15 +2420,29 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "entrar_solo_en_pullback",
       "precio_referencia": 39.42,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 8.0,
-      "expira": "2026-09-23T00:37:07Z",
+      "expira": "2026-09-23T20:00:00Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T18:37:07.647389+00:00",
-      "notas": "1d=+30.9% vol=16.2x 52h_dist=0.0%"
+      "notas": "Score base 9,17 REBAJADO a 7,67 por runup de +35,5% en un dia — regla MOVIMIENTO_YA_DESCONTADO (precedente ANF 26-ago: +37% de gap y el resto del movimiento ya estaba descontado). NO perseguir en apertura.",
+      "score_total": 8.67,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-09-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": null,
+      "ventana_entrada": "2026-09-23 10:15-14:00 ET solo si retrocede a 38-39",
+      "stop_tipo": "ATRx2.0 (biotech post-catalizador)",
+      "sizing": "posicion normal",
+      "argumento": "Datos de mantenimiento de VK2735 ('best-case scenario' segun Truist): conserva hasta el 97% de la perdida de peso pasando a dosis quincenal; fase 3 con ~5.500 pacientes. +35,5% hoy con volumen x9,2 cerrando al 84% del rango = aceptacion real, no fade.",
+      "sector": "healthcare",
+      "conviction_tier": "conviction_media",
+      "sizing_multiplier": 0.7,
+      "sector_win_rate": 0
     },
     {
       "ticker": "ONON",
@@ -2399,8 +2472,8 @@
       "ticker": "MU",
       "symbol": "MU",
       "estado": "pendiente",
-      "score": 7.69,
-      "score_ajustado": 7.69,
+      "score": 7.84,
+      "score_ajustado": 7.84,
       "score_raw": 8.3,
       "score_breakdown": {
         "momentum": 7.0,
@@ -2409,22 +2482,36 @@
         "uw": 0,
         "sector": 0.5
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "entrar_apertura_desde_20260923",
       "precio_referencia": 1086.02,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-23T00:37:07Z",
+      "expira": "2026-09-23T20:00:00Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T18:37:07.647389+00:00",
-      "notas": "1d=+4.0% vol=0.8x 52h_dist=0.0%"
+      "notas": "Precio $1.095/accion: verificar que el cap del 5% por simbolo permita >=1 accion.",
+      "score_total": 8.84,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-09-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": null,
+      "ventana_entrada": "2026-09-23 09:40-12:00 ET",
+      "stop_tipo": "ATRx1.5 (~6,2%)",
+      "sizing": "posicion normal",
+      "argumento": "Lider del complejo de memoria. +5,0% hoy cerrando al 97% del rango diario (maxima aceptacion) y +18,1% en 5d. SMH +12,1% en 5d al 93% del rango confirma el sector.",
+      "sector": "technology",
+      "conviction_tier": "conviction_alta",
+      "sizing_multiplier": 1,
+      "sector_win_rate": 50
     },
     {
       "ticker": "RMBS",
       "symbol": "RMBS",
       "estado": "pendiente",
-      "score": 7.5,
-      "score_ajustado": 7.5,
+      "score": 8.6,
+      "score_ajustado": 8.6,
       "score_raw": 8.1,
       "score_breakdown": {
         "momentum": 7.3,
@@ -2433,15 +2520,29 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "entrar_apertura_desde_20260923",
       "precio_referencia": 104.54,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-23T00:37:07Z",
+      "expira": "2026-09-23T20:00:00Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T18:37:07.647389+00:00",
-      "notas": "1d=+7.8% vol=1.2x 52h_dist=0.0%"
+      "notas": "PRIORIDAD 1. Score >=8,5 -> usa la plaza de conviccion nueva (SLOT_CONVICCION). Reentrada del bloqueado de ayer.",
+      "score_total": 9.6,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-09-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": null,
+      "ventana_entrada": "2026-09-23 09:40-11:00 ET",
+      "stop_tipo": "ATRx1.5 (~4,2%)",
+      "sizing": "posicion normal",
+      "argumento": "Memory IP. +8,6% hoy cerrando al 88% del rango con volumen x4,3 y +26,6% en 5d. Nucleo del tema dominante (memoria/almacenamiento). Ayer se bloqueo por capacidad y subio +9,8% open->close.",
+      "sector": "technology",
+      "conviction_tier": "conviction_maxima",
+      "sizing_multiplier": 1.5,
+      "sector_win_rate": 50
     },
     {
       "ticker": "GRML",
@@ -2470,7 +2571,7 @@
     {
       "ticker": "BAI",
       "symbol": "BAI",
-      "estado": "pendiente",
+      "estado": "vigilar_cauteloso",
       "score": 7.41,
       "score_ajustado": 7.41,
       "score_raw": 8.0,
@@ -2481,15 +2582,29 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "entrar_apertura_desde_20260923",
       "precio_referencia": 47.5,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-23T00:37:07Z",
+      "expira": "2026-09-23T20:00:00Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T18:37:07.647389+00:00",
-      "notas": "1d=+1.2% vol=14.0x 52h_dist=0.0%"
+      "notas": "Volumen x10,9 sin gap = acumulacion silenciosa. Vigilar confirmacion en los primeros 30 min.",
+      "score_total": 8.41,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-09-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": null,
+      "ventana_entrada": "2026-09-23 09:40-12:00 ET",
+      "stop_tipo": "ATRx1.5 (~3,5%)",
+      "sizing": "posicion normal",
+      "argumento": "+1,5% hoy pero cerrando al 93% del rango con volumen x10,9 (el mayor ratio de volumen del universo). +12,0% en 5d. Acumulacion sin expansion de precio todavia.",
+      "sector": "technology",
+      "conviction_tier": "conviction_media",
+      "sizing_multiplier": 0.7,
+      "sector_win_rate": 50
     },
     {
       "ticker": "TWLO",
@@ -2519,8 +2634,8 @@
       "ticker": "SNDK",
       "symbol": "SNDK",
       "estado": "pendiente",
-      "score": 7.22,
-      "score_ajustado": 7.22,
+      "score": 7.62,
+      "score_ajustado": 7.62,
       "score_raw": 7.8,
       "score_breakdown": {
         "momentum": 7.0,
@@ -2529,27 +2644,41 @@
         "uw": 0,
         "sector": 0
       },
-      "accion_recomendada": "entrar_apertura",
+      "accion_recomendada": "entrar_apertura_desde_20260923",
       "precio_referencia": 1885.59,
       "stop_pct": 0.04,
       "tp_pct": 0.08,
       "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-23T00:37:07Z",
+      "expira": "2026-09-23T20:00:00Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T18:37:07.647389+00:00",
-      "notas": "1d=+6.7% vol=1.0x 52h_dist=0.0%"
+      "notas": "ATR 5,5% — sizing reducido. Alternativa menos extendida del mismo tema: WDC (+3,7% hoy, +12,8% 5d).",
+      "score_total": 8.62,
+      "score_macro_bonus": 1,
+      "fecha_deteccion": "2026-09-22",
+      "detectado_por": "post-market-review",
+      "earnings_fecha": null,
+      "earnings_timing": null,
+      "ventana_entrada": "2026-09-23 09:40-12:00 ET",
+      "stop_tipo": "ATRx1.5 (~8,2%)",
+      "sizing": "posicion normal",
+      "argumento": "Almacenamiento flash. +6,8% hoy al 83% del rango, +23,2% en 5d. Mismo tema que MU/RMBS/STX/WDC.",
+      "sector": "technology",
+      "conviction_tier": "conviction_alta",
+      "sizing_multiplier": 1,
+      "sector_win_rate": 50
     }
   ],
   "macro_context": {
-    "fecha_actualizacion": "2026-09-21",
+    "fecha_actualizacion": "2026-09-22",
     "semana": "2026-W37",
-    "regimen": "POST_FOMC_HIKE_CONFIRMED + AI_MELTUP_ON_US_CHINA_TALKS + OIL_RETREAT + VOL_CRUSH",
+    "regimen": "AI_DISPERSION_MELTUP + OIL_RETREAT + IRAN_WAR_BACKGROUND + VOL_CRUSH",
     "regimen_anterior": "STAGFLATION_SHOCK + OIL_100_SUPPLY_SHOCK + HAWKISH_REPRICING",
-    "vix": 14.270000457763672,
+    "vix": 14.87,
     "yield_spread_10y2y": 0.41,
     "us10y": 4.97,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-21 (lunes): Melt-up de IA/semis tras valoraciones 'muy exitosas' de las conversaciones EEUU-China sobre IA y comercio previas a la cumbre Trump-Xi de esta semana. SPX +1.19% a 7.741,51 | Nasdaq +1.80% a 26.998,87 | Dow +0.47% a 51.927,75 | VIX 14,94 (+0,13). Dispersion brutal bajo el indice: ARM +17,1%, INTC +12,0%, META +11,4%, WBD +10,7%, AMD +10,0%, TQQQ +8,6% con SPY solo +1,56% y QQQ +2,78% — el alpha estuvo en nombres individuales, no en el indice. Petroleo retrocede (Brent 101,39 -2,4%) pero el diesel USA supera $6,50/galon por primera vez. 10y baja a 4,95% (-5pb), de nuevo bajo el 5%. Bitcoin +4,3% hacia 87k -> MSTR +9,4%. WBD +10,7% y Paramount Skydance +6% por avances en las conversaciones de acuerdo con California. Accenture +6,1% por acuerdo con Anthropic. SoftBank busca >$11.000M en high yield para OpenAI. Contrapeso: EarningsWhispers (Whisper Report 1.115) reporta sentimiento girando a bajista (contrarian alcista); Morgan Stanley/Wilson advierte de riesgo de caida del 7%; Fidelity alerta de deuda tech como riesgo sistemico en 2027. Semana de earnings escasa: General Mills mie, Costco+H&M jue.",
+    "narrativa_dominante": "ACTUALIZACION 2026-09-22 (martes): Nasdaq en MAXIMO HISTORICO de cierre con el SPX plano — la dispersion bajo el indice vuelve a ser el hecho dominante por segundo dia consecutivo: SPY -0,01% y QQQ +0,81%, pero VKTX +35,5%, GRML +50,2%, RMBS +8,6%, SNDK +6,8%, MU +5,0%, ONON +7,6%, TWLO +7,0%. El alpha esta en nombres individuales, NO en el indice. TEMA CENTRAL: complejo de MEMORIA/ALMACENAMIENTO en acumulacion institucional — MU +18,1% en 5d cerrando al 97% del rango diario, SNDK +23,2%, RMBS +26,6%, STX +19,2%, WDC +12,8%, SMH +12,1% 5d cerrando al 93% del rango. CATALIZADOR BIOTECH: VKTX +35,5% con volumen x9,2 tras datos de mantenimiento de VK2735 (conserva hasta el 97% de la perdida de peso al pasar a dosis quincenal; Truist lo llama 'best-case scenario'; fase 3 con ~5.500 pacientes). PETROLEO A LA BAJA 5 SESIONES: Brent $98,10 (-2,2%), Arabia Saudi probando el oleoducto este-oeste para reabrirlo esta semana -> XLE -1,1% hoy y -6,3% en 5d. CONTRAPESO EN IA: Bloomberg documenta la de-rating de NVDA — PER <17x (la mitad que en 2025, >50x en 2023); Alibaba presenta su acelerador de IA para competir con Nvidia. SoftBank capta >$20.000M de demanda preliminar en high yield para OpenAI. GEOPOLITICA: Trump defiende ante la Asamblea General de la ONU su decision de iniciar la guerra con Iran; el mercado lo ignora (VIX 14,87). Bitcoin $85,8k, +13% en 4 sesiones, cripto supera $3 billones, pero se mueve CON las apuestas de mayor volatilidad, no como refugio. RIESGO DE FONDO: morosidad CMBS en EEUU al 12%, cerca de record y por encima de 2008. 10y en 4,92%. Semana de earnings sin alpha (3er dia confirmado).",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -2564,10 +2693,11 @@
       "Alpaca bars: fuerza relativa de 19 tickers energia/defensivos",
       "WebSearch post-market 2026-09-11 (CPI/VIX/tipos) + EarningsWhispers calendario 14/15-sep (Gmail MCP no usado: sandbox Linux caido)",
       "Gmail post-market 2026-09-18: 25 hilos (Bloomberg/EW/InsiderFinance) + EW web + WebSearch x4",
-      "Gmail post-market 2026-09-21: 12 emails (EW Whisper Report 1115, Bloomberg Markets Daily/Energy/Supply Lines, TipRanks) + EW calendar web (sin sesion premium) + WebSearch x4"
+      "Gmail post-market 2026-09-21: 12 emails (EW Whisper Report 1115, Bloomberg Markets Daily/Energy/Supply Lines, TipRanks) + EW calendar web (sin sesion premium) + WebSearch x4",
+      "Gmail post-market 2026-09-22: 13 emails (Bloomberg Markets Daily, Breaking News UN/Iran, Energy Daily, TipRanks, EW summary) + EW calendar web + Alpaca market data"
     ],
     "sector_prioridades": {
-      "energy": 1,
+      "energy": 0,
       "materials": 0,
       "industrials": 0,
       "healthcare": 1,
@@ -2579,14 +2709,12 @@
       "consumer_staples": -2,
       "real_estate": -2,
       "energy_services": -1,
-      "energy_refiners": 1
+      "energy_refiners": 0
     },
     "sectores_a_vigilar_esta_semana": [
-      "energy",
       "healthcare",
       "financials",
-      "technology",
-      "energy_refiners"
+      "technology"
     ],
     "sectores_a_evitar_esta_semana": [
       "utilities",
@@ -2850,6 +2978,17 @@
           "communication"
         ],
         "fuente": "Bloomberg Markets Daily + Alpaca snapshots"
+      },
+      {
+        "fecha": "2026-09-22",
+        "evento": "Nasdaq en maximo historico con SPX plano. Complejo de memoria en acumulacion. VKTX +35,5% por datos de VK2735. Brent cae 5a sesion ($98,10) con Arabia Saudi reabriendo el oleoducto este-oeste. Trump defiende la guerra con Iran en la ONU sin reaccion del mercado.",
+        "impacto": "ALTO",
+        "sectores_afectados": [
+          "technology",
+          "healthcare",
+          "energy"
+        ],
+        "fuente": "Bloomberg Markets Daily + Breaking News + Alpaca data"
       }
     ],
     "futuros": {
@@ -2927,7 +3066,19 @@
     ],
     "oil_wti": 89.70999908447266,
     "oro": 4391.39990234375,
-    "btc": 86596.6328125
+    "btc": 86596.6328125,
+    "tema_dominante": {
+      "nombre": "MEMORIA/ALMACENAMIENTO",
+      "tickers": [
+        "MU",
+        "SNDK",
+        "RMBS",
+        "STX",
+        "WDC"
+      ],
+      "evidencia": "5d: MU +18,1% SNDK +23,2% RMBS +26,6% STX +19,2% WDC +12,8% | SMH +12,1% cerrando al 93% del rango",
+      "desde": "2026-09-22"
+    }
   },
   "operaciones_crypto": [
     {
@@ -5713,12 +5864,12 @@
   },
   "kpis": {
     "_meta": "Actualizado por post-market-review (diario) y weekly-performance-review (semanal). Leer instrucciones en SKILL.md de cada tarea.",
-    "_ultima_actualizacion": "2026-09-21",
+    "_ultima_actualizacion": "2026-09-22",
     "rendimiento_global": {
-      "equity_paper_actual": 107862.01,
+      "equity_paper_actual": 106735.44,
       "equity_paper_inicio_sistema": 105500,
-      "pnl_total_paper_dolares": 2362.01,
-      "pnl_total_paper_pct": 2.24,
+      "pnl_total_paper_dolares": 1235.44,
+      "pnl_total_paper_pct": 1.17,
       "equity_real_actual": 4548.2,
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.12,
@@ -5728,28 +5879,28 @@
       "alpha_real_vs_spy_pct": -13.93,
       "dias_activo_sistema": 28,
       "fecha_inicio": "2026-04-13",
-      "pnl_dia_paper_dolares": -310.45,
-      "pnl_dia_real_dolares": 0,
+      "pnl_dia_paper_dolares": -1021.16,
+      "pnl_dia_real_dolares": 0.01,
       "equity_paper_peak": 109924.64,
       "_nota_spy": "Sobrescrito por kpi_report.py con datos Alpaca (SPY ajustado, mismo periodo)."
     },
     "cowork_trading": {
-      "operaciones_totales": 42,
-      "operaciones_cerradas": 29,
+      "operaciones_totales": 33,
+      "operaciones_cerradas": 33,
       "operaciones_ganadoras": 9,
-      "operaciones_perdedoras": 20,
+      "operaciones_perdedoras": 24,
       "operaciones_break_even": 0,
-      "win_rate_pct": 31.0,
-      "avg_r_logrado": -0.28,
-      "profit_factor": 1.05,
-      "avg_pnl_por_operacion_dolares": 5.38,
+      "win_rate_pct": 27.3,
+      "avg_r_logrado": -0.29,
+      "profit_factor": 0.85,
+      "avg_pnl_por_operacion_dolares": -15.55,
       "avg_hold_time_dias": null,
       "mayor_ganancia_dolares": 1264.65,
       "mayor_perdida_dolares": -996.95,
       "racha_ganadora_actual": 0,
-      "racha_perdedora_actual": 3,
+      "racha_perdedora_actual": 7,
       "racha_ganadora_max": 3,
-      "racha_perdedora_max": 6,
+      "racha_perdedora_max": 7,
       "_nota": "Se actualiza al cerrar cada operación en post-market-review PASO 5B",
       "operaciones_abiertas_actuales": 8,
       "_comentario_W17": "MSFT entrada 24-abr abierta — earnings 29-abr AH (W18). KPIs Cowork pendientes hasta cierre.",
@@ -5865,7 +6016,7 @@
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
       "max_drawdown_paper_actual_pct": 1.65,
-      "drawdown_actual_pct": 1.92
+      "drawdown_actual_pct": 2.9
     },
     "bot_metricas": {
       "paper": {
@@ -6444,6 +6595,16 @@
         "avg_r_acumulado": -0.28,
         "operaciones_acumuladas": 29,
         "vix": 14.94
+      },
+      {
+        "fecha": "2026-09-22",
+        "equity_paper": 106735.44,
+        "equity_real": 4548.2,
+        "pnl_dia_paper": -1021.16,
+        "win_rate_acumulado": 27.3,
+        "avg_r_acumulado": -0.29,
+        "operaciones_acumuladas": 33,
+        "vix": 14.87
       }
     ],
     "objetivos": {
@@ -9213,6 +9374,26 @@
       ],
       "evento_clave": "Melt-up IA por talks EEUU-China: ARM +17,1%, INTC +12,0%, META +11,4%, WBD +10,7%, AMD +10,0% con SPY solo +1,56%.",
       "leccion": "El sistema PUNTUO correctamente los 7 candidatos que explotaron hoy (scores 6,94-9,07, todos subieron; media +10,4%) pero solo ejecuto 1 (INTC, y lo hizo el bot GHA, no Cowork). El cuello de botella del dia NO fue la senal: fue la CAPACIDAD (max_cowork_positions=4 con 5-6 abiertas). Coste de oportunidad ~$4.260 vs P&L real +$1.771."
+    },
+    {
+      "fecha": "2026-09-22",
+      "dia": "Martes",
+      "equity_paper_cierre": 106735.44,
+      "variacion_dia": -1021.16,
+      "variacion_pct": -0.95,
+      "vix": 14.87,
+      "regimen_macro": "AI_DISPERSION_MELTUP + OIL_RETREAT + IRAN_WAR_BACKGROUND + VOL_CRUSH",
+      "trades_paper": [
+        "ONON buy 308@$30.84737",
+        "CRM sell 28@$232.5",
+        "TWLO buy 28@$285.88",
+        "META buy 12@$756.319167",
+        "NVDA buy 44@$228.771818",
+        "COHR sell 20@$308.53",
+        "SOL/USD buy 138.6@$116.273295527"
+      ],
+      "evento_clave": "Nasdaq en maximo historico con SPX plano: segunda sesion consecutiva en que todo el alpha esta en nombres individuales (VKTX +35,5% por datos de VK2735, GRML +50,2%, RMBS +8,6%) y ninguno en el indice. El complejo de memoria (MU/SNDK/RMBS/STX/WDC) cierra entre el 79% y el 97% del rango diario. Brent cae la 5a sesion a $98,10.",
+      "leccion": "La causa raiz del cuello de botella ya no es una hipotesis: ejecucion_apertura descarto los 10 candidatos con el motivo 'max posiciones paper 8' porque el bot GHA habia llenado 4 plazas esa misma manana con entradas de score 5,74-6,48, por debajo del umbral 7,5. VKTX (9,17) y RMBS (8,60) quedaron fuera y subieron +9,6% y +9,8% open->close. 7/7 bloqueados subieron: 14/14 en dos dias. Implementadas hoy 2 plazas de conviccion para score>=8,5."
     }
   ],
   "alertas_criticas": [
@@ -9550,7 +9731,16 @@
       "ts": "11:18 ET",
       "tipo": "config_tp_irreal",
       "ticker": "INTC",
-      "detalle": "INTC OCO (COWORK-SENT-OCOFIX-202609211412-INTC) lleva TP limit $208.40 sobre entrada $115.93 (+79.8%) heredado del bracket GHA-20260921-INTC. Con precio $121.69 ese TP no se ejecutara nunca: la posicion queda con stop de facto en break-even ($116.05) y sin salida por beneficio. Recomendacion: reemplazar la pata TP por 3xATR (~$132-135)."
+      "detalle": "INTC OCO (COWORK-SENT-OCOFIX-202609211412-INTC) lleva TP limit $208.40 sobre entrada $115.93 (+79.8%) heredado del bracket GHA-20260921-INTC. Con precio $121.69 ese TP no se ejecutara nunca: la posicion queda con stop de facto en break-even ($116.05) y sin salida por beneficio. Recomendacion: reemplazar la pata TP por 3xATR (~$132-135).",
+      "resuelto": true,
+      "resuelto_en": "2026-09-22",
+      "accion_tomada": "OCO reemplazado: stop 115,95 / TP 135,40"
+    },
+    {
+      "fecha": "2026-09-22",
+      "tipo": "SIN_STOP_OVERNIGHT_RESUELTO",
+      "mensaje": "INTC y RBLX estaban sin stop ($15.177). OCO colocados por post-market. 11/11 posiciones protegidas.",
+      "resuelto": true
     }
   ],
   "mejoras_sistema": [
@@ -9976,6 +10166,24 @@
       "archivo_modificado": "pendiente — requiere cambio coordinado en market-open-execution + intraday-monitor",
       "impacto_esperado": "Rotar capital muerto hacia senales frescas. No implementado hoy: toca >5 lineas en 2 tareas (regla de division por dias).",
       "implementada": false
+    },
+    {
+      "fecha": "2026-09-22",
+      "tipo": "bug_corregido + codigo_editado",
+      "descripcion": "Plazas de conviccion en market_open_execution.py: SLOT_CONVICCION=2 por encima de max_positions cuando score>=8.5",
+      "evidencia": "ejecucion_apertura 2026-09-22: 0 ejecutados, 10 descartados por 'max posiciones paper 8'. VKTX 9,17 (+9,6% open->close) y RMBS 8,60 (+9,8%) bloqueados por posiciones del bot con score 5,74-6,48. Coste ~$1.556.",
+      "archivo_modificado": "github:pacomontorop/Trading-bot scripts/market_open_execution.py (commit 91721d9d)",
+      "impacto_esperado": "Un candidato >=8,5 deja de poder ser bloqueado por posiciones de menor score. Riesgo extra acotado a 2x risk_per_trade (2% de equity). Verificable en el log de mañana: 'maxpos=8 (+2 plazas si score>=8.5)'.",
+      "implementada": true
+    },
+    {
+      "fecha": "2026-09-22",
+      "tipo": "proteccion_restaurada",
+      "descripcion": "Stops OCO restaurados en INTC y RBLX (estaban desnudas con TP irreal reteniendo el inventario)",
+      "evidencia": "$15.177 de exposicion sin stop a cierre. INTC TP $208,40 = +79,8% sobre entrada, inalcanzable.",
+      "archivo_modificado": "cuenta paper Alpaca (ordenes)",
+      "impacto_esperado": "11/11 posiciones protegidas overnight.",
+      "implementada": true
     }
   ],
   "industry_intelligence": {
@@ -12205,6 +12413,14 @@
       "candidatos_activos": 3,
       "score_sistema": 6.5,
       "mejora_hoy": "Slot reservado de alta conviccion (score>=8.5 puede exceder max_cowork_positions en +1)"
+    },
+    {
+      "fecha": "2026-09-22",
+      "lecciones_acumuladas": 34,
+      "mejoras_acumuladas": 48,
+      "candidatos_activos": 8,
+      "score_sistema": 4.8,
+      "mejora_hoy": "Plazas de conviccion (score>=8.5) en market_open_execution.py + stops OCO restaurados en INTC/RBLX"
     }
   ],
   "motor_alpha_diario": {
@@ -20709,40 +20925,28 @@
   ],
   "acciones_pendientes_manana": [
     {
-      "fecha": "2026-09-10",
-      "accion": "NO_ABRIR_NADA_ANTES_DEL_PPI",
+      "fecha": "2026-09-22",
+      "accion": "ROTAR_CAPITAL_ANTES_DE_ABRIR_NUEVAS",
       "prioridad": "CRITICA",
-      "detalle": "PPI de agosto a las 08:30 ET. Con Brent >$100 el riesgo de sorpresa al alza en precios de produccion es real y el FOMC del 16-sep descuenta 58% de SUBIDA. Cero entradas antes de las 09:00 ET."
+      "detalle": "11 posiciones abiertas (8 equity) contra un tope de 8: el gate seguira saturado mañana. La plaza de conviccion nueva solo cubre a RMBS (8,60); MU (7,84) y SNDK (7,62) seguiran bloqueadas. ANTES de la apertura: cerrar las dos posiciones equity mas debiles para liberar plazas. Candidatas por debilidad relativa: DELL (-2,47% latente, -4,56% hoy, 0% del tema dominante) y META (-2,55% latente, -0,63% hoy). Liberan ~$14.900 y 2 plazas."
     },
     {
-      "fecha": "2026-09-10",
-      "accion": "EVALUAR_OXY_POST_PPI",
-      "prioridad": "MEDIA",
-      "detalle": "OXY score 7.0 (vigilar_cauteloso). Solo si el PPI no sorprende al alza. Ventana 10:00-12:00 ET. Sizing 0.6x segun sizing_por_conviction (banda <8.5). Stop ATRx1.5 = -3.4%. Alternativa: SLB (6.8)."
-    },
-    {
-      "fecha": "2026-09-10",
-      "accion": "GESTIONAR_XOM_CVX",
+      "fecha": "2026-09-22",
+      "accion": "VERIFICAR_PLAZA_CONVICCION",
       "prioridad": "ALTA",
-      "detalle": "XOM R=0.55 (+1.66%), CVX R=0.13 (+0.39%). Ninguna en zona de parcial. Si XOM alcanza 1.0R (~$166.4) mover stop a break-even 161.59. Si el crudo revierte por titular de acuerdo Ormuz-Oman, los stops (158 / 207.5) son la proteccion — NO adelantarse a venderlas manualmente."
+      "detalle": "Confirmar en el log de market-open-execution que aparece 'maxpos=8 (+2 plazas si score>=8.5)'. Si RMBS vuelve a descartarse por capacidad, el parche no se ha desplegado y hay que revisar el workflow de GitHub Actions."
     },
     {
-      "fecha": "2026-09-10",
-      "accion": "NO_TOCAR_ORCL_ADBE_RH",
-      "prioridad": "MEDIA",
-      "detalle": "Reportan AH el 10-sep. ORCL bloqueado por momentum (+14.37% 5d > gate 10%). ADBE es beat-and-fade estructural (bate 95.8% de las veces, reaccion media -6.74%). RH: sorpresa media negativa + sector -2. Ninguno es candidato bajo ninguna condicion."
-    },
-    {
-      "fecha": "2026-09-11",
-      "accion": "riesgo_macro_CPI",
+      "fecha": "2026-09-22",
+      "accion": "NO_PERSEGUIR_VKTX_EN_APERTURA",
       "prioridad": "ALTA",
-      "detalle": "CPI de agosto 08:30 ET. Crudo a $100 entra en el IPC de septiembre, no en el de agosto, pero el mercado leera el dato en clave de estanflacion. KR reporta el mismo dia (descartado)."
+      "detalle": "VKTX +35,5% hoy. Regla MOVIMIENTO_YA_DESCONTADO: entrada solo en pullback a 38-39 entre las 10:15 y las 14:00 ET, stop ATRx2,0. Si abre en gap al alza, se descarta el dia."
     },
     {
-      "fecha": "2026-09-10",
-      "accion": "barrer_polvo",
-      "prioridad": "BAJA",
-      "detalle": "BTCUSD real: 0.0000083 BTC = $0.65 al -33.6%. BTCUSD paper: $15. Residuos sin stop en real. Sin riesgo material pero ensucian la fiscalizacion diaria."
+      "fecha": "2026-09-22",
+      "accion": "TRAILING_INTC_RBLX",
+      "prioridad": "MEDIA",
+      "detalle": "INTC R=0,78 (stop nuevo 115,95 = break-even, TP 135,40) y RBLX R=0,58 (stop 47,90 = break-even, TP 56,69). Ninguna en zona de parcial (1,5R). Trailar solo si superan 1,5R: INTC >$129, RBLX >$53,1."
     }
   ],
   "auditoria_tareas": [
@@ -21796,6 +22000,60 @@
         "sentinel"
       ],
       "diagnostico": "El sistema PROTEGE bien (stops 100%, OCO reparado, trailing activo) pero NO EJECUTA (0/7). La brecha es capacidad y rotacion de capital, no deteccion."
+    },
+    {
+      "fecha": "2026-09-22",
+      "score_sistema": 4.8,
+      "tareas": {
+        "market-open-execution": {
+          "ok": false,
+          "score": 0,
+          "ejecutados_hoy": 0,
+          "issues": [
+            "0 ejecutados / 10 descartados, todos por 'max posiciones paper 8'",
+            "VKTX 9,17 y RMBS 8,60 bloqueados por posiciones de score 5,74-6,48",
+            "7/7 bloqueados subieron: coste ~$2.986"
+          ]
+        },
+        "pre-market-earnings-scan": {
+          "ok": true,
+          "score": 7,
+          "candidatos_detectados": 8,
+          "issues": [
+            "Universo de earnings sin alpha por 3er dia — correcto no forzar"
+          ]
+        },
+        "sentinel": {
+          "ok": false,
+          "score": 6,
+          "ciclos_hoy": 2,
+          "issues": [
+            "Diagnostico erroneo: reporto 'bloqueo de SENAL, no de capacidad' con el gate de ejecucion saturado a 8/8",
+            "Solo 2 ciclos registrados hoy (esperados >=10)"
+          ]
+        },
+        "intraday-monitor": {
+          "ok": true,
+          "score": 8,
+          "issues": [
+            "Cierre de emergencia de CRM a -8,9% ejecutado correctamente"
+          ]
+        },
+        "pre-close-manager": {
+          "ok": false,
+          "score": 3,
+          "r0_cerradas_hoy": 0,
+          "issues": [
+            "Dejo INTC y RBLX sin stop overnight ($15.177 desprotegidos) — corregido por post-market",
+            "No detecto el TP irreal de INTC ($208,40) que impedia colocar la proteccion"
+          ]
+        }
+      },
+      "tareas_con_issues": [
+        "market-open-execution",
+        "sentinel",
+        "pre-close-manager"
+      ]
     }
   ],
   "_last_ew_daily_run": "2026-09-07T14:28:48Z",
@@ -22454,6 +22712,72 @@
           "motivo_no_ejecucion": "max_cowork_positions=4 con 5-6 abiertas — bloqueo por CAPACIDAD, no por senal"
         }
       ]
+    },
+    {
+      "fecha": "2026-09-22",
+      "n_oportunidades": 7,
+      "coste_total_estimado": 2986.0,
+      "metodo": "entrada realista a la apertura, $8.000 de nocional por posicion",
+      "motivo_bloqueo": "max posiciones paper 8 (gate saturado por entradas del bot GHA)",
+      "pnl_real_dia": -1021.0,
+      "detalle": [
+        {
+          "ticker": "VKTX",
+          "score": 9.17,
+          "gap_pct": 23.62,
+          "open_to_close_pct": 9.64,
+          "full_day_pct": 35.54,
+          "pnl_est_8k_open": 771.0
+        },
+        {
+          "ticker": "RMBS",
+          "score": 8.6,
+          "gap_pct": -1.1,
+          "open_to_close_pct": 9.82,
+          "full_day_pct": 8.61,
+          "pnl_est_8k_open": 785.0
+        },
+        {
+          "ticker": "MU",
+          "score": 7.84,
+          "gap_pct": -1.03,
+          "open_to_close_pct": 6.07,
+          "full_day_pct": 4.98,
+          "pnl_est_8k_open": 486.0
+        },
+        {
+          "ticker": "SNDK",
+          "score": 7.62,
+          "gap_pct": 0.41,
+          "open_to_close_pct": 6.38,
+          "full_day_pct": 6.82,
+          "pnl_est_8k_open": 511.0
+        },
+        {
+          "ticker": "GRML",
+          "score": 7.41,
+          "gap_pct": 46.32,
+          "open_to_close_pct": 2.66,
+          "full_day_pct": 50.21,
+          "pnl_est_8k_open": 213.0
+        },
+        {
+          "ticker": "BAI",
+          "score": 7.41,
+          "gap_pct": -0.45,
+          "open_to_close_pct": 1.97,
+          "full_day_pct": 1.51,
+          "pnl_est_8k_open": 158.0
+        },
+        {
+          "ticker": "SNX",
+          "score": 6.69,
+          "gap_pct": 0.51,
+          "open_to_close_pct": 0.79,
+          "full_day_pct": 1.31,
+          "pnl_est_8k_open": 63.0
+        }
+      ]
     }
   ],
   "incidencias_sistema": [
@@ -22955,7 +23279,7 @@
       "estado": "workaround_aplicado_en_ejecucion_no_en_SKILL"
     }
   ],
-  "ultima_actualizacion": "2026-09-22T14:21",
+  "ultima_actualizacion": "2026-09-22T20:20:00Z",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
@@ -23258,66 +23582,30 @@
     "actualizado": "2026-09-08T11:38:51.837792+00:00"
   },
   "candidatos_descartados_hoy": {
-    "fecha": "2026-09-21",
-    "universo": "EW calendar 2026-09-22 BMO (4) + AH (0) + CBRL heredado",
-    "analizados": [
+    "fecha": "2026-09-22",
+    "universo": "EW calendar 2026-09-23 BMO(5)+AH(3) + momentum del complejo de memoria + biotech",
+    "descartados": [
       {
-        "ticker": "THO",
-        "timing": "pre-market",
-        "hora": "6:30 AM ET",
-        "whisper": 0.99,
-        "consensus": 0.95,
-        "asimetria_pct": 4.21,
-        "score": 0.5,
-        "detalle": "B1 asimetria +4,21% = 2pts | B2 beat rate ~50-65% (beat,beat,miss ult 3T) = 1pt | B3 reaccion historica NEGATIVA: Q2 FY26 sorpresa EPS +750% y la accion CAYO -5,56% = 0pts (bloque mas predictivo) | B4 momentum -15,3% en 1 mes, bajo MA50 = 0pts | B5 target $88,50 vs precio $67,31 = 0,5pts | B6 consumer_discretionary = -2pts | B7 revenue -14,8% a/a, EPS de $2,36 a $0,95 (-60%) = -1pt",
-        "veredicto": "DESCARTADO — sell-the-news estructural + sector en -2"
+        "ticker": "GRML",
+        "motivo": "Blow-off: +50,2% hoy pero cerrando solo al 27% del rango tras +354,5% en 5 dias. El fade desde 17,92 hasta 14,09 es rechazo, no consolidacion."
       },
       {
-        "ticker": "AZO",
-        "timing": "pre-market",
-        "hora": "6:55 AM ET",
-        "whisper": 54.26,
-        "consensus": 54.78,
-        "asimetria_pct": -0.95,
-        "score": 1.5,
-        "detalle": "B1 asimetria NEGATIVA -0,95% (whisper POR DEBAJO del consenso = anti-senal) = 0pts | volatilidad implicita 4,6% | B6 consumer_discretionary = -2pts",
-        "veredicto": "DESCARTADO — asimetria negativa, el whisper espera miss"
-      },
-      {
-        "ticker": "MLKN",
-        "timing": "pre-market",
-        "hora": "1:00 AM ET",
-        "whisper": null,
-        "consensus": 0.35,
-        "asimetria_pct": null,
-        "score": 2.0,
-        "detalle": "Sin whisper publicado. Revenue $942,7M, crecimiento -1,4%. Mobiliario de oficina, sector debil.",
-        "veredicto": "DESCARTADO — sin whisper, sin asimetria medible"
-      },
-      {
-        "ticker": "HERE",
-        "timing": "pre-market",
-        "hora": "5:00 AM ET",
-        "whisper": null,
-        "consensus": null,
-        "asimetria_pct": null,
-        "score": 0.0,
-        "detalle": "Sin estimaciones publicadas en EW.",
-        "veredicto": "DESCARTADO — sin datos"
+        "ticker": "GIS",
+        "motivo": "Consumer staples (prioridad -2). Cerro al 13% del rango, -3,0% en 5d. Sentinel lo puntuo 5,0."
       },
       {
         "ticker": "CBRL",
-        "timing": "pre-market",
-        "hora": "BMO 2026-09-23",
-        "whisper": null,
-        "consensus": null,
-        "asimetria_pct": null,
-        "score": 6.32,
-        "detalle": "Candidato heredado estado=pendiente_ew, expira hoy 20:00. Hoy -0,42% (44,85). Sector consumer_discretionary -2. Score 6,32 < umbral 7,5.",
-        "veredicto": "EXPIRA — no alcanza umbral"
+        "motivo": "Consumer discretionary (-2). Asimetria inflada: +45% sobre un consenso de $0,20 son $0,09 absolutos. Cerro al 21% del rango."
+      },
+      {
+        "ticker": "PAYX",
+        "motivo": "-3,2% en 5d, cierre al 51% del rango, consenso $1,33 sin whisper. ~5,0."
+      },
+      {
+        "ticker": "SFIX/FUL/NEOV",
+        "motivo": "Earnings AH del 23-sep sin liquidez ni asimetria medible."
       }
-    ],
-    "conclusion": "0 candidatos de earnings sobre umbral 7,5 para el 22-sep. Confirma la leccion del 18-sep: semana 21-25 sep SIN alpha de earnings. El alpha de esta semana es momentum/macro, no earnings."
+    ]
   },
   "ew_proxy_module": {
     "version": "1.0",
