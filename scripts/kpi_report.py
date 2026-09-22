@@ -22,6 +22,17 @@ DEFAULT_START = "2026-04-13"
 
 
 def equity_curve(alp, start):
+    """Curva de equity diaria, cerrada SIEMPRE con el equity vivo de la cuenta.
+
+    2026-09-22: la serie /account/portfolio/history va con retraso. El informe de las
+    00:11 UTC del 22-sep leyo como ultimo punto el del 19-sep (106.070,92 $) cuando la
+    cuenta cerro el lunes en 107.756,60 $: se comio entero el mejor dia del sistema
+    (+1.686 $) y reporto -2,71 % de retorno cuando el real era -1,05 %.
+
+    No es cosmetico: de esta curva salen `retorno_pct`, `max_drawdown_pct` y sobre todo
+    `retorno_60d_pct`, que es uno de los cinco criterios de la puerta que decide si se
+    opera con dinero real. Medir la puerta con datos de ayer es decidir a ciegas.
+    """
     h = alp.req("/account/portfolio/history?period=1A&timeframe=1D")
     pts = []
     for t, e in zip(h.get("timestamp", []) or [], h.get("equity", []) or []):
@@ -29,6 +40,16 @@ def equity_curve(alp, start):
             d = datetime.fromtimestamp(t, tz=timezone.utc).strftime("%Y-%m-%d")
             if d >= start:
                 pts.append((d, float(e)))
+    try:                                   # nunca romper el informe por esto
+        eq_now = float((alp.req("/account") or {}).get("equity") or 0)
+    except Exception:  # noqa: BLE001
+        eq_now = 0.0
+    if eq_now > 0:
+        hoy = now_utc().strftime("%Y-%m-%d")
+        if pts and pts[-1][0] >= hoy:
+            pts[-1] = (hoy, eq_now)        # el punto de hoy, con el valor vivo
+        elif hoy >= start:
+            pts.append((hoy, eq_now))      # la serie no llega a hoy: se anade
     return pts
 
 
