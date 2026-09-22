@@ -399,3 +399,39 @@ def test_pata_de_stop_va_a_mercado():
     assert body["stop_loss"]["stop_price"] == "90.0"
     assert "limit_price" not in body["stop_loss"], body["stop_loss"]
     assert body["take_profit"]["limit_price"] == "130.0"
+
+
+def test_equity_curve_termina_en_el_equity_vivo():
+    """La curva de KPIs debe cerrar con el equity actual, no con el ultimo punto diario.
+
+    Regresion del 22-sep: la serie de Alpaca iba un dia retrasada y la puerta de la cuenta
+    real se evaluaba con el equity del sabado, perdiendo el mejor dia del sistema.
+    """
+    import kpi_report
+
+    hoy = common.now_utc().strftime("%Y-%m-%d")
+
+    class _Alp:
+        def req(self, path, method="GET", data=None):
+            if path.startswith("/account/portfolio/history"):
+                # serie retrasada: el ultimo punto es viejo
+                return {"timestamp": [1_600_000_000, 1_600_086_400], "equity": [100000.0, 106070.92]}
+            return {"equity": "107756.60"}
+
+    cur = kpi_report.equity_curve(_Alp(), "2000-01-01")
+    assert cur[-1][0] == hoy, cur[-1]
+    assert abs(cur[-1][1] - 107756.60) < 0.01, cur[-1]
+    assert len(cur) == 3          # los dos puntos historicos + el vivo
+
+
+def test_equity_curve_sobrevive_si_falla_la_cuenta():
+    import kpi_report
+
+    class _Alp:
+        def req(self, path, method="GET", data=None):
+            if path.startswith("/account/portfolio/history"):
+                return {"timestamp": [1_600_000_000], "equity": [100000.0]}
+            raise RuntimeError("cuenta no disponible")
+
+    cur = kpi_report.equity_curve(_Alp(), "2000-01-01")
+    assert cur == [("2020-09-13", 100000.0)], cur
