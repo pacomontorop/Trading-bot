@@ -35,6 +35,15 @@ ALLOW_KW = ("entrar", "largo", "comprar", "buy", "long", "open", "apertura", "pr
 BLOCK_KW = ("no_entrar", "no entrar", "descartar", "evitar", "short", "vigilar_no")
 ESTADOS = {"pendiente", "pendiente_reentrada", "pendiente_ew"}
 
+# ── Slots de convicción (2026-09-22) ──────────────────────────────────────────
+# Evidencia 21 y 22-sep: 14/14 candidatos acertados, 1-3 ejecutados. El 22-sep el bot
+# llenó los 8 slots con entradas propias (TWLO 6.48, META 5.74, ambas < min_score 7.5)
+# y bloqueó VKTX (9.17, +9.6% open→close) y RMBS (8.60, +9.8%): ~$1.556 de coste con
+# $8k/posición. Un candidato de convicción no puede quedar fuera por posiciones de
+# menor score ya abiertas -> se le reservan SLOT_CONVICCION plazas por encima del tope.
+SLOT_CONVICCION  = 2    # plazas extra como máximo por pasada (riesgo extra acotado a 2x risk_per_trade)
+SCORE_CONVICCION = 8.5  # score paper mínimo para abrir una plaza de convicción
+
 # Universo del escaneo rápido de apertura (solo PAPER — fuente live_open_scan)
 UNIVERSE_QUICK = ["NVDA", "AMD", "MSFT", "AAPL", "GOOGL", "META", "AMZN", "CRM", "DELL", "CRWD",
                   "PLTR", "COIN", "SMCI", "ARM", "NFLX", "TSLA", "AVGO", "MU", "AMAT", "XLK", "SMH",
@@ -178,7 +187,8 @@ def main():
 
     L = effective_limits(plog, limits)
     lp, lr = L["paper"], L["real"]
-    log(f"Paper: score≥{lp['min_score']} maxpos={lp['max_positions']} | "
+    log(f"Paper: score≥{lp['min_score']} maxpos={lp['max_positions']} "
+        f"(+{SLOT_CONVICCION} plazas si score≥{SCORE_CONVICCION}) | "
         f"Real: {'ACTIVA' if lr['active'] else 'OFF'} ({lr['why']}) score≥{lr['min_score']}")
 
     # ── candidatos ──
@@ -237,8 +247,10 @@ def main():
         # PAPER
         if t in pos:
             descartados.append((t, "ya en cartera paper"))
-        elif n_open >= lp["max_positions"]:
-            descartados.append((t, f"max posiciones paper {lp['max_positions']}"))
+        elif n_open >= lp["max_positions"] + (SLOT_CONVICCION if sc >= SCORE_CONVICCION else 0):
+            _extra = SLOT_CONVICCION if sc >= SCORE_CONVICCION else 0
+            descartados.append((t, f"max posiciones paper {lp['max_positions']}"
+                                   + (f"+{_extra} convicción" if _extra else f" (score {sc:.2f}<{SCORE_CONVICCION}: sin plaza de convicción)")))
         elif n_new >= lp["max_new_per_day"]:
             descartados.append((t, "max entradas/día paper"))
         elif paper_dd <= -lp["daily_loss_stop_pct"]:
