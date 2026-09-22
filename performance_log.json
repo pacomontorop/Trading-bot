@@ -2316,42 +2316,6 @@
       "fecha_ejecucion": "2026-09-22 14:39"
     },
     {
-      "ticker": "SNX",
-      "symbol": "SNX",
-      "estado": "pendiente_ew",
-      "score": 6.29,
-      "score_ajustado": 6.29,
-      "score_breakdown": {
-        "whisper": 0.26,
-        "beat_rate": 3.0,
-        "reaccion": 0.53,
-        "revisiones": 1.5,
-        "momentum5d": 0.0,
-        "macro": 1.0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 279.67,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-22T20:00:00Z",
-      "fecha_entrada_prevista": "2026-09-22",
-      "cerrar_antes": "2026-09-23",
-      "earnings_fecha": "2026-09-24",
-      "earnings_timing": "pre-market",
-      "consenso_eps": 4.65,
-      "whisper": 4.74,
-      "asimetria_pct": 1.94,
-      "beat_rate": 87.5,
-      "reaccion_media_pct": 1.41,
-      "momentum_5d_pct": 6.71,
-      "analistas": 8,
-      "fecha_scan": "2026-09-22T16:35:46Z",
-      "asimetria_abs_usd": 0.09,
-      "consensus": 4.65,
-      "verificado_ew_json": "2026-09-22T13:17",
-      "notas": "Sentinel 13:15 ET: asimetria verificada +1.94% (abs $0.09 sobre 4.65) < min 2.5%. Earnings 24-sep BMO. Vigilar, no ejecutar."
-    },
-    {
       "ticker": "VKTX",
       "symbol": "VKTX",
       "estado": "pendiente",
@@ -2542,6 +2506,38 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T16:37:03.863165+00:00",
       "notas": "1d=+5.8% vol=1.1x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "SNX",
+      "symbol": "SNX",
+      "estado": "pendiente_ew",
+      "score": 6.29,
+      "score_ajustado": 6.29,
+      "score_breakdown": {
+        "whisper": 0.26,
+        "beat_rate": 3.0,
+        "reaccion": 0.53,
+        "revisiones": 1.5,
+        "momentum5d": 0.0,
+        "macro": 1.0
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 279.67,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-09-22T20:00:00Z",
+      "fecha_entrada_prevista": "2026-09-22",
+      "cerrar_antes": "2026-09-23",
+      "earnings_fecha": "2026-09-24",
+      "earnings_timing": "BMO",
+      "consenso_eps": 4.65,
+      "whisper": 4.74,
+      "asimetria_pct": 1.94,
+      "beat_rate": 87.5,
+      "reaccion_media_pct": 1.41,
+      "momentum_5d_pct": 6.9,
+      "analistas": 8,
+      "fecha_scan": "2026-09-22T17:35:54Z"
     }
   ],
   "macro_context": {
@@ -23276,7 +23272,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-22T16:35Z",
+    "ts": "2026-09-22T17:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -23316,11 +23312,11 @@
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 35.9, 'rating': 'fear'}"
+        "detalle": "{'score': 36.0, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 107, 'menciones_24h_antes': 60, 'ratio_24h': 1.78}"
+        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 92, 'menciones_24h_antes': 79, 'ratio_24h': 1.16}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -23328,7 +23324,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.53"
+        "detalle": "C/P 1.58"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -23336,12 +23332,12 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 4.1, 'rs20': 7.11}"
+        "detalle": "{'etf': 'XLK', 'rs5': 4.2, 'rs20': 7.21}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-22T16:35Z",
+    "ts": "2026-09-22T17:35Z",
     "entrada": "2026-09-22",
     "salida": "2026-09-23",
     "eventos": 23,
@@ -23431,7 +23427,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-22T16:35Z",
+    "ts": "2026-09-22T17:35Z",
     "calendario": {
       "2026-09-22": [
         {
@@ -23573,7 +23569,7 @@
           "ticker": "CBRL",
           "company": "Cracker Barrel Old Country Store, Inc.",
           "releaseTime": 1,
-          "total": 13,
+          "total": 14,
           "fuente": "ew"
         },
         {
@@ -23605,17 +23601,17 @@
           "fuente": "ew"
         },
         {
-          "ticker": "SFIX",
-          "company": "Stitch Fix, Inc.",
+          "ticker": "FUL",
+          "company": "H.B. Fuller Company",
           "releaseTime": 3,
           "total": 8,
           "fuente": "ew"
         },
         {
-          "ticker": "FUL",
-          "company": "H.B. Fuller Company",
+          "ticker": "SFIX",
+          "company": "Stitch Fix, Inc.",
           "releaseTime": 3,
-          "total": 7,
+          "total": 8,
           "fuente": "ew"
         },
         {
@@ -24116,16 +24112,6 @@
         "reaccion_media_pct": 6.08,
         "score": 4.75
       },
-      "SNX": {
-        "consenso_eps": 4.65,
-        "whisper": 4.74,
-        "asimetria_pct": 1.94,
-        "earnings_fecha": "2026-09-24",
-        "earnings_timing": "BMO",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 1.41,
-        "score": 6.29
-      },
       "FUL": {
         "consenso_eps": 1.45,
         "whisper": 1.45,
@@ -24135,6 +24121,16 @@
         "beat_rate": 75.0,
         "reaccion_media_pct": 0.57,
         "score": 5.71
+      },
+      "SNX": {
+        "consenso_eps": 4.65,
+        "whisper": 4.74,
+        "asimetria_pct": 1.94,
+        "earnings_fecha": "2026-09-24",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 1.41,
+        "score": 6.29
       },
       "HUBG": {
         "consenso_eps": 0.38,
