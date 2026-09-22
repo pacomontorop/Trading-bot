@@ -24832,31 +24832,41 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-22",
-    "hora_utc": "14:39",
-    "min_desde_apertura": 69.0,
+    "hora_utc": "15:38",
+    "min_desde_apertura": 128.2,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
-    "ejecutados": [
-      "ONON"
-    ],
+    "ejecutados": [],
     "descartados": [
+      "ONON: ya en cartera paper",
+      "VKTX: max posiciones paper 8",
       "MRNA: max posiciones paper 8",
       "GRML: max posiciones paper 8",
+      "TWLO: ya en cartera paper",
       "SOXL: max posiciones paper 8",
       "MU: max posiciones paper 8",
-      "TWLO: ya en cartera paper",
-      "STX: max posiciones paper 8",
       "SNX: max posiciones paper 8",
       "SNDK: max posiciones paper 8"
     ],
     "ajustes_fuentes": {
       "ONON": {
-        "base": 8.15,
-        "paper": 8.3,
-        "real": 8.15,
+        "base": 7.69,
+        "paper": 7.84,
+        "real": 7.69,
         "partes": {
           "analistas": 0.05,
           "opciones": 0.5,
+          "sector": -0.4
+        }
+      },
+      "VKTX": {
+        "base": 7.41,
+        "paper": 7.51,
+        "real": 7.41,
+        "partes": {
+          "analistas": 0.2,
+          "opciones": 0.5,
+          "corto": -0.2,
           "sector": -0.4
         }
       },
@@ -24880,41 +24890,30 @@
           "sector": -0.4
         }
       },
+      "TWLO": {
+        "base": 6.48,
+        "paper": 7.13,
+        "real": 6.48,
+        "partes": {
+          "opciones": 0.25,
+          "sector": 0.4
+        }
+      },
       "SOXL": {
-        "base": 6.94,
-        "paper": 7.14,
-        "real": 6.94,
+        "base": 6.67,
+        "paper": 6.87,
+        "real": 6.67,
         "partes": {
           "social": 0.2
         }
       },
       "MU": {
-        "base": 6.94,
-        "paper": 7.09,
-        "real": 6.94,
+        "base": 6.67,
+        "paper": 6.82,
+        "real": 6.67,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.05,
-          "sector": 0.4
-        }
-      },
-      "TWLO": {
-        "base": 6.48,
-        "paper": 6.98,
-        "real": 6.48,
-        "partes": {
-          "analistas": -0.15,
-          "opciones": 0.25,
-          "sector": 0.4
-        }
-      },
-      "STX": {
-        "base": 6.48,
-        "paper": 6.83,
-        "real": 6.48,
-        "partes": {
-          "insiders": -0.3,
-          "opciones": 0.25,
           "sector": 0.4
         }
       },
@@ -24941,14 +24940,14 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-22T14:39Z",
+    "ts": "2026-09-22T15:38Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.92,
-      "fear_greed": 37.4,
+      "credito_hyg_ief_20": 0.95,
+      "fear_greed": 36.1,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -24956,25 +24955,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 135,
+        "ms": 187,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 429,
+        "ms": 426,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 94895,
+        "ms": 95115,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
         "ok": 9,
         "fallos": 0,
-        "ms": 2468,
+        "ms": 2977,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -24986,31 +24985,31 @@
       "insiders": {
         "ok": 9,
         "fallos": 0,
-        "ms": 28000,
+        "ms": 15249,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1029,
+        "ms": 1193,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1955,
+        "ms": 1740,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1457,
+        "ms": 1172,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 9,
         "fallos": 0,
-        "ms": 13928,
+        "ms": 3111,
         "ultimo_error": null
       }
     }
