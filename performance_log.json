@@ -2157,8 +2157,8 @@
     },
     {
       "ticker": "CBRL",
-      "score": 5.0,
-      "score_ajustado": 5.0,
+      "score": 7.5,
+      "score_ajustado": 7.5,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
       "accion_recomendada": "revisar_premarket",
@@ -2166,15 +2166,16 @@
       "earnings_fecha": "2026-09-23",
       "earnings_timing": "pre-market",
       "expira": "2026-09-23T20:00:00Z",
-      "notas": "Score=5.0 < umbral paper 7.5. EW JSON API: whisper vs consenso +45.00%; beat_rate=50%(2/4); timing+1; 5d=-11.2% px=44.87",
+      "notas": "Rescorado sentinel 2026-09-22T10:20 via EW JSON API. whisper +3.0; beat_rate +1.0(0.62,n=8); reaccion +1.5(3.88%); mom5d +1.0(+3.2%); macro +1.0. ATENCION: asimetria % inflada por consenso pequeno ($0.2), asimetria absoluta solo $0.09. No ejecutado: por debajo de umbral efectivo 7.5 en score fiable.",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)",
-      "ts_creado": "2026-09-22T13:23:14.324839+00:00"
+      "ts_creado": "2026-09-22T13:23:14.324839+00:00",
+      "asimetria_abs_usd": 0.09
     },
     {
       "ticker": "GIS",
-      "score": 4.0,
-      "score_ajustado": 4.0,
+      "score": 5.0,
+      "score_ajustado": 5.0,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
       "accion_recomendada": "revisar_premarket",
@@ -2182,15 +2183,16 @@
       "earnings_fecha": "2026-09-23",
       "earnings_timing": "pre-market",
       "expira": "2026-09-23T20:00:00Z",
-      "notas": "Score=4.0 < umbral paper 7.5. EW JSON API: whisper vs consenso +2.78%; beat_rate=75%(3/4); timing+1; 5d=-2.9% px=35.41",
+      "notas": "Rescorado sentinel 2026-09-22T10:20 via EW JSON API. whisper +1.0; beat_rate +2.0(0.88,n=8); reaccion +0.0(-0.15%); mom5d +1.0(-1.6%); macro +1.0. No ejecutado: por debajo de umbral efectivo 7.5 en score fiable.",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)",
-      "ts_creado": "2026-09-22T13:23:14.324839+00:00"
+      "ts_creado": "2026-09-22T13:23:14.324839+00:00",
+      "asimetria_abs_usd": 0.02
     },
     {
       "ticker": "CTAS",
-      "score": 4.0,
-      "score_ajustado": 4.0,
+      "score": 6.0,
+      "score_ajustado": 6.0,
       "score_macro_bonus": 0,
       "estado": "sentinel_preview",
       "accion_recomendada": "revisar_premarket",
@@ -2198,10 +2200,11 @@
       "earnings_fecha": "2026-09-23",
       "earnings_timing": "pre-market",
       "expira": "2026-09-23T20:00:00Z",
-      "notas": "Score=4.0 < umbral paper 7.5. EW JSON API: whisper vs consenso +2.22%; beat_rate=75%(3/4); timing+1; 5d=-2.0% px=196.88",
+      "notas": "Rescorado sentinel 2026-09-22T10:20 via EW JSON API. whisper +1.0; beat_rate +2.0(0.88,n=8); reaccion +1.0(1.42%); mom5d +1.0(-0.7%); macro +1.0. No ejecutado: por debajo de umbral efectivo 7.5 en score fiable.",
       "detectado_por": "sentinel-preopen",
       "ventana_entrada": "10:15 ET (pre-market scan)",
-      "ts_creado": "2026-09-22T13:23:14.324839+00:00"
+      "ts_creado": "2026-09-22T13:23:14.324839+00:00",
+      "asimetria_abs_usd": 0.03
     },
     {
       "ticker": "SNX",
@@ -2505,123 +2508,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-22T09:23",
+      "timestamp": "2026-09-22T10:20",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "lectura": "Risk-on. Lunes 21-sep: SPY +1.55%, QQQ +2.77% (Nasdaq record), XLK +2.77%, INTC +14%. WTI -5.98% por desescalada Iran; XLE -2.88%. VIX 14.6. Y10 4.94% (-0.48%). Futuros planos/ligeramente positivos (ES +0.07%, RUT +0.84%).",
-      "datos": {
-        "FUT_SP": {
-          "px": 7839.25,
-          "chg": 0.07
-        },
-        "FUT_NQ": {
-          "px": 30762.75,
-          "chg": -0.07
-        },
-        "FUT_DOW": {
-          "px": 52773.0,
-          "chg": 0.57
-        },
-        "FUT_RUT": {
-          "px": 2921.7,
-          "chg": 0.84
-        },
-        "VIX": {
-          "px": 14.63,
-          "chg": -1.61
-        },
-        "TLT": {
-          "px": 81.8,
-          "chg": 0.68
-        },
-        "Y10": {
-          "px": 4.94,
-          "chg": -0.48
-        },
-        "Y30": {
-          "px": 5.27,
-          "chg": -0.43
-        },
-        "DXY": {
-          "px": 28.48,
-          "chg": 0.32
-        },
-        "ORO": {
-          "px": 4377.4,
-          "chg": -0.15
-        },
-        "WTI": {
-          "px": 90.05,
-          "chg": -5.98
-        },
-        "BTC": {
-          "px": 85993.77,
-          "chg": -0.7
-        },
-        "NIKKEI": {
-          "px": 65018.95,
-          "chg": 1.38
-        },
-        "DAX": {
-          "px": 25738.36,
-          "chg": 0.64
-        },
-        "FTSE": {
-          "px": 10748.65,
-          "chg": 0.09
-        },
-        "HSI": {
-          "px": 25087.75,
-          "chg": 0.18
-        },
-        "TECH": {
-          "px": 194.85,
-          "chg": 2.77
-        },
-        "FIN": {
-          "px": 55.9,
-          "chg": 0.07
-        },
-        "ENERGY": {
-          "px": 62.46,
-          "chg": -2.88
-        },
-        "HEALTH": {
-          "px": 169.01,
-          "chg": 0.37
-        },
-        "INDUS": {
-          "px": 169.98,
-          "chg": 0.14
-        },
-        "CONSD": {
-          "px": 112.23,
-          "chg": 1.08
-        },
-        "UTIL": {
-          "px": 40.66,
-          "chg": -1.07
-        },
-        "STAPLES": {
-          "px": 81.92,
-          "chg": -1.06
-        },
-        "SPY": {
-          "px": 773.5,
-          "chg": 1.55
-        },
-        "QQQ": {
-          "px": 741.47,
-          "chg": 2.77
-        },
-        "IWM": {
-          "px": 285.58,
-          "chg": 0.52
-        }
-      }
+      "lectura": "Sin shock. Desescalada Iran (WTI -1.5% tras -9% en 4 sesiones), VIX 14.5, Nasdaq cerca de record. META +7.7% en 24h por acuerdo Meta-Shopify AI (idiosincratico, no earnings). XLF -1.5% unica debilidad sectorial. 10Y en 4.95% tras la subida Fed 15-16 sep a 3.75-4.00%."
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -2642,18 +2535,17 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-21T15:22",
-    "macro_score": 0.5,
-    "macro_bonus_ew": 0.15,
+    "ts_actualizado": "2026-09-22T10:20",
+    "macro_score": 0.3,
+    "macro_bonus_ew": 0.1,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros/indices fuertes: ES +2.39%, NQ +3.94% (risk-on)",
-      "WTI -7.8% ($92.5) por esperanzas de desescalada Iran-EEUU en la ONU -> XLE -2.3%",
-      "Yield 10Y 4.96% (-0.70%) sigue >4.5%: presion leve sobre valuaciones growth",
-      "XLK +2.68% lider sectorial -> favorable a candidatos EW tech",
-      "META +11.9% intradia: upgrade Wells Fargo (PT 796) + momentum IA Muse/Connect 9/23. NO es sorpresa de earnings -> no se clasifica como shock",
-      "VIX 15.0, sin spike (30min +0.1%); SPY plano ultimos 30min",
-      "Internacional +0.95% medio (N225 +1.38, DAX +1.07, FTSE +0.75, HSI +0.60)"
+      "VIX 14.54 (-2.2%) - calma",
+      "SPY +0.03% / QQQ +0.53% / SMH +0.85% - tech lidera",
+      "10Y 4.95% (alto, headwind valuaciones growth)",
+      "WTI -1.5%, oro -0.4%: desescalada Iran quita prima geopolitica",
+      "XLF -1.50% - financieras unico sector claramente debil",
+      "Fear&Greed 34 (fear) pese a Nasdaq en record - divergencia"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -2663,8 +2555,8 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": 0.61,
-      "yield_10y": 4.96
+      "tlt_chg": 0.07,
+      "yield_10y": 4.95
     },
     "commodities": {
       "wti": 92.49,
@@ -2716,21 +2608,10 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "lider": "tech",
-      "cambio_lider": 2.68,
-      "tech_chg": 2.68,
-      "all": {
-        "tech": 2.68,
-        "fin": 0.27,
-        "energy": -2.31,
-        "health": 0.47,
-        "indu": 0.34,
-        "cons_disc": 1.4,
-        "util": -1.01,
-        "mat": -0.17,
-        "re": 0.19
-      },
-      "ts": "15:22"
+      "lider": "semis(SMH +0.85)",
+      "tech_chg": 0.24,
+      "debil": "financials(XLF -1.50)",
+      "ts": "10:20"
     },
     "eventos_recientes": [
       {
@@ -2857,10 +2738,8 @@
       }
     ],
     "futuros": {
-      "ES": 2.39,
-      "NQ": 3.94,
-      "YM": 1.45,
-      "RTY": 1.14
+      "SPY": 0.03,
+      "QQQ": 0.53
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -14859,6 +14738,17 @@
       "macro_nivel": "normal",
       "modo": "preopen_scan_read_only",
       "nota": "Ciclo 09:14 ET pre-apertura (rama WEEKEND_MODE/IS_PREOPEN del skill: solo scan, sin ejecucion). FIX MAYOR: old.earningswhispers.com sigue inalcanzable (connect timeout) y www.* es SPA JS sin IDs -> el scraping headless del skill devuelve 0 siempre. Sustituido por la API JSON publica de EW (/api/caldata/YYYYMMDD, /api/getstocksdata/TICKER, /api/todaysresults, /api/epsdetails/TICKER): whisper + consenso + fecha + releaseTime OK. Calendario 22-24 sep: 23 empresas, ninguna mega-cap. Mejor candidato CBRL score 5.0 (asimetria +45% inflada por denominador 0.20). Ninguno alcanza umbral 7.5 -> 0 ejecuciones (correcto). Stops: 8/8 equity con stop vivo; 3/3 crypto con stop vivo (el skill los marca SIN_STOP por mismatch SOLUSD vs SOL/USD). XOM stop 157.02 a solo -0.8% del cierre con XLE -2.88% y WTI -6%: riesgo alto de stop-out hoy."
+    },
+    {
+      "ts": "2026-09-22T14:20:09.076210+00:00",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 5,
+      "cowork_abiertas": 3,
+      "vix": 14.5,
+      "macro_nivel": "normal",
+      "macro_score": 0.3,
+      "nota": "Sin entradas: ningun candidato >=7.5 fiable. CBRL 7.50 bruto pero inflado por consenso 0.20 (asim abs solo $0.09) -> real ~5.5. Pipeline GHA 13:35Z coincide (top SNX 6.29). EW old.* inaccesible desde sandbox; usada API JSON www (ew_json_api) con exito. Cowork 3/4 (CRM, INTC, RBLX) todas con stop. CRM -8.2% a 1.3% de su stop 230.94 - vigilar. DELL[bot] momentum bajista con volumen (-1.45%/15min, RSI 26) - no se toca, regla bot. Cuenta real solo $1 BTC residual."
     }
   ],
   "momentum_15m": {
@@ -14919,14 +14809,14 @@
       "ts": "10:15"
     },
     "CRM": {
-      "precio": 237.68,
-      "mom_15m": 0.063,
-      "mom_30m": 0.403,
-      "vol_ratio": 0.66,
-      "vwap_dev": 0.083,
-      "rsi": 42.9,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 234.07,
+      "m15": -0.442,
+      "m30": -1.002,
+      "vol": 0.47,
+      "vwap_dev": -1.179,
+      "rsi": 33.1,
+      "sig": "debil_bajista",
+      "ts": "10:20"
     },
     "BURL": {
       "precio": 294.79,
@@ -15017,14 +14907,14 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 225.62,
-      "mom_15m": -0.022,
-      "mom_30m": -0.259,
-      "vol_ratio": 0.2,
-      "vwap_dev": -0.115,
-      "rsi": 46.9,
-      "señal": "LATERAL",
-      "ts": "15:13"
+      "precio": 228.17,
+      "m15": 0.394,
+      "m30": 0.281,
+      "vol": 0.79,
+      "vwap_dev": 0.046,
+      "rsi": 55.0,
+      "sig": "debil_alcista",
+      "ts": "10:20"
     },
     "HPQ": {
       "precio": 30,
@@ -15117,14 +15007,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 579.63,
-      "mom_15m": -0.115,
-      "mom_30m": -0.194,
-      "vol_ratio": 0.63,
-      "vwap_dev": 0.05,
-      "rsi": 70.9,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 563.3,
+      "m15": -1.449,
+      "m30": -0.933,
+      "vol": 1.62,
+      "vwap_dev": -1.513,
+      "rsi": 25.9,
+      "sig": "BAJISTA",
+      "ts": "10:20"
     },
     "LULU": {
       "px": 119.42,
@@ -15608,14 +15498,14 @@
       "ts": "15:24"
     },
     "TSLA": {
-      "precio": 375.54,
-      "mom_15m": -0.08,
-      "mom_30m": 0.16,
-      "vol_ratio": 0.71,
-      "vwap_dev": 0.2,
-      "rsi": 71.4,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 377.1,
+      "m15": 0.108,
+      "m30": 0.403,
+      "vol": 0.78,
+      "vwap_dev": 0.361,
+      "rsi": 52.4,
+      "sig": "LATERAL",
+      "ts": "10:20"
     },
     "NAVN": {
       "precio": 27.89,
@@ -15860,14 +15750,14 @@
       "ts": "15:13"
     },
     "AAPL": {
-      "precio": 338.86,
-      "mom_15m": 0.055,
-      "mom_30m": 0.0,
-      "vol_ratio": 0.83,
-      "vwap_dev": 0.089,
-      "rsi": 60.0,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 339.16,
+      "m15": -0.122,
+      "m30": -0.711,
+      "vol": 0.81,
+      "vwap_dev": -0.414,
+      "rsi": 49.8,
+      "sig": "LATERAL",
+      "ts": "10:20"
     },
     "ACVA": {
       "precio": 10.45,
@@ -15940,14 +15830,14 @@
       "ts": "15:28"
     },
     "RBLX": {
-      "precio": 51.03,
-      "mom_15m": 0.167,
-      "mom_30m": 0.01,
-      "vol_ratio": 0.82,
-      "vwap_dev": 0.024,
-      "rsi": 44.6,
-      "señal": "debil_alcista",
-      "ts": "15:22"
+      "precio": 49.74,
+      "m15": 0.131,
+      "m30": -0.281,
+      "vol": 0.29,
+      "vwap_dev": -2.327,
+      "rsi": 21.0,
+      "sig": "LATERAL",
+      "ts": "10:20"
     },
     "SWKS": {
       "precio": 88.42,
@@ -15980,24 +15870,24 @@
       "ts": "15:28"
     },
     "INTC": {
-      "precio": 121.38,
-      "mom_15m": -0.062,
-      "mom_30m": 0.111,
-      "vol_ratio": 0.73,
-      "vwap_dev": -0.072,
-      "rsi": 46.6,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 122.3,
+      "m15": 0.452,
+      "m30": 0.778,
+      "vol": 0.5,
+      "vwap_dev": 0.441,
+      "rsi": 57.5,
+      "sig": "debil_alcista",
+      "ts": "10:20"
     },
     "WBD": {
-      "precio": 30.82,
-      "mom_15m": 0.032,
-      "mom_30m": 0.052,
-      "vol_ratio": 0.24,
-      "vwap_dev": -0.007,
-      "rsi": 34.9,
-      "señal": "LATERAL",
-      "ts": "15:22"
+      "precio": 30.81,
+      "m15": 0.0,
+      "m30": 0.032,
+      "vol": 0.4,
+      "vwap_dev": 0.012,
+      "rsi": 41.2,
+      "sig": "LATERAL",
+      "ts": "10:20"
     },
     "AMD": {
       "precio": 613.28,
@@ -16040,24 +15930,24 @@
       "ts": "13:22"
     },
     "CBRL": {
-      "precio": 44.94,
-      "mom_15m": -0.222,
-      "mom_30m": 0.469,
-      "vol_ratio": 0.58,
-      "vwap_dev": 0.477,
-      "rsi": 68.9,
-      "señal": "debil_bajista",
-      "ts": "15:22"
+      "precio": 46.58,
+      "m15": 0.888,
+      "m30": 0.561,
+      "vol": 0.25,
+      "vwap_dev": 2.962,
+      "rsi": 77.2,
+      "sig": "debil_alcista",
+      "ts": "10:20"
     },
     "META": {
-      "precio": 744.49,
-      "mom_15m": -0.164,
-      "mom_30m": -0.31,
-      "vol_ratio": 0.76,
-      "vwap_dev": 0.029,
-      "rsi": 51.3,
-      "señal": "debil_bajista",
-      "ts": "15:22"
+      "precio": 749.76,
+      "m15": 0.34,
+      "m30": 0.651,
+      "vol": 0.59,
+      "vwap_dev": 0.302,
+      "rsi": 46.9,
+      "sig": "debil_alcista",
+      "ts": "10:20"
     },
     "GRML": {
       "precio": 10.26,
@@ -16068,6 +15958,76 @@
       "rsi": 58.4,
       "señal": "debil_alcista",
       "ts": "15:22"
+    },
+    "TWLO": {
+      "precio": 280.87,
+      "m15": 0.506,
+      "m30": 1.134,
+      "vol": 0.22,
+      "vwap_dev": 2.95,
+      "rsi": 72.3,
+      "sig": "debil_alcista",
+      "ts": "10:20"
+    },
+    "CTAS": {
+      "precio": 197.36,
+      "m15": 0.071,
+      "m30": 0.107,
+      "vol": 0.24,
+      "vwap_dev": 0.05,
+      "rsi": 48.2,
+      "sig": "LATERAL",
+      "ts": "10:20"
+    },
+    "GIS": {
+      "precio": 35.94,
+      "m15": -0.014,
+      "m30": 0.223,
+      "vol": 0.5,
+      "vwap_dev": 0.782,
+      "rsi": 60.6,
+      "sig": "LATERAL",
+      "ts": "10:20"
+    },
+    "SNX": {
+      "precio": 281.53,
+      "m15": 0.185,
+      "m30": 0.171,
+      "vol": 0.19,
+      "vwap_dev": 0.671,
+      "rsi": 65.1,
+      "sig": "debil_alcista",
+      "ts": "10:20"
+    },
+    "FUL": {
+      "precio": 51.29,
+      "m15": 0.333,
+      "m30": 1.474,
+      "vol": 0.36,
+      "vwap_dev": 2.596,
+      "rsi": 78.7,
+      "sig": "debil_alcista",
+      "ts": "10:20"
+    },
+    "SHOP": {
+      "precio": 148.99,
+      "m15": 0.283,
+      "m30": -0.131,
+      "vol": 0.58,
+      "vwap_dev": 2.787,
+      "rsi": 81.1,
+      "sig": "debil_alcista",
+      "ts": "10:20"
+    },
+    "ONON": {
+      "precio": 30.82,
+      "m15": -0.13,
+      "m30": -0.916,
+      "vol": 0.33,
+      "vwap_dev": 1.963,
+      "rsi": 85.5,
+      "sig": "LATERAL",
+      "ts": "10:20"
     }
   },
   "sentinel_signals": [
@@ -17400,6 +17360,111 @@
       "ts_detected": "2026-09-22T13:23:14.324839+00:00",
       "ejecutado": false,
       "fuente": "sentinel-preopen-20260922-ewjsonapi"
+    },
+    {
+      "ticker": "CBRL",
+      "score": 7.5,
+      "tipo": "earnings_ew",
+      "asimetria": 45.0,
+      "asimetria_abs_usd": 0.09,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "whisper +3.0; beat_rate +1.0(0.62,n=8); reaccion +1.5(3.88%); mom5d +1.0(+3.2%); macro +1.0",
+      "beat_rate": 0.62,
+      "react_beat": 3.88,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "CTAS",
+      "score": 6.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.22,
+      "asimetria_abs_usd": 0.03,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "whisper +1.0; beat_rate +2.0(0.88,n=8); reaccion +1.0(1.42%); mom5d +1.0(-0.7%); macro +1.0",
+      "beat_rate": 0.88,
+      "react_beat": 1.42,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "SNX",
+      "score": 5.5,
+      "tipo": "earnings_ew",
+      "asimetria": 1.94,
+      "asimetria_abs_usd": 0.09,
+      "earnings_fecha": "2026-09-24",
+      "earnings_timing": "pre-market",
+      "razon": "whisper +0.5; beat_rate +2.0(0.88,n=8); reaccion +1.0(1.7%); mom5d +1.0(+7.3%); macro +1.0",
+      "beat_rate": 0.88,
+      "react_beat": 1.7,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "GIS",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 2.78,
+      "asimetria_abs_usd": 0.02,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "pre-market",
+      "razon": "whisper +1.0; beat_rate +2.0(0.88,n=8); reaccion +0.0(-0.15%); mom5d +1.0(-1.6%); macro +1.0",
+      "beat_rate": 0.88,
+      "react_beat": -0.15,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "FUL",
+      "score": 5.0,
+      "tipo": "earnings_ew",
+      "asimetria": 0.0,
+      "asimetria_abs_usd": 0.0,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "after-hours",
+      "razon": "whisper +0.0; beat_rate +2.0(0.75,n=8); reaccion +1.0(1.24%); mom5d +1.0(+0.9%); macro +1.0",
+      "beat_rate": 0.75,
+      "react_beat": 1.24,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "AYTU",
+      "score": 4.5,
+      "tipo": "earnings_ew",
+      "asimetria": null,
+      "asimetria_abs_usd": null,
+      "earnings_fecha": "2026-09-22",
+      "earnings_timing": "after-hours",
+      "razon": "beat_rate +2.0(0.75,n=8); reaccion +1.5(11.96%); mom5d +0.0(+10.8%); macro +1.0",
+      "beat_rate": 0.75,
+      "react_beat": 11.96,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
+    },
+    {
+      "ticker": "SFIX",
+      "score": 4.0,
+      "tipo": "earnings_ew",
+      "asimetria": null,
+      "asimetria_abs_usd": null,
+      "earnings_fecha": "2026-09-23",
+      "earnings_timing": "after-hours",
+      "razon": "beat_rate +2.0(1.0,n=8); reaccion +0.0(-0.52%); mom5d +1.0(+0.1%); macro +1.0",
+      "beat_rate": 1.0,
+      "react_beat": -0.52,
+      "ts_detected": "2026-09-22T10:20:09.076140+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ewapi"
     }
   ],
   "skip_analysis": {
@@ -22401,7 +22466,7 @@
       "accion": "Migrar get_ew_headless() a la API JSON publica. Endpoints verificados hoy — ver clave ew_json_api."
     }
   ],
-  "ultima_actualizacion": "2026-09-22T13:23:14.324839+00:00",
+  "ultima_actualizacion": "2026-09-22T10:20",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
