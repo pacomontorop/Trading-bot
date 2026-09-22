@@ -1555,6 +1555,84 @@
       "stop_loss": 0,
       "source": "bot_autonomo",
       "nota": "Registrada por reconciliacion post-market: abierta hoy por GHA, ausente del log"
+    },
+    {
+      "id": "GHA-20260922-NVDA",
+      "simbolo": "NVDA",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "score_entrada": 8.63,
+      "score_base": 6.88,
+      "ajuste_fuentes": 1.75,
+      "fuentes_extra": {
+        "insiders": -0.3,
+        "analistas": 1.0,
+        "opciones": 0.45,
+        "sector": 0.4,
+        "social": 0.2
+      },
+      "fecha_entrada": "2026-09-22",
+      "precio_entrada": 228.771818,
+      "precio_stop": 217.33,
+      "precio_tp": 343.15,
+      "stop_pct": 5.0,
+      "rr": 10.0,
+      "qty": 44,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "982e0dc8-930c-4753-bcc0-ffa2c6dee0b1",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260922-META",
+      "simbolo": "META",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "score_entrada": 7.38,
+      "score_base": 6.88,
+      "ajuste_fuentes": 0.5,
+      "fuentes_extra": {
+        "insiders": -0.3,
+        "opciones": 0.45,
+        "sector": 0.15,
+        "social": 0.2
+      },
+      "fecha_entrada": "2026-09-22",
+      "precio_entrada": 756.319167,
+      "precio_stop": 715.44,
+      "precio_tp": 1165.05,
+      "stop_pct": 5.4,
+      "rr": 10.0,
+      "qty": 12,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "731cb31b-f3b9-4966-9628-b37868eecfc0",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260922-TWLO",
+      "simbolo": "TWLO",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 7.23,
+      "score_base": 6.48,
+      "ajuste_fuentes": 0.75,
+      "fuentes_extra": {
+        "analistas": -0.15,
+        "opciones": 0.5,
+        "sector": 0.4
+      },
+      "fecha_entrada": "2026-09-22",
+      "precio_entrada": 285.88,
+      "precio_stop": 267.47,
+      "precio_tp": 467.91,
+      "stop_pct": 6.38,
+      "rr": 10.0,
+      "qty": 28,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "2a4b5060-c720-47cf-92ad-a71bc3357b88",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -2160,7 +2238,7 @@
     {
       "ticker": "TWLO",
       "symbol": "TWLO",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.48,
       "score_ajustado": 6.48,
       "score_raw": 7.0,
@@ -2179,7 +2257,8 @@
       "expira": "2026-09-22T19:36:39Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T13:36:39.721803+00:00",
-      "notas": "1d=+5.5% vol=0.2x 52h_dist=0.0%"
+      "notas": "1d=+5.5% vol=0.2x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-22 13:38"
     },
     {
       "ticker": "GRML",
@@ -2280,7 +2359,7 @@
     {
       "ticker": "META",
       "symbol": "META",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 5.74,
       "score_ajustado": 5.74,
       "score_raw": 6.2,
@@ -2299,7 +2378,8 @@
       "expira": "2026-09-22T19:36:39Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-22T13:36:39.721803+00:00",
-      "notas": "1d=+2.0% vol=0.2x 52h_dist=0.0%"
+      "notas": "1d=+2.0% vol=0.2x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-22 13:38"
     },
     {
       "ticker": "SNDK",
@@ -24507,59 +24587,53 @@
     }
   ],
   "ejecucion_apertura": {
-    "fecha": "2026-09-21",
-    "hora_utc": "18:55",
-    "min_desde_apertura": 325.8,
+    "fecha": "2026-09-22",
+    "hora_utc": "13:38",
+    "min_desde_apertura": 8.8,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
-    "ejecutados": [],
+    "ejecutados": [
+      "NVDA",
+      "META",
+      "TWLO"
+    ],
     "descartados": [
-      "WBD: max posiciones paper 8",
-      "ARM: max posiciones paper 8",
-      "INTC: ya en cartera paper",
-      "META: max posiciones paper 8",
-      "AMD: max posiciones paper 8",
-      "TSLA: max posiciones paper 8",
-      "NVDA: max posiciones paper 8",
+      "AAPL: ya en cartera paper",
+      "SNX: max posiciones paper 8",
+      "SHOP: max posiciones paper 8",
       "GRML: max posiciones paper 8",
-      "TQQQ: max posiciones paper 8",
-      "DELL: ya en cartera paper",
-      "CBRL: max posiciones paper 8"
+      "IREN: score 6.0<6.0",
+      "ONON: score 6.0<6.0",
+      "AMD: score 5.8<6.0",
+      "TQQQ: score 5.7<6.0",
+      "SNDK: score 5.7<6.0"
     ],
     "ajustes_fuentes": {
-      "WBD": {
-        "base": 9.07,
-        "paper": 8.92,
-        "real": 8.92,
+      "NVDA": {
+        "base": 6.88,
+        "paper": 8.63,
+        "real": 6.88,
         "partes": {
           "insiders": -0.3,
-          "sector": 0.15
-        }
-      },
-      "ARM": {
-        "base": 7.87,
-        "paper": 8.67,
-        "real": 7.87,
-        "partes": {
-          "analistas": -0.3,
-          "opciones": 0.7,
-          "sector": 0.4
-        }
-      },
-      "INTC": {
-        "base": 7.22,
-        "paper": 8.22,
-        "real": 7.22,
-        "partes": {
-          "analistas": 0.4,
+          "analistas": 1.0,
+          "opciones": 0.45,
           "sector": 0.4,
           "social": 0.2
         }
       },
+      "AAPL": {
+        "base": 6.88,
+        "paper": 7.43,
+        "real": 6.88,
+        "partes": {
+          "analistas": 0.15,
+          "sector": 0.4
+        }
+      },
       "META": {
-        "base": 7.69,
-        "paper": 8.19,
-        "real": 7.69,
+        "base": 6.88,
+        "paper": 7.38,
+        "real": 6.88,
         "partes": {
           "insiders": -0.3,
           "opciones": 0.45,
@@ -24567,10 +24641,69 @@
           "social": 0.2
         }
       },
+      "TWLO": {
+        "base": 6.48,
+        "paper": 7.23,
+        "real": 6.48,
+        "partes": {
+          "analistas": -0.15,
+          "opciones": 0.5,
+          "sector": 0.4
+        }
+      },
+      "SNX": {
+        "base": 6.29,
+        "paper": 7.19,
+        "real": 6.29,
+        "partes": {
+          "opciones": 0.5,
+          "sector": 0.4
+        }
+      },
+      "SHOP": {
+        "base": 5.83,
+        "paper": 6.88,
+        "real": 5.83,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.5,
+          "sector": 0.4
+        }
+      },
+      "GRML": {
+        "base": 6.48,
+        "paper": 6.48,
+        "real": 6.48,
+        "partes": {
+          "insiders": 0.6,
+          "corto": -0.2,
+          "sector": -0.4
+        }
+      },
+      "IREN": {
+        "base": 5.56,
+        "paper": 5.96,
+        "real": 5.56,
+        "partes": {
+          "analistas": 0.75,
+          "opciones": 0.25,
+          "corto": -0.2,
+          "sector": -0.4
+        }
+      },
+      "ONON": {
+        "base": 6.3,
+        "paper": 5.95,
+        "real": 5.95,
+        "partes": {
+          "analistas": 0.05,
+          "sector": -0.4
+        }
+      },
       "AMD": {
-        "base": 7.31,
-        "paper": 8.16,
-        "real": 7.31,
+        "base": 5.0,
+        "paper": 5.85,
+        "real": 5.0,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.55,
@@ -24578,70 +24711,29 @@
           "social": 0.2
         }
       },
-      "TSLA": {
-        "base": 7.5,
-        "paper": 7.35,
-        "real": 7.35,
-        "partes": {
-          "opciones": 0.25,
-          "sector": -0.4
-        }
-      },
-      "NVDA": {
-        "base": 5.62,
-        "paper": 7.17,
-        "real": 5.62,
+      "SNDK": {
+        "base": 5.56,
+        "paper": 5.71,
+        "real": 5.56,
         "partes": {
           "insiders": -0.3,
-          "analistas": 1.0,
-          "opciones": 0.25,
+          "analistas": -0.15,
           "sector": 0.4,
           "social": 0.2
-        }
-      },
-      "GRML": {
-        "base": 6.94,
-        "paper": 6.94,
-        "real": 6.94,
-        "partes": {
-          "insiders": 0.6,
-          "corto": -0.2,
-          "sector": -0.4
-        }
-      },
-      "DELL": {
-        "base": 5.62,
-        "paper": 6.52,
-        "real": 5.62,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.8,
-          "sector": 0.4
-        }
-      },
-      "CBRL": {
-        "base": 6.32,
-        "paper": 6.17,
-        "real": 6.17,
-        "partes": {
-          "analistas": 0.15,
-          "opciones": 0.5,
-          "corto": -0.4,
-          "sector": -0.4
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-21T18:55Z",
+    "ts": "2026-09-22T13:38Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 0.89,
-      "fear_greed": 34.7,
+      "credito_hyg_ief_20": 0.88,
+      "fear_greed": 34.2,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -24649,61 +24741,61 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 156,
+        "ms": 159,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 308,
+        "ms": 530,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 95174,
+        "ms": 95052,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 3545,
+        "ms": 1374,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 20482,
+        "ms": 25457,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 1146,
+        "ms": 630,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 2018,
+        "ms": 1661,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 743,
+        "ms": 2037,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 11,
+        "ok": 12,
         "fallos": 0,
-        "ms": 912,
+        "ms": 6297,
         "ultimo_error": null
       }
     }
