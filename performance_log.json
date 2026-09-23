@@ -3014,13 +3014,15 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-23T09:16",
+      "timestamp": "2026-09-23T11:20",
       "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
       "score_min_paper_efectivo": 7.5,
       "score_min_real_efectivo": 9.0,
-      "nota_falso_positivo": "Titular 'Trump amenaza con aniquilar a Iran en la UNGA' NO se confirma como shock macro: el petroleo CAE (-3,7% WTI), el VIX baja a 14,29, la defensa cae y el oro cede. Cross-asset contradice el titular -> clasificado como retorica ya descontada. macro_nivel=normal, sin macro plays ni bloqueo de entradas."
+      "riesgo_dominante": "Tipos: 10y 5,06% (+1,91%), 30y 5,37%. Cruce del 5% es el techo para el multiplo de las growth. Geopolitica en desescalada (WTI -3,47%).",
+      "fear_greed": 36.2,
+      "rotacion": "XLB/XLP/XLI arriba vs XLF/XLU/XLY/XLRE abajo = castigo a sensibles a tipos"
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -15522,6 +15524,26 @@
       "macro_nivel": "normal",
       "macro_score": -0.5,
       "nota": "Miercoles 09:16 ET, mercado cerrado (apertura 09:30). Modo scan sin ejecucion. PASO 1: INTC y RBLX (Cowork) con bracket stop vivo (115,95 / 47,90). AAPL(30sh, +2,5%) y DELL(11sh, -1,5%) del BOT SIN STOP -> solo alerta, regla 5 de coordinacion. Cripto SOLUSD/BTCUSD sin stop (fuera de perimetro Cowork). PASO 4B: falso positivo macro descartado con datos cross-asset (ver sentinel_ultimo_check.nota_falso_positivo). PASO 3: EW sigue siendo SPA client-side, scan headless imposible; se usa Alpaca snapshots + news + WebSearch. Candidatos GHA 'pendiente' expirados a las 03:39Z (8): eran runups de la sesion del 22-sep ya descontados. VKTX ya rebajado a 7,67 con 'NO perseguir'. Earnings de hoy CBRL/GIS/CTAS todos <7,5; CTAS beat marginal de ingresos ($3,01B vs $2,98B) -> descartado. CAPACIDAD: 8 equities en paper = limite de entradas nuevas alcanzado. Conclusion: 0 ejecuciones justificadas; bloqueo es de SENAL y de CAPACIDAD, no de macro."
+    },
+    {
+      "ts": "2026-09-23T11:20:32.266906+00:00",
+      "modo": "intraday_full_scan",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 2,
+      "paper_equities_abiertas": 8,
+      "vix": 14.49,
+      "macro_nivel": "normal",
+      "macro_score": -0.4,
+      "equity_paper": 106574.61,
+      "equity_real": 4548.18,
+      "stops_ok": "10/10",
+      "riesgo_agregado_pct": 3.62,
+      "us10y": 5.06,
+      "fear_greed": 36.2,
+      "wti": 91.31,
+      "nota": "Ciclo 11:30 ET miercoles 23-sep. 0 EJECUCIONES (correcto): bloqueo doble de SENAL y CAPACIDAD. CAPACIDAD: 8 equities en paper vs max_posiciones_paper_para_nuevas_entradas=2. Cowork 2/4 (INTC +4,3%, RBLX +2,7%), exposicion Cowork 14,0% vs cap 30%. STOPS: 10/10 posiciones con stop vivo (8 equity + 2 cripto). OJO METODOLOGICO: /orders?status=open NO devuelve las patas stop en 'held' de brackets; hay que consultar por simbolo con status=all&nested=true. Un chequeo con solo status=open marca falsamente META/NVDA/ONON/TWLO como SIN STOP. Riesgo agregado si saltan todos los stops: $3.854 = 3,62% del equity. Distancia minima al stop: RBLX 2,54%; maxima TWLO 9,13%. EARNINGS: ninguna posicion reporta en <29 dias (INTC 22-oct la mas proxima) -> riesgo de gap overnight NULO. EW: pipeline via ew_json_api v1.0 OK (caldata 23sep=10 / 24sep=11 eventos, todaysresults=11). 0 candidatos >=7,5. Asimetrias fwd: GIS +2,8% ($0,02), CTAS +2,2% ($0,03), SNX +1,9% ($0,09), DRI +1,5%, PAYX +1,5%, COST +0,9% (jue AH). CBRL +45% es artefacto de consenso 0,20. PEAD: CBRL batio whisper +241% (EPS 0,99 vs w 0,29) pero el mercado lo RECHAZA: +5,6%, cotiza por DEBAJO de la apertura (47,38 vs 47,57), volumen dia solo x1,3, 20d -18,3% -> sin drift. WOR: abrio 67,11 y esta en 60,90 (rango 56,74-67,54, volx2,2) = blow-off completo, evitar. AZO se desvanece desde apertura (2.888 -> 2.823, pos 37,5% del rango) y a $2.823/accion el cap 5% no permite sizing. MLKN -2,8% confirma el fade de ayer. KBH es el unico PEAD limpio (+2,0%, cierra en maximo del dia, beat whisper +23,5%) pero score ~6,5 < 7,5. MACRO normal, sin shock: VIX 14,49 (-2,6%), SPY -0,48%, QQQ +0,06%, DIA -0,71%. F&G 36,2 (fear), recuperando desde 27,3 hace 1 semana. TENSION REAL = TIPOS: 10y 5,06% (+1,91%), 30y 5,37%, TLT -1,31%. Cruce decisivo del 5% en el 10y es el riesgo dominante de la sesion, no la geopolitica. Rotacion coherente: XLB +1,46 XLP +0,64 XLI +0,54 vs XLF -1,98 XLU -1,78 XLY -1,25 XLRE -1,14 (castigo a sensibles a tipos). HORMUZ SE DESESCALA: WTI -3,47% a $91,31; ARK apunta a $30-35 si reabre el Estrecho. Confirma la clasificacion de ayer del titular 'Trump aniquilar Iran' como retorica descontada (oro -1,15%, VIX abajo, defensa sin bid). GOOGL -3,76% y AMZN -3,06%: de-rating del trade IA por narrativa (Fidelity 'dead money', Eisman 'puntocom+subprime', Burry corto en memoria, Cathie Wood recorta GOOGL). Sin noticia idiosincratica grave; por debajo del umbral 6% de shock Mag7. Ninguno en cartera. VIGILAR: ONON RSI 72,8 extendido (+1,58%/30min); DELL RSI 24,0, -1,10% bajo VWAP y a 5,64% del stop; NVDA y META con RSI ~31 pero laterales sin volumen (volx0,3). INCIDENCIA CONFIRMADA: get_ew_headless() del SKILL esta muerto -> old.earningswhispers.com da ConnectionError (el DNS resuelve 12.205.130.8 pero no acepta conexion) y www/stocks/{t} responde 200 SIN elemento #whisperbox (SPA client-side). La funcion devuelve None para todos los tickers: PASO 3 del skill produce 0 candidatos por diseno roto, no por ausencia de senal. ACCION REQUERIDA: sustituir get_ew_headless por ew_json_api (www.earningswhispers.com/api/caldata|getstocksdata|todaysresults), verificado funcionando hoy."
     }
   ],
   "momentum_15m": {
@@ -16922,282 +16944,6 @@
   },
   "sentinel_signals": [
     {
-      "ticker": "SNOW",
-      "score": 3,
-      "tipo": "earnings_ew",
-      "asimetria": 13.333333333333334,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=13.333333333333334% beat=4/4 vsMA200=51.0% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "HPE",
-      "score": 1,
-      "tipo": "earnings_ew",
-      "asimetria": 2.1276595744680873,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=2.1276595744680873% beat=4/4 vsMA200=60.9% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "LULU",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": -1.6759776536312863,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=-1.6759776536312863% beat=4/4 vsMA200=-21.6% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "ZS",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 3.6697247706421847,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=3.6697247706421847% beat=4/4 vsMA200=4.8% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "DOCU",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": 6.422018348623839,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=6.422018348623839% beat=4/4 vsMA200=19.2% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "PATH",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": 20,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=20.0% beat=3/4 vsMA200=41.8% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "ASAN",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": null,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=None% beat=4/4 vsMA200=14.8% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "AI",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": -4.0000000000000036,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=-4.0000000000000036% beat=2/4 vsMA200=-1.7% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "NIO",
-      "score": 2,
-      "tipo": "earnings_ew",
-      "asimetria": -28.57142857142855,
-      "earnings_fecha": "2026-09-01",
-      "earnings_timing": "pre-market",
-      "razon": "asim=-28.57142857142855% beat=4/4 vsMA200=-17.1% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "NTAP",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": 1.8867924528301903,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=1.8867924528301903% beat=4/4 vsMA200=45.3% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "FIVE",
-      "score": 3,
-      "tipo": "earnings_ew",
-      "asimetria": 14.39393939393939,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=14.39393939393939% beat=4/4 vsMA200=17.5% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "OLLI",
-      "score": 1,
-      "tipo": "earnings_ew",
-      "asimetria": -85.96491228070175,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "pre-market",
-      "razon": "asim=-85.96491228070175% beat=3/4 vsMA200=-23.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "PVH",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 3.8961038961038996,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=3.8961038961038996% beat=4/4 vsMA200=-1.2% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "CIEN",
-      "score": 4,
-      "tipo": "earnings_ew",
-      "asimetria": 6.936416184971105,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "pre-market",
-      "razon": "asim=6.936416184971105% beat=4/4 vsMA200=1.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "IOT",
-      "score": 3,
-      "tipo": "earnings_ew",
-      "asimetria": 25.000000000000007,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=25.000000000000007% beat=4/4 vsMA200=22.4% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "AMBA",
-      "score": 5,
-      "tipo": "earnings_ew",
-      "asimetria": 17.64705882352941,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "after-hours",
-      "razon": "asim=17.64705882352941% beat=4/4 vsMA200=1.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "GIII",
-      "score": 4,
-      "tipo": "earnings_ew",
-      "asimetria": 24,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "pre-market",
-      "razon": "asim=24.0% beat=3/4 vsMA200=7.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "WOOF",
-      "score": 3,
-      "tipo": "earnings_ew",
-      "asimetria": 14.285714285714276,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=14.285714285714276% beat=2/4 vsMA200=-3.5% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "CXM",
-      "score": 2.5,
-      "tipo": "earnings_ew",
-      "asimetria": 9.999999999999995,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "pre-market",
-      "razon": "asim=9.999999999999995% beat=4/4 vsMA200=31.6% baf=-2.0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "TTC",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 3.0769230769230793,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "pre-market",
-      "razon": "asim=3.0769230769230793% beat=4/4 vsMA200=9.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "CPB",
-      "score": 3.5,
-      "tipo": "earnings_ew",
-      "asimetria": 7.499999999999993,
-      "earnings_fecha": "2026-09-03",
-      "earnings_timing": "pre-market",
-      "razon": "asim=7.499999999999993% beat=3/4 vsMA200=-3.8% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "CHPT",
-      "score": 0,
-      "tipo": "earnings_ew",
-      "asimetria": -11.249999999999996,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=-11.249999999999996% beat=2/4 vsMA200=-14.7% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
-      "ticker": "AGX",
-      "score": 4,
-      "tipo": "earnings_ew",
-      "asimetria": 5.992509363295886,
-      "earnings_fecha": "2026-09-02",
-      "earnings_timing": "after-hours",
-      "razon": "asim=5.992509363295886% beat=4/4 vsMA200=-18.3% baf=0",
-      "ts_detected": "2026-08-28T16:16:56.909012+00:00",
-      "ejecutado": false,
-      "fuente": "sentinel-postclose-ewapi"
-    },
-    {
       "ticker": "SAIC",
       "score": 8.3,
       "tipo": "post_earnings_continuation",
@@ -18499,6 +18245,51 @@
         "reaccion": 1.83,
         "macro": 1.06
       }
+    },
+    {
+      "ticker": "CBRL",
+      "score": 5.2,
+      "tipo": "pead_rechazado",
+      "razon": "beat whisper +241% pero cotiza bajo apertura, volx1,3, 20d -18,3% -> sin aceptacion",
+      "ts_detected": "2026-09-23T11:20:32.266906+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ew-json-api"
+    },
+    {
+      "ticker": "KBH",
+      "score": 6.5,
+      "tipo": "pead",
+      "razon": "beat whisper +23,5%, +2,0% cierra en maximo del dia, volx1,0 -> limpio pero <7,5",
+      "ts_detected": "2026-09-23T11:20:32.266906+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ew-json-api"
+    },
+    {
+      "ticker": "WOR",
+      "score": 3.0,
+      "tipo": "pead_rechazado",
+      "razon": "abrio 67,11 -> 60,90, blow-off con volx2,2",
+      "ts_detected": "2026-09-23T11:20:32.266906+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ew-json-api"
+    },
+    {
+      "ticker": "AZO",
+      "score": 5.5,
+      "tipo": "pead",
+      "razon": "beat whisper +3,3% pero fade desde apertura; $2.823/accion impide sizing con cap 5%",
+      "ts_detected": "2026-09-23T11:20:32.266906+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ew-json-api"
+    },
+    {
+      "ticker": "COST",
+      "score": 5.4,
+      "tipo": "earnings_ew",
+      "razon": "asim +0,9% ($0,06), earnings 24-sep AMC",
+      "ts_detected": "2026-09-23T11:20:32.266906+00:00",
+      "ejecutado": false,
+      "fuente": "sentinel-ew-json-api"
     }
   ],
   "skip_analysis": {
@@ -23667,6 +23458,14 @@
       "impacto": "El PASO 3 del sentinel (scan EW headless) esta efectivamente muerto: 0 hits en 18 tickers.",
       "solucion": "Sustituir get_ew_headless() por los endpoints JSON ya documentados en plog[\"ew_json_api\"] (api/caldata/{YYYYMMDD} + api/getstocksdata/{TICKER} con Referer). Verificado funcionando hoy en este ciclo.",
       "estado": "workaround_aplicado_en_ejecucion_no_en_SKILL"
+    },
+    {
+      "ts": "2026-09-23T11:20:32.266906+00:00",
+      "severidad": "alta",
+      "componente": "skill sentinel PASO 3 get_ew_headless",
+      "detalle": "old.earningswhispers.com ConnectionError (DNS resuelve pero no acepta conexion); www.earningswhispers.com/stocks/{t} devuelve 200 sin #whisperbox (SPA). get_ew_headless devuelve None siempre -> 0 candidatos por diseno roto.",
+      "solucion": "Sustituir por ew_json_api v1.0: /api/caldata/{YYYYMMDD}, /api/getstocksdata/{TICKER}, /api/todaysresults. Verificado OK 2026-09-23.",
+      "estado": "pendiente_editar_skill"
     }
   ],
   "ultima_actualizacion": "2026-09-23T13:16:50.105152+00:00",
