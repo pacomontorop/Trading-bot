@@ -3014,15 +3014,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-23T11:20",
+      "timestamp": "2026-09-23T12:19",
       "nivel": "normal",
       "shocks": [],
-      "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 9.0,
-      "riesgo_dominante": "Tipos: 10y 5,06% (+1,91%), 30y 5,37%. Cruce del 5% es el techo para el multiplo de las growth. Geopolitica en desescalada (WTI -3,47%).",
-      "fear_greed": 36.2,
-      "rotacion": "XLB/XLP/XLI arriba vs XLF/XLU/XLY/XLRE abajo = castigo a sensibles a tipos"
+      "bloquear_entradas": true,
+      "motivo_bloqueo": "8 posiciones equity abiertas vs max_posiciones_paper_simultaneas=4 y max_posiciones_paper_para_nuevas_entradas=2",
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -3043,19 +3041,17 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-23T09:16",
-    "macro_score": -0.5,
-    "macro_bonus_ew": -0.15,
+    "ts_actualizado": "2026-09-23T12:19",
+    "macro_score": -1.3,
+    "macro_bonus_ew": -0.39,
     "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros levemente bajistas: ES -0,12%, NQ -0,24%, YM -0,32%, RTY -0,53%",
-      "VIX 14,29 (-3,9%) — volatilidad en minimos, sin estres",
-      "Yield 10Y 4,99% (>4,5%) — presion sobre valoraciones growth",
-      "Petroleo cediendo (WTI ~$91, Brent ~$96,5) por expectativas de via diplomatica con Iran",
-      "Defensa a la baja ayer (LMT -2,4%, NOC -3,2%, GD -3,0%, ITA -0,94%) — el mercado descuenta retorica, no guerra",
-      "Oro -1,19% en pre-market — sin demanda de refugio",
-      "Internacional mixto-suave: DAX -0,50%, FTSE -0,26%, HSI -0,83%",
-      "Tech lidera (XLK +0,73% ayer, QQQ +0,81%) frente a financieras (XLF -1,98%)"
+      "Futuros bajistas (ES -0.69% / NQ -0.94%)",
+      "US10Y 5.08% (+12pb) y TLT -1.47% — repricing de tipos al alza",
+      "Dolar fuerte (UUP +0.54%) — headwind multinacionales",
+      "Rate-sensitives castigados: financials -2.03%, utilities -1.94%, REITs -1.07%",
+      "Tech plano (XLK +0.06%) — sin contagio al nucleo EW",
+      "VIX 14.78 — sin estres; Asia positiva (Nikkei +1.38%, HSI +1.18%)"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -3065,9 +3061,9 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "yield_10y": 4.99,
-      "yield_30y": 5.32,
-      "tlt_chg": -0.05
+      "tlt_chg": -1.47,
+      "yield_10y": 5.08,
+      "yield_30y": 5.39
     },
     "commodities": {
       "wti": 91.29,
@@ -3122,18 +3118,12 @@
       "lectura": "VIX 15.3 (calma). 10Y 4.78% elevado y subiendo 5 sesiones — headwind para growth. WTI ~91 (oil alto, presion inflacionaria). Oro +1.06% a 4477. Rotacion: XLK +0.70% vs XLE -0.87% / XLF -0.79%."
     },
     "sectores_hoy": {
-      "all": {
-        "tech": 0.56,
-        "fin": -1.78,
-        "energy": -0.49,
-        "health": 0.71,
-        "indus": -0.01,
-        "cons_disc": 0.22,
-        "util": -0.12,
-        "mat": 1.69,
-        "reit": 0.06
-      },
-      "ts": "14:21"
+      "lider": "materials",
+      "cambio_lider": 1.4,
+      "tech_chg": 0.06,
+      "peor": "financials",
+      "cambio_peor": -2.03,
+      "ts": "12:19"
     },
     "eventos_recientes": [
       {
@@ -3271,10 +3261,8 @@
       }
     ],
     "futuros": {
-      "ES": -0.12,
-      "NQ": -0.24,
-      "YM": -0.32,
-      "RTY": -0.53
+      "ES": -0.69,
+      "NQ": -0.94
     },
     "shock_tipo": "oil_spike",
     "oil": {
@@ -15544,6 +15532,17 @@
       "fear_greed": 36.2,
       "wti": 91.31,
       "nota": "Ciclo 11:30 ET miercoles 23-sep. 0 EJECUCIONES (correcto): bloqueo doble de SENAL y CAPACIDAD. CAPACIDAD: 8 equities en paper vs max_posiciones_paper_para_nuevas_entradas=2. Cowork 2/4 (INTC +4,3%, RBLX +2,7%), exposicion Cowork 14,0% vs cap 30%. STOPS: 10/10 posiciones con stop vivo (8 equity + 2 cripto). OJO METODOLOGICO: /orders?status=open NO devuelve las patas stop en 'held' de brackets; hay que consultar por simbolo con status=all&nested=true. Un chequeo con solo status=open marca falsamente META/NVDA/ONON/TWLO como SIN STOP. Riesgo agregado si saltan todos los stops: $3.854 = 3,62% del equity. Distancia minima al stop: RBLX 2,54%; maxima TWLO 9,13%. EARNINGS: ninguna posicion reporta en <29 dias (INTC 22-oct la mas proxima) -> riesgo de gap overnight NULO. EW: pipeline via ew_json_api v1.0 OK (caldata 23sep=10 / 24sep=11 eventos, todaysresults=11). 0 candidatos >=7,5. Asimetrias fwd: GIS +2,8% ($0,02), CTAS +2,2% ($0,03), SNX +1,9% ($0,09), DRI +1,5%, PAYX +1,5%, COST +0,9% (jue AH). CBRL +45% es artefacto de consenso 0,20. PEAD: CBRL batio whisper +241% (EPS 0,99 vs w 0,29) pero el mercado lo RECHAZA: +5,6%, cotiza por DEBAJO de la apertura (47,38 vs 47,57), volumen dia solo x1,3, 20d -18,3% -> sin drift. WOR: abrio 67,11 y esta en 60,90 (rango 56,74-67,54, volx2,2) = blow-off completo, evitar. AZO se desvanece desde apertura (2.888 -> 2.823, pos 37,5% del rango) y a $2.823/accion el cap 5% no permite sizing. MLKN -2,8% confirma el fade de ayer. KBH es el unico PEAD limpio (+2,0%, cierra en maximo del dia, beat whisper +23,5%) pero score ~6,5 < 7,5. MACRO normal, sin shock: VIX 14,49 (-2,6%), SPY -0,48%, QQQ +0,06%, DIA -0,71%. F&G 36,2 (fear), recuperando desde 27,3 hace 1 semana. TENSION REAL = TIPOS: 10y 5,06% (+1,91%), 30y 5,37%, TLT -1,31%. Cruce decisivo del 5% en el 10y es el riesgo dominante de la sesion, no la geopolitica. Rotacion coherente: XLB +1,46 XLP +0,64 XLI +0,54 vs XLF -1,98 XLU -1,78 XLY -1,25 XLRE -1,14 (castigo a sensibles a tipos). HORMUZ SE DESESCALA: WTI -3,47% a $91,31; ARK apunta a $30-35 si reabre el Estrecho. Confirma la clasificacion de ayer del titular 'Trump aniquilar Iran' como retorica descontada (oro -1,15%, VIX abajo, defensa sin bid). GOOGL -3,76% y AMZN -3,06%: de-rating del trade IA por narrativa (Fidelity 'dead money', Eisman 'puntocom+subprime', Burry corto en memoria, Cathie Wood recorta GOOGL). Sin noticia idiosincratica grave; por debajo del umbral 6% de shock Mag7. Ninguno en cartera. VIGILAR: ONON RSI 72,8 extendido (+1,58%/30min); DELL RSI 24,0, -1,10% bajo VWAP y a 5,64% del stop; NVDA y META con RSI ~31 pero laterales sin volumen (volx0,3). INCIDENCIA CONFIRMADA: get_ew_headless() del SKILL esta muerto -> old.earningswhispers.com da ConnectionError (el DNS resuelve 12.205.130.8 pero no acepta conexion) y www/stocks/{t} responde 200 SIN elemento #whisperbox (SPA client-side). La funcion devuelve None para todos los tickers: PASO 3 del skill produce 0 candidatos por diseno roto, no por ausencia de senal. ACCION REQUERIDA: sustituir get_ew_headless por ew_json_api (www.earningswhispers.com/api/caldata|getstocksdata|todaysresults), verificado funcionando hoy."
+    },
+    {
+      "ts": "2026-09-23T12:19:59.727391+00:00",
+      "alertas": 1,
+      "acciones": 4,
+      "oportunidades": 0,
+      "cowork_abiertas": 8,
+      "vix": 14.78,
+      "macro_score": -1.3,
+      "macro_nivel": "normal",
+      "nota": "4 OCO de proteccion colocados (META/NVDA/ONON/TWLO). 0 entradas nuevas (limite posiciones + 0 candidatos EW validos)."
     }
   ],
   "momentum_15m": {
@@ -15702,14 +15701,15 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 229.18,
-      "mom_15m": 0.017,
-      "mom_30m": 0.096,
-      "vol_ratio": 0.82,
-      "vwap_dev": -0.055,
-      "rsi": 45.3,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "px": 224.85,
+      "atr": 5.95,
+      "m15": 0.02,
+      "m30": -0.09,
+      "vr": 0.0,
+      "vwap_dev": -0.32,
+      "rsi": 22.7,
+      "sig": "LATERAL",
+      "ts": "12:19"
     },
     "HPQ": {
       "precio": 30,
@@ -15802,14 +15802,15 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 554.22,
-      "mom_15m": 0.198,
-      "mom_30m": -0.244,
-      "vol_ratio": 0.73,
-      "vwap_dev": 0.239,
-      "rsi": 62.9,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "px": 551.31,
+      "atr": 36.64,
+      "m15": -0.26,
+      "m30": -0.14,
+      "vr": 0.0,
+      "vwap_dev": -0.31,
+      "rsi": 52.7,
+      "sig": "debil_bajista",
+      "ts": "12:19"
     },
     "LULU": {
       "px": 119.42,
@@ -16545,14 +16546,15 @@
       "ts": "15:13"
     },
     "AAPL": {
-      "precio": 341.24,
-      "mom_15m": 0.052,
-      "mom_30m": -0.045,
-      "vol_ratio": 0.69,
-      "vwap_dev": -0.108,
-      "rsi": 36.8,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "px": 336.85,
+      "atr": 7.09,
+      "m15": -0.02,
+      "m30": 0.0,
+      "vr": 0.0,
+      "vwap_dev": -0.1,
+      "rsi": 25.2,
+      "sig": "LATERAL",
+      "ts": "12:19"
     },
     "ACVA": {
       "precio": 10.45,
@@ -16625,14 +16627,15 @@
       "ts": "15:28"
     },
     "RBLX": {
-      "precio": 50.16,
-      "mom_15m": 0.18,
-      "mom_30m": 0.2,
-      "vol_ratio": 0.79,
-      "vwap_dev": 0.518,
-      "rsi": 59.4,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "px": 49.13,
+      "atr": 2.41,
+      "m15": -0.11,
+      "m30": -0.25,
+      "vr": 0.0,
+      "vwap_dev": -0.21,
+      "rsi": 43.9,
+      "sig": "LATERAL",
+      "ts": "12:19"
     },
     "SWKS": {
       "precio": 88.42,
@@ -16665,14 +16668,15 @@
       "ts": "15:28"
     },
     "INTC": {
-      "precio": 122.46,
-      "mom_15m": 0.501,
-      "mom_30m": 0.608,
-      "vol_ratio": 0.97,
-      "vwap_dev": 0.509,
-      "rsi": 75.4,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "px": 120.29,
+      "atr": 6.62,
+      "m15": 0.19,
+      "m30": -0.09,
+      "vr": 0.0,
+      "vwap_dev": -0.21,
+      "rsi": 46.1,
+      "sig": "debil_alcista",
+      "ts": "12:19"
     },
     "WBD": {
       "precio": 30.8,
@@ -16735,14 +16739,15 @@
       "ts": "14:21"
     },
     "META": {
-      "precio": 743.27,
-      "mom_15m": 0.19,
-      "mom_30m": 0.187,
-      "vol_ratio": 0.76,
-      "vwap_dev": 0.115,
-      "rsi": 53.0,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "px": 753.88,
+      "atr": 27.04,
+      "m15": -0.21,
+      "m30": -0.19,
+      "vr": 0.0,
+      "vwap_dev": 0.11,
+      "rsi": 60.3,
+      "sig": "debil_bajista",
+      "ts": "12:19"
     },
     "GRML": {
       "precio": 13.8,
@@ -16755,14 +16760,15 @@
       "ts": "14:21"
     },
     "TWLO": {
-      "precio": 283.28,
-      "mom_15m": 0.113,
-      "mom_30m": 0.118,
-      "vol_ratio": 1.44,
-      "vwap_dev": 0.257,
-      "rsi": 57.5,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "px": 293.71,
+      "atr": 12.88,
+      "m15": -0.54,
+      "m30": 0.07,
+      "vr": 0.0,
+      "vwap_dev": -0.28,
+      "rsi": 37.1,
+      "sig": "debil_bajista",
+      "ts": "12:19"
     },
     "CTAS": {
       "precio": 196.21,
@@ -16815,14 +16821,15 @@
       "ts": "10:20"
     },
     "ONON": {
-      "precio": 29.85,
-      "mom_15m": 0.387,
-      "mom_30m": 0.37,
-      "vol_ratio": 0.86,
-      "vwap_dev": -0.086,
-      "rsi": 30.2,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "px": 30.39,
+      "atr": 1.07,
+      "m15": -0.36,
+      "m30": -0.83,
+      "vr": 0.0,
+      "vwap_dev": 0.14,
+      "rsi": 64.7,
+      "sig": "debil_bajista",
+      "ts": "12:19"
     },
     "MLKN": {
       "p": 20.84,
@@ -20217,6 +20224,77 @@
           "br": 1
         }
       }
+    },
+    {
+      "ts": "2026-09-23T12:19:59.727391+00:00",
+      "fuente": "sentinel-ew-api",
+      "calendario": {
+        "2026-09-23": [
+          "CBRL",
+          "GIS",
+          "CTAS",
+          "PAYX",
+          "ESP",
+          "GFAI",
+          "MANU",
+          "SFIX",
+          "FUL",
+          "NEOV"
+        ],
+        "2026-09-24": [
+          "BB",
+          "DRI",
+          "SNX",
+          "MITQ",
+          "RAVE",
+          "UXIN",
+          "COST",
+          "LGCY",
+          "SCHL",
+          "ASTC",
+          "BTOC"
+        ]
+      },
+      "whispers": {
+        "COST": {
+          "w": 6.54,
+          "c": 6.48,
+          "asim_pct": 0.93,
+          "when": "AH 09-24"
+        },
+        "DRI": {
+          "w": 2.09,
+          "c": 2.06,
+          "asim_pct": 1.46,
+          "when": "BMO 09-24"
+        },
+        "SNX": {
+          "w": 4.74,
+          "c": 4.65,
+          "asim_pct": 1.94,
+          "when": "BMO 09-24"
+        },
+        "BB": {
+          "w": 0.04,
+          "c": 0.04,
+          "asim_pct": 0.0,
+          "when": "BMO 09-24"
+        },
+        "CBRL": {
+          "w": 0.29,
+          "c": 0.2,
+          "asim_pct": 45.0,
+          "when": "BMO 09-23",
+          "descartado": "consenso $0.20 < min_consenso_eps_para_asimetria 0.30 — asimetria no fiable"
+        },
+        "FUL": {
+          "w": 1.45,
+          "c": 1.45,
+          "asim_pct": 0.0,
+          "when": "AH 09-23"
+        }
+      },
+      "resultado": "0 candidatos: ninguno supera min_whisper_asymmetry_pct=2.5. Ningun holding reporta hoy/manana -> sin riesgo earnings overnight."
     }
   ],
   "pre_market_scan_log": [
@@ -23466,9 +23544,19 @@
       "detalle": "old.earningswhispers.com ConnectionError (DNS resuelve pero no acepta conexion); www.earningswhispers.com/stocks/{t} devuelve 200 sin #whisperbox (SPA). get_ew_headless devuelve None siempre -> 0 candidatos por diseno roto.",
       "solucion": "Sustituir por ew_json_api v1.0: /api/caldata/{YYYYMMDD}, /api/getstocksdata/{TICKER}, /api/todaysresults. Verificado OK 2026-09-23.",
       "estado": "pendiente_editar_skill"
+    },
+    {
+      "fecha": "2026-09-23",
+      "hora_et": "12:19",
+      "severidad": "alta",
+      "detectado_por": "sentinel",
+      "titulo": "REINCIDENCIA: TP limit GTC al 100% de qty dejo 4 posiciones sin stop",
+      "detalle": "META, NVDA, ONON y TWLO (entradas GHA-20260922) tenian unicamente una orden sell limit GTC por el 100% de la qty, con precios objetivo irreales (META 1165.05 vs 753.88 = +55%; NVDA 343.15 vs 224.85 = +53%; TWLO 467.91 vs 293.71 = +59%; ONON 47.23 vs 30.39 = +55%). Esa limit bloquea fisicamente la colocacion de stops (403 insufficient qty). Es exactamente el fallo documentado el 2026-09-18 con NFLX/SQQQ: el parametro orden_salida_order_class=oco y stop_obligatorio_antes_de_tp=true NO se esta aplicando en el flujo GHA de entrada.",
+      "accion": "Sentinel cancelo las 4 limit huerfanas y coloco OCO (TP + stop_limit) con stop 1.5xATR y R=2.0. Verificado: 9/9 posiciones con stop.",
+      "accion_pendiente": "Corregir el flujo de entrada GHA para que emita OCO desde el origen, no una limit suelta."
     }
   ],
-  "ultima_actualizacion": "2026-09-23T13:16:50.105152+00:00",
+  "ultima_actualizacion": "2026-09-23T12:19 ET (sentinel)",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
