@@ -3123,7 +3123,7 @@
       "semana": "Cumbre Trump-Xi — evento pivote de la semana"
     },
     "restricciones_activas": [],
-    "ts_health_check": "2026-09-22T06:02",
+    "ts_health_check": "2026-09-23T06:02",
     "health_check_log": [
       {
         "fecha": "2026-09-22",
@@ -3140,6 +3140,57 @@
           "ℹ️ Naming drift: 'post-market auto-update' / 'ew-pipeline' sustituyen a los patrones antiguos del checker"
         ],
         "fixes": []
+      },
+      {
+        "fecha": "2026-09-23",
+        "ts": "2026-09-23T06:02Z",
+        "estado": "AMARILLO",
+        "vix_observado": 14.21,
+        "vix_log": 14.87,
+        "vix_accion": "sin cambio (<1.5pts)",
+        "regimen": "AI_DISPERSION_MELTUP + OIL_RETREAT + IRAN_WAR_BACKGROUND + VOL_CRUSH",
+        "restricciones_activas": 0,
+        "restricciones_eliminadas": 0,
+        "alpaca_paper": {
+          "ok": true,
+          "equity": 106870.73,
+          "last_equity": 107756.6,
+          "status": "ACTIVE",
+          "trading_blocked": false,
+          "posiciones": 11,
+          "cash": 22902.61
+        },
+        "alpaca_real": {
+          "ok": true,
+          "equity": 4548.2,
+          "status": "ACTIVE",
+          "trading_blocked": false,
+          "posiciones": [
+            "BTCUSD -26.6%"
+          ]
+        },
+        "tareas": {
+          "pre-market-earnings-scan": "2026-09-15 (6d lab) 🚨",
+          "market-open-execution": "2026-09-22 (0d) ✅",
+          "intraday-monitor": "2026-09-22 (0d) ✅",
+          "post-market-review": "2026-09-22 (0d) ✅",
+          "ew-daily-results": "2026-09-18 (3d) — ew-pipeline corre cada hora ✅",
+          "sentinel": "2026-09-22 (0d) ✅",
+          "pre-close-manager": "2026-09-18 (3d lab) 🚨",
+          "kpi-report": "2026-09-22 (0d) ✅",
+          "system-health-check": "2026-09-22 (0d) ✅"
+        },
+        "alertas": [
+          "🚨 pre-close-manager sin run el 21 y 22-sep (último: 18-sep, 3d lab) — 2 sesiones sin gestión de cierre",
+          "🚨 pre-market-earnings-scan sin run propio desde 2026-09-15 (6d lab) — función cubierta de facto por dynamic-scanner + ew-pipeline"
+        ],
+        "notas": [
+          "ℹ️ Naming drift persistente: 'market-open v3', 'intraday-monitor v3', 'post-market auto-update', 'ew-pipeline' — patrones del checker desactualizados",
+          "ℹ️ VIX Yahoo 14.21 vs log 14.87 (Δ0.66 < 1.5) — sin actualizar por umbral",
+          "ℹ️ 0 restricciones activas; nada que expirar"
+        ],
+        "fixes": [],
+        "nota": "Miércoles W39. Sistema operativo y conectado: Alpaca paper y real ACTIVE, sin trading_blocked. VIX 14.21 (vol crush intacto). Paper -$885 vs last_equity. Los dos huecos son de scheduling, no de conectividad: pre-close-manager lleva 2 sesiones sin correr y pre-market-earnings-scan 6 días laborables."
       }
     ],
     "oil_wti": 89.70999908447266,
@@ -3156,7 +3207,8 @@
       ],
       "evidencia": "5d: MU +18,1% SNDK +23,2% RMBS +26,6% STX +19,2% WDC +12,8% | SMH +12,1% cerrando al 93% del rango",
       "desde": "2026-09-22"
-    }
+    },
+    "vix_observado_health": 14.21
   },
   "operaciones_crypto": [
     {
