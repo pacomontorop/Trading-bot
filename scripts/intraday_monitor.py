@@ -62,12 +62,58 @@ def planned_stop(sym, plog):
     return None
 
 
+BANDA_MIN_PCT = 5.0   # separación mínima exigida entre stop_price y limit_price
+
+
+def ensanchar_bandas(alp, orders, acciones):
+    """Regla 8 · un stop con el límite pegado al disparo no se ejecuta en un hueco.
+
+    2026-09-19 se midió que 4 de las 16 perdedoras cerradas (25 %) atravesaron su stop y
+    costaron 4,34R de más. Se arregló la raíz: las entradas nuevas de este sistema colocan
+    la pata de stop A MERCADO. Pero eso solo cubre lo que abre GitHub Actions. Las patas
+    `stop_limit` que ya existían, y las que colocan las tareas de Cowork, siguen con el
+    límite a stop×0,995 — una banda del 0,5 % que un hueco de apertura se salta entero.
+    La cripto es el caso peor: cotiza 24/7 y salta mucho más que una acción.
+
+    No se puede convertir un `stop_limit` en `stop` sin cancelar y recrear, y cancelar una
+    pata rompe el OCO y deja la posición desnuda — el incidente del 15-sep. Pero
+    `limit_price` SÍ se modifica con un PATCH, conservando el OCO.
+
+    Así que se baja el límite hasta un 5 % por debajo del disparo: sigue protegiendo de un
+    llenado absurdo en un flash-crash, pero llena en cualquier hueco realista. Esta regla
+    NUNCA mueve el precio de disparo: el riesgo aceptado no cambia, solo deja de ser teórico.
+    Se aplica también a cripto, que el resto del monitor no toca.
+    """
+    for o in orders:
+        if o.get("side") != "sell" or o.get("type") != "stop_limit":
+            continue
+        try:
+            sp = float(o.get("stop_price") or 0)
+            lp = float(o.get("limit_price") or 0)
+        except (TypeError, ValueError):
+            continue
+        if sp <= 0 or lp <= 0 or lp >= sp:
+            continue
+        if (sp - lp) / sp * 100 >= BANDA_MIN_PCT:
+            continue
+        nuevo = round_px(sp * (1 - BANDA_MIN_PCT / 100))
+        if nuevo <= 0 or nuevo >= lp:
+            continue
+        r = alp.req(f"/orders/{o['id']}", "PATCH", {"stop_price": str(sp), "limit_price": str(nuevo)})
+        if "_error" in r:
+            acciones.append(f"⚠️ [{alp.name}] {o['symbol']}: no se pudo ensanchar la banda: {r['_error'][:70]}")
+        else:
+            acciones.append(f"🪤 [{alp.name}] {o['symbol']}: banda del stop {lp} → {nuevo} "
+                            f"(disparo {sp} intacto; pegado al disparo no llenaba en un hueco)")
+
+
 def manage(alp, plog, M, acciones):
     if alp is None:
         return
     positions = alp.positions()
     orders = alp.open_orders()
     stops = stop_orders_by_symbol(orders)
+    ensanchar_bandas(alp, orders, acciones)
 
     for p in positions:
         sym = p["symbol"]; qty = float(p["qty"]); side = p.get("side", "long")
@@ -124,7 +170,7 @@ def manage(alp, plog, M, acciones):
             nuevo = round_px(ps)
             body = {"stop_price": str(nuevo)}
             if so.get("type") == "stop_limit":
-                body["limit_price"] = str(round_px(nuevo * 0.995))
+                body["limit_price"] = str(round_px(nuevo * (1 - BANDA_MIN_PCT / 100)))
             r = alp.req(f"/orders/{so['id']}", "PATCH", body)
             if "_error" in r:
                 acciones.append(f"⚠️ {tag}: no se pudo soltar el stop pegado {cur}: {r['_error'][:80]}")
@@ -157,7 +203,8 @@ def manage(alp, plog, M, acciones):
             continue
         body = {"stop_price": str(target)}
         if so.get("type") == "stop_limit":
-            body["limit_price"] = str(round_px(target * 0.995))
+            # misma banda que la regla 8: pegado al disparo no llena en un hueco
+            body["limit_price"] = str(round_px(target * (1 - BANDA_MIN_PCT / 100)))
         r = alp.req(f"/orders/{so['id']}", "PATCH", body)
         if "_error" in r:
             acciones.append(f"⚠️ {tag}: no se pudo subir stop {cur}→{target}: {r['_error'][:80]}")
