@@ -575,6 +575,30 @@
       "accion_correctiva": "Dejar de puntuar earnings esta semana y operar el tema: el candidato de mañana sale del complejo de memoria, no del calendario.",
       "tarea_afectada": "pre-market-earnings-scan",
       "aplicada": true
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "FIX_INFRAESTRUCTURA",
+      "severidad": "critica",
+      "titulo": "FUENTE EW RESTAURADA: https://www.earningswhispers.com/api/todaysresults devuelve JSON estructurado con whisper",
+      "descripcion": "Diagnostico confirmado del ciclo anterior: old.earningswhispers.com NO conecta (ConnectTimeout) y www.earningswhispers.com/stocks/{t} es SPA sin whisperbox/mainitem/epsconsensus/tweeturl -> get_ew_headless() = None para TODO el universo. SOLUCION ENCONTRADA en este ciclo: el endpoint JSON GET https://www.earningswhispers.com/api/todaysresults (headers UA navegador + Accept: application/json) responde 200 application/json con campos ESTRUCTURADOS por ticker: ticker, epsDate, eps (EPS reportado), estimate (consenso), whisper (whisper number), earningsSurprise, revenue, revenueEstimate, revenueSurprise, earningsGrowth, revenueGrowth, ewGrade, pwrRating, quarter, summary (texto narrativo con \"beat/missed expectations by X%\"). Cubre resultados YA REPORTADOS (~11 entradas, ultimos 2-3 dias) -> sirve para PASO 4C (post-earnings continuation) y para validacion de resultados, NO para calendario forward. NO funcionan: /api/calendar, /api/upcoming, /api/mostanticipated, /api/stocks/{t}, /api/whisper/{t}, /api/todaysearnings, /api/calendar/{fecha} -> todos devuelven el HTML del SPA (96276 bytes). /api/card/{TICKER} devuelve un PNG (imagen de tarjeta), no datos.",
+      "accion_requerida": "Reescribir get_ew_headless(): sustituir el scraping de old. por consumo de /api/todaysresults y cachearlo una vez por ciclo (NO una request por ticker). Eliminar los retries de 20s x3 sobre old. que colgaban el scan ~60s/ticker. Para el calendario FORWARD (earnings hoy AH / manana BMO) sigue faltando fuente: usar Alpaca corporate actions, yfinance .calendar/.earnings_dates o Nasdaq earnings calendar como sustituto.",
+      "evidencia_edge": "Validacion directa del edge whisper HOY: PAYX eps 1.34 vs whisper 1.35 (-0.7% vs whisper, aunque BATIO el consenso 1.33) -> dia -7.81%, gap -4.90%. CBRL eps 0.99 vs whisper 0.29 (+241% vs whisper) -> dia +8.58%, gap +6.02%, y sigue +2.42% sobre el open (continuacion intradia). GIS +1.4% vs whisper -> +1.54%. CTAS +0.7% vs whisper -> -1.03%. CONCLUSION: el whisper, no el consenso, es el que predice la reaccion. PAYX bate consenso y cae 8%: confirma que usar consenso como referencia es una trampa. El edge EW es REAL y estaba inaccesible por rotura de fuente, no por falta de alpha."
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "CORRECCION_DIAGNOSTICO",
+      "severidad": "media",
+      "titulo": "SOLUSD SI tiene stop: el hallazgo del ciclo anterior era un falso negativo por formato de simbolo",
+      "descripcion": "El ciclo de 18:20Z reporto \"SOLUSD $15.747 (14,8% equity) con 0 ordenes abiertas, sin proteccion\". VERIFICADO HOY: es FALSO. La posicion se llama SOLUSD en /positions pero la orden se llama SOL/USD en /orders. Existe stop_limit sell SOL/USD qty=138.253550032 stop=110.793 limit=105.25 status=new -> cobertura 100%. El matcher de tiene_stop() compara o[\"symbol\"]==sym literalmente y falla con cripto.",
+      "accion_requerida": "Normalizar simbolos antes de comparar: sym.replace(\"/\",\"\").upper() en ambos lados de tiene_stop() y tps_abiertos(). Afecta a toda posicion cripto."
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "FIX_APLICADO",
+      "severidad": "alta",
+      "titulo": "tiene_stop() debe consultar status=open: confirmado y aplicado en este ciclo",
+      "descripcion": "Se aplico el fix propuesto en el ciclo anterior: /orders?status=open en vez de status=all. Con status=all las legs historicas (canceladas/rellenadas) hacen que IONQ aparezca protegida cuando no lo esta. Con status=open la deteccion es correcta: 8/10 posiciones con cobertura de stop 100%, IONQ 0%. Ademas se paso de booleano a COBERTURA POR QTY (qty_stop/qty_posicion) para detectar stops parciales, que un booleano no distingue de cobertura completa."
     }
   ],
   "operaciones": [
@@ -3033,7 +3057,7 @@
     "yield_spread_10y2y": 0.41,
     "us10y": 4.97,
     "us2y": 4.34,
-    "narrativa_dominante": "ACTUALIZACION 2026-09-22 (martes): Nasdaq en MAXIMO HISTORICO de cierre con el SPX plano — la dispersion bajo el indice vuelve a ser el hecho dominante por segundo dia consecutivo: SPY -0,01% y QQQ +0,81%, pero VKTX +35,5%, GRML +50,2%, RMBS +8,6%, SNDK +6,8%, MU +5,0%, ONON +7,6%, TWLO +7,0%. El alpha esta en nombres individuales, NO en el indice. TEMA CENTRAL: complejo de MEMORIA/ALMACENAMIENTO en acumulacion institucional — MU +18,1% en 5d cerrando al 97% del rango diario, SNDK +23,2%, RMBS +26,6%, STX +19,2%, WDC +12,8%, SMH +12,1% 5d cerrando al 93% del rango. CATALIZADOR BIOTECH: VKTX +35,5% con volumen x9,2 tras datos de mantenimiento de VK2735 (conserva hasta el 97% de la perdida de peso al pasar a dosis quincenal; Truist lo llama 'best-case scenario'; fase 3 con ~5.500 pacientes). PETROLEO A LA BAJA 5 SESIONES: Brent $98,10 (-2,2%), Arabia Saudi probando el oleoducto este-oeste para reabrirlo esta semana -> XLE -1,1% hoy y -6,3% en 5d. CONTRAPESO EN IA: Bloomberg documenta la de-rating de NVDA — PER <17x (la mitad que en 2025, >50x en 2023); Alibaba presenta su acelerador de IA para competir con Nvidia. SoftBank capta >$20.000M de demanda preliminar en high yield para OpenAI. GEOPOLITICA: Trump defiende ante la Asamblea General de la ONU su decision de iniciar la guerra con Iran; el mercado lo ignora (VIX 14,87). Bitcoin $85,8k, +13% en 4 sesiones, cripto supera $3 billones, pero se mueve CON las apuestas de mayor volatilidad, no como refugio. RIESGO DE FONDO: morosidad CMBS en EEUU al 12%, cerca de record y por encima de 2008. 10y en 4,92%. Semana de earnings sin alpha (3er dia confirmado).",
+    "narrativa_dominante": "Yields al alza (US10Y 5.11%, US30Y 5.40%, TLT -1.72%) + WTI $92 tras conflicto Iran/Hormuz + actividad empresarial US mas fuerte desde 2021 -> presion inflacionaria y compresion de multiplos growth. Trump en UNGA amenaza con \"aniquilar\" Iran pero hay negociaciones en Nueva York; Arabia Saudi reabre el oleoducto Este-Oeste para puentear Hormuz -> WTI -2.5% hoy. VIX 14.98 SIN estres: el mercado descuenta via tipos, no via volatilidad.",
     "fuentes_consultadas": [
       "Bloomberg Morning Briefing Americas 4-sep 'Nowhere to hide'",
       "Bloomberg Markets Daily 4-sep",
@@ -3098,13 +3122,13 @@
     ],
     "notas_adicionales": "W37 tiene 4 sesiones (Labor Day el lunes 7). Temporada de resultados practicamente vacia: ORCL/ADBE/RH (10-sep AMC), CHWY/AVAV (9-sep), KR (11-sep BMO, el mismo dia que el IPC). ORCL, ADBE, CHWY y KR son large caps >=10.000 M$, el segmento donde el sistema tiene medido -5,00% de media con upside topado (n=8). El viernes 11 concentra IPC + KR: no abrir posiciones esa mañana.",
     "sentinel_ultimo_check": {
-      "timestamp": "2026-09-23T14:20",
-      "nivel": "alerta",
+      "timestamp": "2026-09-23T15:20",
+      "nivel": "normal",
       "shocks": [],
       "bloquear_entradas": false,
-      "score_min_paper_efectivo": 7.5,
-      "score_min_real_efectivo": 8.5,
-      "nota": "Ciclo 14:15 ET. Repricing hawkish de tipos (10Y 5.12%, max desde 2007), NO shock: VIX 15.01, SPY -0.66% dia / +0.01% 30min, ningun Mag7 >=6%. macro_score -1.3."
+      "score_min_paper_efectivo": 8.0,
+      "score_min_real_efectivo": 9.0,
+      "motivo_no_entrada": "capacidad Cowork 6/4 SOBRE LIMITE y exposicion Cowork 48.3% vs cap 30% -- no por macro"
     },
     "cierre_viernes_20260904": {
       "VIX": 15.19,
@@ -3125,18 +3149,15 @@
       "Brent >95$ por escalada Hormuz",
       "Futuros descuentan ~58% prob. SUBIDA de tipos"
     ],
-    "ts_actualizado": "2026-09-23T14:20",
+    "ts_actualizado": "2026-09-23T15:20",
     "macro_score": -1.3,
     "macro_bonus_ew": -0.39,
-    "macro_nivel": "alerta",
+    "macro_nivel": "normal",
     "contexto_resumen": [
-      "Futuros bajistas: ES -0.72%, NQ -0.96% (avg -0.84%)",
-      "US10Y 5.12% (+3.12%) maximo desde 2007; TLT -1.88% -> repricing hawkish, no shock",
-      "Dolar fuerte UUP +0.53% -> headwind multinacionales",
-      "Financieras -2.07% y utilities -1.97% castigadas por tipos; materiales +1.53% lider",
-      "Tech XLK +0.09% plano; GOOGL -4.28% y AMZN -3.45% pero ningun Mag7 >=6%",
-      "VIX 15.01 (-2.15% en 30min) y SPY +0.01% en 30min -> sin spike, sin shock",
-      "WTI $91.87 (-2.88%) sigue >90 -> presion inflacionaria de fondo"
+      "Futuros bajistas (-0.74%)",
+      "TLT bajando (-1.72%) - yields al alza",
+      "Yield 10Y alto (5.11%) - presion valuaciones growth",
+      "Dolar fuerte (+0.60%)"
     ],
     "catalizadores_semana": [
       "PPI jueves 2026-09-10",
@@ -3146,9 +3167,8 @@
       "Debate abierto sobre posible SUBIDA de tipos (no recorte)"
     ],
     "bonos": {
-      "tlt_chg": -1.88,
-      "yield_10y": 5.12,
-      "yield_30y": 5.4
+      "tlt_chg": -1.717611682486623,
+      "yield_10y": 5.113999843597412
     },
     "commodities": {
       "wti": 91.29,
@@ -3204,20 +3224,19 @@
     },
     "sectores_hoy": {
       "lider": "materials",
-      "cambio_lider": 1.5,
-      "tech_chg": -0.23,
+      "tech_chg": 0.09,
       "all": {
-        "tech": -0.22581597517245916,
-        "financials": -2.0661942083479765,
-        "energy": -0.27217126390828505,
-        "healthcare": -0.3313399069846723,
-        "industrials": 0.2794482382956476,
-        "consumer_disc": -1.510291048850353,
-        "utilities": -1.9552340677047784,
-        "materials": 1.4986979688252282,
-        "realestate": -1.3618263183299024
+        "tech": 0.09,
+        "financials": -2.26,
+        "energy": -0.2,
+        "healthcare": -0.21,
+        "industrials": 0.17,
+        "consumer_disc": -1.31,
+        "utilities": -2.1,
+        "materials": 1.24,
+        "realestate": -1.54
       },
-      "ts": "13:16"
+      "ts": "15:20"
     },
     "eventos_recientes": [
       {
@@ -3355,18 +3374,13 @@
       }
     ],
     "futuros": {
-      "ES": -0.72,
-      "NQ": -0.96,
-      "YM": -0.63,
-      "RTY": -1.66
+      "ES": -0.6895010693650844,
+      "NQ": -0.7952366372850767
     },
     "shock_tipo": "oil_spike",
     "oil": {
-      "wti": 102.48,
-      "chg_pct": 6.7,
-      "brent": 107.63,
-      "brent_chg_pct": 5.9,
-      "nota": "WTI cruza 100 USD por primera vez en el ciclo; diesel medio USA 5.85 USD/gal (record)"
+      "wti": 92.22000122070312,
+      "chg_pct": -2.505545204507142
     },
     "calendario_earnings_inmediato": {
       "lunes_14_pre": [
@@ -10316,6 +10330,18 @@
       "tipo": "SIN_STOP_OVERNIGHT_RESUELTO",
       "mensaje": "INTC y RBLX estaban sin stop ($15.177). OCO colocados por post-market. 11/11 posiciones protegidas.",
       "resuelto": true
+    },
+    {
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "ticker": "IONQ",
+      "severidad": "alta",
+      "cuenta": "paper",
+      "origen": "bot",
+      "ciclos_consecutivos": 2,
+      "titulo": "IONQ 149sh ($6.382) SIN STOP por segundo ciclo consecutivo",
+      "detalle": "Unica orden abierta para IONQ: sell limit 149 @77.04 order_class=bracket status=new (cid 18598a42 = orden del BOT, no COWORK-). Cobertura de stop 0%. P&L actual +0.1%, precio $42.73. Es exactamente el patron de la leccion del 2026-09-18: un TP limit GTC por el 100% de la qty retiene el inventario y hace fisicamente imposible colocar un stop (403 de Alpaca). Mismo patron que llevo a NFLX a salir a -1.96R sin stop.",
+      "accion_tomada": "NINGUNA - respetadas REGLA 2 y REGLA 5 de coordinacion: posicion del BOT, no cumple ninguna condicion de emergencia (P&L +0.1% no <-5%; sin earnings proximos; sin noticia negativa; macro sin shock). Modificar el tipo de orden del bot esta explicitamente prohibido.",
+      "accion_recomendada": "Intervencion MANUAL o del bot: cancelar el TP limit 149@77.04 y recolocar como OCO (TP 77.04 + stop ~40.6, -5%) o reducir el TP al 50% de la qty (tp_limit_gtc_max_pct_posicion=0.5 ya esta en parametros) para liberar inventario y permitir el stop. Riesgo sin cubrir: $6.382."
     }
   ],
   "mejoras_sistema": [
@@ -15784,6 +15810,27 @@
       "exposicion_total_pct": 84.4,
       "exposicion_cowork_pct": 54.0,
       "nota": "EJECUCION SUSPENDIDA EN ESTE CICLO: agente no coloca ni modifica ordenes. HALLAZGOS CRITICOS: (1) IONQ 149sh $6.382 SOLO tiene TP limit sell @77.04, NINGUN stop en status=open -- el tiene_stop() del sentinel consulta status=all y da falso positivo con legs historicos; corregir a status=open. (2) SOLUSD $15.747 (14,8% equity) con 0 ordenes abiertas, sin proteccion. (3) FUENTE EW MUERTA: old.earningswhispers.com no conecta (ConnectTimeout) y www.earningswhispers.com es ahora SPA Blazor sin whisperbox/mainitem/epsconsensus/tweeturl -> get_ew_headless() devuelve None para TODO el universo. PASO 3 produce 0 senales por rotura estructural, no por falta de oportunidad. Requiere nueva fuente de whisper. (4) Retries de 20s x3 sobre old. hacen que el scan cuelgue ~60s/ticker -> timeout del ciclo. CAPACIDAD: 9 equities paper vs max_para_nuevas_entradas=2; Cowork 7/4 SOBRE LIMITE; exposicion Cowork 54% vs cap 30%. Sin earnings de posiciones abiertas hoy AH ni manana BMO (AH hoy: SCS, SCHL, PLAY, SFIX, FUL, NEOV -- ninguna en universo). Sin noticias negativas en tickers monitorizados."
+    },
+    {
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "modo": "intraday_full",
+      "alertas": 2,
+      "acciones": 0,
+      "oportunidades": 0,
+      "cowork_abiertas": 6,
+      "paper_equities_abiertas": 9,
+      "vix": 14.98,
+      "macro_nivel": "normal",
+      "macro_score": -1.3,
+      "equity_paper": 106216,
+      "equity_real": 4548.18,
+      "stops_ok": "9/10 posiciones (IONQ sin stop; SOL/USD SI protegida - falso negativo corregido)",
+      "exposicion_total_pct": 84.4,
+      "exposicion_cowork_pct": 48.3,
+      "us10y": 5.113999843597412,
+      "wti": 92.22000122070312,
+      "spy_dia_pct": -0.65,
+      "nota": "CICLO SIN EJECUCION POR CAPACIDAD (no por macro): Cowork 6/4 sobre limite y exposicion 48.3% vs cap 30%. HALLAZGO PRINCIPAL: FUENTE EW RESTAURADA -- www.earningswhispers.com/api/todaysresults devuelve JSON estructurado con whisper/estimate/eps/surprise por ticker; old.earningswhispers.com sigue muerto y el SPA no sirve para scraping. Ver leccion FIX_INFRAESTRUCTURA. Edge validado hoy: PAYX -0.7% vs whisper -> -7.81% dia; CBRL +241% vs whisper -> +8.58% dia. IONQ sin stop 2o ciclo consecutivo (posicion del bot, no intervenida por REGLA 2/5). SOL/USD: el \"sin proteccion\" del ciclo anterior era falso negativo por formato de simbolo (SOLUSD vs SOL/USD). Macro sin shock cuantitativo (VIX 14.98 plano, SPY -0.65% dia, Mag7 dentro de +-4%) pero macro_score -1.30 por yields 5.11%/5.40%, TLT -1.72%, dolar +0.60%. Sin noticias negativas en los 19 tickers monitorizados. Sin earnings de posiciones abiertas hoy AH ni manana BMO."
     }
   ],
   "momentum_15m": {
@@ -15808,14 +15855,14 @@
       "ts": "13:16"
     },
     "OKTA": {
-      "precio": 183.08,
-      "mom_15m": -0.147,
-      "mom_30m": -0.115,
-      "vol_ratio": 0.4,
-      "vwap_dev": -0.234,
-      "rsi": 49.6,
-      "señal": "LATERAL",
-      "ts": "15:28"
+      "precio": 202.98,
+      "mom_15m": 0.074,
+      "mom_30m": 0.168,
+      "vol_ratio": 0.77,
+      "vwap_dev": 0.012,
+      "rsi": 53.1,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "ESTC": {
       "day": 18.58,
@@ -15824,14 +15871,14 @@
       "ts": "12:13"
     },
     "CRWD": {
-      "precio": 211.15,
-      "mom_15m": -1.172,
-      "mom_30m": -3.027,
-      "vol_ratio": 0.61,
-      "vwap_dev": -4.365,
-      "rsi": 14.6,
-      "señal": "debil_bajista",
-      "ts": "10:15"
+      "precio": 261.49,
+      "mom_15m": -0.088,
+      "mom_30m": 0.059,
+      "vol_ratio": 0.51,
+      "vwap_dev": 0.12,
+      "rsi": 61.0,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "DG": {
       "precio": 123.78,
@@ -15942,14 +15989,14 @@
       "ts": "2026-08-27T13:23"
     },
     "NVDA": {
-      "precio": 224.33,
-      "mom_15m": -0.108,
-      "mom_30m": 0.052,
-      "vol_ratio": 0.54,
-      "vwap_dev": -0.142,
-      "rsi": 40.8,
-      "señal": "LATERAL",
-      "ts": "13:16"
+      "precio": 225.31,
+      "mom_15m": 0.058,
+      "mom_30m": -0.075,
+      "vol_ratio": 0.6,
+      "vwap_dev": -0.002,
+      "rsi": 56.4,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "HPQ": {
       "precio": 30,
@@ -16042,14 +16089,14 @@
       "ts": "15:32"
     },
     "DELL": {
-      "precio": 544.27,
-      "mom_15m": -0.465,
-      "mom_30m": -0.688,
-      "vol_ratio": 1.21,
-      "vwap_dev": -0.973,
-      "rsi": 21.8,
-      "señal": "BAJISTA",
-      "ts": "13:16"
+      "precio": 548.61,
+      "mom_15m": 0.224,
+      "mom_30m": -0.107,
+      "vol_ratio": 0.68,
+      "vwap_dev": -0.065,
+      "rsi": 49.0,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     },
     "LULU": {
       "px": 119.42,
@@ -16785,14 +16832,14 @@
       "ts": "15:13"
     },
     "AAPL": {
-      "precio": 337.73,
-      "mom_15m": 0.261,
-      "mom_30m": 0.315,
-      "vol_ratio": 0.77,
-      "vwap_dev": 0.258,
-      "rsi": 67.2,
-      "señal": "debil_alcista",
-      "ts": "13:16"
+      "precio": 336.35,
+      "mom_15m": -0.166,
+      "mom_30m": -0.237,
+      "vol_ratio": 1.07,
+      "vwap_dev": -0.222,
+      "rsi": 24.6,
+      "senal": "debil_bajista",
+      "ts": "15:20"
     },
     "ACVA": {
       "precio": 10.45,
@@ -16865,14 +16912,14 @@
       "ts": "15:28"
     },
     "RBLX": {
-      "precio": 48.85,
-      "mom_15m": -0.59,
-      "mom_30m": -0.55,
-      "vol_ratio": 0.63,
-      "vwap_dev": -0.48,
-      "rsi": 29.2,
-      "señal": "debil_bajista",
-      "ts": "13:16"
+      "precio": 49.27,
+      "mom_15m": -0.304,
+      "mom_30m": -0.243,
+      "vol_ratio": 0.71,
+      "vwap_dev": -0.327,
+      "rsi": 37.6,
+      "senal": "debil_bajista",
+      "ts": "15:20"
     },
     "SWKS": {
       "precio": 88.42,
@@ -16905,14 +16952,14 @@
       "ts": "15:28"
     },
     "INTC": {
-      "precio": 119.93,
-      "mom_15m": -0.298,
-      "mom_30m": -0.49,
-      "vol_ratio": 0.66,
-      "vwap_dev": -0.345,
-      "rsi": 44.8,
-      "señal": "debil_bajista",
-      "ts": "13:16"
+      "precio": 121.43,
+      "mom_15m": 0.401,
+      "mom_30m": 0.322,
+      "vol_ratio": 0.53,
+      "vwap_dev": 0.386,
+      "rsi": 75.4,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     },
     "WBD": {
       "precio": 30.8,
@@ -16965,24 +17012,24 @@
       "ts": "13:22"
     },
     "CBRL": {
-      "precio": 45.84,
-      "mom_15m": -0.488,
-      "mom_30m": 0.153,
-      "vol_ratio": 0.99,
-      "vwap_dev": -0.252,
-      "rsi": 39.0,
-      "señal": "debil_baj",
-      "ts": "14:21"
+      "precio": 48.6,
+      "mom_15m": 0.942,
+      "mom_30m": 0.279,
+      "vol_ratio": 1.07,
+      "vwap_dev": 0.254,
+      "rsi": 49.6,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     },
     "META": {
-      "precio": 751.23,
-      "mom_15m": -0.15,
-      "mom_30m": -0.557,
-      "vol_ratio": 0.73,
-      "vwap_dev": -0.474,
-      "rsi": 41.6,
-      "señal": "debil_bajista",
-      "ts": "13:16"
+      "precio": 747.53,
+      "mom_15m": -0.133,
+      "mom_30m": -0.297,
+      "vol_ratio": 0.68,
+      "vwap_dev": -0.307,
+      "rsi": 31.6,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "GRML": {
       "precio": 13.8,
@@ -16995,14 +17042,14 @@
       "ts": "14:21"
     },
     "TWLO": {
-      "precio": 292.63,
-      "mom_15m": -0.484,
-      "mom_30m": -0.246,
-      "vol_ratio": 1.73,
-      "vwap_dev": -0.34,
-      "rsi": 30.9,
-      "señal": "BAJISTA",
-      "ts": "13:16"
+      "precio": 288.77,
+      "mom_15m": 0.109,
+      "mom_30m": 0.038,
+      "vol_ratio": 0.37,
+      "vwap_dev": -0.365,
+      "rsi": 40.8,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "CTAS": {
       "precio": 196.21,
@@ -17015,24 +17062,24 @@
       "ts": "14:21"
     },
     "GIS": {
-      "precio": 35.58,
-      "mom_15m": -0.084,
-      "mom_30m": -0.003,
-      "vol_ratio": 0.86,
-      "vwap_dev": -0.32,
-      "rsi": 15.7,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "precio": 35.96,
+      "mom_15m": 0.658,
+      "mom_30m": 0.714,
+      "vol_ratio": 0.72,
+      "vwap_dev": 0.836,
+      "rsi": 79.3,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     },
     "SNX": {
-      "precio": 281.17,
-      "mom_15m": 0.122,
-      "mom_30m": 0.27,
-      "vol_ratio": 0.36,
-      "vwap_dev": 0.25,
-      "rsi": 69.6,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "precio": 289.84,
+      "mom_15m": 0.237,
+      "mom_30m": 0.526,
+      "vol_ratio": 1.95,
+      "vwap_dev": -0.334,
+      "rsi": 27.2,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     },
     "FUL": {
       "precio": 51.29,
@@ -17055,14 +17102,14 @@
       "ts": "10:20"
     },
     "ONON": {
-      "precio": 30.32,
-      "mom_15m": -0.394,
-      "mom_30m": -0.46,
-      "vol_ratio": 0.46,
-      "vwap_dev": -0.474,
-      "rsi": 33.9,
-      "señal": "debil_bajista",
-      "ts": "13:16"
+      "precio": 30.31,
+      "mom_15m": -0.115,
+      "mom_30m": 0.132,
+      "vol_ratio": 0.54,
+      "vwap_dev": -0.342,
+      "rsi": 35.2,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "MLKN": {
       "p": 20.84,
@@ -17098,15 +17145,14 @@
       "ts": "13:17"
     },
     "COST": {
-      "p": 899.28,
-      "dia": 0.1,
-      "m15": -0.3,
-      "m30": -0.27,
-      "vr": 0.73,
-      "vwap": -0.22,
-      "rsi": 33.8,
-      "sig": "debil_baj",
-      "ts": "13:17"
+      "precio": 904.5,
+      "mom_15m": 0.069,
+      "mom_30m": -0.002,
+      "vol_ratio": 0.43,
+      "vwap_dev": 0.218,
+      "rsi": 63.2,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "DRI": {
       "p": 213.77,
@@ -17152,14 +17198,14 @@
       "ts": "14:21"
     },
     "BAI": {
-      "precio": 47.48,
-      "mom_15m": 0.105,
-      "mom_30m": 0.2,
-      "vol_ratio": 0.07,
-      "vwap_dev": 0.232,
-      "rsi": 73.1,
-      "señal": "LATERAL",
-      "ts": "14:21"
+      "precio": 46.96,
+      "mom_15m": 0.011,
+      "mom_30m": 0.0,
+      "vol_ratio": 2.09,
+      "vwap_dev": -0.054,
+      "rsi": 50.6,
+      "senal": "LATERAL",
+      "ts": "15:20"
     },
     "MRNA": {
       "precio": 182.7,
@@ -17172,14 +17218,44 @@
       "ts": "14:21"
     },
     "VKTX": {
-      "precio": 38.7,
-      "mom_15m": 0.181,
-      "mom_30m": 0.106,
-      "vol_ratio": 1.04,
-      "vwap_dev": -1.704,
-      "rsi": 22.7,
-      "señal": "debil_alc",
-      "ts": "14:21"
+      "precio": 42.12,
+      "mom_15m": 1.201,
+      "mom_30m": 2.865,
+      "vol_ratio": 0.59,
+      "vwap_dev": 1.373,
+      "rsi": 54.7,
+      "senal": "debil_alcista",
+      "ts": "15:20"
+    },
+    "FSLY": {
+      "precio": 30.6,
+      "mom_15m": -0.277,
+      "mom_30m": 2.136,
+      "vol_ratio": 0.37,
+      "vwap_dev": 3.586,
+      "rsi": 67.1,
+      "senal": "debil_bajista",
+      "ts": "15:20"
+    },
+    "IONQ": {
+      "precio": 42.73,
+      "mom_15m": 0.428,
+      "mom_30m": -0.616,
+      "vol_ratio": 0.35,
+      "vwap_dev": -0.197,
+      "rsi": 51.0,
+      "senal": "debil_alcista",
+      "ts": "15:20"
+    },
+    "VICR": {
+      "precio": 281.55,
+      "mom_15m": 0.392,
+      "mom_30m": 1.204,
+      "vol_ratio": 0.56,
+      "vwap_dev": 1.003,
+      "rsi": 80.5,
+      "senal": "debil_alcista",
+      "ts": "15:20"
     }
   },
   "sentinel_signals": [
@@ -19899,6 +19975,182 @@
         }
       ],
       "leccion": "THO tenia la 2a mejor asimetria del dia (+6.45%) y fallo -21%. Confirma la regla del 8-sep: exigir confirmacion de momentum post-apertura antes de entrar, nunca comprar solo por whisper."
+    },
+    {
+      "ticker": "PAYX",
+      "fecha": "2026-09-23",
+      "eps": 1.34,
+      "consenso": 1.33,
+      "whisper": 1.35,
+      "beat_pct_vs_whisper": -0.74,
+      "resultado": "miss",
+      "earnings_surprise_pct": -0.007407407407407408,
+      "revenue_surprise_pct": 0.006481481481481481,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "CTAS",
+      "fecha": "2026-09-23",
+      "eps": 1.39,
+      "consenso": 1.35,
+      "whisper": 1.38,
+      "beat_pct_vs_whisper": 0.72,
+      "resultado": "beat",
+      "earnings_surprise_pct": 0.007246376811594203,
+      "revenue_surprise_pct": 0.014808417508417509,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "CBRL",
+      "fecha": "2026-09-23",
+      "eps": 0.99,
+      "consenso": 0.2,
+      "whisper": 0.29,
+      "beat_pct_vs_whisper": 241.38,
+      "resultado": "beat",
+      "earnings_surprise_pct": 2.413793103448276,
+      "revenue_surprise_pct": 0.02192463182211955,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "GIS",
+      "fecha": "2026-09-23",
+      "eps": 0.75,
+      "consenso": 0.72,
+      "whisper": 0.74,
+      "beat_pct_vs_whisper": 1.35,
+      "resultado": "beat",
+      "earnings_surprise_pct": 0.013513513513513514,
+      "revenue_surprise_pct": 0.01374133949191686,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "KBH",
+      "fecha": "2026-09-22",
+      "eps": 1.05,
+      "consenso": 0.88,
+      "whisper": 0.85,
+      "beat_pct_vs_whisper": 23.53,
+      "resultado": "beat",
+      "earnings_surprise_pct": 0.23529411764705882,
+      "revenue_surprise_pct": 0.005504651162790698,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "WOR",
+      "fecha": "2026-09-22",
+      "eps": 0.82,
+      "consenso": 0.74,
+      "whisper": 999,
+      "beat_pct_vs_whisper": -99.92,
+      "resultado": "miss",
+      "earnings_surprise_pct": 0.10810810810810811,
+      "revenue_surprise_pct": 0.03548931044866004,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "AYTU",
+      "fecha": "2026-09-22",
+      "eps": -0.05,
+      "consenso": -0.22,
+      "whisper": 999,
+      "beat_pct_vs_whisper": -100.01,
+      "resultado": "miss",
+      "earnings_surprise_pct": 0.7727272727272727,
+      "revenue_surprise_pct": 0.39445887445887445,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "MLKN",
+      "fecha": "2026-09-22",
+      "eps": 0.53,
+      "consenso": 0.35,
+      "whisper": 0.37,
+      "beat_pct_vs_whisper": 43.24,
+      "resultado": "beat",
+      "earnings_surprise_pct": 0.43243243243243246,
+      "revenue_surprise_pct": -0.020473109154556062,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "AZO",
+      "fecha": "2026-09-22",
+      "eps": 56.05,
+      "consenso": 54.54,
+      "whisper": 54.26,
+      "beat_pct_vs_whisper": 3.3,
+      "resultado": "beat",
+      "earnings_surprise_pct": 0.03298931072613343,
+      "revenue_surprise_pct": -0.017156631892697467,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "THO",
+      "fecha": "2026-09-22",
+      "eps": 0.78,
+      "consenso": 0.93,
+      "whisper": 0.99,
+      "beat_pct_vs_whisper": -21.21,
+      "resultado": "miss",
+      "earnings_surprise_pct": -0.21212121212121213,
+      "revenue_surprise_pct": 0.07517581395348837,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
+    },
+    {
+      "ticker": "ABVX",
+      "fecha": "2026-09-21",
+      "eps": -1.71,
+      "consenso": -1.08,
+      "whisper": 999,
+      "beat_pct_vs_whisper": -100.17,
+      "resultado": "miss",
+      "earnings_surprise_pct": -0.5833333333333334,
+      "revenue_surprise_pct": -0.24946236559139784,
+      "ew_grade": null,
+      "pwr_rating": null,
+      "fuente": "ew_api_todaysresults",
+      "registrado_por": "sentinel",
+      "ts": "2026-09-23T19:20:51.467121+00:00"
     }
   ],
   "kpis_actuales": {
@@ -23794,9 +24046,15 @@
       "detalle": "META, NVDA, ONON y TWLO (entradas GHA-20260922) tenian unicamente una orden sell limit GTC por el 100% de la qty, con precios objetivo irreales (META 1165.05 vs 753.88 = +55%; NVDA 343.15 vs 224.85 = +53%; TWLO 467.91 vs 293.71 = +59%; ONON 47.23 vs 30.39 = +55%). Esa limit bloquea fisicamente la colocacion de stops (403 insufficient qty). Es exactamente el fallo documentado el 2026-09-18 con NFLX/SQQQ: el parametro orden_salida_order_class=oco y stop_obligatorio_antes_de_tp=true NO se esta aplicando en el flujo GHA de entrada.",
       "accion": "Sentinel cancelo las 4 limit huerfanas y coloco OCO (TP + stop_limit) con stop 1.5xATR y R=2.0. Verificado: 9/9 posiciones con stop.",
       "accion_pendiente": "Corregir el flujo de entrada GHA para que emita OCO desde el origen, no una limit suelta."
+    },
+    {
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "tipo": "capacidad",
+      "severidad": "media",
+      "detalle": "Cowork 6/4 SOBRE LIMITE (INTC, META, NVDA, ONON, RBLX, TWLO). Exposicion Cowork $51.311 = 48.3% del equity frente a max_exposicion_cowork_equity_pct=30. Exposicion total $89.643 = 84.4%. 9 equities + 1 cripto en paper frente a max_posiciones_paper_para_nuevas_entradas=2. Ninguna entrada nueva es admisible en este ciclo por capacidad, con independencia del score."
     }
   ],
-  "ultima_actualizacion": "2026-09-23T18:35:00.898078+00:00",
+  "ultima_actualizacion": "2026-09-23T19:20:51.467121+00:00",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
