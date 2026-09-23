@@ -435,3 +435,54 @@ def test_equity_curve_sobrevive_si_falla_la_cuenta():
 
     cur = kpi_report.equity_curve(_Alp(), "2000-01-01")
     assert cur == [("2020-09-13", 100000.0)], cur
+
+
+def _stop_limit(oid, sym, sp, lp, side="sell"):
+    return {"id": oid, "symbol": sym, "side": side, "type": "stop_limit",
+            "stop_price": str(sp), "limit_price": str(lp), "status": "held"}
+
+
+def test_regla8_ensancha_la_banda_pegada_sin_mover_el_disparo():
+    import intraday_monitor as im
+
+    alp = _Alp([], [])
+    alp.name = "PAPER"
+    ords = [_stop_limit("a", "RBLX", 47.90, 47.66)]        # banda 0,5 %
+    acciones = []
+    im.ensanchar_bandas(alp, ords, acciones)
+    metodo, ruta, body = alp.calls[0]
+    assert metodo == "PATCH" and ruta == "/orders/a"
+    assert body["stop_price"] == "47.9"                      # el disparo NO se mueve
+    assert abs(float(body["limit_price"]) - 47.90 * 0.95) < 0.01, body
+    assert len(acciones) == 1
+
+
+def test_regla8_no_toca_lo_que_ya_tiene_banda_ni_los_stop_de_mercado():
+    import intraday_monitor as im
+
+    alp = _Alp([], [])
+    alp.name = "PAPER"
+    ords = [
+        _stop_limit("b", "X", 100.0, 94.0),                                  # banda 6 % → ok
+        {"id": "c", "symbol": "Y", "side": "sell", "type": "stop",
+         "stop_price": "50.0", "status": "held"},                            # de mercado → ok
+        {"id": "d", "symbol": "Z", "side": "buy", "type": "stop_limit",
+         "stop_price": "10.0", "limit_price": "9.99", "status": "new"},      # compra → no aplica
+    ]
+    acciones = []
+    im.ensanchar_bandas(alp, ords, acciones)
+    assert alp.calls == [], alp.calls
+    assert acciones == []
+
+
+def test_regla8_alcanza_a_la_cripto():
+    """La cripto la salta el resto del monitor, pero su banda tambien debe ensancharse."""
+    import intraday_monitor as im
+
+    alp = _Alp([], [])
+    alp.name = "PAPER"
+    ords = [_stop_limit("s", "SOL/USD", 110.793, 110.239)]
+    acciones = []
+    im.ensanchar_bandas(alp, ords, acciones)
+    assert alp.calls and alp.calls[0][1] == "/orders/s"
+    assert abs(float(alp.calls[0][2]["limit_price"]) - 110.793 * 0.95) < 0.01
