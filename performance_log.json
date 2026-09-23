@@ -25924,75 +25924,41 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-23",
-    "hora_utc": "13:38",
-    "min_desde_apertura": 8.1,
+    "hora_utc": "14:38",
+    "min_desde_apertura": 68.5,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
-      "MU: max posiciones paper 8 (score 7.73<8.5: sin plaza de convicción)",
-      "CRWD: max posiciones paper 8 (score 7.48<8.5: sin plaza de convicción)",
-      "ARM: max posiciones paper 8 (score 7.48<8.5: sin plaza de convicción)",
-      "PLTR: max posiciones paper 8 (score 7.28<8.5: sin plaza de convicción)",
-      "GRML: max posiciones paper 8 (score 6.48<8.5: sin plaza de convicción)",
+      "IONQ: max posiciones paper 8 (score 6.88<8.5: sin plaza de convicción)",
+      "CLS: max posiciones paper 8 (score 6.31<8.5: sin plaza de convicción)",
       "GRAL: max posiciones paper 8 (score 6.07<8.5: sin plaza de convicción)",
       "TWLO: score 6.0<6.0",
-      "RKLB: score 5.7<6.0",
+      "ONON: score 5.9<6.0",
       "DDOG: score 5.7<6.0",
-      "MRNA: score 5.6<6.0",
-      "NET: score 5.5<6.0",
-      "META: score 5.5<6.0"
+      "META: score 5.5<6.0",
+      "MRNA: score 5.3<6.0"
     ],
     "ajustes_fuentes": {
-      "MU": {
-        "base": 6.88,
-        "paper": 7.73,
-        "real": 6.88,
+      "IONQ": {
+        "base": 5.83,
+        "paper": 6.88,
+        "real": 5.83,
         "partes": {
-          "insiders": -0.3,
-          "analistas": 0.05,
-          "opciones": 0.7,
-          "sector": 0.4
+          "analistas": 0.2,
+          "opciones": 0.25,
+          "sector": 0.4,
+          "social": 0.2
         }
       },
-      "CRWD": {
-        "base": 6.88,
-        "paper": 7.48,
-        "real": 6.88,
+      "CLS": {
+        "base": 5.56,
+        "paper": 6.31,
+        "real": 5.56,
         "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
+          "analistas": 0.75,
+          "opciones": -0.4,
           "sector": 0.4
-        }
-      },
-      "ARM": {
-        "base": 6.88,
-        "paper": 7.48,
-        "real": 6.88,
-        "partes": {
-          "analistas": -0.3,
-          "opciones": 0.5,
-          "sector": 0.4
-        }
-      },
-      "PLTR": {
-        "base": 6.88,
-        "paper": 7.28,
-        "real": 6.88,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.3,
-          "sector": 0.4
-        }
-      },
-      "GRML": {
-        "base": 6.48,
-        "paper": 6.48,
-        "real": 6.48,
-        "partes": {
-          "insiders": 0.6,
-          "corto": -0.2,
-          "sector": -0.4
         }
       },
       "GRAL": {
@@ -26014,13 +25980,12 @@
           "sector": 0.4
         }
       },
-      "RKLB": {
-        "base": 5.56,
-        "paper": 5.71,
-        "real": 5.56,
+      "ONON": {
+        "base": 6.11,
+        "paper": 5.91,
+        "real": 5.91,
         "partes": {
-          "analistas": 0.05,
-          "opciones": 0.5,
+          "analistas": 0.2,
           "sector": -0.4
         }
       },
@@ -26033,25 +25998,6 @@
           "sector": 0.4
         }
       },
-      "MRNA": {
-        "base": 5.56,
-        "paper": 5.56,
-        "real": 5.56,
-        "partes": {
-          "analistas": 0.4,
-          "sector": -0.4
-        }
-      },
-      "NET": {
-        "base": 5.56,
-        "paper": 5.51,
-        "real": 5.51,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": -0.15,
-          "sector": 0.4
-        }
-      },
       "META": {
         "base": 5.56,
         "paper": 5.51,
@@ -26060,19 +26006,28 @@
           "insiders": -0.3,
           "opciones": 0.25
         }
+      },
+      "MRNA": {
+        "base": 5.28,
+        "paper": 5.28,
+        "real": 5.28,
+        "partes": {
+          "analistas": 0.4,
+          "sector": -0.4
+        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-23T13:38Z",
+    "ts": "2026-09-23T14:38Z",
     "macro": {
       "hy_oas": null,
       "hy_cambio_20": null,
       "nfci": null,
       "curva_10a2a": null,
-      "credito_hyg_ief_20": 1.22,
-      "fear_greed": 35.0,
+      "credito_hyg_ief_20": 1.46,
+      "fear_greed": 35.4,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -26080,61 +26035,61 @@
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 134,
+        "ms": 127,
         "ultimo_error": null
       },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 167,
+        "ms": 291,
         "ultimo_error": null
       },
       "fred": {
         "ok": 0,
         "fallos": 3,
-        "ms": 94956,
+        "ms": 94944,
         "ultimo_error": "RuntimeError: HTTP 0"
       },
       "yahoo_ficha": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 2424,
+        "ms": 1685,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 39242,
+        "ms": 25970,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 852,
+        "ms": 517,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 1692,
+        "ms": 1225,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 497,
+        "ms": 296,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 12,
+        "ok": 8,
         "fallos": 0,
-        "ms": 1390,
+        "ms": 663,
         "ultimo_error": null
       }
     }
