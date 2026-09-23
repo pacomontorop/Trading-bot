@@ -9200,6 +9200,108 @@
         }
       ],
       "infra": "Ruta canonica de filesystem inaccesible en esta sesion; lectura y escritura via GitHub. /sessions al 100% de disco -> deps instaladas en /tmp."
+    },
+    {
+      "timestamp": "2026-09-23T18:35:00.898078+00:00",
+      "hora_et": "2026-09-23 14:35 ET",
+      "minutos_hasta_cierre": 84,
+      "evaluaciones": [
+        {
+          "symbol": "AAPL",
+          "decision": "mantener",
+          "razon": "bot_autonomo_sin_earnings_R0_no_aplica; stop_limit propio @322.82",
+          "pnl_pct": 0.73,
+          "stop": 322.82,
+          "proteccion": "stop_limit new"
+        },
+        {
+          "symbol": "DELL",
+          "decision": "mantener",
+          "razon": "bot_autonomo — R1-R4 no aplican (hands-off); stop @519.31",
+          "pnl_pct": -2.89,
+          "stop": 519.31,
+          "proteccion": "stop_limit new"
+        },
+        {
+          "symbol": "INTC",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @115.95",
+          "pnl_pct": 4.4,
+          "stop": 115.95,
+          "proteccion": "bracket leg held"
+        },
+        {
+          "symbol": "IONQ",
+          "decision": "mantener",
+          "razon": "bot_autonomo abierto hoy; ANOMALIA: sin stop (solo TP limit @77.04)",
+          "pnl_pct": -0.28,
+          "stop": 0,
+          "proteccion": "*** NAKED ***"
+        },
+        {
+          "symbol": "META",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @715.76",
+          "pnl_pct": -1.02,
+          "stop": 715.76,
+          "proteccion": "bracket leg held"
+        },
+        {
+          "symbol": "NVDA",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @218.90",
+          "pnl_pct": -1.45,
+          "stop": 218.9,
+          "proteccion": "bracket leg held"
+        },
+        {
+          "symbol": "ONON",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @29.24",
+          "pnl_pct": -1.53,
+          "stop": 29.24,
+          "proteccion": "bracket leg held"
+        },
+        {
+          "symbol": "RBLX",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @47.90",
+          "pnl_pct": 3.09,
+          "stop": 47.9,
+          "proteccion": "bracket leg held"
+        },
+        {
+          "symbol": "SOLUSD",
+          "decision": "mantener",
+          "razon": "crypto 24/7; stop_limit @110.793 activo",
+          "pnl_pct": -1.68,
+          "stop": 110.793,
+          "proteccion": "stop_limit new"
+        },
+        {
+          "symbol": "TWLO",
+          "decision": "mantener",
+          "razon": "bot_autonomo; bracket leg held @266.56",
+          "pnl_pct": 0.64,
+          "stop": 266.56,
+          "proteccion": "bracket leg held"
+        }
+      ],
+      "posiciones_cerrar": 0,
+      "posiciones_mantener": 10,
+      "cierres_ejecutados": [],
+      "cierres_fallidos": [],
+      "stops_overnight": [],
+      "pnl_dia_abs": 0.0,
+      "pnl_dia_equity_delta": -410.25,
+      "clasificacion": "0 posiciones Cowork / 10 bot_autonomo (todas las entradas son GHA-*): R1-R4 no aplican por diseño",
+      "r0": "NO ACTIVADA — ninguna posicion reporta earnings hoy AH ni mañana pre-market (verificado yfinance: proximo earnings mas cercano INTC 22-oct)",
+      "anomalias": [
+        "IONQ (149sh, entry 42.81) abierta hoy por GHA sin stop: solo hay sell limit TP @77.04. Posicion NAKED overnight. No se toca por regla hands-off bot_autonomo (leccion GE 28-abr) — requiere fix en el bot, no en pre-close.",
+        "Schema drift en performance_log.operaciones: las entradas usan 'simbolo'/'fuente'/'precio_entrada'/'qty'; el codigo de pre-close busca 'symbol'/'source'/'entry_price'/'shares' -> el match Cowork por log SIEMPRE falla. Clasificacion resuelta via client_order_id (GHA-* vs COWORK-*).",
+        "Entorno de ejecucion: /sessions al 100% de disco y /tmp no escribible -> sin yfinance preinstalado ni escritura local; log persistido directo a GitHub."
+      ],
+      "ejecutado_por": "cowork pre-close-manager (14:33 ET)"
     }
   ],
   "historial_diario_notas": [
@@ -19877,6 +19979,13 @@
       "titulo": "descartado_runup filtro potencialmente sobre-restrictivo",
       "descripcion": "Gate NVDA muy positivo (+9.08%) y los 4 nombres AH del 26-ago descartados por 'descartado_runup' explotaron hoy: OKTA +27.4%, CRM +21.4%, CRWD +17.2%, SNPS +11.2%. Capturado: 0. El filtro descartado_runup puede estar demasiado restrictivo en regimen de beats generalizados post-NVDA.",
       "accion_sugerida": "Revisar en post-market-review el umbral de run-up: cuando el gate sectorial (NVDA) es fuertemente positivo, considerar rebajar la penalizacion por run-up pre-earnings en 1 punto en lugar de descartar."
+    },
+    {
+      "fecha": "2026-09-23",
+      "origen": "pre-close-manager",
+      "titulo": "IONQ abierta por GHA sin stop (naked overnight)",
+      "detalle": "149sh @42.81. Unica orden abierta: sell limit TP @77.04. No hay stop ni bracket leg. Pre-close no interviene por hands-off bot_autonomo; el bot GHA debe adjuntar stop en la entrada.",
+      "severidad": "alta"
     }
   ],
   "w20_pivot": {
@@ -23654,7 +23763,7 @@
       "accion_pendiente": "Corregir el flujo de entrada GHA para que emita OCO desde el origen, no una limit suelta."
     }
   ],
-  "ultima_actualizacion": "2026-09-23T13:16 ET",
+  "ultima_actualizacion": "2026-09-23T18:35:00.898078+00:00",
   "ew_calendario_proximo": {
     "ts_actualizado": "2026-09-07T15:19",
     "fuente": "yfinance (EW scraper caido)",
