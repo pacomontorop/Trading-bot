@@ -553,6 +553,36 @@
       "accion_correctiva": "NO se toca todavia la regla: la clausula asimetria_denominador_regla_v2 pide 2 casos mas antes de revisar. Este es el caso 2 de 3. Al tercero, revisar min_consenso_eps_para_asimetria (0,30) y el cap de BLOQUE 1.",
       "tarea_afectada": "pre-market-earnings-scan",
       "aplicada": false
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "DATA_QUALITY",
+      "titulo": "DATO CORRUPTO: whisper=999 en el feed EW se estaba interpretando como whisper real",
+      "descripcion": "WOR (22-sep) y AYTU (22-sep) entraron como MISS con beat_pct_vs_whisper de -99.9% porque el feed devolvio whisper=999 (centinela de 'sin whisper'). En realidad WOR batio consenso +10.81% y AYTU +77.27%. Dos falsos MISS en un solo dia.",
+      "accion_futura": "Filtro obligatorio en cualquier parser EW: si whisper in (999, -999, 0) o |whisper/consenso| > 10 -> tratar whisper como None y clasificar contra consenso. Nunca calcular beat_pct_vs_whisper con el centinela.",
+      "impacto_score": 0.0,
+      "registrado_por": "ew-daily-results",
+      "ts": "2026-09-23T21:39:48.242205+00:00"
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "BEAT_RESULTADO",
+      "titulo": "CBRL: beat de +241% sobre whisper con reaccion +4.2% — unico continuation play valido del 23-sep",
+      "descripcion": "EPS 0.99 vs whisper 0.29 vs consenso 0.20. Reaccion intradia +4.2% (fuentes de after-hours citan hasta +7.9%). Guidance FY2027 de 3.325-3.4 B USD. Es el unico de los 4 reporters de hoy que bate y ademas sube.",
+      "accion_futura": "Continuation generada para 24-sep con score capado a 7.8: el +241% esta inflado por el denominador pequeno (consenso 0.20). Riesgo sectorial: el flujo de opciones del 23-sep muestra puts largos persistentes en travel & dining (EXPE, SHAK, ONON). Sizing 0.75x.",
+      "impacto_score": 0.2,
+      "registrado_por": "ew-daily-results",
+      "ts": "2026-09-23T21:39:48.242205+00:00"
+    },
+    {
+      "fecha": "2026-09-23",
+      "tipo": "CONTEXTO_SEMANA",
+      "titulo": "Semana 21-25 sep sin alpha de earnings: el catalizador real es MU (24-sep AMC)",
+      "descripcion": "Reporters del 23-sep: PAYX, CTAS, CBRL, GIS — todos small/mid impact, 3 de 4 planos o negativos. El proximo catalizador con tamano es Micron (24-sep AMC), con price targets movidos a 1300-1625 USD y un golden sweep de 19.6 M USD en calls 900 del 9-oct. Macro dominante: 5Y del Tesoro por encima del 5%, 10Y en 5.1%, ~73% de probabilidad implicita de subida en octubre.",
+      "accion_futura": "No forzar entradas de earnings esta semana. Preparar el escenario MU para el 24-sep post-cierre: el riesgo declarado es el guidance de margenes, no el EPS.",
+      "impacto_score": 0.0,
+      "registrado_por": "ew-daily-results",
+      "ts": "2026-09-23T21:39:48.242205+00:00"
     }
   ],
   "operaciones": [
@@ -3001,6 +3031,41 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-23T18:37:04.647221+00:00",
       "notas": "1d=+4.4% vol=0.7x 52h_dist=0.0% | Expirado 2026-09-23: ventana de entrada (apertura 23-sep) agotada sin ejecutar por capacidad (8 posiciones Cowork / tope 4). Movio +4.97% hoy. NO se prorroga: el run-up ya supera el limite de runup_max_pct_low_score (5%) para reentrada."
+    },
+    {
+      "ticker": "CBRL",
+      "score": 7.8,
+      "score_ajustado": 7.8,
+      "score_override": 7.8,
+      "source": "log_validated",
+      "estado": "pendiente_ew",
+      "tipo": "post_earnings_continuation",
+      "earnings_fecha": "2026-09-23",
+      "accion_recomendada": "entrar_apertura",
+      "ventana_entrada": "2026-09-24 09:40-10:15 ET — continuacion post-beat",
+      "stop_tipo": "low_earnings_day_or_ATR1.5",
+      "sizing": "0.75x",
+      "argumento": "CBRL batio whisper (+241%: EPS 0.99 vs whisper 0.29 vs consenso 0.20) el 23-sep BMO y cerro +4.2%. Guidance FY2027 3.325-3.4 B USD. Continuacion post-beat 1-3 dias. Score capado a 7.8 por denominador pequeno; sizing reducido por puts largos en el sector dining.",
+      "beat_pct_vs_whisper": 241.38,
+      "consensus_beat_pct": 395.0,
+      "reaccion_ah_pct": 0.0,
+      "reaccion_1d_pct": 4.2,
+      "continuation_ruta": "whisper_confirmado_capado",
+      "eps_actual": 0.99,
+      "eps_whisper": 0.29,
+      "eps_consensus": 0.2,
+      "revenue_growth_yoy": null,
+      "fuente": "ew-daily-results-continuation",
+      "detectado_por": "ew-daily-results",
+      "fecha_deteccion": "2026-09-23",
+      "expira": "2026-09-24T21:00:00Z",
+      "notas": "Entrar apertura 24-sep. Stop bajo el minimo del 23-sep o ATR x1.5. Target 2xATR. Max hold 3 dias. ABORTAR si abre con gap > +3%: el movimiento ya estaria consumido.",
+      "asimetria_pct": 20.0,
+      "ts_creado": "2026-09-23T21:39:48.242205+00:00",
+      "umbral_real": 7.5,
+      "max_hold_dias": 3,
+      "play_horizon": "post_earnings_1_3d",
+      "riesgo_sectorial": "Flujo de opciones 23-sep: puts largos persistentes en travel & dining."
     }
   ],
   "macro_context": {
@@ -10021,6 +10086,12 @@
       "posiciones_abiertas": 10,
       "evento_clave": "El 5 anos del Tesoro toca el 5% por primera vez desde 2007 y el 10 anos (5,11%) marca maximo desde 2007. Castigo concentrado en proxies de bono (XLU -1,88%, XLRE -1,51%, TLT -1,58%) con VIX en 15,18: golpe de duracion, no de miedo.",
       "leccion": "Segundo dia consecutivo en que la senal acierta y la ejecucion falla por CAPACIDAD: FSLY (7,87) +13,67% y VICR (7,50) +5,61% bloqueadas con 8 posiciones Cowork contra un tope de 4. $1.432 de coste de oportunidad frente a -$368 de P&L real. Implementado el reciclaje de slots."
+    },
+    {
+      "fecha": "2026-09-23",
+      "tarea": "ew-daily-results",
+      "resumen": "4 reporters (PAYX, CTAS, CBRL, GIS). 1 continuation (CBRL). 2 falsos MISS corregidos del 22-sep (WOR, AYTU: whisper=999). Email EW del 23-sep aun no habia llegado a las 21:36 UTC; datos tomados del feed EW del sentinel + email EW del 22-sep + Evening Edge 23-sep.",
+      "ts": "2026-09-23T21:39:48.242205+00:00"
     }
   ],
   "alertas_criticas": [
@@ -19347,7 +19418,10 @@
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "reaccion_1d_pct": -8.76,
+      "reaccion_ah_pct": 0.0,
+      "enriquecido_por": "ew-daily-results"
     },
     {
       "ticker": "CTAS",
@@ -19363,7 +19437,10 @@
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "reaccion_1d_pct": -3.33,
+      "reaccion_ah_pct": 0.0,
+      "enriquecido_por": "ew-daily-results"
     },
     {
       "ticker": "CBRL",
@@ -19379,7 +19456,10 @@
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "reaccion_1d_pct": 4.2,
+      "reaccion_ah_pct": 0.0,
+      "enriquecido_por": "ew-daily-results"
     },
     {
       "ticker": "GIS",
@@ -19395,7 +19475,10 @@
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "reaccion_1d_pct": 0.94,
+      "reaccion_ah_pct": 0.0,
+      "enriquecido_por": "ew-daily-results"
     },
     {
       "ticker": "KBH",
@@ -19418,32 +19501,44 @@
       "fecha": "2026-09-22",
       "eps": 0.82,
       "consenso": 0.74,
-      "whisper": 999,
-      "beat_pct_vs_whisper": -99.92,
-      "resultado": "miss",
+      "whisper": null,
+      "beat_pct_vs_whisper": null,
+      "resultado": "beat",
       "earnings_surprise_pct": 0.10810810810810811,
       "revenue_surprise_pct": 0.03548931044866004,
       "ew_grade": null,
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "consensus_beat_pct": 10.81,
+      "revenue_growth_yoy": 13.23,
+      "resultado_anterior_erroneo": "miss",
+      "correccion": "whisper=999 era valor centinela 'sin whisper', no un numero real. Reclasificado como BEAT vs consenso segun email EW del 22-sep.",
+      "corregido_por": "ew-daily-results",
+      "ts_correccion": "2026-09-23T21:39:48.242205+00:00"
     },
     {
       "ticker": "AYTU",
       "fecha": "2026-09-22",
       "eps": -0.05,
       "consenso": -0.22,
-      "whisper": 999,
-      "beat_pct_vs_whisper": -100.01,
-      "resultado": "miss",
+      "whisper": null,
+      "beat_pct_vs_whisper": null,
+      "resultado": "beat",
       "earnings_surprise_pct": 0.7727272727272727,
       "revenue_surprise_pct": 0.39445887445887445,
       "ew_grade": null,
       "pwr_rating": null,
       "fuente": "ew_api_todaysresults",
       "registrado_por": "sentinel",
-      "ts": "2026-09-23T19:20:51.467121+00:00"
+      "ts": "2026-09-23T19:20:51.467121+00:00",
+      "consensus_beat_pct": 77.27,
+      "revenue_growth_yoy": 6.42,
+      "resultado_anterior_erroneo": "miss",
+      "correccion": "whisper=999 era valor centinela 'sin whisper', no un numero real. Reclasificado como BEAT vs consenso segun email EW del 22-sep.",
+      "corregido_por": "ew-daily-results",
+      "ts_correccion": "2026-09-23T21:39:48.242205+00:00"
     },
     {
       "ticker": "MLKN",
