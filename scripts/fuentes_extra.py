@@ -595,9 +595,25 @@ def parse_fred_csv(txt: str) -> list:
 
 @fuente("fred")
 def fred_series(serie: str, dias: int = 120) -> list | None:
+    """Serie diaria de FRED.
+
+    2026-09-24: FRED rechaza el User-Agent falso de Chrome (`UA`) con la conexión cortada
+    —HTTP 000, ni siquiera un 403— y llevaba caído sin que se notara, porque el sistema es
+    fail-soft. Medido hoy contra fredgraph.csv, las tres series que usa el sistema:
+
+        UA "Mozilla/5.0 ... Chrome/128.0"      → 000, 000, 000
+        UA de contacto (SEC_UA)                → 200, 200, 200
+
+    Con FRED muerto, `macro_extra` devolvía hy_oas=None, nfci=None y curva_10a2a=None, y el
+    régimen macro caía siempre a "neutral" con ajuste 0,0: el sistema operaba ciego a la curva
+    de tipos y a los diferenciales de crédito en pleno ciclo de subidas. Misma lección que la
+    SEC: identificarse honestamente funciona, fingir ser un navegador te bloquea.
+
+    SEC_UA trae ya un valor descriptivo por defecto, así que esto funciona con o sin el secreto.
+    """
     desde = (date.today() - timedelta(days=dias)).isoformat()
     st, txt = _get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={serie}&cosd={desde}",
-                   {"User-Agent": UA}, timeout=15, as_json=False)
+                   {"User-Agent": SEC_UA}, timeout=15, as_json=False)
     vals = parse_fred_csv(txt) if isinstance(txt, str) else []
     if not vals:
         raise RuntimeError(f"HTTP {st}" + (f" ({str(txt)[:60]!r})" if isinstance(txt, str) else ""))
