@@ -1741,6 +1741,80 @@
       "estado": "abierta",
       "orden_id": "ac351208-60a5-44ef-89a9-9f6f25a8725b",
       "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260924-P",
+      "simbolo": "P",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 8.86,
+      "score_base": 7.96,
+      "ajuste_fuentes": 0.9,
+      "fuentes_extra": {
+        "insiders": -0.3,
+        "analistas": 0.8,
+        "sector": 0.4
+      },
+      "fecha_entrada": "2026-09-24",
+      "precio_entrada": 124.88,
+      "precio_stop": 115.04,
+      "precio_tp": 221.08,
+      "stop_pct": 7.73,
+      "rr": 10.0,
+      "qty": 53,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "de0bcd62-0fee-48e4-8f90-5db350362270",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260924-OKTA",
+      "simbolo": "OKTA",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 7.75,
+      "score_base": 6.85,
+      "ajuste_fuentes": 0.9,
+      "fuentes_extra": {
+        "analistas": 0.5,
+        "sector": 0.4
+      },
+      "fecha_entrada": "2026-09-24",
+      "precio_entrada": 205.34,
+      "precio_stop": 190.83,
+      "precio_tp": 346.0,
+      "stop_pct": 6.88,
+      "rr": 10.0,
+      "qty": 36,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "37f49c88-5e29-43e6-bc0d-3f6d31b4b432",
+      "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260924-AMD",
+      "simbolo": "AMD",
+      "tipo": "GH_Actions_open",
+      "fuente": "live_open_scan",
+      "score_entrada": 7.53,
+      "score_base": 6.88,
+      "ajuste_fuentes": 0.65,
+      "fuentes_extra": {
+        "insiders": -0.3,
+        "analistas": 0.55,
+        "sector": 0.4
+      },
+      "fecha_entrada": "2026-09-24",
+      "precio_entrada": 619.29,
+      "precio_stop": 579.93,
+      "precio_tp": 1011.43,
+      "stop_pct": 6.34,
+      "rr": 10.0,
+      "qty": 12,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "d6b1c12e-99ff-4743-becc-e42dbb02b186",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -3070,7 +3144,7 @@
     {
       "ticker": "P",
       "symbol": "P",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 7.96,
       "score_ajustado": 7.96,
       "score_raw": 8.6,
@@ -3089,7 +3163,8 @@
       "expira": "2026-09-24T19:36:12Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-24T13:36:12.717315+00:00",
-      "notas": "1d=+13.8% vol=0.2x 52h_dist=0.0%"
+      "notas": "1d=+13.8% vol=0.2x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-24 13:38"
     },
     {
       "ticker": "ONON",
@@ -3118,7 +3193,7 @@
     {
       "ticker": "OKTA",
       "symbol": "OKTA",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 6.85,
       "score_ajustado": 6.85,
       "score_raw": 7.4,
@@ -3137,7 +3212,8 @@
       "expira": "2026-09-24T19:36:12Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-24T13:36:12.717315+00:00",
-      "notas": "1d=-0.2% vol=0.1x 52h_dist=0.0%"
+      "notas": "1d=-0.2% vol=0.1x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-24 13:38"
     },
     {
       "ticker": "RMBS",
@@ -26189,187 +26265,220 @@
     }
   ],
   "ejecucion_apertura": {
-    "fecha": "2026-09-23",
-    "hora_utc": "18:38",
-    "min_desde_apertura": 308.8,
+    "fecha": "2026-09-24",
+    "hora_utc": "13:38",
+    "min_desde_apertura": 8.6,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
-    "ejecutados": [],
+    "ejecutados": [
+      "P",
+      "OKTA",
+      "AMD"
+    ],
     "descartados": [
-      "IONQ: ya en cartera paper",
-      "FSLY: max posiciones paper 8 (score 8.47<8.5: sin plaza de convicción)",
-      "VICR: max posiciones paper 8 (score 8.15<8.5: sin plaza de convicción)",
-      "SNX: max posiciones paper 8 (score 7.84<8.5: sin plaza de convicción)",
-      "OKTA: max posiciones paper 8 (score 7.38<8.5: sin plaza de convicción)",
-      "VKTX: max posiciones paper 8 (score 7.14<8.5: sin plaza de convicción)",
-      "CRWD: max posiciones paper 8 (score 7.08<8.5: sin plaza de convicción)",
+      "META: ya en cartera paper",
+      "CBRL: max posiciones paper 12 (score 7.40<8.5: sin plaza de convicción)",
+      "RMBS: max posiciones paper 12 (score 7.40<8.5: sin plaza de convicción)",
       "ONON: ya en cartera paper",
-      "COST: max posiciones paper 8 (score 6.47<8.5: sin plaza de convicción)"
+      "CRM: max posiciones paper 12 (score 7.00<8.5: sin plaza de convicción)",
+      "RBLX: ya en cartera paper",
+      "BMNR: score 5.9<6.0",
+      "GRML: score 5.8<6.0",
+      "AAPL: score 5.8<6.0"
     ],
     "ajustes_fuentes": {
-      "IONQ": {
-        "base": 8.15,
-        "paper": 9.2,
-        "real": 8.15,
+      "P": {
+        "base": 7.96,
+        "paper": 8.86,
+        "real": 7.96,
         "partes": {
-          "analistas": 0.2,
+          "insiders": -0.3,
+          "analistas": 0.8,
+          "sector": 0.4
+        }
+      },
+      "META": {
+        "base": 8.75,
+        "paper": 8.85,
+        "real": 8.75,
+        "partes": {
+          "insiders": -0.3,
           "opciones": 0.25,
-          "sector": 0.4,
-          "social": 0.2
-        }
-      },
-      "FSLY": {
-        "base": 7.87,
-        "paper": 8.47,
-        "real": 7.87,
-        "partes": {
-          "analistas": -0.3,
-          "opciones": 0.5,
-          "sector": 0.4
-        }
-      },
-      "VICR": {
-        "base": 7.5,
-        "paper": 8.15,
-        "real": 7.5,
-        "partes": {
-          "opciones": 0.25,
-          "sector": 0.4
-        }
-      },
-      "SNX": {
-        "base": 6.94,
-        "paper": 7.84,
-        "real": 6.94,
-        "partes": {
-          "opciones": 0.5,
-          "sector": 0.4
+          "sector": 0.15
         }
       },
       "OKTA": {
-        "base": 6.48,
-        "paper": 7.38,
-        "real": 6.48,
+        "base": 6.85,
+        "paper": 7.75,
+        "real": 6.85,
         "partes": {
           "analistas": 0.5,
           "sector": 0.4
         }
       },
-      "VKTX": {
-        "base": 7.04,
-        "paper": 7.14,
-        "real": 7.04,
+      "AMD": {
+        "base": 6.88,
+        "paper": 7.53,
+        "real": 6.88,
         "partes": {
-          "analistas": 0.2,
-          "opciones": 0.5,
-          "corto": -0.2,
+          "insiders": -0.3,
+          "analistas": 0.55,
+          "sector": 0.4
+        }
+      },
+      "CBRL": {
+        "base": 7.8,
+        "paper": 7.4,
+        "real": 7.4,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.25,
+          "corto": -0.4,
           "sector": -0.4
         }
       },
-      "CRWD": {
-        "base": 6.48,
-        "paper": 7.08,
-        "real": 6.48,
+      "RMBS": {
+        "base": 6.3,
+        "paper": 7.4,
+        "real": 6.3,
         "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
+          "analistas": 0.2,
+          "opciones": 0.5,
           "sector": 0.4
         }
       },
       "ONON": {
-        "base": 7.04,
-        "paper": 6.94,
-        "real": 6.94,
+        "base": 7.31,
+        "paper": 7.26,
+        "real": 7.26,
         "partes": {
-          "analistas": 0.05,
-          "opciones": 0.25,
+          "analistas": 0.35,
           "sector": -0.4
         }
       },
-      "COST": {
-        "base": 6.37,
-        "paper": 6.47,
-        "real": 6.37,
+      "CRM": {
+        "base": 5.0,
+        "paper": 7.0,
+        "real": 5.0,
         "partes": {
-          "analistas": 0.25,
-          "opciones": 0.25,
+          "insiders": 0.6,
+          "analistas": 0.8,
+          "opciones": 0.5,
+          "sector": 0.4
+        }
+      },
+      "RBLX": {
+        "base": 5.65,
+        "paper": 6.6,
+        "real": 5.65,
+        "partes": {
+          "analistas": 0.8,
+          "sector": 0.15
+        }
+      },
+      "BMNR": {
+        "base": 5.83,
+        "paper": 5.88,
+        "real": 5.83,
+        "partes": {
+          "analistas": 0.45,
           "sector": -0.4
+        }
+      },
+      "GRML": {
+        "base": 5.83,
+        "paper": 5.83,
+        "real": 5.83,
+        "partes": {
+          "insiders": 0.6,
+          "corto": -0.2,
+          "sector": -0.4
+        }
+      },
+      "AAPL": {
+        "base": 5.0,
+        "paper": 5.8,
+        "real": 5.0,
+        "partes": {
+          "analistas": 0.15,
+          "opciones": 0.25,
+          "sector": 0.4
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-23T18:38Z",
+    "ts": "2026-09-24T13:38Z",
     "macro": {
-      "hy_oas": null,
-      "hy_cambio_20": null,
-      "nfci": null,
-      "curva_10a2a": null,
-      "credito_hyg_ief_20": 1.62,
-      "fear_greed": 36.3,
+      "hy_oas": 2.68,
+      "hy_cambio_20": -0.02,
+      "nfci": -0.555,
+      "curva_10a2a": 0.26,
+      "credito_hyg_ief_20": 1.09,
+      "fear_greed": 32.5,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 581,
+        "ultimo_error": null
+      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 73,
+        "ms": 146,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 505,
+        "ms": 414,
         "ultimo_error": null
       },
-      "fred": {
-        "ok": 0,
-        "fallos": 3,
-        "ms": 94888,
-        "ultimo_error": "RuntimeError: HTTP 0"
-      },
       "yahoo_ficha": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 1618,
+        "ms": 2834,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 30084,
+        "ms": 39272,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 543,
+        "ms": 887,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 1322,
+        "ms": 1596,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 1456,
+        "ms": 834,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 9,
+        "ok": 12,
         "fallos": 0,
-        "ms": 1285,
+        "ms": 3463,
         "ultimo_error": null
       }
     }
