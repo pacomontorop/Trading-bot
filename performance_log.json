@@ -26419,22 +26419,21 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-24",
-    "hora_utc": "14:39",
-    "min_desde_apertura": 69.9,
+    "hora_utc": "15:40",
+    "min_desde_apertura": 130.7,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "OKTA: ya en cartera paper",
       "P: ya en cartera paper",
-      "NBIS: max posiciones paper 12 (score 7.67<8.5: sin plaza de convicción)",
-      "GDDY: max posiciones paper 12 (score 7.11<8.5: sin plaza de convicción)",
+      "UNG: max posiciones paper 12 (score 7.07<8.5: sin plaza de convicción)",
       "ILMN: max posiciones paper 12 (score 6.73<8.5: sin plaza de convicción)",
-      "TWLO: ya en cartera paper",
       "CBRL: max posiciones paper 12 (score 6.45<8.5: sin plaza de convicción)",
-      "MRNA: max posiciones paper 12 (score 6.18<8.5: sin plaza de convicción)",
-      "NTRA: score 5.9<6.0",
-      "META: score 5.7<6.0"
+      "META: ya en cartera paper",
+      "GRML: max posiciones paper 12 (score 6.11<8.5: sin plaza de convicción)",
+      "ONON: score 5.9<6.0",
+      "TWST: score 5.0<6.0"
     ],
     "ajustes_fuentes": {
       "OKTA": {
@@ -26448,33 +26447,22 @@
       },
       "P": {
         "base": 7.22,
-        "paper": 8.62,
+        "paper": 8.37,
         "real": 7.22,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.8,
-          "opciones": 0.5,
+          "opciones": 0.25,
           "sector": 0.4
         }
       },
-      "NBIS": {
+      "UNG": {
         "base": 7.22,
-        "paper": 7.67,
-        "real": 7.22,
+        "paper": 7.07,
+        "real": 7.07,
         "partes": {
-          "opciones": 0.5,
-          "corto": -0.2,
-          "sector": 0.15
-        }
-      },
-      "GDDY": {
-        "base": 6.76,
-        "paper": 7.11,
-        "real": 6.76,
-        "partes": {
-          "analistas": -0.55,
-          "opciones": 0.5,
-          "sector": 0.4
+          "opciones": 0.25,
+          "sector": -0.4
         }
       },
       "ILMN": {
@@ -26484,14 +26472,6 @@
         "partes": {
           "analistas": 0.4,
           "sector": -0.15
-        }
-      },
-      "TWLO": {
-        "base": 6.3,
-        "paper": 6.7,
-        "real": 6.3,
-        "partes": {
-          "sector": 0.4
         }
       },
       "CBRL": {
@@ -26505,110 +26485,120 @@
           "sector": -0.4
         }
       },
-      "MRNA": {
-        "base": 6.48,
-        "paper": 6.18,
-        "real": 6.18,
-        "partes": {
-          "analistas": 0.25,
-          "opciones": -0.4,
-          "sector": -0.15
-        }
-      },
-      "NTRA": {
-        "base": 6.48,
-        "paper": 5.88,
-        "real": 5.88,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": -0.15,
-          "sector": -0.15
-        }
-      },
       "META": {
-        "base": 5.62,
-        "paper": 5.72,
-        "real": 5.62,
+        "base": 6.02,
+        "paper": 6.12,
+        "real": 6.02,
         "partes": {
           "insiders": -0.3,
           "opciones": 0.25,
           "sector": 0.15
+        }
+      },
+      "GRML": {
+        "base": 6.11,
+        "paper": 6.11,
+        "real": 6.11,
+        "partes": {
+          "insiders": 0.6,
+          "corto": -0.2,
+          "sector": -0.4
+        }
+      },
+      "ONON": {
+        "base": 5.93,
+        "paper": 5.88,
+        "real": 5.88,
+        "partes": {
+          "analistas": 0.35,
+          "sector": -0.4
+        }
+      },
+      "TWST": {
+        "base": 5.83,
+        "paper": 5.03,
+        "real": 5.03,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": -0.15,
+          "corto": -0.2,
+          "sector": -0.15
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-24T14:39Z",
+    "ts": "2026-09-24T15:40Z",
     "macro": {
       "hy_oas": 2.73,
       "hy_cambio_20": 0.06,
       "nfci": -0.555,
       "curva_10a2a": 0.26,
-      "credito_hyg_ief_20": 1.28,
-      "fear_greed": 35.9,
+      "credito_hyg_ief_20": 1.33,
+      "fear_greed": 33.6,
       "regimen": "neutral",
       "ajuste": 0.0
     },
     "estado": {
-      "cnn_fear_greed": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 196,
-        "ultimo_error": null
-      },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1927,
+        "ms": 1079,
+        "ultimo_error": null
+      },
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 253,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 515,
+        "ms": 523,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 3163,
+        "ms": 3913,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 44061,
+        "ms": 28698,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 727,
+        "ms": 1942,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1731,
+        "ms": 1684,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 896,
+        "ms": 1551,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 891,
+        "ms": 926,
         "ultimo_error": null
       }
     }
