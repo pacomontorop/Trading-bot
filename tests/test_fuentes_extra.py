@@ -228,3 +228,30 @@ def test_macro_respaldo_credito_sin_fred():
     # con FRED disponible manda FRED
     calma = [("d", 3.0)] * 25
     assert fx.regimen_macro(calma, [("d", -0.5)], None, None, {"rel20": -5})["ajuste"] == 0.0
+
+
+def test_fred_no_usa_el_user_agent_falso_de_navegador(monkeypatch):
+    """FRED corta la conexion con el UA de Chrome: debe identificarse con el UA de contacto.
+
+    Regresion del 24-sep: las tres series (T10Y2Y, BAMLH0A0HYM2, NFCI) daban HTTP 000 con el
+    UA falso y 200 con el de contacto, y el regimen macro llevaba caido a "neutral" sin avisar.
+    """
+    vistos = {}
+
+    def fake_get(url, headers=None, timeout=12, retries=2, as_json=True):
+        vistos["url"] = url
+        vistos["ua"] = (headers or {}).get("User-Agent")
+        return 200, "observation_date,T10Y2Y\n2026-09-23,0.26\n"
+
+    monkeypatch.setattr(fx, "_get", fake_get)
+    vals = fx.fred_series("T10Y2Y", dias=30)
+
+    assert vals == [("2026-09-23", 0.26)], vals
+    assert vistos["ua"] == fx.SEC_UA
+    assert "Mozilla" not in vistos["ua"] and "Chrome" not in vistos["ua"], vistos["ua"]
+
+
+def test_parse_fred_csv_acepta_la_cabecera_nueva():
+    """FRED cambio la cabecera de DATE a observation_date; el parser salta la primera fila."""
+    txt = "observation_date,NFCI\n2026-09-11,-0.55\n2026-09-18,.\n"
+    assert fx.parse_fred_csv(txt) == [("2026-09-11", -0.55)]
