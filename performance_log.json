@@ -1815,6 +1815,30 @@
       "estado": "abierta",
       "orden_id": "d6b1c12e-99ff-4743-becc-e42dbb02b186",
       "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260924-UNG",
+      "simbolo": "UNG",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 8.9,
+      "score_base": 8.8,
+      "ajuste_fuentes": 0.1,
+      "fuentes_extra": {
+        "opciones": 0.5,
+        "sector": -0.4
+      },
+      "fecha_entrada": "2026-09-24",
+      "precio_entrada": 11.51,
+      "precio_stop": 11.01,
+      "precio_tp": 16.49,
+      "stop_pct": 4.33,
+      "rr": 10.0,
+      "qty": 932,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "6d0f7078-2afe-45e3-9498-df2dcaf29b3c",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -3218,7 +3242,7 @@
     {
       "ticker": "UNG",
       "symbol": "UNG",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 8.8,
       "score_ajustado": 8.8,
       "score_raw": 9.5,
@@ -3237,7 +3261,8 @@
       "expira": "2026-09-25T00:36:51Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-24T18:36:51.909534+00:00",
-      "notas": "1d=+6.1% vol=3.0x 52h_dist=0.0%"
+      "notas": "1d=+6.1% vol=3.0x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-24 18:39"
     },
     {
       "ticker": "P",
@@ -26262,23 +26287,33 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-24",
-    "hora_utc": "17:59",
-    "min_desde_apertura": 269.2,
+    "hora_utc": "18:39",
+    "min_desde_apertura": 309.3,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
-    "ejecutados": [],
+    "ejecutados": [
+      "UNG"
+    ],
     "descartados": [
-      "P: ya en cartera paper",
       "OKTA: ya en cartera paper",
+      "P: ya en cartera paper",
       "META: ya en cartera paper",
-      "NBIS: max posiciones paper 12 (score 8.25<8.5: sin plaza de convicción)",
+      "NBIS: max posiciones paper 12 (score 8.45<8.5: sin plaza de convicción)",
       "IONQ: ya en cartera paper",
-      "UNG: max posiciones paper 12 (score 7.97<8.5: sin plaza de convicción)",
-      "TWLO: ya en cartera paper",
-      "GRML: max posiciones paper 12 (score 6.57<8.5: sin plaza de convicción)",
-      "CBRL: max posiciones paper 12 (score 6.45<8.5: sin plaza de convicción)"
+      "MRNA: max posiciones paper 12 (score 6.77<8.5: sin plaza de convicción)",
+      "CBRL: max posiciones paper 12 (score 6.45<8.5: sin plaza de convicción)",
+      "TWST: score 6.0<6.0"
     ],
     "ajustes_fuentes": {
+      "OKTA": {
+        "base": 9.26,
+        "paper": 10.0,
+        "real": 9.26,
+        "partes": {
+          "analistas": 0.5,
+          "sector": 0.4
+        }
+      },
       "P": {
         "base": 8.7,
         "paper": 10.0,
@@ -26290,19 +26325,19 @@
           "sector": 0.4
         }
       },
-      "OKTA": {
-        "base": 8.52,
-        "paper": 9.42,
-        "real": 8.52,
+      "UNG": {
+        "base": 8.8,
+        "paper": 8.9,
+        "real": 8.8,
         "partes": {
-          "analistas": 0.5,
-          "sector": 0.4
+          "opciones": 0.5,
+          "sector": -0.4
         }
       },
       "META": {
-        "base": 7.96,
-        "paper": 8.26,
-        "real": 7.96,
+        "base": 8.24,
+        "paper": 8.54,
+        "real": 8.24,
         "partes": {
           "insiders": -0.3,
           "opciones": 0.45,
@@ -26311,13 +26346,14 @@
       },
       "NBIS": {
         "base": 7.5,
-        "paper": 8.25,
+        "paper": 8.45,
         "real": 7.5,
         "partes": {
           "analistas": 0.55,
           "opciones": 0.25,
           "corto": -0.2,
-          "sector": 0.15
+          "sector": 0.15,
+          "social": 0.2
         }
       },
       "IONQ": {
@@ -26330,31 +26366,13 @@
           "sector": 0.4
         }
       },
-      "UNG": {
-        "base": 7.87,
-        "paper": 7.97,
-        "real": 7.87,
+      "MRNA": {
+        "base": 6.67,
+        "paper": 6.77,
+        "real": 6.67,
         "partes": {
-          "opciones": 0.5,
-          "sector": -0.4
-        }
-      },
-      "TWLO": {
-        "base": 6.48,
-        "paper": 6.88,
-        "real": 6.48,
-        "partes": {
-          "sector": 0.4
-        }
-      },
-      "GRML": {
-        "base": 6.57,
-        "paper": 6.57,
-        "real": 6.57,
-        "partes": {
-          "insiders": 0.6,
-          "corto": -0.2,
-          "sector": -0.4
+          "analistas": 0.25,
+          "sector": -0.15
         }
       },
       "CBRL": {
@@ -26367,19 +26385,30 @@
           "corto": -0.4,
           "sector": -0.4
         }
+      },
+      "TWST": {
+        "base": 6.76,
+        "paper": 5.96,
+        "real": 5.96,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": -0.15,
+          "corto": -0.2,
+          "sector": -0.15
+        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-24T17:59Z",
+    "ts": "2026-09-24T18:39Z",
     "macro": {
       "hy_oas": 2.73,
       "hy_cambio_20": 0.06,
       "nfci": -0.555,
       "curva_10a2a": 0.26,
-      "credito_hyg_ief_20": 1.35,
-      "fear_greed": 34.9,
+      "credito_hyg_ief_20": 1.33,
+      "fear_greed": 35.3,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -26387,25 +26416,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 75,
+        "ms": 240,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1354,
+        "ms": 2787,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 517,
+        "ms": 585,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1522,
+        "ms": 2597,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26417,31 +26446,31 @@
       "insiders": {
         "ok": 9,
         "fallos": 0,
-        "ms": 32401,
+        "ms": 37578,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 9,
         "fallos": 0,
-        "ms": 808,
+        "ms": 869,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1216,
+        "ms": 1930,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 9,
         "fallos": 0,
-        "ms": 1490,
+        "ms": 1334,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 9,
         "fallos": 0,
-        "ms": 13234,
+        "ms": 1112,
         "ultimo_error": null
       }
     }
