@@ -24624,7 +24624,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-25T13:35Z",
+    "ts": "2026-09-25T14:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -24656,19 +24656,19 @@
       },
       "fred": {
         "ok": true,
-        "detalle": "HY OAS 2.73"
+        "detalle": "HY OAS 2.8"
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 1.39}"
+        "detalle": "{'rel20': 1.44}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 35.6, 'rating': 'fear'}"
+        "detalle": "{'score': 37.1, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 10, 'menciones': 47, 'menciones_24h_antes': 63, 'ratio_24h': 0.75}"
+        "detalle": "{'en_ranking': True, 'rank': 12, 'menciones': 44, 'menciones_24h_antes': 60, 'ratio_24h': 0.73}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24676,7 +24676,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.5"
+        "detalle": "C/P 1.87"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -24684,21 +24684,36 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.55, 'rs20': 4.11}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.6, 'rs20': 4.15}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-25T13:35Z",
+    "ts": "2026-09-25T14:35Z",
     "entrada": "2026-09-25",
     "salida": "2026-09-28",
     "eventos": 24,
     "evaluados": 10,
     "macro": {
-      "vix": 15.22,
+      "vix": 15.74,
       "spy_above_ma50": true
     },
     "top": [
+      {
+        "ticker": "KMX",
+        "score": 5.75,
+        "earnings_fecha": "2026-09-29",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "whisper": 2.0,
+          "beat_rate": 1.0,
+          "reaccion": -0.5,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
       {
         "ticker": "CCL",
         "score": 4.99,
@@ -24715,21 +24730,6 @@
         }
       },
       {
-        "ticker": "KMX",
-        "score": 4.75,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "whisper": 2.0,
-          "beat_rate": 0.0,
-          "reaccion": -0.5,
-          "revisiones": 0.75,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
         "ticker": "IDT",
         "score": 3.5,
         "earnings_fecha": "2026-09-28",
@@ -24738,16 +24738,6 @@
           "beat_rate": 2.0,
           "reaccion": -0.5,
           "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "INTG",
-        "score": 2.0,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
           "momentum5d": 1.0,
           "macro": 1.0
         }
@@ -24782,6 +24772,16 @@
         "earnings_timing": "desconocido",
         "score_breakdown": {
           "revisiones": 0.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "INTG",
+        "score": 1.0,
+        "earnings_fecha": "2026-09-29",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
           "momentum5d": 0.0,
           "macro": 1.0
         }
@@ -24839,7 +24839,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-25T13:35Z",
+    "ts": "2026-09-25T14:35Z",
     "calendario": {
       "2026-09-25": [
         {
@@ -24967,7 +24967,7 @@
           "ticker": "MTN",
           "company": "Vail Resorts, Inc.",
           "releaseTime": 3,
-          "total": 7,
+          "total": 8,
           "fuente": "ew"
         },
         {
@@ -24981,7 +24981,7 @@
           "ticker": "JEF",
           "company": "Jefferies Financial Group Inc.",
           "releaseTime": 3,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -25095,21 +25095,21 @@
           "ticker": "CCL",
           "company": "Carnival Corporation & plc",
           "releaseTime": 1,
-          "total": 20,
+          "total": 21,
           "fuente": "ew"
         },
         {
           "ticker": "KMX",
           "company": "CarMax, Inc.",
           "releaseTime": 1,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
           "ticker": "UEC",
           "company": "Uranium Energy Corp.",
           "releaseTime": 1,
-          "total": 7,
+          "total": 8,
           "fuente": "ew"
         },
         {
@@ -25258,7 +25258,7 @@
           "ticker": "MU",
           "company": "Micron Technology, Inc.",
           "releaseTime": 3,
-          "total": 171,
+          "total": 173,
           "fuente": "ew"
         },
         {
@@ -25520,9 +25520,9 @@
         "asimetria_pct": 20.9,
         "earnings_fecha": "2026-09-29",
         "earnings_timing": "BMO",
-        "beat_rate": 50.0,
+        "beat_rate": 62.5,
         "reaccion_media_pct": -6.29,
-        "score": 4.75
+        "score": 5.75
       },
       "MTN": {
         "consenso_eps": -5.37,
@@ -25592,7 +25592,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": null,
         "reaccion_media_pct": null,
-        "score": 2.0
+        "score": 1.0
       },
       "GTEN": {
         "consenso_eps": null,
@@ -25613,9 +25613,9 @@
         "estimate": 6.48,
         "whisper": 6.54,
         "revenue": 95723.0,
-        "revenueEstimate": 94780.0,
+        "revenueEstimate": null,
         "earningsSurprise": 0.009174311926605505,
-        "revenueSurprise": 0.009949356404304706,
+        "revenueSurprise": null,
         "subject": "Costco Wholesale Beat Expectations"
       },
       {
@@ -25625,9 +25625,9 @@
         "estimate": 999.0,
         "whisper": 999,
         "revenue": 20.102,
-        "revenueEstimate": 19.74,
+        "revenueEstimate": null,
         "earningsSurprise": null,
-        "revenueSurprise": 0.01833839918946302,
+        "revenueSurprise": null,
         "subject": "Legacy Education Inc. Reported Earnings"
       },
       {
@@ -25637,9 +25637,9 @@
         "estimate": -3.42,
         "whisper": 999,
         "revenue": 216.8,
-        "revenueEstimate": 224.69,
+        "revenueEstimate": null,
         "earningsSurprise": -0.06140350877192982,
-        "revenueSurprise": -0.035115047398638126,
+        "revenueSurprise": null,
         "subject": "Scholastic Missed Consensus Estimates"
       },
       {
@@ -25649,9 +25649,9 @@
         "estimate": 4.65,
         "whisper": 4.74,
         "revenue": 21558.406,
-        "revenueEstimate": 18620.0,
+        "revenueEstimate": null,
         "earningsSurprise": 0.19831223628691982,
-        "revenueSurprise": 0.15780912996777657,
+        "revenueSurprise": null,
         "subject": "TD SYNNEX Beat Expectations"
       },
       {
@@ -25661,9 +25661,9 @@
         "estimate": 2.06,
         "whisper": 2.09,
         "revenue": 3200.3,
-        "revenueEstimate": 3200.0,
+        "revenueEstimate": null,
         "earningsSurprise": -0.019138755980861243,
-        "revenueSurprise": 9.375e-05,
+        "revenueSurprise": null,
         "subject": "Darden Restaurants Missed Expectations"
       },
       {
@@ -25673,9 +25673,9 @@
         "estimate": 0.04,
         "whisper": 0.04,
         "revenue": 163.3,
-        "revenueEstimate": 143.0,
+        "revenueEstimate": null,
         "earningsSurprise": 0.75,
-        "revenueSurprise": 0.14195804195804196,
+        "revenueSurprise": null,
         "subject": "BlackBerry Limited Beat Expectations"
       },
       {
@@ -25685,9 +25685,9 @@
         "estimate": -0.02,
         "whisper": 999,
         "revenue": 6.543,
-        "revenueEstimate": 5.11,
+        "revenueEstimate": null,
         "earningsSurprise": 0,
-        "revenueSurprise": 0.28043052837573385,
+        "revenueSurprise": null,
         "subject": "AtlasClear Reported In-line with Estimates"
       },
       {
@@ -25697,9 +25697,9 @@
         "estimate": -0.1,
         "whisper": 999,
         "revenue": 0.013,
-        "revenueEstimate": 1.38,
+        "revenueEstimate": null,
         "earningsSurprise": -1.4,
-        "revenueSurprise": -0.9905797101449275,
+        "revenueSurprise": null,
         "subject": "NeoVolta Missed Consensus Estimates"
       },
       {
@@ -25709,9 +25709,9 @@
         "estimate": 1.45,
         "whisper": 1.45,
         "revenue": 938.175,
-        "revenueEstimate": 940.38,
+        "revenueEstimate": null,
         "earningsSurprise": 0.04827586206896552,
-        "revenueSurprise": -0.002344796784278696,
+        "revenueSurprise": null,
         "subject": "H.B. Fuller Beat Expectations"
       },
       {
@@ -25721,9 +25721,9 @@
         "estimate": -0.06,
         "whisper": 999,
         "revenue": 324.418,
-        "revenueEstimate": 324.97,
+        "revenueEstimate": null,
         "earningsSurprise": 0.8333333333333334,
-        "revenueSurprise": -0.0016986183340000616,
+        "revenueSurprise": null,
         "subject": "Stitch Fix Beat Consensus Estimates"
       },
       {
@@ -25733,9 +25733,9 @@
         "estimate": 1.35,
         "whisper": 1.38,
         "revenue": 3013.981,
-        "revenueEstimate": 2970.0,
+        "revenueEstimate": null,
         "earningsSurprise": 0.007246376811594203,
-        "revenueSurprise": 0.014808417508417509,
+        "revenueSurprise": null,
         "subject": "Cintas Beat Expectations"
       },
       {
@@ -25745,9 +25745,9 @@
         "estimate": 1.33,
         "whisper": 1.35,
         "revenue": 1630.5,
-        "revenueEstimate": 1620.0,
+        "revenueEstimate": null,
         "earningsSurprise": -0.007407407407407408,
-        "revenueSurprise": 0.006481481481481481,
+        "revenueSurprise": null,
         "subject": "Paychex Missed Expectations"
       },
       {
@@ -25757,9 +25757,9 @@
         "estimate": 0.2,
         "whisper": 0.29,
         "revenue": 849.342,
-        "revenueEstimate": 831.12,
+        "revenueEstimate": null,
         "earningsSurprise": 2.413793103448276,
-        "revenueSurprise": 0.02192463182211955,
+        "revenueSurprise": null,
         "subject": "Cracker Barrel Old Country Store Beat Expectations"
       },
       {
@@ -25769,9 +25769,9 @@
         "estimate": 0.72,
         "whisper": 0.74,
         "revenue": 4389.5,
-        "revenueEstimate": 4330.0,
+        "revenueEstimate": null,
         "earningsSurprise": 0.013513513513513514,
-        "revenueSurprise": 0.01374133949191686,
+        "revenueSurprise": null,
         "subject": "General Mills Beat Expectations"
       }
     ]
