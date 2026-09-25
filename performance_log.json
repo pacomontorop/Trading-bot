@@ -3606,6 +3606,38 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-25T18:36:55.908422+00:00",
       "notas": "1d=+5.9% vol=0.6x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "JBL",
+      "symbol": "JBL",
+      "estado": "pendiente_ew",
+      "score": 6.06,
+      "score_ajustado": 6.06,
+      "score_breakdown": {
+        "whisper": 0.16,
+        "beat_rate": 3.0,
+        "reaccion": 1.15,
+        "revisiones": 0.75,
+        "momentum5d": 0.0,
+        "macro": 1.0
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 316.7,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-09-28T20:00:00Z",
+      "fecha_entrada_prevista": "2026-09-28",
+      "cerrar_antes": "2026-09-29",
+      "earnings_fecha": "2026-09-30",
+      "earnings_timing": "BMO",
+      "consenso_eps": 4.05,
+      "whisper": 4.1,
+      "asimetria_pct": 1.23,
+      "beat_rate": 100.0,
+      "reaccion_media_pct": 3.06,
+      "momentum_5d_pct": 5.74,
+      "analistas": 10,
+      "fecha_scan": "2026-09-25T21:40:35Z"
     }
   ],
   "macro_context": {
@@ -24747,7 +24779,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-25T18:36Z",
+    "ts": "2026-09-25T21:40Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -24783,15 +24815,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 1.28}"
+        "detalle": "{'rel20': 1.17}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 37.9, 'rating': 'fear'}"
+        "detalle": "{'score': 37.0, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 11, 'menciones': 47, 'menciones_24h_antes': 48, 'ratio_24h': 0.98}"
+        "detalle": "{'en_ranking': True, 'rank': 9, 'menciones': 49, 'menciones_24h_antes': 46, 'ratio_24h': 1.07}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24799,7 +24831,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.91"
+        "detalle": "C/P 1.82"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -24807,146 +24839,112 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.54, 'rs20': 4.1}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.33, 'rs20': 3.89}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-25T18:36Z",
-    "entrada": "2026-09-25",
-    "salida": "2026-09-28",
-    "eventos": 24,
-    "evaluados": 10,
+    "ts": "2026-09-25T21:40Z",
+    "entrada": "2026-09-28",
+    "salida": "2026-09-29",
+    "eventos": 19,
+    "evaluados": 7,
     "macro": {
-      "vix": 14.98,
+      "vix": 14.87,
       "spy_above_ma50": true
     },
     "top": [
       {
-        "ticker": "KMX",
-        "score": 5.75,
-        "earnings_fecha": "2026-09-29",
+        "ticker": "JBL",
+        "score": 6.06,
+        "earnings_fecha": "2026-09-30",
         "earnings_timing": "BMO",
         "score_breakdown": {
-          "whisper": 2.0,
-          "beat_rate": 1.0,
-          "reaccion": -0.5,
+          "whisper": 0.16,
+          "beat_rate": 3.0,
+          "reaccion": 1.15,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "FDS",
+        "score": 5.24,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "whisper": 0.25,
+          "beat_rate": 2.0,
+          "reaccion": 0.24,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
+          "macro": 1.0
         }
       },
       {
-        "ticker": "CCL",
-        "score": 4.99,
+        "ticker": "AIR",
+        "score": 5.12,
         "earnings_fecha": "2026-09-29",
-        "earnings_timing": "BMO",
+        "earnings_timing": "AMC",
         "score_breakdown": {
-          "whisper": 0.1,
           "beat_rate": 3.0,
-          "reaccion": 0.39,
-          "revisiones": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "IDT",
-        "score": 3.5,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 2.0,
-          "reaccion": -0.5,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "GTEN",
-        "score": 2.0,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "TRAK",
-        "score": 1.0,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "reaccion": 0.0,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "IPX",
-        "score": 1.0,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "revisiones": 0.0,
+          "reaccion": 0.37,
+          "revisiones": 0.75,
           "momentum5d": 0.0,
           "macro": 1.0
         }
       },
       {
-        "ticker": "INTG",
-        "score": 1.0,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "momentum5d": 0.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "MTN",
-        "score": 0.98,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "whisper": 0.0,
-          "beat_rate": -1.0,
-          "reaccion": 0.48,
-          "revisiones": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "JEF",
-        "score": 0.5,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
+        "ticker": "CALM",
+        "score": 1.87,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
         "score_breakdown": {
           "beat_rate": 0.0,
-          "reaccion": -0.5,
+          "reaccion": 0.87,
+          "revisiones": 0.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "SA",
+        "score": 1.26,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": -1.0,
+          "reaccion": 0.26,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "CAG",
+        "score": 1.0,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "whisper": 0.0,
+          "beat_rate": 0.0,
+          "reaccion": 0.0,
           "revisiones": -1.0,
           "momentum5d": 1.0,
           "macro": 1.0
         }
       },
       {
-        "ticker": "UEC",
+        "ticker": "CNXC",
         "score": 0.0,
         "earnings_fecha": "2026-09-29",
-        "earnings_timing": "BMO",
+        "earnings_timing": "AMC",
         "score_breakdown": {
-          "whisper": -1.0,
+          "whisper": -0.15,
           "beat_rate": -1.0,
-          "reaccion": 0.0,
-          "revisiones": 0.0,
+          "reaccion": -0.5,
+          "revisiones": -1.0,
           "momentum5d": 1.0,
           "macro": 1.0
         }
@@ -24962,100 +24960,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-25T18:36Z",
+    "ts": "2026-09-25T21:40Z",
     "calendario": {
-      "2026-09-25": [
-        {
-          "ticker": "TBN",
-          "company": "Tamboran Resources Corporation",
-          "releaseTime": 1,
-          "total": 9,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "AFB",
-          "company": "Alliance National Municipal Income Fund, Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "AMTY",
-          "company": "Amerityre Corp.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "FGPR",
-          "company": "Ferrellgas Partners, L.P.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "IVA",
-          "company": "Inventiva S.A.",
-          "releaseTime": 3,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "NB",
-          "company": "NioCorp Developments Ltd.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "HTLM",
-          "company": "HomesToLife Ltd",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ZONE",
-          "company": "Zone Frontier Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "LITS",
-          "company": "Lite Strategy, Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CELU",
-          "company": "Celularity Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ENLV",
-          "company": "Enlivex Ltd.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "LNAI",
-          "company": "Lunai Bioworks Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        }
-      ],
       "2026-09-28": [
         {
           "ticker": "GNS",
           "company": "Genius Group Limited ",
           "releaseTime": 1,
-          "total": 3,
+          "total": 4,
           "fuente": "ew"
         },
         {
@@ -25225,7 +25137,7 @@
           "ticker": "KMX",
           "company": "CarMax, Inc.",
           "releaseTime": 1,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -25381,7 +25293,7 @@
           "ticker": "MU",
           "company": "Micron Technology, Inc.",
           "releaseTime": 3,
-          "total": 178,
+          "total": 181,
           "fuente": "ew"
         },
         {
@@ -25624,108 +25536,79 @@
           "total": 7,
           "fuente": "nasdaq"
         }
-      ]
+      ],
+      "2026-10-02": []
     },
     "tickers": {
-      "CCL": {
-        "consenso_eps": 1.36,
-        "whisper": 1.37,
-        "asimetria_pct": 0.74,
-        "earnings_fecha": "2026-09-29",
+      "CAG": {
+        "consenso_eps": 0.31,
+        "whisper": 0.31,
+        "asimetria_pct": 0.0,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
+        "beat_rate": 50.0,
+        "reaccion_media_pct": -1.47,
+        "score": 1.0
+      },
+      "JBL": {
+        "consenso_eps": 4.05,
+        "whisper": 4.1,
+        "asimetria_pct": 1.23,
+        "earnings_fecha": "2026-09-30",
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
-        "reaccion_media_pct": 1.05,
-        "score": 4.99
+        "reaccion_media_pct": 3.06,
+        "score": 6.06
       },
-      "KMX": {
-        "consenso_eps": 0.67,
-        "whisper": 0.81,
-        "asimetria_pct": 20.9,
+      "CNXC": {
+        "consenso_eps": 2.71,
+        "whisper": 2.67,
+        "asimetria_pct": -1.48,
         "earnings_fecha": "2026-09-29",
-        "earnings_timing": "BMO",
-        "beat_rate": 62.5,
-        "reaccion_media_pct": -6.29,
-        "score": 5.75
-      },
-      "MTN": {
-        "consenso_eps": -5.37,
-        "whisper": -5.37,
-        "asimetria_pct": 0.0,
-        "earnings_fecha": "2026-09-28",
         "earnings_timing": "AMC",
         "beat_rate": 37.5,
-        "reaccion_media_pct": 1.29,
-        "score": 0.98
-      },
-      "UEC": {
-        "consenso_eps": -0.04,
-        "whisper": -0.05,
-        "asimetria_pct": -25.0,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "BMO",
-        "beat_rate": 0.0,
-        "reaccion_media_pct": -1.97,
+        "reaccion_media_pct": -3.46,
         "score": 0.0
       },
-      "JEF": {
-        "consenso_eps": 1.04,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
-        "beat_rate": 50.0,
-        "reaccion_media_pct": -4.58,
-        "score": 0.5
-      },
-      "IDT": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-09-28",
-        "earnings_timing": "AMC",
+      "FDS": {
+        "consenso_eps": 4.32,
+        "whisper": 4.4,
+        "asimetria_pct": 1.85,
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
         "beat_rate": 75.0,
-        "reaccion_media_pct": -5.49,
-        "score": 3.5
+        "reaccion_media_pct": 0.64,
+        "score": 5.24
       },
-      "TRAK": {
-        "consenso_eps": null,
+      "AIR": {
+        "consenso_eps": 999.0,
         "whisper": null,
         "asimetria_pct": null,
-        "earnings_fecha": "2026-09-28",
+        "earnings_fecha": "2026-09-29",
         "earnings_timing": "AMC",
-        "beat_rate": 37.5,
-        "reaccion_media_pct": -0.97,
-        "score": 1.0
+        "beat_rate": 100.0,
+        "reaccion_media_pct": 0.98,
+        "score": 5.12
       },
-      "IPX": {
-        "consenso_eps": -0.16,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 1.0
-      },
-      "INTG": {
+      "CALM": {
         "consenso_eps": null,
         "whisper": null,
         "asimetria_pct": null,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 1.0
+        "earnings_fecha": "2026-09-30",
+        "earnings_timing": "BMO",
+        "beat_rate": 50.0,
+        "reaccion_media_pct": 2.33,
+        "score": 1.87
       },
-      "GTEN": {
-        "consenso_eps": null,
+      "SA": {
+        "consenso_eps": 999.0,
         "whisper": null,
         "asimetria_pct": null,
-        "earnings_fecha": "2026-09-29",
+        "earnings_fecha": "2026-09-30",
         "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 2.0
+        "beat_rate": 25.0,
+        "reaccion_media_pct": 0.7,
+        "score": 1.26
       }
     },
     "resultados_hoy": [
