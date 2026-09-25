@@ -26723,70 +26723,70 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-25",
-    "hora_utc": "15:39",
-    "min_desde_apertura": 129.0,
+    "hora_utc": "16:40",
+    "min_desde_apertura": 190.0,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
-    "ejecutados": [
-      "GLND"
-    ],
+    "ejecutados": [],
     "descartados": [
-      "AKAM: ya en cartera paper",
       "P: ya en cartera paper",
-      "IONQ: ya en cartera paper",
+      "AKAM: ya en cartera paper",
+      "GLND: max posiciones paper 12 (score 8.11<8.5: sin plaza de convicción)",
       "QCOM: ya en cartera paper",
+      "SMCI: max posiciones paper 12 (score 7.64<8.5: sin plaza de convicción)",
+      "SOXL: max posiciones paper 12 (score 6.94<8.5: sin plaza de convicción)",
       "DDOG: max posiciones paper 12 (score 6.77<8.5: sin plaza de convicción)",
-      "SMCI: max posiciones paper 12 (score 6.72<8.5: sin plaza de convicción)",
-      "HUM: max posiciones paper 12 (score 6.55<8.5: sin plaza de convicción)"
+      "DELL: runup +6.6%>5%",
+      "TEM: max posiciones paper 12 (score 6.53<8.5: sin plaza de convicción)"
     ],
     "ajustes_fuentes": {
-      "AKAM": {
-        "base": 7.5,
-        "paper": 9.3,
-        "real": 7.5,
-        "partes": {
-          "analistas": 0.9,
-          "opciones": 0.7,
-          "corto": -0.2,
-          "sector": 0.4
-        }
-      },
       "P": {
-        "base": 7.78,
-        "paper": 8.68,
-        "real": 7.78,
+        "base": 8.7,
+        "paper": 9.6,
+        "real": 8.7,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.8,
           "sector": 0.4
         }
       },
-      "GLND": {
-        "base": 7.87,
-        "paper": 8.52,
-        "real": 7.87,
+      "AKAM": {
+        "base": 7.5,
+        "paper": 9.4,
+        "real": 7.5,
         "partes": {
-          "opciones": 0.5,
-          "sector": 0.15
+          "analistas": 1.0,
+          "opciones": 0.7,
+          "corto": -0.2,
+          "sector": 0.4
         }
       },
-      "IONQ": {
-        "base": 6.3,
-        "paper": 7.4,
-        "real": 6.3,
+      "GLND": {
+        "base": 7.41,
+        "paper": 8.11,
+        "real": 7.41,
         "partes": {
-          "analistas": 0.2,
+          "opciones": 0.5,
+          "social": 0.2
+        }
+      },
+      "QCOM": {
+        "base": 6.94,
+        "paper": 7.69,
+        "real": 6.94,
+        "partes": {
+          "analistas": -0.15,
           "opciones": 0.5,
           "sector": 0.4
         }
       },
-      "QCOM": {
-        "base": 6.02,
-        "paper": 7.07,
-        "real": 6.02,
+      "SMCI": {
+        "base": 6.94,
+        "paper": 7.64,
+        "real": 6.94,
         "partes": {
-          "analistas": 0.15,
           "opciones": 0.5,
+          "corto": -0.2,
           "sector": 0.4
         }
       },
@@ -26799,36 +26799,40 @@
           "sector": 0.4
         }
       },
-      "SMCI": {
-        "base": 6.02,
-        "paper": 6.72,
-        "real": 6.02,
+      "DELL": {
+        "base": 5.62,
+        "paper": 6.77,
+        "real": 5.62,
         "partes": {
-          "opciones": 0.5,
-          "corto": -0.2,
+          "insiders": -0.3,
+          "analistas": 0.8,
+          "opciones": 0.25,
           "sector": 0.4
         }
       },
-      "HUM": {
-        "base": 6.3,
-        "paper": 6.55,
-        "real": 6.3,
+      "TEM": {
+        "base": 6.48,
+        "paper": 6.53,
+        "real": 6.48,
         "partes": {
-          "opciones": 0.25
+          "insiders": -0.3,
+          "analistas": 0.5,
+          "opciones": 0.25,
+          "corto": -0.4
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-25T15:39Z",
+    "ts": "2026-09-25T16:40Z",
     "macro": {
       "hy_oas": 2.8,
       "hy_cambio_20": 0.17,
       "nfci": -0.555,
       "curva_10a2a": 0.31,
-      "credito_hyg_ief_20": 1.32,
-      "fear_greed": 37.7,
+      "credito_hyg_ief_20": 1.35,
+      "fear_greed": 38.0,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -26836,61 +26840,61 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 110,
-        "ultimo_error": null
-      },
-      "credito_hyg_ief": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 111,
+        "ms": 246,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 930,
+        "ms": 1590,
+        "ultimo_error": null
+      },
+      "credito_hyg_ief": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 697,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1648,
+        "ms": 2017,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 20893,
+        "ms": 23808,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 654,
+        "ms": 838,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1036,
+        "ms": 1616,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 357,
+        "ms": 1148,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 8,
+        "ok": 9,
         "fallos": 0,
-        "ms": 875,
+        "ms": 1264,
         "ultimo_error": null
       }
     }
