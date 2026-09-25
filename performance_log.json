@@ -1915,6 +1915,30 @@
       "estado": "abierta",
       "orden_id": "2b42e428-4555-4e91-83e9-9158554a7e78",
       "cuenta": "paper"
+    },
+    {
+      "id": "GHA-20260925-GLND",
+      "simbolo": "GLND",
+      "tipo": "GH_Actions_open",
+      "fuente": "dynamic_scanner_gha",
+      "score_entrada": 8.52,
+      "score_base": 7.87,
+      "ajuste_fuentes": 0.65,
+      "fuentes_extra": {
+        "opciones": 0.5,
+        "sector": 0.15
+      },
+      "fecha_entrada": "2026-09-25",
+      "precio_entrada": 6.49,
+      "precio_stop": 5.95,
+      "precio_tp": 11.65,
+      "stop_pct": 8.0,
+      "rr": 10.0,
+      "qty": 982,
+      "real_qty": 0,
+      "estado": "abierta",
+      "orden_id": "f7979480-8887-4be2-a810-40a9c5206406",
+      "cuenta": "paper"
     }
   ],
   "candidatos_validados": [
@@ -3369,7 +3393,7 @@
     {
       "ticker": "GLND",
       "symbol": "GLND",
-      "estado": "pendiente",
+      "estado": "ejecutado",
       "score": 7.87,
       "score_ajustado": 7.87,
       "score_raw": 8.5,
@@ -3388,7 +3412,8 @@
       "expira": "2026-09-25T21:36:26Z",
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-25T15:36:26.062589+00:00",
-      "notas": "1d=+21.5% vol=2.7x 52h_dist=0.0%"
+      "notas": "1d=+21.5% vol=2.7x 52h_dist=0.0%",
+      "fecha_ejecucion": "2026-09-25 15:39"
     },
     {
       "ticker": "P",
@@ -26674,41 +26699,60 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-25",
-    "hora_utc": "14:40",
-    "min_desde_apertura": 70.6,
+    "hora_utc": "15:39",
+    "min_desde_apertura": 129.0,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [
-      "QCOM"
+      "GLND"
     ],
     "descartados": [
       "AKAM: ya en cartera paper",
       "P: ya en cartera paper",
-      "GLND: max posiciones paper 12 (score 6.95<8.5: sin plaza de convicción)",
+      "IONQ: ya en cartera paper",
+      "QCOM: ya en cartera paper",
       "DDOG: max posiciones paper 12 (score 6.77<8.5: sin plaza de convicción)",
       "SMCI: max posiciones paper 12 (score 6.72<8.5: sin plaza de convicción)",
-      "BE: score 5.8<6.0",
-      "SOXL: score 5.7<6.0"
+      "HUM: max posiciones paper 12 (score 6.55<8.5: sin plaza de convicción)"
     ],
     "ajustes_fuentes": {
       "AKAM": {
-        "base": 8.7,
-        "paper": 10.0,
-        "real": 8.7,
+        "base": 7.5,
+        "paper": 9.3,
+        "real": 7.5,
         "partes": {
           "analistas": 0.9,
-          "opciones": 0.5,
+          "opciones": 0.7,
           "corto": -0.2,
           "sector": 0.4
         }
       },
       "P": {
-        "base": 6.85,
-        "paper": 7.75,
-        "real": 6.85,
+        "base": 7.78,
+        "paper": 8.68,
+        "real": 7.78,
         "partes": {
           "insiders": -0.3,
           "analistas": 0.8,
+          "sector": 0.4
+        }
+      },
+      "GLND": {
+        "base": 7.87,
+        "paper": 8.52,
+        "real": 7.87,
+        "partes": {
+          "opciones": 0.5,
+          "sector": 0.15
+        }
+      },
+      "IONQ": {
+        "base": 6.3,
+        "paper": 7.4,
+        "real": 6.3,
+        "partes": {
+          "analistas": 0.2,
+          "opciones": 0.5,
           "sector": 0.4
         }
       },
@@ -26720,15 +26764,6 @@
           "analistas": 0.15,
           "opciones": 0.5,
           "sector": 0.4
-        }
-      },
-      "GLND": {
-        "base": 6.3,
-        "paper": 6.95,
-        "real": 6.3,
-        "partes": {
-          "opciones": 0.5,
-          "sector": 0.15
         }
       },
       "DDOG": {
@@ -26750,28 +26785,26 @@
           "sector": 0.4
         }
       },
-      "BE": {
-        "base": 5.83,
-        "paper": 5.83,
-        "real": 5.83,
+      "HUM": {
+        "base": 6.3,
+        "paper": 6.55,
+        "real": 6.3,
         "partes": {
-          "analistas": 0.15,
-          "opciones": 0.25,
-          "sector": -0.4
+          "opciones": 0.25
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-25T14:40Z",
+    "ts": "2026-09-25T15:39Z",
     "macro": {
       "hy_oas": 2.8,
       "hy_cambio_20": 0.17,
       "nfci": -0.555,
       "curva_10a2a": 0.31,
-      "credito_hyg_ief_20": 1.39,
-      "fear_greed": 37.3,
+      "credito_hyg_ief_20": 1.32,
+      "fear_greed": 37.7,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -26779,25 +26812,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 188,
-        "ultimo_error": null
-      },
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 2135,
+        "ms": 110,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 348,
+        "ms": 111,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 930,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 8,
         "fallos": 0,
-        "ms": 1556,
+        "ms": 1648,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26809,31 +26842,31 @@
       "insiders": {
         "ok": 8,
         "fallos": 0,
-        "ms": 18323,
+        "ms": 20893,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 8,
         "fallos": 0,
-        "ms": 681,
+        "ms": 654,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 8,
         "fallos": 0,
-        "ms": 1191,
+        "ms": 1036,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 8,
         "fallos": 0,
-        "ms": 852,
+        "ms": 357,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 8,
         "fallos": 0,
-        "ms": 1170,
+        "ms": 875,
         "ultimo_error": null
       }
     }
