@@ -21,6 +21,8 @@ Cambios clave frente a v2:
     sector, Reddit y macro FRED/Fear&Greed ajustan el score ±2 como máximo. Paper usa el
     ajuste completo; real solo la parte negativa. Si una fuente cae, ajuste 0 y se opera igual.
 """
+import collections
+import re
 import sys
 from datetime import timedelta
 
@@ -315,6 +317,24 @@ def main():
                     "precio_stop": e["stop"], "precio_tp": e["tp"], "stop_pct": e["stop_pct"], "rr": e["rr"],
                     "qty": e.get("qty", 0), "real_qty": e.get("real_qty", 0), "estado": "abierta",
                     "orden_id": e.get("oid"), "cuenta": "paper+real" if e.get("real_qty") else "paper"})
+        # 2026-09-28 · HISTORICO DE DESCARTES.
+        # `ejecucion_apertura` es un dict que se SOBREESCRIBE en cada pasada, asi que el
+        # motivo por el que un candidato no entro se perdia al minuto siguiente. Durante
+        # semanas no se pudo contestar "¿por que ejecutamos 56 operaciones donde el backtest
+        # hacia 126?" — habia que adivinarlo. Esto lo acumula: una linea por pasada con el
+        # recuento de motivos, con los numeros normalizados para poder agregarlos.
+        try:
+            hist = pl.setdefault("descartes_historico", [])
+            if isinstance(hist, list):
+                motivos = collections.Counter(
+                    re.sub(r"[-+]?\d+[\d.,]*", "N", w).strip() for _, w in descartados)
+                hist.append({"fecha": hoy, "hora_utc": ahora.strftime("%H:%M"),
+                             "candidatos": len(uniq), "ejecutados": len(ejecutados),
+                             "descartados": len(descartados),
+                             "motivos": dict(motivos.most_common(12))})
+                del hist[:-400]
+        except Exception:                      # nunca romper la escritura del log por esto
+            pass
         pl["ejecucion_apertura"] = {"fecha": hoy, "hora_utc": ahora.strftime("%H:%M"),
                                     "min_desde_apertura": round(mso or 0, 1),
                                     "real_activa": lr["active"], "real_motivo": lr["why"],
