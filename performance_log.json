@@ -3608,19 +3608,49 @@
       "notas": "1d=+4.0% vol=1.2x 52h_dist=0.0%"
     },
     {
+      "ticker": "AIR",
+      "symbol": "AIR",
+      "estado": "pendiente_ew",
+      "score": 6.12,
+      "score_ajustado": 6.12,
+      "score_breakdown": {
+        "beat_rate": 3.0,
+        "reaccion": 0.37,
+        "revisiones": 0.75,
+        "momentum5d": 1.0,
+        "macro": 1.0
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 116.96,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-09-28T20:00:00Z",
+      "fecha_entrada_prevista": "2026-09-28",
+      "cerrar_antes": "2026-09-29",
+      "earnings_fecha": "2026-09-29",
+      "earnings_timing": "AMC",
+      "consenso_eps": 999.0,
+      "whisper": null,
+      "asimetria_pct": null,
+      "beat_rate": 100.0,
+      "reaccion_media_pct": 0.98,
+      "momentum_5d_pct": -0.77,
+      "analistas": 6,
+      "fecha_scan": "2026-09-28T13:35:47Z"
+    },
+    {
       "ticker": "JBL",
       "symbol": "JBL",
       "estado": "pendiente_ew",
-      "score": 6.56,
-      "score_ajustado": 6.56,
+      "score": 6.06,
+      "score_ajustado": 6.06,
       "score_breakdown": {
         "whisper": 0.16,
         "beat_rate": 3.0,
         "reaccion": 1.15,
         "revisiones": 0.75,
         "momentum5d": 0.0,
-        "macro": 1.0,
-        "noticias": 0.5
+        "macro": 1.0
       },
       "accion_recomendada": "entrar_apertura",
       "fuente": "ew_pipeline_gha",
@@ -3636,9 +3666,9 @@
       "asimetria_pct": 1.23,
       "beat_rate": 100.0,
       "reaccion_media_pct": 3.06,
-      "momentum_5d_pct": 5.74,
+      "momentum_5d_pct": 4.92,
       "analistas": 12,
-      "fecha_scan": "2026-09-27T23:55:57Z"
+      "fecha_scan": "2026-09-28T13:35:47Z"
     }
   ],
   "macro_context": {
@@ -24787,7 +24817,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-27T23:55Z",
+    "ts": "2026-09-28T13:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -24823,15 +24853,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 1.17}"
+        "detalle": "{'rel20': 1.07}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 37.0, 'rating': 'fear'}"
+        "detalle": "{'score': 37.4, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 17, 'menciones_24h_antes': 12, 'ratio_24h': 1.42}"
+        "detalle": "{'en_ranking': True, 'rank': 3, 'menciones': 70, 'menciones_24h_antes': 8, 'ratio_24h': 8.75}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24839,7 +24869,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 2.05"
+        "detalle": "C/P 1.12"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -24847,24 +24877,37 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.33, 'rs20': 3.89}"
+        "detalle": "{'etf': 'XLK', 'rs5': 0.95, 'rs20': 5.24}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-27T23:55Z",
+    "ts": "2026-09-28T13:35Z",
     "entrada": "2026-09-28",
     "salida": "2026-09-29",
     "eventos": 19,
     "evaluados": 7,
     "macro": {
-      "vix": 14.87,
+      "vix": 16.01,
       "spy_above_ma50": true
     },
     "top": [
       {
+        "ticker": "AIR",
+        "score": 6.12,
+        "earnings_fecha": "2026-09-29",
+        "earnings_timing": "AMC",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.37,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
         "ticker": "JBL",
-        "score": 6.56,
+        "score": 6.06,
         "earnings_fecha": "2026-09-30",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -24873,32 +24916,18 @@
           "reaccion": 1.15,
           "revisiones": 0.75,
           "momentum5d": 0.0,
-          "macro": 1.0,
-          "noticias": 0.5
+          "macro": 1.0
         }
       },
       {
         "ticker": "FDS",
-        "score": 5.24,
+        "score": 4.24,
         "earnings_fecha": "2026-09-30",
         "earnings_timing": "BMO",
         "score_breakdown": {
           "whisper": 0.25,
           "beat_rate": 2.0,
           "reaccion": 0.24,
-          "revisiones": 0.75,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "AIR",
-        "score": 5.12,
-        "earnings_fecha": "2026-09-29",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.37,
           "revisiones": 0.75,
           "momentum5d": 0.0,
           "macro": 1.0
@@ -24969,14 +24998,21 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-27T23:55Z",
+    "ts": "2026-09-28T13:35Z",
     "calendario": {
       "2026-09-28": [
+        {
+          "ticker": "IVA",
+          "company": "Inventiva S.A.",
+          "releaseTime": 1,
+          "total": 12,
+          "fuente": "ew"
+        },
         {
           "ticker": "GNS",
           "company": "Genius Group Limited ",
           "releaseTime": 1,
-          "total": 8,
+          "total": 9,
           "fuente": "ew"
         },
         {
@@ -25008,24 +25044,24 @@
           "fuente": "ew"
         },
         {
-          "ticker": "MTN",
-          "company": "Vail Resorts, Inc.",
-          "releaseTime": 3,
-          "total": 18,
+          "ticker": "PTN",
+          "company": "Palatin Technologies, Inc.",
+          "releaseTime": 1,
+          "total": 0,
           "fuente": "ew"
         },
         {
-          "ticker": "IVA",
-          "company": "Inventiva S.A.",
+          "ticker": "MTN",
+          "company": "Vail Resorts, Inc.",
           "releaseTime": 3,
-          "total": 11,
+          "total": 19,
           "fuente": "ew"
         },
         {
           "ticker": "JEF",
           "company": "Jefferies Financial Group Inc.",
           "releaseTime": 3,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -25132,21 +25168,21 @@
           "ticker": "CCL",
           "company": "Carnival Corporation & plc",
           "releaseTime": 1,
-          "total": 24,
+          "total": 26,
           "fuente": "ew"
         },
         {
           "ticker": "KMX",
           "company": "CarMax, Inc.",
           "releaseTime": 1,
-          "total": 16,
+          "total": 18,
           "fuente": "ew"
         },
         {
           "ticker": "UEC",
           "company": "Uranium Energy Corp.",
           "releaseTime": 1,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
@@ -25295,21 +25331,21 @@
           "ticker": "MU",
           "company": "Micron Technology, Inc.",
           "releaseTime": 3,
-          "total": 215,
+          "total": 225,
           "fuente": "ew"
         },
         {
           "ticker": "PRGS",
           "company": "Progress Software Corp.",
           "releaseTime": 3,
-          "total": 8,
+          "total": 9,
           "fuente": "ew"
         },
         {
           "ticker": "BSET",
           "company": "Bassett Furniture Industries, Inc.",
           "releaseTime": 3,
-          "total": 3,
+          "total": 4,
           "fuente": "ew"
         },
         {
@@ -25402,7 +25438,7 @@
           "ticker": "ACN",
           "company": "Accenture plc",
           "releaseTime": 1,
-          "total": 20,
+          "total": 21,
           "fuente": "ew"
         },
         {
@@ -25423,7 +25459,7 @@
           "ticker": "NKE",
           "company": "NIKE, Inc.",
           "releaseTime": 3,
-          "total": 43,
+          "total": 47,
           "fuente": "ew"
         },
         {
@@ -25459,13 +25495,6 @@
           "company": "Endava plc",
           "releaseTime": null,
           "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "YRD",
-          "company": "Yiren Digital Ltd.",
-          "releaseTime": null,
-          "total": 7,
           "fuente": "nasdaq"
         },
         {
@@ -25525,21 +25554,57 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "ITP",
-          "company": "IT Tech Packaging, Inc.",
-          "releaseTime": null,
-          "total": 7,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "IPST",
           "company": "IP Strategy Holdings, Inc.",
           "releaseTime": null,
           "total": 7,
           "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ITP",
+          "company": "IT Tech Packaging, Inc.",
+          "releaseTime": null,
+          "total": 7,
+          "fuente": "nasdaq"
         }
       ],
-      "2026-10-02": []
+      "2026-10-02": [
+        {
+          "ticker": "HTLM",
+          "company": "HomesToLife Ltd",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ZONE",
+          "company": "Zone Frontier Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "CELU",
+          "company": "Celularity Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ENLV",
+          "company": "Enlivex Ltd.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "LNAI",
+          "company": "Lunai Bioworks Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        }
+      ]
     },
     "tickers": {
       "CAG": {
@@ -25560,7 +25625,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 3.06,
-        "score": 6.56
+        "score": 6.06
       },
       "CNXC": {
         "consenso_eps": 2.71,
@@ -25580,7 +25645,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": 0.98,
-        "score": 5.12
+        "score": 6.12
       },
       "FDS": {
         "consenso_eps": 4.32,
@@ -25590,7 +25655,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 75.0,
         "reaccion_media_pct": 0.64,
-        "score": 5.24
+        "score": 4.24
       },
       "CALM": {
         "consenso_eps": null,
