@@ -26645,55 +26645,53 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-28",
-    "hora_utc": "16:39",
-    "min_desde_apertura": 189.1,
+    "hora_utc": "17:39",
+    "min_desde_apertura": 249.2,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "KOD: max entradas/día paper",
+      "P: ya en cartera paper",
       "PANW: max entradas/día paper",
-      "IONQ: ya en cartera paper",
       "ILMN: max entradas/día paper",
       "OKTA: max entradas/día paper",
-      "P: ya en cartera paper",
       "JBL: ya en cartera paper",
-      "NVDA: ya en cartera paper",
       "CRWD: ya en cartera paper",
+      "IONQ: ya en cartera paper",
+      "NVDA: ya en cartera paper",
       "AIR: score 5.5<6.0",
-      "A: score 5.5<6.0",
       "DDOG: score 5.5<6.0"
     ],
     "ajustes_fuentes": {
       "KOD": {
-        "base": 9.54,
-        "paper": 8.54,
-        "real": 8.54,
+        "base": 10.0,
+        "paper": 9.15,
+        "real": 9.15,
         "partes": {
-          "analistas": -0.15,
           "opciones": -0.4,
           "corto": -0.4,
           "sector": 0.15,
           "macro": -0.2
         }
       },
-      "PANW": {
-        "base": 5.65,
-        "paper": 7.15,
-        "real": 5.65,
+      "P": {
+        "base": 6.48,
+        "paper": 7.18,
+        "real": 6.48,
         "partes": {
+          "insiders": -0.3,
           "analistas": 0.8,
-          "opciones": 0.5,
           "sector": 0.4,
           "macro": -0.2
         }
       },
-      "IONQ": {
-        "base": 6.48,
-        "paper": 7.13,
-        "real": 6.48,
+      "PANW": {
+        "base": 5.65,
+        "paper": 6.9,
+        "real": 5.65,
         "partes": {
-          "analistas": 0.2,
+          "analistas": 0.8,
           "opciones": 0.25,
           "sector": 0.4,
           "macro": -0.2
@@ -26719,24 +26717,34 @@
           "macro": -0.2
         }
       },
-      "P": {
-        "base": 5.56,
-        "paper": 6.51,
-        "real": 5.56,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.8,
-          "opciones": 0.25,
-          "sector": 0.4,
-          "macro": -0.2
-        }
-      },
       "JBL": {
         "base": 6.06,
         "paper": 6.31,
         "real": 6.06,
         "partes": {
           "analistas": 0.05,
+          "sector": 0.4,
+          "macro": -0.2
+        }
+      },
+      "CRWD": {
+        "base": 5.83,
+        "paper": 6.23,
+        "real": 5.83,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": 0.5,
+          "sector": 0.4,
+          "macro": -0.2
+        }
+      },
+      "IONQ": {
+        "base": 5.56,
+        "paper": 6.21,
+        "real": 5.56,
+        "partes": {
+          "analistas": 0.2,
+          "opciones": 0.25,
           "sector": 0.4,
           "macro": -0.2
         }
@@ -26754,32 +26762,12 @@
           "macro": -0.2
         }
       },
-      "CRWD": {
-        "base": 5.62,
-        "paper": 6.02,
-        "real": 5.62,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
-          "sector": 0.4,
-          "macro": -0.2
-        }
-      },
       "AIR": {
         "base": 6.12,
         "paper": 5.52,
         "real": 5.52,
         "partes": {
           "sector": -0.4,
-          "macro": -0.2
-        }
-      },
-      "A": {
-        "base": 5.56,
-        "paper": 5.51,
-        "real": 5.51,
-        "partes": {
-          "sector": 0.15,
           "macro": -0.2
         }
       },
@@ -26797,76 +26785,76 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-28T16:39Z",
+    "ts": "2026-09-28T17:39Z",
     "macro": {
       "hy_oas": 2.93,
       "hy_cambio_20": 0.33,
       "nfci": -0.555,
       "curva_10a2a": 0.36,
-      "credito_hyg_ief_20": 1.1,
-      "fear_greed": 35.1,
+      "credito_hyg_ief_20": 0.96,
+      "fear_greed": 34.8,
       "regimen": "cautela",
       "ajuste": -0.2
     },
     "estado": {
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 1157,
-        "ultimo_error": null
-      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 233,
+        "ms": 246,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 432,
+        "ms": 374,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 2324,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 3370,
+        "ms": 3145,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 40863,
+        "ms": 33968,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 1098,
+        "ms": 1556,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 2407,
+        "ms": 2643,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 947,
+        "ms": 738,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 12,
+        "ok": 11,
         "fallos": 0,
-        "ms": 1138,
+        "ms": 1042,
         "ultimo_error": null
       }
     }
@@ -26899,5 +26887,19 @@
       "CUIDADO: con consenso pequeno (<0.50) la asimetria % se dispara (CBRL 0.29 vs 0.20 = +45%). Filtrar por asimetria absoluta en $ ademas del %.",
       "old.earningswhispers.com NO es alcanzable; no usarlo como primario ni fallback."
     ]
-  }
+  },
+  "descartes_historico": [
+    {
+      "fecha": "2026-09-28",
+      "hora_utc": "17:39",
+      "candidatos": 11,
+      "ejecutados": 0,
+      "descartados": 11,
+      "motivos": {
+        "ya en cartera paper": 5,
+        "max entradas/día paper": 4,
+        "score N<N": 2
+      }
+    }
+  ]
 }
