@@ -1,0 +1,50 @@
+name: EW Archivo (observacional)
+
+# Registra cada dia, para toda empresa que reporte, el whisper y el consenso ANTES del
+# resultado y la reaccion del precio DESPUES. No opera, no puntua y no genera candidatos.
+#
+# Existe porque la hipotesis sobre la que se construyo el sistema -que la asimetria
+# whisper/consenso predice la reaccion- nunca se ha podido contrastar: la API de EW solo
+# expone el trimestre en curso, y nadie fue guardando los datos. A 2026-09-28 habia
+# CUATRO observaciones utilizables. A ~10 utiles por sesion, en un ano habra del orden de
+# 900, que ya es muestra suficiente para responder a la pregunta.
+#
+# Se ejecuta aunque el resto del sistema este parado: recoger datos no depende de que la
+# estrategia funcione, y es justamente lo que hay que hacer mientras no funcione.
+
+on:
+  schedule:
+    - cron: "10 22 * * 1-5"   # 00:10 CEST, tras el cierre de EEUU y con los cierres del dia
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "DRY_RUN (no escribe nada, solo enseña lo que escribiria)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: ew-archivo
+  cancel-in-progress: false
+
+permissions:
+  contents: write            # para anadir lineas a data/ew_archivo.jsonl
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      # sin dependencias: el script usa solo la libreria estandar (common y datasources
+      # importan yfinance de forma perezosa, en funciones que este script no llama)
+      - name: Archivar
+        env:
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          APCA_KEY: ${{ secrets.APCA_KEY }}
+          APCA_SEC: ${{ secrets.APCA_SEC }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN_TRADING || github.token }}
+        run: python scripts/ew_archivo.py
