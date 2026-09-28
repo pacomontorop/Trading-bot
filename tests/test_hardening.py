@@ -486,3 +486,38 @@ def test_regla8_alcanza_a_la_cripto():
     im.ensanchar_bandas(alp, ords, acciones)
     assert alp.calls and alp.calls[0][1] == "/orders/s"
     assert abs(float(alp.calls[0][2]["limit_price"]) - 110.793 * 0.95) < 0.01
+
+
+def test_historico_de_descartes_acumula_y_normaliza():
+    """Los motivos de descarte deben acumularse entre pasadas, no sobreescribirse.
+
+    Sin esto no se puede responder "¿por que ejecutamos 56 donde tocaban 126?" — que es
+    justo lo que no se pudo contestar durante las semanas de septiembre.
+    """
+    import collections, re
+
+    def acumula(pl, descartados, hoy, hora, n_cand, n_ejec):
+        hist = pl.setdefault("descartes_historico", [])
+        motivos = collections.Counter(
+            re.sub(r"[-+]?\d+[\d.,]*", "N", w).strip() for _, w in descartados)
+        hist.append({"fecha": hoy, "hora_utc": hora, "candidatos": n_cand,
+                     "ejecutados": n_ejec, "descartados": len(descartados),
+                     "motivos": dict(motivos.most_common(12))})
+        del hist[:-400]
+
+    pl = {}
+    acumula(pl, [("AAPL", "max posiciones paper 12"), ("MSFT", "runup +9.3%>8%")],
+            "2026-09-28", "13:39", 8, 1)
+    acumula(pl, [("NVDA", "max posiciones paper 12"), ("AMD", "score 5.1<6.0")],
+            "2026-09-29", "13:39", 9, 0)
+
+    h = pl["descartes_historico"]
+    assert len(h) == 2, "la segunda pasada no debe borrar la primera"
+    # los numeros se normalizan para poder agregar motivos entre dias
+    assert "max posiciones paper N" in h[0]["motivos"]
+    assert "max posiciones paper N" in h[1]["motivos"]
+    assert h[0]["candidatos"] == 8 and h[0]["ejecutados"] == 1
+
+    total = collections.Counter()
+    for e in h: total.update(e["motivos"])
+    assert total["max posiciones paper N"] == 2, total
