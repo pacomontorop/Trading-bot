@@ -521,3 +521,151 @@ def test_historico_de_descartes_acumula_y_normaliza():
     total = collections.Counter()
     for e in h: total.update(e["motivos"])
     assert total["max posiciones paper N"] == 2, total
+
+
+
+# -- 2026-09-29 . la cripto tambien se protege --------------------------------
+# La auditoria del libro encontro dos fallos que se tapaban mutuamente:
+#   1) Alpaca llama SOLUSD a la POSICION y SOL/USD a la ORDEN sobre esa misma posicion,
+#      asi que comparar el simbolo en crudo da por desnuda una posicion protegida.
+#   2) El monitor saltaba la cripto entera ("la gestionan las tareas crypto"). Esas
+#      tareas son heredadas, no estan en list_triggers y no se pueden auditar.
+# Resultado: SOLUSD, 16.355 $, la MAYOR posicion del libro y en un mercado que cotiza
+# 24/7, colgaba de una sola orden puesta por una de esas tareas. Si se cancela, nada la
+# repone. Estos tests fijan las dos mitades.
+import intraday_monitor as _IM  # noqa: E402
+
+_M = common.load_limits()["management"]
+
+
+class _AlpacaFalso:
+    """Registra lo que se le manda en vez de mandarlo."""
+
+    def __init__(self, posiciones, ordenes, rechaza_stop_cripto=False):
+        self.name = "test"
+        self._pos, self._ord = posiciones, ordenes
+        self.rechaza_stop_cripto = rechaza_stop_cripto
+        self.enviadas = []
+
+    def positions(self):
+        return self._pos
+
+    def open_orders(self, symbols=None):
+        return self._ord
+
+    def req(self, path, method="GET", data=None):
+        if method == "POST" and path == "/orders":
+            self.enviadas.append(data)
+            if self.rechaza_stop_cripto and "/" in data.get("symbol", "") and data.get("type") == "stop":
+                return {"_error": "stop orders are not supported for crypto"}
+            return {"id": "x", "status": "new"}
+        return {}
+
+
+def _pos_cripto(sym="SOLUSD", qty=138.25, disponible=None, precio=118.0, entrada=116.27):
+    return {"symbol": sym, "qty": str(qty),
+            "qty_available": str(qty if disponible is None else disponible),
+            "side": "long", "asset_class": "crypto", "current_price": str(precio),
+            "avg_entry_price": str(entrada), "market_value": str(qty * precio),
+            "unrealized_plpc": "0.01"}
+
+
+def _orden_stop(sym, qty, stop):
+    return {"id": "o1", "symbol": sym, "side": "sell", "type": "stop_limit", "status": "held",
+            "qty": str(qty), "stop_price": str(stop), "limit_price": str(stop * 0.95),
+            "client_order_id": "ca4dbf0c-cowork"}
+
+
+def test_norm_sym_iguala_las_dos_formas_del_mismo_activo():
+    assert _IM.norm_sym("SOL/USD") == _IM.norm_sym("SOLUSD") == "SOLUSD"
+    assert _IM.norm_sym("btc/usd") == "BTCUSD"
+    assert _IM.norm_sym("AAPL") == "AAPL"
+    assert _IM.norm_sym(None) == ""
+
+
+def test_sym_orden_devuelve_el_par_con_barra_solo_en_cripto():
+    assert _IM.sym_orden(_pos_cripto("SOLUSD")) == "SOL/USD"
+    assert _IM.sym_orden(_pos_cripto("BTCUSD")) == "BTC/USD"
+    assert _IM.sym_orden(_pos_cripto("ETHUSDT")) == "ETH/USDT"
+    assert _IM.sym_orden(_pos_cripto("SOL/USD")) == "SOL/USD", "no debe duplicar la barra"
+    assert _IM.sym_orden({"symbol": "AAPL", "asset_class": "us_equity"}) == "AAPL"
+
+
+def test_el_indice_de_stops_se_construye_normalizado():
+    d = _IM.stop_orders_by_symbol([_orden_stop("SOL/USD", 138.25, 110.79)])
+    assert "SOLUSD" in d, "la orden viene como SOL/USD y la posicion se llama SOLUSD"
+
+
+def test_cripto_protegida_bajo_el_simbolo_con_barra_no_se_duplica():
+    """EL BUG: antes se veia desnuda y se intentaba un segundo stop sobre unidades ya
+    retenidas."""
+    alp = _AlpacaFalso([_pos_cripto()], [_orden_stop("SOL/USD", 138.25, 110.79)])
+    _IM.manage(alp, {}, _M, [])
+    assert alp.enviadas == [], f"no debia mandar nada y mando {alp.enviadas}"
+
+
+def test_cripto_sin_stop_recibe_proteccion():
+    """Lo que antes NO pasaba: la cripto se saltaba entera."""
+    alp = _AlpacaFalso([_pos_cripto()], [])
+    acciones = []
+    _IM.manage(alp, {}, _M, acciones)
+    assert len(alp.enviadas) == 1
+    o = alp.enviadas[0]
+    assert o["symbol"] == "SOL/USD", "la orden va con barra, la posicion sin ella"
+    assert o["side"] == "sell" and o["time_in_force"] == "gtc"
+    assert float(o["qty"]) == 138.25, "la cripto es fraccionaria: redondear la perderia"
+    assert float(o["stop_price"]) < 118.0
+
+
+def test_el_stop_de_cripto_es_mas_ancho_que_el_de_acciones():
+    """Un 6 % en cripto salta por ruido y convierte la proteccion en una picadora."""
+    alp = _AlpacaFalso([_pos_cripto()], [])
+    _IM.manage(alp, {}, _M, [])
+    ancho = (118.0 - float(alp.enviadas[0]["stop_price"])) / 118.0 * 100
+    assert 10 < ancho < 15, f"ancho {ancho:.1f}% fuera de lo esperado para cripto"
+
+
+def test_si_alpaca_rechaza_el_stop_a_mercado_cae_a_stop_limit():
+    """Alpaca no admite stop a mercado en cripto. Sin respaldo, la posicion se quedaria
+    sin proteccion y el sistema creeria haberla puesto."""
+    alp = _AlpacaFalso([_pos_cripto()], [], rechaza_stop_cripto=True)
+    _IM.manage(alp, {}, _M, [])
+    assert len(alp.enviadas) == 2, "primero stop, luego stop_limit"
+    seg = alp.enviadas[1]
+    assert seg["type"] == "stop_limit"
+    banda = (float(seg["stop_price"]) - float(seg["limit_price"])) / float(seg["stop_price"]) * 100
+    assert banda >= _IM.BANDA_MIN_PCT - 0.01, "la banda debe ser la de la regla 8"
+
+
+def test_sin_unidades_libres_avisa_y_dice_quien_las_retiene():
+    """Con solo un objetivo de beneficio hay salida al alza y NINGUNA a la baja. No se
+    puede anadir el stop, asi que hay que gritarlo y nombrar la orden culpable."""
+    objetivo = {"id": "o9", "symbol": "SOL/USD", "side": "sell", "type": "limit",
+                "status": "new", "qty": "138.25", "limit_price": "140",
+                "client_order_id": "COWORK-SENT-OCO-2026"}
+    alp = _AlpacaFalso([_pos_cripto(disponible=0)], [objetivo])
+    acciones = []
+    _IM.manage(alp, {}, _M, acciones)
+    assert alp.enviadas == [], "sin unidades libres no se puede mandar nada"
+    txt = " ".join(acciones)
+    assert "SIN STOP" in txt and "COWORK" in txt
+
+
+def test_el_polvo_se_sigue_ignorando():
+    alp = _AlpacaFalso([_pos_cripto("BTCUSD", qty=0.0000085, precio=81000.0, entrada=81000.0)], [])
+    _IM.manage(alp, {}, _M, [])
+    assert alp.enviadas == []
+
+
+def test_las_acciones_siguen_usando_su_propio_umbral():
+    """El cambio no debe tocar el comportamiento en acciones."""
+    p = {"symbol": "AAPL", "qty": "30", "qty_available": "30", "side": "long",
+         "asset_class": "us_equity", "current_price": "332", "avg_entry_price": "330",
+         "market_value": "9960", "unrealized_plpc": "0.006"}
+    alp = _AlpacaFalso([p], [])
+    _IM.manage(alp, {}, _M, [])
+    o = alp.enviadas[0]
+    assert o["symbol"] == "AAPL" and o["type"] == "stop"
+    assert float(o["qty"]) == 30
+    ancho = (332 - float(o["stop_price"])) / 332 * 100
+    assert 5 < ancho < 7, f"acciones usan naked_stop_pct (6%), no el de cripto: {ancho:.1f}%"
