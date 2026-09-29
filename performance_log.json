@@ -26672,8 +26672,8 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-29",
-    "hora_utc": "18:37",
-    "min_desde_apertura": 307.8,
+    "hora_utc": "18:53",
+    "min_desde_apertura": 323.1,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
@@ -26681,8 +26681,8 @@
       "IOVA: fuente dynamic_scanner_gha bloqueada en paper",
       "PRGS: max entradas/día paper",
       "BE: fuente dynamic_scanner_gha bloqueada en paper",
-      "AXTI: fuente dynamic_scanner_gha bloqueada en paper",
       "CCL: fuente dynamic_scanner_gha bloqueada en paper",
+      "AXTI: fuente dynamic_scanner_gha bloqueada en paper",
       "AMAT: fuente dynamic_scanner_gha bloqueada en paper",
       "AYI: max entradas/día paper",
       "MU: max entradas/día paper",
@@ -26724,6 +26724,17 @@
           "macro": -0.2
         }
       },
+      "CCL": {
+        "base": 8.43,
+        "paper": 7.73,
+        "real": 7.73,
+        "partes": {
+          "analistas": -0.6,
+          "opciones": 0.5,
+          "sector": -0.4,
+          "macro": -0.2
+        }
+      },
       "AXTI": {
         "base": 7.22,
         "paper": 7.67,
@@ -26731,17 +26742,6 @@
         "partes": {
           "opciones": 0.25,
           "sector": 0.4,
-          "macro": -0.2
-        }
-      },
-      "CCL": {
-        "base": 8.43,
-        "paper": 7.48,
-        "real": 7.48,
-        "partes": {
-          "analistas": -0.6,
-          "opciones": 0.25,
-          "sector": -0.4,
           "macro": -0.2
         }
       },
@@ -26813,14 +26813,14 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-29T18:37Z",
+    "ts": "2026-09-29T18:53Z",
     "macro": {
       "hy_oas": 3.02,
       "hy_cambio_20": 0.39,
       "nfci": -0.555,
       "curva_10a2a": 0.32,
-      "credito_hyg_ief_20": 0.66,
-      "fear_greed": 31.8,
+      "credito_hyg_ief_20": 0.64,
+      "fear_greed": 32.3,
       "regimen": "cautela",
       "ajuste": -0.2
     },
@@ -26828,25 +26828,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 76,
+        "ms": 260,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 745,
+        "ms": 1199,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 132,
+        "ms": 364,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 11,
         "fallos": 0,
-        "ms": 2104,
+        "ms": 2589,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26858,31 +26858,31 @@
       "insiders": {
         "ok": 11,
         "fallos": 0,
-        "ms": 15068,
+        "ms": 15467,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 11,
         "fallos": 0,
-        "ms": 870,
+        "ms": 860,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 11,
         "fallos": 0,
-        "ms": 1740,
+        "ms": 1672,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 11,
         "fallos": 0,
-        "ms": 316,
+        "ms": 1372,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 11,
         "fallos": 0,
-        "ms": 2044,
+        "ms": 3439,
         "ultimo_error": null
       }
     }
@@ -26997,6 +26997,17 @@
     {
       "fecha": "2026-09-29",
       "hora_utc": "18:37",
+      "candidatos": 11,
+      "ejecutados": 0,
+      "descartados": 11,
+      "motivos": {
+        "fuente dynamic_scanner_gha bloqueada en paper": 8,
+        "max entradas/día paper": 3
+      }
+    },
+    {
+      "fecha": "2026-09-29",
+      "hora_utc": "18:53",
       "candidatos": 11,
       "ejecutados": 0,
       "descartados": 11,
