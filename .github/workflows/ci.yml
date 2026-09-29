@@ -3,7 +3,7 @@ on:
   push:
     # signals/**, start.py y policy.yaml son código de producción (scoring y arranque) y hasta
     # 2026-09-17 no disparaban CI: un fallo de sintaxis o de import ahí pasaba sin revisar.
-    paths: ["scripts/**", "signals/**", "start.py", "config/risk_limits.json", "config/policy.yaml", ".github/workflows/**", "tests/test_hardening.py", "tests/test_fuentes_extra.py", "tests/test_motor.py"]
+    paths: ["scripts/**", "signals/**", "start.py", "config/risk_limits.json", "config/policy.yaml", ".github/workflows/**", "tests/test_hardening.py", "tests/test_fuentes_extra.py", "tests/test_motor.py", "tests/test_ew_archivo.py"]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -27,4 +27,4 @@ jobs:
       - name: Validar risk_limits.json
         run: python -c "import json;json.load(open('config/risk_limits.json'))"
       - name: Tests de endurecimiento y fuentes
-        run: python -m pytest -q tests/test_hardening.py tests/test_fuentes_extra.py tests/test_motor.py
+        run: python -m pytest -q tests/test_hardening.py tests/test_fuentes_extra.py tests/test_motor.py tests/test_ew_archivo.py
