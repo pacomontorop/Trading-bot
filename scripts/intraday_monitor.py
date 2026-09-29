@@ -18,7 +18,8 @@ Eliminado de v2: la venta parcial al +7% (fallaba siempre porque las acciones
 están retenidas por las patas del bracket) y el break-even al +5% fijo, que
 recortaba ganadoras antes del TP (evidencia: ganancia media $129 vs pérdida
 media $241 en 133 cierres paper).
-Crypto y restos < $5: se ignoran (los gestionan las tareas crypto).
+Restos < $5 se ignoran. La cripto SI se protege (regla 1) desde el 29-sep-2026,
+     aunque queda fuera de la gestion por multiplos de R.
 """
 from datetime import datetime, timezone
 
@@ -26,12 +27,77 @@ from common import (DRY_RUN, load_limits, log, now_utc, paper_client, read_log, 
                     round_px, tg, update_log)
 
 
+def norm_sym(s):
+    """Alpaca llama SOLUSD a la POSICION y SOL/USD a la ORDEN sobre esa misma posicion.
+
+    Comparar el simbolo en crudo hace que una posicion protegida parezca desnuda (y al
+    reves). Comprobado el 29-sep-2026 con SOLUSD, 16.355 $, la mayor del libro: tenia su
+    stop vivo y cualquier comparacion literal la daba por desprotegida.
+    """
+    return (s or "").replace("/", "").upper()
+
+
+def sym_orden(p):
+    """Simbolo tal y como hay que escribirlo al MANDAR una orden.
+
+    En cripto Alpaca exige el par con barra (SOL/USD); la posicion se llama SOLUSD.
+    """
+    sym = p["symbol"]
+    if p.get("asset_class") != "crypto" or "/" in sym:
+        return sym
+    for q in ("USDT", "USDC", "USD", "BTC", "ETH"):
+        if sym.upper().endswith(q) and len(sym) > len(q):
+            return f"{sym[:-len(q)]}/{q}"
+    return sym
+
+
 def stop_orders_by_symbol(orders):
     d = {}
     for o in orders:
         if o.get("side") == "sell" and o.get("type") in ("stop", "stop_limit", "trailing_stop"):
-            d.setdefault(o["symbol"], []).append(o)
+            d.setdefault(norm_sym(o["symbol"]), []).append(o)
     return d
+
+
+def proteger_desnuda(alp, p, entry, price, pct, acciones, tag, retienen=()):
+    """Coloca un stop de proteccion sobre una posicion que no tiene ninguno.
+
+    Intenta primero un stop A MERCADO, que es el que llena siempre. Alpaca no lo admite en
+    cripto, asi que ahi cae a stop_limit con la misma banda del 5 % que exige la regla 8.
+    """
+    sym = p["symbol"]
+    sp = round_px(max(entry, price) * (1 - pct / 100))
+    if sp >= price:
+        sp = round_px(price * 0.99)
+    try:
+        avail = float(p.get("qty_available") or p.get("qty") or 0)
+    except (TypeError, ValueError):
+        avail = 0.0
+    cripto = p.get("asset_class") == "crypto"
+    # en acciones Alpaca no acepta fracciones en un stop; en cripto si, y redondear a
+    # entero dejaria 0 (SOLUSD son 138,25 unidades, BTC puede ser 0,0006)
+    q = avail if cripto else float(int(avail))
+    if q <= 0:
+        # Sin unidades libres no se puede anadir un stop. Pasa cuando otra orden de venta
+        # (p. ej. un objetivo de beneficio de una tarea Cowork) retiene la cantidad: la
+        # posicion tiene salida al alza pero NINGUNA a la baja. Hay que decir quien la
+        # retiene, porque la accion correcta es cancelar esa orden y rehacer el par.
+        quien = ", ".join(f"{o.get('type')} {str(o.get('client_order_id') or '')[:18]}" for o in retienen) or "desconocido"
+        acciones.append(f"\U0001F534 {tag}: SIN STOP y sin unidades libres ({avail}). "
+                        f"Retiene: {quien}. La posicion no tiene proteccion a la baja.")
+        return
+    base = {"symbol": sym_orden(p), "qty": str(q), "side": "sell", "time_in_force": "gtc",
+            "client_order_id": f"GHA-PROTECT-{now_utc():%Y%m%d%H%M}-{norm_sym(sym)}"[:48]}
+    r = alp.req("/orders", "POST", {**base, "type": "stop", "stop_price": str(sp)})
+    if "_error" in r and cripto:                 # cripto: no admite stop a mercado
+        lim = round_px(sp * (1 - BANDA_MIN_PCT / 100))
+        r = alp.req("/orders", "POST", {**base, "type": "stop_limit",
+                                        "stop_price": str(sp), "limit_price": str(lim)})
+        if "_error" not in r:
+            acciones.append(f"\U0001F6E1\uFE0F {tag}: sin stop -> stop_limit proteccion {sp} (limite {lim}) OK")
+            return
+    acciones.append(f"\U0001F6E1\uFE0F {tag}: sin stop -> stop proteccion {sp} "
+                    f"{'OK' if '_error' not in r else 'ERROR ' + r['_error'][:80]}")
 
 
 def initial_risk(sym, entry, cur_stop, plog):
@@ -120,11 +186,30 @@ def manage(alp, plog, M, acciones):
         price = float(p.get("current_price") or 0); entry = float(p.get("avg_entry_price") or 0)
         pnl_pct = float(p.get("unrealized_plpc") or 0) * 100
         crypto = p.get("asset_class") == "crypto"
-        if side != "long" or qty <= 0 or price <= 0 or crypto:
-            continue  # crypto: la gestionan las tareas crypto (volatilidad distinta)
+        if side != "long" or qty <= 0 or price <= 0:
+            continue
         if abs(float(p.get("market_value") or 0)) < 5:
             continue  # restos ('dust') sin importancia
         tag = f"[{alp.name}] {sym}"
+        my_stops = stops.get(norm_sym(sym), [])
+
+        # 2026-09-29 . LA CRIPTO TAMBIEN SE PROTEGE.
+        # Antes se saltaba entera ("la gestionan las tareas crypto"). Esas tareas son
+        # heredadas, no estan en list_triggers y no se pueden desactivar ni auditar. El
+        # resultado medido hoy: SOLUSD, 16.355 $ -la MAYOR posicion del libro, en un
+        # mercado que cotiza 24/7- colgaba de una sola orden puesta por una de ellas. Si
+        # esa orden se cancela, NADA la repone.
+        # La cripto sigue fuera de la gestion por multiplos de R (break-even, ratchet):
+        # esas reglas estan calibradas con volatilidad de acciones. Pero tener stop no es
+        # una optimizacion, es la condicion minima.
+        if crypto:
+            if not my_stops:
+                otras = [o for o in orders if norm_sym(o.get("symbol")) == norm_sym(sym)
+                         and o.get("side") == "sell"]
+                proteger_desnuda(alp, p, entry, price,
+                                 float(M.get("naked_stop_pct_crypto", 12.0)), acciones, tag,
+                                 retienen=otras)
+            continue
 
         # 2 · emergencia
         if pnl_pct <= -M["emergency_loss_pct"]:
@@ -134,21 +219,12 @@ def manage(alp, plog, M, acciones):
             acciones.append(f"🚨 {tag}: cierre emergencia {pnl_pct:.1f}% {'(error ' + r['_error'][:60] + ')' if '_error' in r else ''}")
             continue
 
-        my_stops = stops.get(sym, [])
-        # 1 · posición desnuda
+        # 1 . posicion desnuda
         if not my_stops:
-            sp = round_px(max(entry, price) * (1 - M["naked_stop_pct"] / 100))
-            if sp >= price:
-                sp = round_px(price * 0.99)
-            avail = float(p.get("qty_available") or qty)
-            if avail >= 1:
-                r = alp.req("/orders", "POST", {"symbol": sym, "qty": str(int(avail)), "side": "sell",
-                                                "type": "stop", "stop_price": str(sp), "time_in_force": "gtc",
-                                                "client_order_id": f"GHA-PROTECT-{now_utc():%Y%m%d%H%M}-{sym}"[:48]})
-                acciones.append(f"🛡️ {tag}: sin stop → stop protección {sp} "
-                                f"{'OK' if '_error' not in r else 'ERROR ' + r['_error'][:80]}")
-            else:
-                acciones.append(f"⚠️ {tag}: sin stop y acciones retenidas por otra orden — revisar a mano")
+            otras = [o for o in orders if norm_sym(o.get("symbol")) == norm_sym(sym)
+                     and o.get("side") == "sell"]
+            proteger_desnuda(alp, p, entry, price, float(M["naked_stop_pct"]), acciones, tag,
+                             retienen=otras)
             continue
 
         # 3/4 · subir stop por R

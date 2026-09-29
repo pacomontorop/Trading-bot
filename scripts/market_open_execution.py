@@ -249,6 +249,17 @@ def main():
         # PAPER
         if t in pos:
             descartados.append((t, "ya en cartera paper"))
+        # 2026-09-28 · FUENTE BLOQUEADA EN PAPER.
+        # `blocked_sources` existia desde hacia semanas pero SOLO se leia en la rama REAL
+        # (una unica linea, mas abajo): ponerlo en el bloque paper del JSON no habria hecho
+        # nada, porque este filtro no existia. Reproducido sobre 9,7 años de cinta
+        # consolidada (SIP 2016-2026, 11.126 valores, deslistados incluidos), el scoring de
+        # dynamic_scanner_gha da -13,6% anual y -91,7% de caida frente a +15,1% de SPY;
+        # diferencia de Sharpe -1,04, IC95% [-1,62,-0,50], no cruza el cero. Genero 55 de
+        # los 68 candidatos del log. Se bloquea aqui, en la EJECUCION, y no en el scanner:
+        # los candidatos se siguen registrando para poder medir despues que habria pasado.
+        elif src in lp.get("blocked_sources", []):
+            descartados.append((t, f"fuente {src} bloqueada en paper"))
         elif n_open >= lp["max_positions"] + (SLOT_CONVICCION if sc >= SCORE_CONVICCION else 0):
             _extra = SLOT_CONVICCION if sc >= SCORE_CONVICCION else 0
             descartados.append((t, f"max posiciones paper {lp['max_positions']}"
