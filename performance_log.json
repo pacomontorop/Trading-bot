@@ -26672,25 +26672,36 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-29",
-    "hora_utc": "15:38",
-    "min_desde_apertura": 128.1,
+    "hora_utc": "16:38",
+    "min_desde_apertura": 188.5,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
+      "IOVA: max entradas/día paper",
       "PRGS: max entradas/día paper",
-      "AXTI: max entradas/día paper",
       "CCL: max entradas/día paper",
+      "AXTI: max entradas/día paper",
       "BE: max entradas/día paper",
-      "RCL: max entradas/día paper",
+      "AMAT: max entradas/día paper",
       "AYI: max entradas/día paper",
+      "RCL: max entradas/día paper",
       "LITE: max entradas/día paper",
       "MU: max entradas/día paper",
-      "SOXL: max entradas/día paper",
-      "ONTO: max entradas/día paper",
-      "KLAC: max entradas/día paper"
+      "ONTO: max entradas/día paper"
     ],
     "ajustes_fuentes": {
+      "IOVA": {
+        "base": 10.0,
+        "paper": 10.0,
+        "real": 10.0,
+        "partes": {
+          "opciones": 0.5,
+          "corto": -0.2,
+          "sector": 0.15,
+          "macro": -0.2
+        }
+      },
       "PRGS": {
         "base": 8.52,
         "paper": 8.72,
@@ -26699,6 +26710,17 @@
           "analistas": 0.2,
           "corto": -0.2,
           "sector": 0.4,
+          "macro": -0.2
+        }
+      },
+      "CCL": {
+        "base": 9.17,
+        "paper": 8.47,
+        "real": 8.47,
+        "partes": {
+          "analistas": -0.6,
+          "opciones": 0.5,
+          "sector": -0.4,
           "macro": -0.2
         }
       },
@@ -26712,17 +26734,6 @@
           "macro": -0.2
         }
       },
-      "CCL": {
-        "base": 8.52,
-        "paper": 7.82,
-        "real": 7.82,
-        "partes": {
-          "analistas": -0.6,
-          "opciones": 0.5,
-          "sector": -0.4,
-          "macro": -0.2
-        }
-      },
       "BE": {
         "base": 7.96,
         "paper": 7.56,
@@ -26733,14 +26744,13 @@
           "macro": -0.2
         }
       },
-      "RCL": {
-        "base": 6.39,
-        "paper": 7.19,
-        "real": 6.39,
+      "AMAT": {
+        "base": 6.94,
+        "paper": 7.34,
+        "real": 6.94,
         "partes": {
-          "analistas": 0.9,
-          "opciones": 0.5,
-          "sector": -0.4,
+          "analistas": 0.2,
+          "sector": 0.4,
           "macro": -0.2
         }
       },
@@ -26754,13 +26764,23 @@
           "macro": -0.2
         }
       },
+      "RCL": {
+        "base": 6.39,
+        "paper": 6.94,
+        "real": 6.39,
+        "partes": {
+          "analistas": 0.9,
+          "opciones": 0.25,
+          "sector": -0.4,
+          "macro": -0.2
+        }
+      },
       "LITE": {
         "base": 6.57,
-        "paper": 7.17,
+        "paper": 6.92,
         "real": 6.57,
         "partes": {
           "analistas": 0.15,
-          "opciones": 0.25,
           "sector": 0.4,
           "macro": -0.2
         }
@@ -26776,14 +26796,6 @@
           "macro": -0.2
         }
       },
-      "SOXL": {
-        "base": 7.04,
-        "paper": 6.84,
-        "real": 6.84,
-        "partes": {
-          "macro": -0.2
-        }
-      },
       "ONTO": {
         "base": 6.48,
         "paper": 6.73,
@@ -26793,30 +26805,19 @@
           "sector": 0.4,
           "macro": -0.2
         }
-      },
-      "KLAC": {
-        "base": 6.3,
-        "paper": 6.6,
-        "real": 6.3,
-        "partes": {
-          "analistas": -0.15,
-          "opciones": 0.25,
-          "sector": 0.4,
-          "macro": -0.2
-        }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-29T15:38Z",
+    "ts": "2026-09-29T16:38Z",
     "macro": {
       "hy_oas": 3.02,
       "hy_cambio_20": 0.39,
       "nfci": -0.555,
       "curva_10a2a": 0.32,
-      "credito_hyg_ief_20": 0.71,
-      "fear_greed": 32.4,
+      "credito_hyg_ief_20": 0.65,
+      "fear_greed": 32.3,
       "regimen": "cautela",
       "ajuste": -0.2
     },
@@ -26824,25 +26825,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 234,
-        "ultimo_error": null
-      },
-      "credito_hyg_ief": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 391,
+        "ms": 175,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 2039,
+        "ms": 940,
+        "ultimo_error": null
+      },
+      "credito_hyg_ief": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 456,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 11,
         "fallos": 0,
-        "ms": 3037,
+        "ms": 3316,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26854,31 +26855,31 @@
       "insiders": {
         "ok": 11,
         "fallos": 0,
-        "ms": 9327,
+        "ms": 15140,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 11,
         "fallos": 0,
-        "ms": 1158,
+        "ms": 967,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 11,
         "fallos": 0,
-        "ms": 2443,
+        "ms": 2418,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 11,
         "fallos": 0,
-        "ms": 1213,
+        "ms": 1124,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 11,
         "fallos": 0,
-        "ms": 2734,
+        "ms": 1900,
         "ultimo_error": null
       }
     }
@@ -26962,6 +26963,16 @@
     {
       "fecha": "2026-09-29",
       "hora_utc": "15:38",
+      "candidatos": 11,
+      "ejecutados": 0,
+      "descartados": 11,
+      "motivos": {
+        "max entradas/día paper": 11
+      }
+    },
+    {
+      "fecha": "2026-09-29",
+      "hora_utc": "16:38",
       "candidatos": 11,
       "ejecutados": 0,
       "descartados": 11,
