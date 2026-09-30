@@ -26536,17 +26536,17 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-09-30",
-    "hora_utc": "18:36",
-    "min_desde_apertura": 306.4,
+    "hora_utc": "18:40",
+    "min_desde_apertura": 310.1,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
-      "NTAP: fuente dynamic_scanner_gha bloqueada en paper",
       "UTHR: fuente dynamic_scanner_gha bloqueada en paper",
       "IOVA: fuente dynamic_scanner_gha bloqueada en paper",
       "AAPL: ya en cartera paper",
       "NKE: max entradas/día paper",
+      "NTAP: fuente dynamic_scanner_gha bloqueada en paper",
       "TWST: fuente dynamic_scanner_gha bloqueada en paper",
       "DDOG: fuente dynamic_scanner_gha bloqueada en paper",
       "TLN: score 5.9<6.0",
@@ -26554,18 +26554,6 @@
       "LRCX: score 5.5<6.0"
     ],
     "ajustes_fuentes": {
-      "NTAP": {
-        "base": 6.3,
-        "paper": 7.2,
-        "real": 6.3,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": 0.5,
-          "opciones": 0.5,
-          "sector": 0.4,
-          "macro": -0.2
-        }
-      },
       "UTHR": {
         "base": 7.22,
         "paper": 7.07,
@@ -26607,6 +26595,18 @@
         "partes": {
           "analistas": -0.6,
           "sector": -0.4,
+          "macro": -0.2
+        }
+      },
+      "NTAP": {
+        "base": 5.65,
+        "paper": 6.55,
+        "real": 5.65,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": 0.5,
+          "opciones": 0.5,
+          "sector": 0.4,
           "macro": -0.2
         }
       },
@@ -26665,14 +26665,14 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-09-30T18:36Z",
+    "ts": "2026-09-30T18:40Z",
     "macro": {
       "hy_oas": 3.08,
       "hy_cambio_20": 0.43,
       "nfci": -0.548,
       "curva_10a2a": 0.37,
-      "credito_hyg_ief_20": 0.82,
-      "fear_greed": 33.6,
+      "credito_hyg_ief_20": 0.83,
+      "fear_greed": 33.3,
       "regimen": "cautela",
       "ajuste": -0.2
     },
@@ -26680,25 +26680,25 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 118,
+        "ms": 179,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1603,
+        "ms": 1035,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 407,
+        "ms": 291,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 10,
         "fallos": 0,
-        "ms": 2712,
+        "ms": 2702,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26710,31 +26710,31 @@
       "insiders": {
         "ok": 10,
         "fallos": 0,
-        "ms": 38700,
+        "ms": 38568,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 10,
         "fallos": 0,
-        "ms": 1152,
+        "ms": 879,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 10,
         "fallos": 0,
-        "ms": 2096,
+        "ms": 1591,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 10,
         "fallos": 0,
-        "ms": 1351,
+        "ms": 935,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 10,
         "fallos": 0,
-        "ms": 3242,
+        "ms": 1504,
         "ultimo_error": null
       }
     }
@@ -26935,6 +26935,19 @@
     {
       "fecha": "2026-09-30",
       "hora_utc": "18:36",
+      "candidatos": 10,
+      "ejecutados": 0,
+      "descartados": 10,
+      "motivos": {
+        "fuente dynamic_scanner_gha bloqueada en paper": 5,
+        "score N<N": 3,
+        "ya en cartera paper": 1,
+        "max entradas/día paper": 1
+      }
+    },
+    {
+      "fecha": "2026-09-30",
+      "hora_utc": "18:40",
       "candidatos": 10,
       "ejecutados": 0,
       "descartados": 10,
