@@ -3550,39 +3550,6 @@
       "fecha_ejecucion": "2026-09-28 13:38"
     },
     {
-      "ticker": "NKE",
-      "symbol": "NKE",
-      "estado": "pendiente_ew",
-      "score": 7.8,
-      "score_ajustado": 7.8,
-      "score_breakdown": {
-        "whisper": 1.55,
-        "beat_rate": 3.0,
-        "reaccion": 0.0,
-        "revisiones": 0.75,
-        "momentum5d": 1.0,
-        "macro": 1.0,
-        "noticias": 0.5
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 35.84,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-09-30T20:00:00Z",
-      "fecha_entrada_prevista": "2026-09-30",
-      "cerrar_antes": "2026-10-01",
-      "earnings_fecha": "2026-10-01",
-      "earnings_timing": "AMC",
-      "consenso_eps": 0.43,
-      "whisper": 0.48,
-      "asimetria_pct": 11.63,
-      "beat_rate": 100.0,
-      "reaccion_media_pct": -1.5,
-      "momentum_5d_pct": -0.85,
-      "analistas": 68,
-      "fecha_scan": "2026-09-30T14:35:25Z"
-    },
-    {
       "ticker": "RKLB",
       "symbol": "RKLB",
       "estado": "pendiente",
@@ -3773,6 +3740,39 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-09-30T14:36:01.568760+00:00",
       "notas": "1d=+1.1% vol=0.1x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "NKE",
+      "symbol": "NKE",
+      "estado": "pendiente_ew",
+      "score": 7.8,
+      "score_ajustado": 7.8,
+      "score_breakdown": {
+        "whisper": 1.55,
+        "beat_rate": 3.0,
+        "reaccion": 0.0,
+        "revisiones": 0.75,
+        "momentum5d": 1.0,
+        "macro": 1.0,
+        "noticias": 0.5
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 35.84,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-09-30T20:00:00Z",
+      "fecha_entrada_prevista": "2026-09-30",
+      "cerrar_antes": "2026-10-01",
+      "earnings_fecha": "2026-10-01",
+      "earnings_timing": "AMC",
+      "consenso_eps": 0.43,
+      "whisper": 0.48,
+      "asimetria_pct": 11.63,
+      "beat_rate": 100.0,
+      "reaccion_media_pct": -1.5,
+      "momentum_5d_pct": -1.1,
+      "analistas": 69,
+      "fecha_scan": "2026-09-30T15:35:30Z"
     }
   ],
   "macro_context": {
@@ -24951,7 +24951,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-09-30T14:35Z",
+    "ts": "2026-09-30T15:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -24983,19 +24983,19 @@
       },
       "fred": {
         "ok": true,
-        "detalle": "HY OAS 3.02"
+        "detalle": "HY OAS 3.08"
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.84}"
+        "detalle": "{'rel20': 0.78}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 35.6, 'rating': 'fear'}"
+        "detalle": "{'score': 35.0, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 72, 'menciones_24h_antes': 114, 'ratio_24h': 0.63}"
+        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 75, 'menciones_24h_antes': 98, 'ratio_24h': 0.77}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25003,7 +25003,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 2.41"
+        "detalle": "C/P 1.82"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25011,18 +25011,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 0.5, 'rs20': 5.92}"
+        "detalle": "{'etf': 'XLK', 'rs5': 0.69, 'rs20': 6.14}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-09-30T14:35Z",
+    "ts": "2026-09-30T15:35Z",
     "entrada": "2026-09-30",
     "salida": "2026-10-01",
     "eventos": 5,
     "evaluados": 1,
     "macro": {
-      "vix": 15.76,
+      "vix": 15.92,
       "spy_above_ma50": true
     },
     "top": [
@@ -25052,7 +25052,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-09-30T14:35Z",
+    "ts": "2026-09-30T15:35Z",
     "calendario": {
       "2026-09-30": [
         {
@@ -25101,14 +25101,14 @@
           "ticker": "MU",
           "company": "Micron Technology, Inc.",
           "releaseTime": 3,
-          "total": 330,
+          "total": 333,
           "fuente": "ew"
         },
         {
           "ticker": "PRGS",
           "company": "Progress Software Corp.",
           "releaseTime": 3,
-          "total": 16,
+          "total": 17,
           "fuente": "ew"
         },
         {
@@ -25201,21 +25201,21 @@
           "ticker": "ACN",
           "company": "Accenture plc",
           "releaseTime": 1,
-          "total": 26,
+          "total": 28,
           "fuente": "ew"
         },
         {
           "ticker": "AYI",
           "company": "Acuity Inc.",
           "releaseTime": 1,
-          "total": 12,
+          "total": 13,
           "fuente": "ew"
         },
         {
           "ticker": "MKC",
           "company": "McCormick & Company, Incorporated",
           "releaseTime": 1,
-          "total": 12,
+          "total": 13,
           "fuente": "ew"
         },
         {
@@ -25229,7 +25229,7 @@
           "ticker": "NKE",
           "company": "NIKE, Inc.",
           "releaseTime": 3,
-          "total": 68,
+          "total": 69,
           "fuente": "ew"
         },
         {
@@ -25303,15 +25303,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "IPST",
-          "company": "IP Strategy Holdings, Inc.",
+          "ticker": "ITP",
+          "company": "IT Tech Packaging, Inc.",
           "releaseTime": null,
           "total": 7,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "ITP",
-          "company": "IT Tech Packaging, Inc.",
+          "ticker": "IPST",
+          "company": "IP Strategy Holdings, Inc.",
           "releaseTime": null,
           "total": 7,
           "fuente": "nasdaq"
