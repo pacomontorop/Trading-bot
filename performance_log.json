@@ -24918,14 +24918,14 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-01T00:48Z",
+    "ts": "2026-10-01T13:35Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
     },
     "nasdaq_calendar": {
       "ok": true,
-      "detalle": "16 filas"
+      "detalle": "17 filas"
     },
     "alpaca_datos": {
       "ok": true,
@@ -24954,15 +24954,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.64}"
+        "detalle": "{'rel20': 0.61}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 30.8, 'rating': 'fear'}"
+        "detalle": "{'score': 30.7, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 82, 'menciones_24h_antes': 78, 'ratio_24h': 1.05}"
+        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 88, 'menciones_24h_antes': 77, 'ratio_24h': 1.14}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24978,18 +24978,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 0.93, 'rs20': 6.34}"
+        "detalle": "{'etf': 'XLK', 'rs5': 1.32, 'rs20': 7.02}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-01T00:48Z",
+    "ts": "2026-10-01T13:35Z",
     "entrada": "2026-10-01",
     "salida": "2026-10-02",
-    "eventos": 7,
+    "eventos": 9,
     "evaluados": 0,
     "macro": {
-      "vix": 16.34,
+      "vix": 16.44,
       "spy_above_ma50": true
     },
     "top": []
@@ -25003,7 +25003,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-01T00:48Z",
+    "ts": "2026-10-01T13:35Z",
     "calendario": {
       "2026-10-01": [
         {
@@ -25017,7 +25017,7 @@
           "ticker": "AYI",
           "company": "Acuity Inc.",
           "releaseTime": 1,
-          "total": 17,
+          "total": 18,
           "fuente": "ew"
         },
         {
@@ -25038,7 +25038,14 @@
           "ticker": "NKE",
           "company": "NIKE, Inc.",
           "releaseTime": 3,
-          "total": 76,
+          "total": 81,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "SENR",
+          "company": "Strategic Environmental & Energy Resources, Inc.",
+          "releaseTime": 3,
+          "total": 0,
           "fuente": "ew"
         },
         {
@@ -25128,11 +25135,18 @@
       ],
       "2026-10-02": [
         {
-          "ticker": "HTLM",
-          "company": "HomesToLife Ltd",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
+          "ticker": "BABB",
+          "company": "BAB Inc.",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "YASKY",
+          "company": "YASKAWA ELE-ADR",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
         },
         {
           "ticker": "CELU",
@@ -25204,6 +25218,20 @@
           "company": "CBAK Energy Technology Limited",
           "releaseTime": null,
           "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "NCPL",
+          "company": "Netcapital Inc.",
+          "releaseTime": null,
+          "total": 2,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "MSS",
+          "company": "Maison Solutions Inc.",
+          "releaseTime": null,
+          "total": 2,
           "fuente": "nasdaq"
         },
         {
@@ -25418,6 +25446,42 @@
     "tickers": {},
     "resultados_hoy": [
       {
+        "ticker": "ACN",
+        "epsDate": "2026-10-01T06:39:00",
+        "eps": 3.29,
+        "estimate": 3.19,
+        "whisper": 3.27,
+        "revenue": 18679.11,
+        "revenueEstimate": 18010.0,
+        "earningsSurprise": 0.0061162079510703364,
+        "revenueSurprise": 0.037152137701277066,
+        "subject": "Accenture plc Beat Expectations"
+      },
+      {
+        "ticker": "MKC",
+        "epsDate": "2026-10-01T06:30:00",
+        "eps": 0.86,
+        "estimate": 0.75,
+        "whisper": 0.75,
+        "revenue": 2024.8,
+        "revenueEstimate": 1980.0,
+        "earningsSurprise": 0.14666666666666667,
+        "revenueSurprise": 0.022626262626262626,
+        "subject": "McCormick & Company, Beat Expectations"
+      },
+      {
+        "ticker": "AYI",
+        "epsDate": "2026-10-01T06:00:00",
+        "eps": 5.77,
+        "estimate": 5.61,
+        "whisper": 5.8,
+        "revenue": 1244.4,
+        "revenueEstimate": 1260.0,
+        "earningsSurprise": -0.005172413793103448,
+        "revenueSurprise": -0.012380952380952381,
+        "subject": "Acuity Missed Expectations"
+      },
+      {
         "ticker": "PRGS",
         "epsDate": "2026-09-30T16:05:00",
         "eps": 1.69,
@@ -25536,78 +25600,6 @@
         "earningsSurprise": -0.4,
         "revenueSurprise": 0.8944444444444445,
         "subject": "Uranium Energy Missed Expectations"
-      },
-      {
-        "ticker": "CAST",
-        "epsDate": "2026-09-29T05:00:00",
-        "eps": -0.37,
-        "estimate": -0.08,
-        "whisper": 999,
-        "revenue": 0.36,
-        "revenueEstimate": 0.1,
-        "earningsSurprise": -3.625,
-        "revenueSurprise": 2.6,
-        "subject": "FreeCast Missed Consensus Estimates"
-      },
-      {
-        "ticker": "SANG",
-        "epsDate": "2026-09-28T17:00:00",
-        "eps": -0.08,
-        "estimate": 999.0,
-        "whisper": 999,
-        "revenue": 49.816,
-        "revenueEstimate": 51.5,
-        "earningsSurprise": null,
-        "revenueSurprise": -0.03269902912621359,
-        "subject": "Sangoma Technologies Reported Earnings"
-      },
-      {
-        "ticker": "AIR",
-        "epsDate": "2026-09-28T16:51:00",
-        "eps": 1.49,
-        "estimate": 999.0,
-        "whisper": 999,
-        "revenue": 918.0,
-        "revenueEstimate": 0.000999,
-        "earningsSurprise": null,
-        "revenueSurprise": 918917.9189189189,
-        "subject": "AAR Reported Earnings"
-      },
-      {
-        "ticker": "AIR",
-        "epsDate": "2026-09-28T16:51:00",
-        "eps": 1.49,
-        "estimate": 999.0,
-        "whisper": 999,
-        "revenue": 918.0,
-        "revenueEstimate": 0.000999,
-        "earningsSurprise": null,
-        "revenueSurprise": 918917.9189189189,
-        "subject": "AAR Reported Earnings"
-      },
-      {
-        "ticker": "JEF",
-        "epsDate": "2026-09-28T16:16:00",
-        "eps": 1.09,
-        "estimate": 1.04,
-        "whisper": 999,
-        "revenue": 3230.798,
-        "revenueEstimate": 2210.0,
-        "earningsSurprise": 0.04807692307692308,
-        "revenueSurprise": 0.46189954751131224,
-        "subject": "Jefferies Financial Group Beat Consensus Estimates"
-      },
-      {
-        "ticker": "MTN",
-        "epsDate": "2026-09-28T16:05:00",
-        "eps": -5.34,
-        "estimate": -5.4,
-        "whisper": -5.45,
-        "revenue": 278.068,
-        "revenueEstimate": 270.11,
-        "earningsSurprise": 0.02018348623853211,
-        "revenueSurprise": 0.02946207100810781,
-        "subject": "Vail Resorts Beat Expectations"
       }
     ]
   },
