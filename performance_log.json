@@ -20583,7 +20583,7 @@
     "accion_para_tareas_diarias": "Sustituir get_ew_headless()/scraping HTML por estas 3 llamadas JSON en sentinel, pre-market-earnings-scan y ew-daily-results.",
     "validacion": "67 tickers del calendario 31-ago/4-sep consultados; 42 con whisper+consenso utilizables (63%).",
     "acceso_correcto": "API JSON https://www.earningswhispers.com/api/... SIN login. OBLIGATORIO cabecera Referer: https://www.earningswhispers.com/ (sin ella responde HTTP 204 vacío). NUNCA scrapear HTML ni old.earningswhispers.com (muerto). Implementación de referencia: scripts/datasources.py del repo.",
-    "ultimo_acceso_ok": true,
+    "ultimo_acceso_ok": false,
     "si_no_puedes_llamar_a_la_api": "Si tu entorno no tiene shell o no puede enviar la cabecera Referer (p.ej. fetch desde navegador), NO consultes earningswhispers.com: usa la sección ew_cache de este log, que GitHub Actions actualiza cada hora en sesión y cada noche. No es un fallo de EW; no bloquees la tarea."
   },
   "plan_semana_proxima": {
@@ -24938,10 +24938,10 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-02T13:45Z",
+    "ts": "2026-10-02T14:36Z",
     "earningswhispers": {
-      "ok": true,
-      "detalle": "HTTP 200"
+      "ok": false,
+      "detalle": "HTTP 404"
     },
     "nasdaq_calendar": {
       "ok": true,
@@ -24970,19 +24970,19 @@
       },
       "fred": {
         "ok": true,
-        "detalle": "HY OAS 3.12"
+        "detalle": "HY OAS 3.24"
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.46}"
+        "detalle": "{'rel20': 0.68}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 30.7, 'rating': 'fear'}"
+        "detalle": "{'score': 32.5, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 86, 'menciones_24h_antes': 87, 'ratio_24h': 0.99}"
+        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 90, 'menciones_24h_antes': 88, 'ratio_24h': 1.02}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24990,7 +24990,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.24"
+        "detalle": "C/P 1.62"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -24998,42 +24998,27 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.26, 'rs20': 8.0}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.37, 'rs20': 8.12}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-02T13:45Z",
+    "ts": "2026-10-02T14:36Z",
     "entrada": "2026-10-02",
     "salida": "2026-10-05",
     "eventos": 6,
     "evaluados": 3,
     "macro": {
-      "vix": 15.62,
+      "vix": 15.56,
       "spy_above_ma50": true
     },
     "top": [
       {
-        "ticker": "LW",
-        "score": 5.5,
-        "earnings_fecha": "2026-10-06",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "whisper": 2.0,
-          "beat_rate": 3.0,
-          "reaccion": -0.5,
-          "revisiones": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
         "ticker": "APOG",
-        "score": 4.72,
+        "score": 5.06,
         "earnings_fecha": "2026-10-06",
         "earnings_timing": "BMO",
         "score_breakdown": {
-          "whisper": -0.34,
           "beat_rate": 3.0,
           "reaccion": 0.06,
           "revisiones": 0.0,
@@ -25042,12 +25027,24 @@
         }
       },
       {
-        "ticker": "RPM",
-        "score": 3.44,
+        "ticker": "LW",
+        "score": 3.5,
         "earnings_fecha": "2026-10-06",
         "earnings_timing": "BMO",
         "score_breakdown": {
-          "whisper": 0.21,
+          "beat_rate": 3.0,
+          "reaccion": -0.5,
+          "revisiones": -1.0,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "RPM",
+        "score": 3.23,
+        "earnings_fecha": "2026-10-06",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
           "beat_rate": 1.0,
           "reaccion": 1.23,
           "revisiones": -1.0,
@@ -25066,7 +25063,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-02T13:45Z",
+    "ts": "2026-10-02T14:36Z",
     "calendario": {
       "2026-10-02": [
         {
@@ -25333,34 +25330,34 @@
     },
     "tickers": {
       "APOG": {
-        "consenso_eps": 0.59,
-        "whisper": 0.57,
-        "asimetria_pct": -3.39,
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
         "earnings_fecha": "2026-10-06",
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 0.15,
-        "score": 4.72
+        "score": 5.06
       },
       "RPM": {
-        "consenso_eps": 1.95,
-        "whisper": 1.98,
-        "asimetria_pct": 1.54,
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
         "earnings_fecha": "2026-10-06",
         "earnings_timing": "BMO",
         "beat_rate": 62.5,
         "reaccion_media_pct": 3.27,
-        "score": 3.44
+        "score": 3.23
       },
       "LW": {
-        "consenso_eps": 0.59,
-        "whisper": 0.72,
-        "asimetria_pct": 22.03,
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
         "earnings_fecha": "2026-10-06",
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -2.62,
-        "score": 5.5
+        "score": 3.5
       }
     },
     "resultados_hoy": [
@@ -25410,7 +25407,7 @@
         "revenueEstimate": 1980.0,
         "earningsSurprise": 0.14666666666666667,
         "revenueSurprise": 0.022626262626262626,
-        "subject": "McCormick & Company, Beat Expectations"
+        "subject": "McCormick & Company, Beat Expectations, Reaffirms"
       },
       {
         "ticker": "NKE",
@@ -25422,7 +25419,7 @@
         "revenueEstimate": 11400.0,
         "earningsSurprise": 0,
         "revenueSurprise": -0.016403508771929826,
-        "subject": "NIKE Reported In-line with Expectations"
+        "subject": "NIKE Reported In-line with Expectations, Guides Below Estimates"
       },
       {
         "ticker": "ACN",
@@ -25434,11 +25431,11 @@
         "revenueEstimate": 18010.0,
         "earningsSurprise": 0.0061162079510703364,
         "revenueSurprise": 0.037152137701277066,
-        "subject": "Accenture plc Beat Expectations"
+        "subject": "Accenture plc Beat Expectations, Guides In-line"
       },
       {
         "ticker": "MKC",
-        "epsDate": "2026-10-01T18:24:00",
+        "epsDate": "2026-10-01T06:30:00",
         "eps": 0.86,
         "estimate": 0.75,
         "whisper": 0.75,
@@ -25446,7 +25443,7 @@
         "revenueEstimate": 1980.0,
         "earningsSurprise": 0.14666666666666667,
         "revenueSurprise": 0.022626262626262626,
-        "subject": "McCormick & Company, Beat Expectations"
+        "subject": "McCormick & Company, Beat Expectations, Reaffirms"
       },
       {
         "ticker": "AYI",
@@ -25470,7 +25467,7 @@
         "revenueEstimate": 247.16,
         "earningsSurprise": 0.05625,
         "revenueSurprise": -0.004673086259912607,
-        "subject": "Progress Software Beat Expectations"
+        "subject": "Progress Software Beat Expectations, Provides Mixed Guidance"
       },
       {
         "ticker": "MU",
@@ -25482,7 +25479,7 @@
         "revenueEstimate": 50860.0,
         "earningsSurprise": -0.0210896309314587,
         "revenueSurprise": 0.06624066063704287,
-        "subject": "Micron Technology Missed Expectations"
+        "subject": "Micron Technology Missed Expectations, Guides Above Estimates"
       },
       {
         "ticker": "BSET",
@@ -25506,7 +25503,7 @@
         "revenueEstimate": 2590.0,
         "earningsSurprise": 0.3225806451612903,
         "revenueSurprise": 0.002277992277992278,
-        "subject": "Conagra Brands Beat Expectations"
+        "subject": "Conagra Brands Beat Expectations, Reaffirms"
       },
       {
         "ticker": "JBL",
@@ -25518,7 +25515,7 @@
         "revenueEstimate": 9610.0,
         "earningsSurprise": 0.07317073170731707,
         "revenueSurprise": 0.10468262226847035,
-        "subject": "Jabil Beat Expectations"
+        "subject": "Jabil Beat Expectations, Guides Above Estimates"
       },
       {
         "ticker": "FDS",
@@ -25530,7 +25527,7 @@
         "revenueEstimate": 628.23,
         "earningsSurprise": 0.02727272727272727,
         "revenueSurprise": 0.01029559237858746,
-        "subject": "FactSet Research Systems Beat Expectations"
+        "subject": "FactSet Research Systems Beat Expectations, Guides Below Estimates"
       }
     ]
   },
