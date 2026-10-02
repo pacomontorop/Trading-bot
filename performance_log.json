@@ -26333,42 +26333,30 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-10-02",
-    "hora_utc": "17:38",
-    "min_desde_apertura": 249.0,
+    "hora_utc": "18:39",
+    "min_desde_apertura": 309.5,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "HPE: fuente dynamic_scanner_gha bloqueada en paper",
-      "ON: fuente dynamic_scanner_gha bloqueada en paper",
       "WOLF: fuente dynamic_scanner_gha bloqueada en paper",
+      "BE: fuente dynamic_scanner_gha bloqueada en paper",
       "TER: fuente dynamic_scanner_gha bloqueada en paper",
+      "ON: fuente dynamic_scanner_gha bloqueada en paper",
+      "SDEV: fuente dynamic_scanner_gha bloqueada en paper",
       "SMTC: fuente dynamic_scanner_gha bloqueada en paper",
       "SOXL: fuente dynamic_scanner_gha bloqueada en paper",
-      "SPCX: fuente dynamic_scanner_gha bloqueada en paper",
-      "DELL: max entradas/día paper",
-      "SDEV: fuente dynamic_scanner_gha bloqueada en paper",
       "AMD: score 5.4<6.0"
     ],
     "ajustes_fuentes": {
       "HPE": {
-        "base": 9.44,
-        "paper": 10.0,
-        "real": 9.44,
+        "base": 8.7,
+        "paper": 9.65,
+        "real": 8.7,
         "partes": {
           "analistas": 0.8,
-          "opciones": 0.5,
-          "sector": 0.4,
-          "macro": -0.5
-        }
-      },
-      "ON": {
-        "base": 8.98,
-        "paper": 8.63,
-        "real": 8.63,
-        "partes": {
-          "analistas": -0.75,
-          "opciones": 0.5,
+          "opciones": 0.25,
           "sector": 0.4,
           "macro": -0.5
         }
@@ -26383,6 +26371,16 @@
           "macro": -0.5
         }
       },
+      "BE": {
+        "base": 7.96,
+        "paper": 7.91,
+        "real": 7.91,
+        "partes": {
+          "analistas": 0.6,
+          "sector": -0.15,
+          "macro": -0.5
+        }
+      },
       "TER": {
         "base": 7.22,
         "paper": 7.37,
@@ -26390,6 +26388,26 @@
         "partes": {
           "opciones": 0.25,
           "sector": 0.4,
+          "macro": -0.5
+        }
+      },
+      "ON": {
+        "base": 7.13,
+        "paper": 6.98,
+        "real": 6.98,
+        "partes": {
+          "analistas": -0.55,
+          "opciones": 0.5,
+          "sector": 0.4,
+          "macro": -0.5
+        }
+      },
+      "SDEV": {
+        "base": 7.87,
+        "paper": 6.97,
+        "real": 6.97,
+        "partes": {
+          "sector": -0.4,
           "macro": -0.5
         }
       },
@@ -26405,41 +26423,9 @@
       },
       "SOXL": {
         "base": 6.94,
-        "paper": 6.69,
-        "real": 6.69,
+        "paper": 6.44,
+        "real": 6.44,
         "partes": {
-          "opciones": 0.25,
-          "macro": -0.5
-        }
-      },
-      "SPCX": {
-        "base": 6.76,
-        "paper": 6.66,
-        "real": 6.66,
-        "partes": {
-          "analistas": 0.35,
-          "sector": -0.15,
-          "social": 0.2,
-          "macro": -0.5
-        }
-      },
-      "DELL": {
-        "base": 5.62,
-        "paper": 6.57,
-        "real": 5.62,
-        "partes": {
-          "analistas": 0.8,
-          "opciones": 0.25,
-          "sector": 0.4,
-          "macro": -0.5
-        }
-      },
-      "SDEV": {
-        "base": 7.41,
-        "paper": 6.51,
-        "real": 6.51,
-        "partes": {
-          "sector": -0.4,
           "macro": -0.5
         }
       },
@@ -26458,76 +26444,76 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-10-02T17:38Z",
+    "ts": "2026-10-02T18:39Z",
     "macro": {
       "hy_oas": 3.24,
       "hy_cambio_20": 0.59,
       "nfci": -0.548,
       "curva_10a2a": 0.46,
-      "credito_hyg_ief_20": 0.73,
+      "credito_hyg_ief_20": 0.77,
       "fear_greed": 31.0,
       "regimen": "risk_off",
       "ajuste": -0.5
     },
     "estado": {
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 685,
+        "ultimo_error": null
+      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 231,
+        "ms": 152,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 287,
-        "ultimo_error": null
-      },
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 1800,
+        "ms": 219,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 2560,
+        "ms": 1677,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 19872,
+        "ms": 17281,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1285,
+        "ms": 822,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1640,
+        "ms": 1159,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 610,
+        "ms": 757,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 10,
+        "ok": 9,
         "fallos": 0,
-        "ms": 1732,
+        "ms": 1004,
         "ultimo_error": null
       }
     }
@@ -26871,6 +26857,17 @@
       "motivos": {
         "fuente dynamic_scanner_gha bloqueada en paper": 8,
         "max entradas/día paper": 1,
+        "score N<N": 1
+      }
+    },
+    {
+      "fecha": "2026-10-02",
+      "hora_utc": "18:39",
+      "candidatos": 9,
+      "ejecutados": 0,
+      "descartados": 9,
+      "motivos": {
+        "fuente dynamic_scanner_gha bloqueada en paper": 8,
         "score N<N": 1
       }
     }
