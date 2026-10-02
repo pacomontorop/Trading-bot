@@ -24938,7 +24938,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-02T01:03Z",
+    "ts": "2026-10-02T13:45Z",
     "earningswhispers": {
       "ok": true,
       "detalle": "HTTP 200"
@@ -24974,15 +24974,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.39}"
+        "detalle": "{'rel20': 0.46}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 28.1, 'rating': 'fear'}"
+        "detalle": "{'score': 30.7, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 8, 'menciones': 87, 'menciones_24h_antes': 82, 'ratio_24h': 1.06}"
+        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 86, 'menciones_24h_antes': 87, 'ratio_24h': 0.99}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24990,7 +24990,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.73"
+        "detalle": "C/P 1.24"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -24998,21 +24998,35 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.04, 'rs20': 7.78}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.26, 'rs20': 8.0}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-02T01:03Z",
+    "ts": "2026-10-02T13:45Z",
     "entrada": "2026-10-02",
     "salida": "2026-10-05",
-    "eventos": 14,
+    "eventos": 6,
     "evaluados": 3,
     "macro": {
-      "vix": 16.39,
+      "vix": 15.62,
       "spy_above_ma50": true
     },
     "top": [
+      {
+        "ticker": "LW",
+        "score": 5.5,
+        "earnings_fecha": "2026-10-06",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "whisper": 2.0,
+          "beat_rate": 3.0,
+          "reaccion": -0.5,
+          "revisiones": -1.0,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
       {
         "ticker": "APOG",
         "score": 4.72,
@@ -25024,20 +25038,6 @@
           "reaccion": 0.06,
           "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "LW",
-        "score": 4.5,
-        "earnings_fecha": "2026-10-06",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "whisper": 2.0,
-          "beat_rate": 3.0,
-          "reaccion": -0.5,
-          "revisiones": -1.0,
-          "momentum5d": 0.0,
           "macro": 1.0
         }
       },
@@ -25066,9 +25066,16 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-02T01:03Z",
+    "ts": "2026-10-02T13:45Z",
     "calendario": {
       "2026-10-02": [
+        {
+          "ticker": "TAYD",
+          "company": "Taylor Devices Inc.",
+          "releaseTime": 1,
+          "total": 2,
+          "fuente": "ew"
+        },
         {
           "ticker": "BABB",
           "company": "BAB Inc.",
@@ -25084,75 +25091,19 @@
           "fuente": "ew"
         },
         {
-          "ticker": "CELU",
-          "company": "Celularity Inc.",
-          "releaseTime": null,
+          "ticker": "TMQ",
+          "company": "Trilogy Metals Inc.",
+          "releaseTime": 3,
           "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ENLV",
-          "company": "Enlivex Ltd.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "LNAI",
-          "company": "Lunai Bioworks Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
+          "fuente": "ew"
         }
       ],
       "2026-10-05": [
-        {
-          "ticker": "GRFS",
-          "company": "Grifols, S.A.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
         {
           "ticker": "AEHR",
           "company": "Aehr Test Systems",
           "releaseTime": null,
           "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CHRN",
-          "company": "ChronoScale Holdings Corporation",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CURR",
-          "company": "Currenc Group Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "AIV",
-          "company": "Apartment Investment and Management Company",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "RELL",
-          "company": "Richardson Electronics, Ltd.",
-          "releaseTime": 3,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CBAT",
-          "company": "CBAK Energy Technology Limited",
-          "releaseTime": null,
-          "total": 1,
           "fuente": "nasdaq"
         },
         {
@@ -25165,13 +25116,6 @@
         {
           "ticker": "MSS",
           "company": "Maison Solutions Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "FRGT",
-          "company": "Freight Technologies, Inc.",
           "releaseTime": null,
           "total": 2,
           "fuente": "nasdaq"
@@ -25203,7 +25147,7 @@
           "ticker": "PENG",
           "company": "Penguin Solutions, Inc.",
           "releaseTime": 3,
-          "total": 19,
+          "total": 20,
           "fuente": "ew"
         },
         {
@@ -25249,64 +25193,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "AREC",
-          "company": "American Resources Corporation",
+          "ticker": "TMQ",
+          "company": "Trilogy Metals Inc.",
           "releaseTime": null,
           "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ELME",
-          "company": "Elme Communities",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ALPS",
-          "company": "ALPS Group Inc",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "BRLS",
-          "company": "Borealis Foods Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "AAME",
-          "company": "Atlantic American Corporation",
-          "releaseTime": null,
-          "total": 2,
           "fuente": "nasdaq"
         },
         {
           "ticker": "ARTW",
           "company": "Art's-Way Manufacturing Co., Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "SEGG",
-          "company": "Sports Entertainment Gaming Global Corporation ",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "BRTX",
-          "company": "BioRestorative Therapies, Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "GTEN",
-          "company": "Gores Holdings X, Inc.",
           "releaseTime": null,
           "total": 2,
           "fuente": "nasdaq"
@@ -25317,7 +25212,7 @@
           "ticker": "APLD",
           "company": "Applied Digital Corporation",
           "releaseTime": 3,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -25359,21 +25254,7 @@
           "ticker": "TAYD",
           "company": "Taylor Devices, Inc.",
           "releaseTime": null,
-          "total": 0,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "TORO",
-          "company": "Toro Corp.",
-          "releaseTime": null,
-          "total": 4,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "SXTC",
-          "company": "China SXT Pharmaceuticals, Inc.",
-          "releaseTime": null,
-          "total": 4,
+          "total": 1,
           "fuente": "nasdaq"
         }
       ],
@@ -25442,8 +25323,8 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "IPW",
-          "company": "iPower Inc.",
+          "ticker": "CMMB",
+          "company": "Chemomab Therapeutics Ltd. ",
           "releaseTime": null,
           "total": 2,
           "fuente": "nasdaq"
@@ -25479,10 +25360,46 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -2.62,
-        "score": 4.5
+        "score": 5.5
       }
     },
     "resultados_hoy": [
+      {
+        "ticker": "TAYD",
+        "epsDate": "2026-10-02T08:15:00",
+        "eps": 0.14,
+        "estimate": 0.86,
+        "whisper": 999,
+        "revenue": 7.3,
+        "revenueEstimate": 13.2,
+        "earningsSurprise": -0.8372093023255814,
+        "revenueSurprise": -0.44696969696969696,
+        "subject": "Taylor Devices Missed Consensus Estimates"
+      },
+      {
+        "ticker": "TMQ",
+        "epsDate": "2026-10-02T06:30:00",
+        "eps": 0.0,
+        "estimate": -0.01,
+        "whisper": 999,
+        "revenue": 0.0,
+        "revenueEstimate": 0.000999,
+        "earningsSurprise": 1,
+        "revenueSurprise": -1,
+        "subject": "Trilogy Metals Beat Consensus Estimates"
+      },
+      {
+        "ticker": "TMQ",
+        "epsDate": "2026-10-02T06:30:00",
+        "eps": 0.0,
+        "estimate": -0.01,
+        "whisper": 999,
+        "revenue": 0.0,
+        "revenueEstimate": 0.000999,
+        "earningsSurprise": 1,
+        "revenueSurprise": -1,
+        "subject": "Trilogy Metals Beat Consensus Estimates"
+      },
       {
         "ticker": "MKC",
         "epsDate": "2026-10-01T18:24:00",
@@ -25580,18 +25497,6 @@
         "subject": "Bassett Furniture Industries Beat Consensus Estimates"
       },
       {
-        "ticker": "JBL",
-        "epsDate": "2026-09-30T07:30:00",
-        "eps": 4.4,
-        "estimate": 4.07,
-        "whisper": 4.1,
-        "revenue": 10616.0,
-        "revenueEstimate": 9610.0,
-        "earningsSurprise": 0.07317073170731707,
-        "revenueSurprise": 0.10468262226847035,
-        "subject": "Jabil Beat Expectations"
-      },
-      {
         "ticker": "CAG",
         "epsDate": "2026-09-30T07:30:00",
         "eps": 0.41,
@@ -25602,6 +25507,18 @@
         "earningsSurprise": 0.3225806451612903,
         "revenueSurprise": 0.002277992277992278,
         "subject": "Conagra Brands Beat Expectations"
+      },
+      {
+        "ticker": "JBL",
+        "epsDate": "2026-09-30T07:30:00",
+        "eps": 4.4,
+        "estimate": 4.07,
+        "whisper": 4.1,
+        "revenue": 10616.0,
+        "revenueEstimate": 9610.0,
+        "earningsSurprise": 0.07317073170731707,
+        "revenueSurprise": 0.10468262226847035,
+        "subject": "Jabil Beat Expectations"
       },
       {
         "ticker": "FDS",
