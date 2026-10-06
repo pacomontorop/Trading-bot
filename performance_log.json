@@ -3740,38 +3740,6 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-10-05T21:18:54.236887+00:00",
       "notas": "1d=+2.1% vol=12.7x 52h_dist=0.0%"
-    },
-    {
-      "ticker": "LEVI",
-      "symbol": "LEVI",
-      "estado": "pendiente_ew",
-      "score": 6.25,
-      "score_ajustado": 6.25,
-      "score_breakdown": {
-        "beat_rate": 3.0,
-        "reaccion": 0.0,
-        "revisiones": 0.75,
-        "momentum5d": 1.0,
-        "macro": 1.0,
-        "noticias": 0.5
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 20.28,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-10-06T20:00:00Z",
-      "fecha_entrada_prevista": "2026-10-06",
-      "cerrar_antes": "2026-10-07",
-      "earnings_fecha": "2026-10-07",
-      "earnings_timing": "AMC",
-      "consenso_eps": null,
-      "whisper": null,
-      "asimetria_pct": null,
-      "beat_rate": 100.0,
-      "reaccion_media_pct": -0.5,
-      "momentum_5d_pct": 2.4,
-      "analistas": 19,
-      "fecha_scan": "2026-10-06T01:51:48Z"
     }
   ],
   "macro_context": {
@@ -24978,7 +24946,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-06T01:51Z",
+    "ts": "2026-10-06T13:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25018,11 +24986,11 @@
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 43.1, 'rating': 'fear'}"
+        "detalle": "{'score': 43.7, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 115, 'menciones_24h_antes': 6, 'ratio_24h': 19.17}"
+        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 137, 'menciones_24h_antes': 28, 'ratio_24h': 4.89}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25038,35 +25006,21 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.07, 'rs20': 6.55}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.13, 'rs20': 5.85}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-06T01:51Z",
+    "ts": "2026-10-06T13:35Z",
     "entrada": "2026-10-06",
     "salida": "2026-10-07",
     "eventos": 13,
     "evaluados": 8,
     "macro": {
-      "vix": 15.52,
+      "vix": 15.37,
       "spy_above_ma50": true
     },
     "top": [
-      {
-        "ticker": "LEVI",
-        "score": 6.25,
-        "earnings_fecha": "2026-10-07",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.0,
-          "revisiones": 0.75,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
       {
         "ticker": "APLD",
         "score": 5.75,
@@ -25092,6 +25046,20 @@
           "revisiones": -1.0,
           "momentum5d": 1.0,
           "macro": 1.0
+        }
+      },
+      {
+        "ticker": "LEVI",
+        "score": 5.25,
+        "earnings_fecha": "2026-10-07",
+        "earnings_timing": "AMC",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0,
+          "noticias": 0.5
         }
       },
       {
@@ -25173,63 +25141,70 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-06T01:51Z",
+    "ts": "2026-10-06T13:35Z",
     "calendario": {
       "2026-10-06": [
         {
           "ticker": "APOG",
           "company": "Apogee Enterprises, Inc.",
           "releaseTime": 1,
-          "total": 23,
+          "total": 30,
           "fuente": "ew"
         },
         {
           "ticker": "LW",
           "company": "Lamb Weston Holdings, Inc.",
           "releaseTime": 1,
-          "total": 16,
+          "total": 21,
           "fuente": "ew"
         },
         {
           "ticker": "RPM",
           "company": "RPM International Inc.",
           "releaseTime": 1,
-          "total": 16,
+          "total": 20,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "VLGEA",
+          "company": "Village Super Market Inc.",
+          "releaseTime": 1,
+          "total": 0,
           "fuente": "ew"
         },
         {
           "ticker": "PENG",
           "company": "Penguin Solutions, Inc.",
           "releaseTime": 3,
-          "total": 47,
+          "total": 54,
           "fuente": "ew"
         },
         {
           "ticker": "STZ",
           "company": "Constellation Brands, Inc.",
           "releaseTime": 3,
-          "total": 25,
+          "total": 28,
           "fuente": "ew"
         },
         {
           "ticker": "NEOG",
           "company": "Neogen Corporation",
           "releaseTime": 3,
-          "total": 12,
+          "total": 14,
           "fuente": "ew"
         },
         {
           "ticker": "WS",
           "company": "Worthington Steel, Inc.",
           "releaseTime": 3,
-          "total": 7,
+          "total": 9,
           "fuente": "ew"
         },
         {
           "ticker": "SAR",
           "company": "Saratoga Investment Corp",
           "releaseTime": 3,
-          "total": 5,
+          "total": 7,
           "fuente": "ew"
         },
         {
@@ -25238,13 +25213,6 @@
           "releaseTime": 3,
           "total": 0,
           "fuente": "ew"
-        },
-        {
-          "ticker": "VLGEA",
-          "company": "Village Super Market, Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
         },
         {
           "ticker": "ARTW",
@@ -25259,14 +25227,14 @@
           "ticker": "APLD",
           "company": "Applied Digital Corporation",
           "releaseTime": 3,
-          "total": 43,
+          "total": 47,
           "fuente": "ew"
         },
         {
           "ticker": "LEVI",
           "company": "Levi Strauss & Co.",
           "releaseTime": 3,
-          "total": 19,
+          "total": 21,
           "fuente": "ew"
         },
         {
@@ -25280,7 +25248,7 @@
           "ticker": "RGP",
           "company": "Resources Connection, Inc. ",
           "releaseTime": 3,
-          "total": 6,
+          "total": 7,
           "fuente": "ew"
         },
         {
@@ -25303,7 +25271,7 @@
           "ticker": "PEP",
           "company": "PepsiCo, Inc.",
           "releaseTime": 1,
-          "total": 24,
+          "total": 25,
           "fuente": "ew"
         },
         {
@@ -25375,7 +25343,7 @@
           "ticker": "DAL",
           "company": "Delta Air Lines, Inc.",
           "releaseTime": 1,
-          "total": 18,
+          "total": 19,
           "fuente": "ew"
         },
         {
@@ -25409,186 +25377,25 @@
       ],
       "2026-10-12": [
         {
-          "ticker": "APGI",
-          "company": "GreenMan Technologies, Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ARIA",
-          "company": "ARIAD Pharmaceuticals, Inc.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "CZBS",
-          "company": "Citizens Bancshares Corp.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "RAM",
-          "company": "ROYAL APPLIANCE MANUFACTURING",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "WUXAY",
-          "company": "WuXi AppTec Co., Ltd.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "AEHR",
-          "company": "Aehr Test Systems",
-          "releaseTime": 3,
-          "total": 9,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ANEB",
-          "company": "Anebulo Pharmaceuticals Inc",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BBIG",
-          "company": "Vinco Ventures, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BSPM",
-          "company": "Biostar Pharmaceuticals, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "CMFO",
-          "company": "China Marine Food Group Ltd",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "CYCL",
-          "company": "Centennial Communications Corp",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "EBET",
-          "company": "Esports Technologies Inc",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ELYS",
-          "company": "Elys Game Technology, Corp.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "EMXX",
-          "company": "Eurasian Minerals",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "EPOW",
-          "company": "Sunrise New Energy Co., Ltd",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "EYES",
-          "company": "Second Sight Medical Products",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "GPT",
-          "company": "Gramercy Property Trust Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "IMUC",
-          "company": "ImmunoCellular Therapeutics Ltd",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "MARK",
-          "company": "Remark Holdings, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "MSTX",
-          "company": "Mast Therapeutics, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
           "ticker": "NCPL",
-          "company": "Netcapital Inc",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "PVSP",
-          "company": "Pervasip Corp",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
+          "company": "Netcapital Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
         },
         {
           "ticker": "RMCF",
           "company": "Rocky Mountain Chocolate Factory, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
         },
         {
-          "ticker": "STAB",
-          "company": "Statera Biopharma Inc",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ULTI",
-          "company": "Ultimate Software Group, Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "VMAR",
-          "company": "Vision Marine Technologies Inc.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
+          "ticker": "MSS",
+          "company": "Maison Solutions Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
         }
       ]
     },
@@ -25621,7 +25428,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": -0.5,
-        "score": 6.25
+        "score": 5.25
       },
       "RELL": {
         "consenso_eps": null,
@@ -25674,7 +25481,44 @@
         "score": 1.0
       }
     },
-    "resultados_hoy": []
+    "resultados_hoy": [
+      {
+        "ticker": "LW",
+        "epsDate": "2026-10-06T08:00:00",
+        "eps": 0.75,
+        "estimate": 0.59,
+        "whisper": 0.72,
+        "revenue": 1670.3,
+        "revenueEstimate": 1650.0,
+        "earningsSurprise": 0.041666666666666664,
+        "revenueSurprise": 0.012303030303030303,
+        "subject": "Lamb Weston Beat Expectations, Raises Guidance, but Earnings Remain In-line with Estimates"
+      },
+      {
+        "ticker": "RPM",
+        "epsDate": "2026-10-06T06:45:00",
+        "eps": 1.98,
+        "estimate": 1.95,
+        "whisper": 1.98,
+        "revenue": 2215.593,
+        "revenueEstimate": 2220.0,
+        "earningsSurprise": 0,
+        "revenueSurprise": -0.001985135135135135,
+        "subject": "RPM International Reported In-line with Expectations, Narrows Guidance"
+      },
+      {
+        "ticker": "APOG",
+        "epsDate": "2026-10-06T06:30:00",
+        "eps": 1.17,
+        "estimate": 0.59,
+        "whisper": 0.57,
+        "revenue": 391.135,
+        "revenueEstimate": 362.61,
+        "earningsSurprise": 1.0526315789473684,
+        "revenueSurprise": 0.07866578417583629,
+        "subject": "Apogee Enterprises Beat Expectations, Raises Guidance"
+      }
+    ]
   },
   "scanner_history": [
     {
