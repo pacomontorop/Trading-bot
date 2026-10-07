@@ -26347,8 +26347,8 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-10-07",
-    "hora_utc": "16:39",
-    "min_desde_apertura": 189.8,
+    "hora_utc": "17:39",
+    "min_desde_apertura": 250.0,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
@@ -26456,40 +26456,40 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-10-07T16:39Z",
+    "ts": "2026-10-07T17:39Z",
     "macro": {
-      "hy_oas": 3.12,
-      "hy_cambio_20": 0.44,
+      "hy_oas": 3.03,
+      "hy_cambio_20": 0.36,
       "nfci": -0.494,
       "curva_10a2a": 0.48,
-      "credito_hyg_ief_20": 0.94,
-      "fear_greed": 44.2,
+      "credito_hyg_ief_20": 0.79,
+      "fear_greed": 44.7,
       "regimen": "cautela",
       "ajuste": -0.2
     },
     "estado": {
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 1123,
-        "ultimo_error": null
-      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 162,
+        "ms": 94,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 1211,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 164,
+        "ms": 214,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 8,
         "fallos": 0,
-        "ms": 2102,
+        "ms": 2533,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -26501,31 +26501,31 @@
       "insiders": {
         "ok": 8,
         "fallos": 0,
-        "ms": 19541,
+        "ms": 18531,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 8,
         "fallos": 0,
-        "ms": 689,
+        "ms": 695,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 8,
         "fallos": 0,
-        "ms": 1212,
+        "ms": 1422,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 8,
         "fallos": 0,
-        "ms": 612,
+        "ms": 1300,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 8,
         "fallos": 0,
-        "ms": 823,
+        "ms": 796,
         "ultimo_error": null
       }
     }
@@ -27075,6 +27075,17 @@
     {
       "fecha": "2026-10-07",
       "hora_utc": "16:39",
+      "candidatos": 8,
+      "ejecutados": 0,
+      "descartados": 8,
+      "motivos": {
+        "fuente dynamic_scanner_gha bloqueada en paper": 7,
+        "score N<N": 1
+      }
+    },
+    {
+      "fecha": "2026-10-07",
+      "hora_utc": "17:39",
       "candidatos": 8,
       "ejecutados": 0,
       "descartados": 8,
