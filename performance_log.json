@@ -3740,6 +3740,38 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-10-07T13:36:13.684949+00:00",
       "notas": "1d=+1.5% vol=0.0x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "JPM",
+      "symbol": "JPM",
+      "estado": "pendiente_ew",
+      "score": 6.5,
+      "score_ajustado": 6.5,
+      "score_breakdown": {
+        "beat_rate": 3.0,
+        "reaccion": 0.25,
+        "revisiones": 0.75,
+        "momentum5d": 1.0,
+        "macro": 1.0,
+        "noticias": 0.5
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 331.45,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-10-09T20:00:00Z",
+      "fecha_entrada_prevista": "2026-10-09",
+      "cerrar_antes": "2026-10-12",
+      "earnings_fecha": "2026-10-13",
+      "earnings_timing": "BMO",
+      "consenso_eps": null,
+      "whisper": null,
+      "asimetria_pct": null,
+      "beat_rate": 87.5,
+      "reaccion_media_pct": 0.66,
+      "momentum_5d_pct": -0.08,
+      "analistas": 35,
+      "fecha_scan": "2026-10-08T21:40:43Z"
     }
   ],
   "macro_context": {
@@ -24946,7 +24978,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-08T19:24Z",
+    "ts": "2026-10-08T21:40Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -24982,15 +25014,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.12}"
+        "detalle": "{'rel20': 0.13}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 37.6, 'rating': 'fear'}"
+        "detalle": "{'score': 38.1, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 78, 'menciones_24h_antes': 146, 'ratio_24h': 0.53}"
+        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 93, 'menciones_24h_antes': 136, 'ratio_24h': 0.68}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -24998,7 +25030,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 2.14"
+        "detalle": "C/P 1.95"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25006,21 +25038,144 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -1.47, 'rs20': 4.37}"
+        "detalle": "{'etf': 'XLK', 'rs5': -1.33, 'rs20': 4.52}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-08T19:24Z",
-    "entrada": "2026-10-08",
-    "salida": "2026-10-09",
-    "eventos": 3,
-    "evaluados": 0,
+    "ts": "2026-10-08T21:40Z",
+    "entrada": "2026-10-09",
+    "salida": "2026-10-12",
+    "eventos": 12,
+    "evaluados": 9,
     "macro": {
-      "vix": 15.64,
+      "vix": 15.41,
       "spy_above_ma50": true
     },
-    "top": []
+    "top": [
+      {
+        "ticker": "JPM",
+        "score": 6.5,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.25,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "C",
+        "score": 5.72,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.22,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "JNJ",
+        "score": 5.66,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.16,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "GS",
+        "score": 5.37,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.87,
+          "revisiones": -1.0,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "UNTY",
+        "score": 5.35,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": 2.0,
+          "reaccion": 0.6,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "WFC",
+        "score": 4.75,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 2.0,
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "UNH",
+        "score": 3.75,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 1.0,
+          "reaccion": -0.5,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "ACI",
+        "score": 2.5,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": -0.5,
+          "revisiones": -1.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "DPZ",
+        "score": 0.75,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": -1.0,
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      }
+    ]
   },
   "selftest": {
     "ts": "2026-10-08T19:16Z",
@@ -25033,114 +25188,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-08T19:24Z",
+    "ts": "2026-10-08T21:40Z",
     "calendario": {
-      "2026-10-08": [
-        {
-          "ticker": "PEP",
-          "company": "PepsiCo, Inc.",
-          "releaseTime": 1,
-          "total": 67,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "TLRY",
-          "company": "Tilray Brands, Inc.",
-          "releaseTime": 1,
-          "total": 26,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BYRN",
-          "company": "Byrna Technologies Inc.",
-          "releaseTime": 1,
-          "total": 11,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "HELE",
-          "company": "Helen of Troy Ltd.",
-          "releaseTime": 1,
-          "total": 11,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ANGO",
-          "company": "AngioDynamics",
-          "releaseTime": 1,
-          "total": 6,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "NG",
-          "company": "NOVAGOLD RESOURCES INC.",
-          "releaseTime": 1,
-          "total": 6,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BKSC",
-          "company": "Bank of South Carolina Corp.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "FRCOY",
-          "company": "Fast Retailing Co., Ltd.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "SVNDY",
-          "company": "Seven & i Holdings Co., Ltd.",
-          "releaseTime": 1,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "NRIX",
-          "company": "Nurix Therapeutics, Inc. ",
-          "releaseTime": 3,
-          "total": 1,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "HIFS",
-          "company": "Hingham Institution for Savings",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ODC",
-          "company": "Oil-Dri Corporation of America",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "PKE",
-          "company": "Park Aerospace Corp. ",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "CMMB",
-          "company": "Chemomab Therapeutics Ltd. ",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        }
-      ],
       "2026-10-09": [
         {
           "ticker": "DAL",
           "company": "Delta Air Lines, Inc.",
           "releaseTime": 1,
-          "total": 43,
+          "total": 45,
           "fuente": "ew"
         },
         {
@@ -25207,7 +25262,7 @@
           "ticker": "JPM",
           "company": "JPMorgan Chase & Co.",
           "releaseTime": 1,
-          "total": 34,
+          "total": 35,
           "fuente": "ew"
         },
         {
@@ -25235,7 +25290,7 @@
           "ticker": "JNJ",
           "company": "Johnson & Johnson",
           "releaseTime": 1,
-          "total": 8,
+          "total": 9,
           "fuente": "ew"
         },
         {
@@ -25380,9 +25435,312 @@
           "total": 3,
           "fuente": "nasdaq"
         }
+      ],
+      "2026-10-15": [
+        {
+          "ticker": "TSM",
+          "company": "Taiwan Semiconductor Manufacturing Company Limited",
+          "releaseTime": 1,
+          "total": 15,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "CMC",
+          "company": "Commercial Metals Company",
+          "releaseTime": 1,
+          "total": 6,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ERIC",
+          "company": "Telefonaktiebolaget LM Ericsson",
+          "releaseTime": 1,
+          "total": 6,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MAN",
+          "company": "ManpowerGroup Inc.",
+          "releaseTime": 1,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "SCHW",
+          "company": "The Charles Schwab Corporation",
+          "releaseTime": 1,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MRSH",
+          "company": "Marsh",
+          "releaseTime": 1,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PNC",
+          "company": "PNC Financial Services Group, Inc.",
+          "releaseTime": 1,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BNY",
+          "company": "The Bank of New York Mellon Corporation",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BSVN",
+          "company": "Bank7 Corp.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "FHN",
+          "company": "First Horizon Corporation",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "NRDBY",
+          "company": "Nordea Bank Abp",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PLD",
+          "company": "Prologis, Inc.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "USB",
+          "company": "U.S. Bancorp",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "WIT",
+          "company": "Wipro Limited",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "AA",
+          "company": "Alcoa Corporation",
+          "releaseTime": 3,
+          "total": 11,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "IBKR",
+          "company": "Interactive Brokers Group, Inc.",
+          "releaseTime": 3,
+          "total": 7,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "INDB",
+          "company": "Independent Bank Corp.",
+          "releaseTime": 3,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "JBHT",
+          "company": "J.B. Hunt Transport Services, Inc.",
+          "releaseTime": 3,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "CNS",
+          "company": "Cohen & Steers, Inc.",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "SFNC",
+          "company": "Simmons First National Corporation",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "WAFD",
+          "company": "WaFd, Inc.",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "WSE",
+          "company": "Wise Group plc",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "CTW",
+          "company": "CTW CAYMAN A",
+          "releaseTime": 3,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "INFY",
+          "company": "Infosys Limited",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "SNA",
+          "company": "Snap-On Incorporated",
+          "releaseTime": null,
+          "total": 5,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "LBRT",
+          "company": "Liberty Energy Inc.",
+          "releaseTime": null,
+          "total": 6,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "WABC",
+          "company": "Westamerica Bancorporation",
+          "releaseTime": null,
+          "total": 5,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "CWBC",
+          "company": "Community West Bancshares",
+          "releaseTime": null,
+          "total": 4,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ALOY",
+          "company": "REalloys Inc.",
+          "releaseTime": null,
+          "total": 5,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "PULM",
+          "company": "Pulmatrix, Inc.",
+          "releaseTime": null,
+          "total": 5,
+          "fuente": "nasdaq"
+        }
       ]
     },
-    "tickers": {},
+    "tickers": {
+      "UNH": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 62.5,
+        "reaccion_media_pct": -6.87,
+        "score": 3.75
+      },
+      "JPM": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 0.66,
+        "score": 6.5
+      },
+      "GS": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 100.0,
+        "reaccion_media_pct": 2.31,
+        "score": 5.37
+      },
+      "WFC": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 75.0,
+        "reaccion_media_pct": -0.0,
+        "score": 4.75
+      },
+      "DPZ": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 37.5,
+        "reaccion_media_pct": -0.18,
+        "score": 0.75
+      },
+      "JNJ": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 0.43,
+        "score": 5.66
+      },
+      "C": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 0.59,
+        "score": 5.72
+      },
+      "ACI": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": -3.47,
+        "score": 2.5
+      },
+      "UNTY": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-13",
+        "earnings_timing": "desconocido",
+        "beat_rate": 75.0,
+        "reaccion_media_pct": 1.61,
+        "score": 5.35
+      }
+    },
     "resultados_hoy": [
       {
         "ticker": "BYRN",
