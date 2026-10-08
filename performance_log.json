@@ -24946,14 +24946,14 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-07T23:45Z",
+    "ts": "2026-10-08T01:15Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
     },
     "nasdaq_calendar": {
       "ok": true,
-      "detalle": "4 filas"
+      "detalle": "10 filas"
     },
     "alpaca_datos": {
       "ok": true,
@@ -24990,7 +24990,7 @@
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 133, 'menciones_24h_antes': 120, 'ratio_24h': 1.11}"
+        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 127, 'menciones_24h_antes': 123, 'ratio_24h': 1.03}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25011,65 +25011,16 @@
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-07T23:45Z",
-    "entrada": "2026-10-07",
-    "salida": "2026-10-08",
-    "eventos": 7,
-    "evaluados": 4,
+    "ts": "2026-10-08T01:15Z",
+    "entrada": "2026-10-08",
+    "salida": "2026-10-09",
+    "eventos": 3,
+    "evaluados": 0,
     "macro": {
       "vix": 15.08,
       "spy_above_ma50": true
     },
-    "top": [
-      {
-        "ticker": "DAL",
-        "score": 5.0,
-        "earnings_fecha": "2026-10-09",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 2.0,
-          "reaccion": 1.5,
-          "revisiones": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "PKE",
-        "score": 4.25,
-        "earnings_fecha": "2026-10-08",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 0.0,
-          "reaccion": 1.5,
-          "revisiones": 0.75,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "HIFS",
-        "score": 2.0,
-        "earnings_fecha": "2026-10-09",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "ODC",
-        "score": 1.0,
-        "earnings_fecha": "2026-10-08",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      }
-    ]
+    "top": []
   },
   "selftest": {
     "ts": "2026-10-07T19:19Z",
@@ -25082,52 +25033,8 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-07T23:45Z",
+    "ts": "2026-10-08T01:15Z",
     "calendario": {
-      "2026-10-07": [
-        {
-          "ticker": "APLD",
-          "company": "Applied Digital Corporation",
-          "releaseTime": 3,
-          "total": 123,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "LEVI",
-          "company": "Levi Strauss & Co.",
-          "releaseTime": 3,
-          "total": 45,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "RELL",
-          "company": "Richardson Electronics, Ltd.",
-          "releaseTime": 3,
-          "total": 20,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "RGP",
-          "company": "Resources Connection, Inc. ",
-          "releaseTime": 3,
-          "total": 17,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "T.FTG",
-          "company": "FIRAN TEC GP-TS",
-          "releaseTime": 3,
-          "total": 7,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "LFS",
-          "company": "LEIFRAS Co., Ltd.",
-          "releaseTime": 3,
-          "total": 0,
-          "fuente": "ew"
-        }
-      ],
       "2026-10-08": [
         {
           "ticker": "PEP",
@@ -25226,7 +25133,7 @@
           "ticker": "DAL",
           "company": "Delta Air Lines, Inc.",
           "releaseTime": 1,
-          "total": 28,
+          "total": 29,
           "fuente": "ew"
         },
         {
@@ -25286,7 +25193,7 @@
           "ticker": "UNH",
           "company": "UnitedHealth Group Incorporated",
           "releaseTime": 1,
-          "total": 51,
+          "total": 52,
           "fuente": "ew"
         },
         {
@@ -25380,50 +25287,95 @@
           "total": 6,
           "fuente": "nasdaq"
         }
+      ],
+      "2026-10-14": [
+        {
+          "ticker": "ASML",
+          "company": "ASML Holding N.V.",
+          "releaseTime": 1,
+          "total": 21,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BAC",
+          "company": "Bank of America Corporation",
+          "releaseTime": 1,
+          "total": 10,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BLK",
+          "company": "BlackRock, Inc.",
+          "releaseTime": 1,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MS",
+          "company": "Morgan Stanley",
+          "releaseTime": 1,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PGR",
+          "company": "Progressive Corporation",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "FAST",
+          "company": "Fastenal Co.",
+          "releaseTime": 1,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "STT",
+          "company": "State Street Corporation",
+          "releaseTime": 1,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "SOTK",
+          "company": "Sono-Tek Corp",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "EQBK",
+          "company": "Equity Bancshares, Inc.",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "HOMB",
+          "company": "Home BancShares Inc.",
+          "releaseTime": 3,
+          "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "EDUC",
+          "company": "Educational Development Corporation",
+          "releaseTime": 3,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "NXTT",
+          "company": "Next Technology Holding Inc.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        }
       ]
     },
-    "tickers": {
-      "DAL": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-10-09",
-        "earnings_timing": "BMO",
-        "beat_rate": 75.0,
-        "reaccion_media_pct": 5.89,
-        "score": 5.0
-      },
-      "HIFS": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-10-09",
-        "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 2.0
-      },
-      "ODC": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-10-08",
-        "earnings_timing": "AMC",
-        "beat_rate": 37.5,
-        "reaccion_media_pct": null,
-        "score": 1.0
-      },
-      "PKE": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-10-08",
-        "earnings_timing": "AMC",
-        "beat_rate": 50.0,
-        "reaccion_media_pct": 7.35,
-        "score": 4.25
-      }
-    },
+    "tickers": {},
     "resultados_hoy": [
       {
         "ticker": "APLD",
