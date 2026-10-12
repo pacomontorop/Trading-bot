@@ -3745,14 +3745,15 @@
       "ticker": "MS",
       "symbol": "MS",
       "estado": "pendiente_ew",
-      "score": 6.22,
-      "score_ajustado": 6.22,
+      "score": 6.72,
+      "score_ajustado": 6.72,
       "score_breakdown": {
         "beat_rate": 3.0,
         "reaccion": 1.22,
         "revisiones": 0.0,
         "momentum5d": 1.0,
-        "macro": 1.0
+        "macro": 1.0,
+        "noticias": 0.5
       },
       "accion_recomendada": "entrar_apertura",
       "fuente": "ew_pipeline_gha",
@@ -3768,9 +3769,9 @@
       "asimetria_pct": null,
       "beat_rate": 100.0,
       "reaccion_media_pct": 3.26,
-      "momentum_5d_pct": -0.15,
-      "analistas": 11,
-      "fecha_scan": "2026-10-12T00:42:48Z"
+      "momentum_5d_pct": 0.42,
+      "analistas": 12,
+      "fecha_scan": "2026-10-12T13:35:40Z"
     },
     {
       "ticker": "ASML",
@@ -3799,9 +3800,9 @@
       "asimetria_pct": null,
       "beat_rate": 87.5,
       "reaccion_media_pct": -3.3,
-      "momentum_5d_pct": -4.64,
-      "analistas": 35,
-      "fecha_scan": "2026-10-12T00:42:48Z"
+      "momentum_5d_pct": -4.9,
+      "analistas": 41,
+      "fecha_scan": "2026-10-12T13:35:40Z"
     }
   ],
   "macro_context": {
@@ -25015,7 +25016,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-12T00:42Z",
+    "ts": "2026-10-12T13:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25051,15 +25052,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.07}"
+        "detalle": "{'rel20': 0.18}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 45.0, 'rating': 'fear'}"
+        "detalle": "{'score': 46.5, 'rating': 'neutral'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 4, 'menciones': 30, 'menciones_24h_antes': 16, 'ratio_24h': 1.88}"
+        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 40, 'menciones_24h_antes': 28, 'ratio_24h': 1.43}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25075,24 +25076,24 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -1.66, 'rs20': 3.94}"
+        "detalle": "{'etf': 'XLK', 'rs5': -2.3, 'rs20': 4.6}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-12T00:42Z",
+    "ts": "2026-10-12T13:35Z",
     "entrada": "2026-10-12",
     "salida": "2026-10-13",
     "eventos": 11,
-    "evaluados": 10,
+    "evaluados": 11,
     "macro": {
-      "vix": 14.84,
+      "vix": 15.41,
       "spy_above_ma50": true
     },
     "top": [
       {
         "ticker": "MS",
-        "score": 6.22,
+        "score": 6.72,
         "earnings_fecha": "2026-10-14",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25100,7 +25101,8 @@
           "reaccion": 1.22,
           "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": 1.0,
+          "noticias": 0.5
         }
       },
       {
@@ -25229,14 +25231,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-12T00:42Z",
+    "ts": "2026-10-12T13:35Z",
     "calendario": {
       "2026-10-12": [
         {
           "ticker": "LVMUY",
           "company": "LVMH Moët Hennessy Louis Vuitton",
           "releaseTime": 1,
-          "total": 4,
+          "total": 5,
           "fuente": "ew"
         },
         {
@@ -25266,33 +25268,40 @@
           "ticker": "UNH",
           "company": "UnitedHealth Group Incorporated",
           "releaseTime": 1,
-          "total": 96,
+          "total": 103,
           "fuente": "ew"
         },
         {
           "ticker": "JPM",
           "company": "JPMorgan Chase & Co.",
           "releaseTime": 1,
-          "total": 59,
+          "total": 67,
           "fuente": "ew"
         },
         {
           "ticker": "GS",
           "company": "The Goldman Sachs Group, Inc.",
           "releaseTime": 1,
-          "total": 36,
+          "total": 38,
           "fuente": "ew"
         },
         {
           "ticker": "WFC",
           "company": "Wells Fargo & Company",
           "releaseTime": 1,
-          "total": 28,
+          "total": 32,
           "fuente": "ew"
         },
         {
           "ticker": "JNJ",
           "company": "Johnson & Johnson",
+          "releaseTime": 1,
+          "total": 24,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "DPZ",
+          "company": "Domino's Pizza, Inc.",
           "releaseTime": 1,
           "total": 21,
           "fuente": "ew"
@@ -25301,35 +25310,28 @@
           "ticker": "C",
           "company": "Citigroup Inc.",
           "releaseTime": 1,
-          "total": 18,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "DPZ",
-          "company": "Domino's Pizza, Inc.",
-          "releaseTime": 1,
-          "total": 18,
+          "total": 20,
           "fuente": "ew"
         },
         {
           "ticker": "ACI",
           "company": "Albertsons Companies, Inc.",
           "releaseTime": 1,
-          "total": 9,
+          "total": 11,
           "fuente": "ew"
         },
         {
           "ticker": "FBK",
           "company": "FB Financial Corporation",
           "releaseTime": 1,
-          "total": 7,
+          "total": 9,
           "fuente": "ew"
         },
         {
           "ticker": "AZZ",
           "company": "AZZ Inc.",
           "releaseTime": 3,
-          "total": 11,
+          "total": 15,
           "fuente": "ew"
         },
         {
@@ -25337,13 +25339,6 @@
           "company": "Unity Bancorp, Inc.",
           "releaseTime": null,
           "total": 3,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ARTW",
-          "company": "Art's-Way Manufacturing Co., Inc.",
-          "releaseTime": null,
-          "total": 6,
           "fuente": "nasdaq"
         },
         {
@@ -25366,56 +25361,56 @@
           "ticker": "ASML",
           "company": "ASML Holding N.V.",
           "releaseTime": 1,
-          "total": 35,
+          "total": 41,
           "fuente": "ew"
         },
         {
           "ticker": "BAC",
           "company": "Bank of America Corporation",
           "releaseTime": 1,
-          "total": 22,
+          "total": 23,
           "fuente": "ew"
         },
         {
           "ticker": "MS",
           "company": "Morgan Stanley",
           "releaseTime": 1,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
           "ticker": "BLK",
           "company": "BlackRock, Inc.",
           "releaseTime": 1,
-          "total": 7,
+          "total": 9,
           "fuente": "ew"
         },
         {
           "ticker": "FAST",
           "company": "Fastenal Co.",
           "releaseTime": 1,
-          "total": 5,
+          "total": 7,
           "fuente": "ew"
         },
         {
           "ticker": "PGR",
           "company": "Progressive Corporation",
           "releaseTime": 1,
-          "total": 5,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "STT",
-          "company": "State Street Corporation",
-          "releaseTime": 1,
-          "total": 3,
+          "total": 6,
           "fuente": "ew"
         },
         {
           "ticker": "SOTK",
           "company": "Sono-Tek Corp",
           "releaseTime": 1,
-          "total": 2,
+          "total": 4,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "STT",
+          "company": "State Street Corporation",
+          "releaseTime": 1,
+          "total": 4,
           "fuente": "ew"
         },
         {
@@ -25429,21 +25424,21 @@
           "ticker": "EQBK",
           "company": "Equity Bancshares, Inc.",
           "releaseTime": 3,
-          "total": 4,
+          "total": 5,
           "fuente": "ew"
         },
         {
           "ticker": "HOMB",
           "company": "Home BancShares Inc.",
           "releaseTime": 3,
-          "total": 3,
+          "total": 4,
           "fuente": "ew"
         },
         {
           "ticker": "CMTL",
           "company": "Comtech Telecommunications Corp.",
           "releaseTime": 3,
-          "total": 1,
+          "total": 2,
           "fuente": "ew"
         },
         {
@@ -25466,7 +25461,7 @@
           "ticker": "TSM",
           "company": "Taiwan Semiconductor Manufacturing Company Limited",
           "releaseTime": 1,
-          "total": 32,
+          "total": 38,
           "fuente": "ew"
         },
         {
@@ -25505,8 +25500,29 @@
           "fuente": "ew"
         },
         {
+          "ticker": "NRDBY",
+          "company": "Nordea Bank Abp",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PLD",
+          "company": "Prologis, Inc.",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
           "ticker": "PNC",
           "company": "PNC Financial Services Group, Inc.",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "USB",
+          "company": "U.S. Bancorp",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
@@ -25528,27 +25544,6 @@
         {
           "ticker": "FHN",
           "company": "First Horizon Corporation",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "NRDBY",
-          "company": "Nordea Bank Abp",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "PLD",
-          "company": "Prologis, Inc.",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "USB",
-          "company": "U.S. Bancorp",
           "releaseTime": 1,
           "total": 2,
           "fuente": "ew"
@@ -25582,6 +25577,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "WSE",
+          "company": "Wise Group plc",
+          "releaseTime": 3,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
           "ticker": "INDB",
           "company": "Independent Bank Corp.",
           "releaseTime": 3,
@@ -25589,8 +25591,8 @@
           "fuente": "ew"
         },
         {
-          "ticker": "WSE",
-          "company": "Wise Group plc",
+          "ticker": "WAFD",
+          "company": "WaFd, Inc.",
           "releaseTime": 3,
           "total": 4,
           "fuente": "ew"
@@ -25610,17 +25612,10 @@
           "fuente": "ew"
         },
         {
-          "ticker": "WAFD",
-          "company": "WaFd, Inc.",
-          "releaseTime": 3,
-          "total": 3,
-          "fuente": "ew"
-        },
-        {
           "ticker": "LOOP",
           "company": "Loop Industries, Inc.",
           "releaseTime": 3,
-          "total": 1,
+          "total": 2,
           "fuente": "ew"
         },
         {
@@ -25820,7 +25815,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 3.26,
-        "score": 6.22
+        "score": 6.72
       },
       "BLK": {
         "consenso_eps": null,
@@ -25852,13 +25847,23 @@
         "reaccion_media_pct": -1.1,
         "score": 3.5
       },
+      "SOTK": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-10-14",
+        "earnings_timing": "BMO",
+        "beat_rate": 62.5,
+        "reaccion_media_pct": -1.12,
+        "score": 0.5
+      },
       "STT": {
         "consenso_eps": null,
         "whisper": null,
         "asimetria_pct": null,
         "earnings_fecha": "2026-10-14",
         "earnings_timing": "BMO",
-        "beat_rate": 87.5,
+        "beat_rate": 100.0,
         "reaccion_media_pct": -1.57,
         "score": 5.0
       },
