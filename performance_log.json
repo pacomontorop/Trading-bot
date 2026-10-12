@@ -3769,22 +3769,23 @@
       "asimetria_pct": null,
       "beat_rate": 100.0,
       "reaccion_media_pct": 3.26,
-      "momentum_5d_pct": 0.42,
+      "momentum_5d_pct": -0.17,
       "analistas": 12,
-      "fecha_scan": "2026-10-12T13:35:40Z"
+      "fecha_scan": "2026-10-12T14:35:59Z"
     },
     {
       "ticker": "ASML",
       "symbol": "ASML",
       "estado": "pendiente_ew",
-      "score": 6.0,
-      "score_ajustado": 6.0,
+      "score": 6.5,
+      "score_ajustado": 6.5,
       "score_breakdown": {
         "beat_rate": 3.0,
         "reaccion": -0.5,
         "revisiones": 1.5,
         "momentum5d": 1.0,
-        "macro": 1.0
+        "macro": 1.0,
+        "noticias": 0.5
       },
       "accion_recomendada": "entrar_apertura",
       "fuente": "ew_pipeline_gha",
@@ -3800,9 +3801,9 @@
       "asimetria_pct": null,
       "beat_rate": 87.5,
       "reaccion_media_pct": -3.3,
-      "momentum_5d_pct": -4.9,
+      "momentum_5d_pct": -5.23,
       "analistas": 41,
-      "fecha_scan": "2026-10-12T13:35:40Z"
+      "fecha_scan": "2026-10-12T14:35:59Z"
     }
   ],
   "macro_context": {
@@ -25016,7 +25017,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-12T13:35Z",
+    "ts": "2026-10-12T14:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25052,15 +25053,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': 0.18}"
+        "detalle": "{'rel20': 0.21}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 46.5, 'rating': 'neutral'}"
+        "detalle": "{'score': 46.0, 'rating': 'neutral'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 5, 'menciones': 40, 'menciones_24h_antes': 28, 'ratio_24h': 1.43}"
+        "detalle": "{'en_ranking': True, 'rank': 3, 'menciones': 46, 'menciones_24h_antes': 29, 'ratio_24h': 1.59}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25068,7 +25069,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.16"
+        "detalle": "C/P 1.87"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25076,18 +25077,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -2.3, 'rs20': 4.6}"
+        "detalle": "{'etf': 'XLK', 'rs5': -2.8, 'rs20': 4.05}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-12T13:35Z",
+    "ts": "2026-10-12T14:35Z",
     "entrada": "2026-10-12",
     "salida": "2026-10-13",
     "eventos": 11,
     "evaluados": 11,
     "macro": {
-      "vix": 15.41,
+      "vix": 15.3,
       "spy_above_ma50": true
     },
     "top": [
@@ -25107,7 +25108,7 @@
       },
       {
         "ticker": "ASML",
-        "score": 6.0,
+        "score": 6.5,
         "earnings_fecha": "2026-10-14",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25115,7 +25116,8 @@
           "reaccion": -0.5,
           "revisiones": 1.5,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": 1.0,
+          "noticias": 0.5
         }
       },
       {
@@ -25199,22 +25201,25 @@
         }
       },
       {
+        "ticker": "SOTK",
+        "score": 2.0,
+        "earnings_fecha": "2026-10-14",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 1.0,
+          "reaccion": 0.0,
+          "revisiones": 0.0,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
         "ticker": "NRUC",
         "score": 2.0,
         "earnings_fecha": "2026-10-14",
         "earnings_timing": "BMO",
         "score_breakdown": {
           "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "NXTT",
-        "score": 1.0,
-        "earnings_fecha": "2026-10-14",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "momentum5d": 0.0,
           "macro": 1.0
         }
       }
@@ -25231,14 +25236,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-12T13:35Z",
+    "ts": "2026-10-12T14:35Z",
     "calendario": {
       "2026-10-12": [
         {
           "ticker": "LVMUY",
           "company": "LVMH Moët Hennessy Louis Vuitton",
           "releaseTime": 1,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -25268,21 +25273,21 @@
           "ticker": "UNH",
           "company": "UnitedHealth Group Incorporated",
           "releaseTime": 1,
-          "total": 103,
+          "total": 106,
           "fuente": "ew"
         },
         {
           "ticker": "JPM",
           "company": "JPMorgan Chase & Co.",
           "releaseTime": 1,
-          "total": 67,
+          "total": 68,
           "fuente": "ew"
         },
         {
           "ticker": "GS",
           "company": "The Goldman Sachs Group, Inc.",
           "releaseTime": 1,
-          "total": 38,
+          "total": 40,
           "fuente": "ew"
         },
         {
@@ -25296,7 +25301,7 @@
           "ticker": "JNJ",
           "company": "Johnson & Johnson",
           "releaseTime": 1,
-          "total": 24,
+          "total": 26,
           "fuente": "ew"
         },
         {
@@ -25382,7 +25387,7 @@
           "ticker": "BLK",
           "company": "BlackRock, Inc.",
           "releaseTime": 1,
-          "total": 9,
+          "total": 10,
           "fuente": "ew"
         },
         {
@@ -25785,7 +25790,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -3.3,
-        "score": 6.0
+        "score": 6.5
       },
       "BAC": {
         "consenso_eps": null,
@@ -25855,7 +25860,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 62.5,
         "reaccion_media_pct": -1.12,
-        "score": 0.5
+        "score": 2.0
       },
       "STT": {
         "consenso_eps": null,
