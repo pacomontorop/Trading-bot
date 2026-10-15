@@ -3740,6 +3740,37 @@
       "fuente": "dynamic_scanner_gha",
       "fecha_scan": "2026-10-07T13:36:13.684949+00:00",
       "notas": "1d=+1.5% vol=0.0x 52h_dist=0.0%"
+    },
+    {
+      "ticker": "SMBK",
+      "symbol": "SMBK",
+      "estado": "pendiente_ew",
+      "score": 6.94,
+      "score_ajustado": 6.94,
+      "score_breakdown": {
+        "beat_rate": 3.0,
+        "reaccion": 1.19,
+        "revisiones": 0.75,
+        "momentum5d": 1.0,
+        "macro": 1.0
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 49.83,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-10-15T20:00:00Z",
+      "fecha_entrada_prevista": "2026-10-15",
+      "cerrar_antes": "2026-10-16",
+      "earnings_fecha": "2026-10-19",
+      "earnings_timing": "BMO",
+      "consenso_eps": null,
+      "whisper": null,
+      "asimetria_pct": null,
+      "beat_rate": 100.0,
+      "reaccion_media_pct": 3.17,
+      "momentum_5d_pct": 0.47,
+      "analistas": 5,
+      "fecha_scan": "2026-10-15T14:35:25Z"
     }
   ],
   "macro_context": {
@@ -24953,7 +24984,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-15T13:36Z",
+    "ts": "2026-10-15T14:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -24985,19 +25016,19 @@
       },
       "fred": {
         "ok": true,
-        "detalle": "HY OAS 3.16"
+        "detalle": "HY OAS 3.25"
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -1.52}"
+        "detalle": "{'rel20': -1.38}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 26.4, 'rating': 'fear'}"
+        "detalle": "{'score': 25.3, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 7, 'menciones': 153, 'menciones_24h_antes': 12, 'ratio_24h': 12.75}"
+        "detalle": "{'en_ranking': True, 'rank': 6, 'menciones': 165, 'menciones_24h_antes': 7, 'ratio_24h': 23.57}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25005,7 +25036,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 0.99"
+        "detalle": "C/P 0.91"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25013,24 +25044,24 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -4.97, 'rs20': -1.7}"
+        "detalle": "{'etf': 'XLK', 'rs5': -4.95, 'rs20': -1.67}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-15T13:36Z",
+    "ts": "2026-10-15T14:35Z",
     "entrada": "2026-10-15",
     "salida": "2026-10-16",
-    "eventos": 14,
-    "evaluados": 7,
+    "eventos": 13,
+    "evaluados": 6,
     "macro": {
-      "vix": 17.51,
-      "spy_above_ma50": false
+      "vix": 17.41,
+      "spy_above_ma50": true
     },
     "top": [
       {
         "ticker": "SMBK",
-        "score": 5.44,
+        "score": 6.94,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25038,12 +25069,12 @@
           "reaccion": 1.19,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": -0.5
+          "macro": 1.0
         }
       },
       {
         "ticker": "FITB",
-        "score": 2.52,
+        "score": 4.02,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25051,12 +25082,12 @@
           "reaccion": 0.02,
           "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": -0.5
+          "macro": 1.0
         }
       },
       {
         "ticker": "PAC",
-        "score": 0.5,
+        "score": 2.0,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "desconocido",
         "score_breakdown": {
@@ -25064,12 +25095,12 @@
           "reaccion": 0.0,
           "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": -0.5
+          "macro": 1.0
         }
       },
       {
         "ticker": "CLF",
-        "score": 0.0,
+        "score": 1.04,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25077,7 +25108,20 @@
           "reaccion": 0.04,
           "revisiones": -1.0,
           "momentum5d": 1.0,
-          "macro": -0.5
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "DX",
+        "score": 0.75,
+        "earnings_fecha": "2026-10-19",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": -1.0,
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0
         }
       },
       {
@@ -25090,33 +25134,7 @@
           "reaccion": -0.5,
           "revisiones": -1.0,
           "momentum5d": 0.0,
-          "macro": -0.5
-        }
-      },
-      {
-        "ticker": "COSO",
-        "score": 0.0,
-        "earnings_fecha": "2026-10-19",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "reaccion": 0.0,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": -0.5
-        }
-      },
-      {
-        "ticker": "DX",
-        "score": 0.0,
-        "earnings_fecha": "2026-10-19",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "reaccion": 0.0,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
-          "macro": -0.5
+          "macro": 1.0
         }
       }
     ]
@@ -25132,7 +25150,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-15T13:36Z",
+    "ts": "2026-10-15T14:35Z",
     "calendario": {
       "2026-10-15": [
         {
@@ -25661,7 +25679,7 @@
           "ticker": "COSO",
           "company": "CoastalSouth Bancshares, Inc.",
           "releaseTime": null,
-          "total": 3,
+          "total": 2,
           "fuente": "nasdaq"
         },
         {
@@ -25681,13 +25699,6 @@
         {
           "ticker": "NCPL",
           "company": "Netcapital Inc.",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "RMCF",
-          "company": "Rocky Mountain Chocolate Factory, Inc.",
           "releaseTime": null,
           "total": 2,
           "fuente": "nasdaq"
@@ -26288,7 +26299,7 @@
           "ticker": "META",
           "company": "Meta Platforms, Inc.",
           "releaseTime": 3,
-          "total": 15,
+          "total": 16,
           "fuente": "ew"
         },
         {
@@ -26785,7 +26796,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 50.0,
         "reaccion_media_pct": 0.11,
-        "score": 0.0
+        "score": 1.04
       },
       "FITB": {
         "consenso_eps": null,
@@ -26795,7 +26806,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 75.0,
         "reaccion_media_pct": 0.06,
-        "score": 2.52
+        "score": 4.02
       },
       "SMBK": {
         "consenso_eps": null,
@@ -26805,7 +26816,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 3.17,
-        "score": 5.44
+        "score": 6.94
       },
       "SMMT": {
         "consenso_eps": null,
@@ -26825,17 +26836,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 50.0,
         "reaccion_media_pct": -1.48,
-        "score": 0.5
-      },
-      "COSO": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-10-19",
-        "earnings_timing": "desconocido",
-        "beat_rate": 20.0,
-        "reaccion_media_pct": -0.71,
-        "score": 0.0
+        "score": 2.0
       },
       "DX": {
         "consenso_eps": null,
@@ -26845,21 +26846,21 @@
         "earnings_timing": "BMO",
         "beat_rate": 37.5,
         "reaccion_media_pct": -0.21,
-        "score": 0.0
+        "score": 0.75
       }
     },
     "resultados_hoy": [
       {
-        "ticker": "PLD",
-        "epsDate": "2026-10-15T08:00:00",
-        "eps": 1.6,
-        "estimate": 1.58,
-        "whisper": 1.61,
-        "revenue": 2387.518,
-        "revenueEstimate": 2200.0,
-        "earningsSurprise": -0.006211180124223602,
-        "revenueSurprise": 0.08523545454545454,
-        "subject": "Prologis Missed Expectations, Narrows Guidance"
+        "ticker": "WIT",
+        "epsDate": "2026-10-15T09:41:00",
+        "eps": 0.03,
+        "estimate": 0.04,
+        "whisper": 0.04,
+        "revenue": 2583.0,
+        "revenueEstimate": 2570.0,
+        "earningsSurprise": -0.25,
+        "revenueSurprise": 0.005058365758754864,
+        "subject": "Wipro Limited Missed Expectations"
       },
       {
         "ticker": "BSVN",
@@ -26872,6 +26873,18 @@
         "earningsSurprise": 0,
         "revenueSurprise": 0.39068689422671726,
         "subject": "Bank7 Reported In-line with Expectations"
+      },
+      {
+        "ticker": "PLD",
+        "epsDate": "2026-10-15T08:00:00",
+        "eps": 1.6,
+        "estimate": 1.58,
+        "whisper": 1.61,
+        "revenue": 2387.518,
+        "revenueEstimate": 2200.0,
+        "earningsSurprise": -0.006211180124223602,
+        "revenueSurprise": 0.08523545454545454,
+        "subject": "Prologis Missed Expectations, Narrows Guidance"
       },
       {
         "ticker": "MAN",
