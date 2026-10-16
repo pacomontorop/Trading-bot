@@ -7090,7 +7090,8 @@
       "pnl_dia_paper_dolares": -399.28,
       "pnl_dia_real_dolares": -0.02,
       "equity_paper_peak": 109924.64,
-      "_nota_spy": "Sobrescrito por kpi_report.py con datos Alpaca (SPY ajustado, mismo periodo)."
+      "_nota_spy": "Sobrescrito por kpi_report.py con datos Alpaca (SPY ajustado, mismo periodo).",
+      "_OBSOLETO": "NO USAR. Congelado el 2026-09-23. Decia equity 106.137 $ (+0,6 %). La cifra buena esta en `kpis.rendimiento_verificado`, que la escribe scripts/kpi_report.py leyendo Alpaca."
     },
     "cowork_trading": {
       "operaciones_totales": 33,
@@ -7225,7 +7226,8 @@
       "mayor_exposicion_simultanea_pct": null,
       "vix_medio_operaciones": null,
       "max_drawdown_paper_actual_pct": 1.65,
-      "drawdown_actual_pct": 3.45
+      "drawdown_actual_pct": 3.45,
+      "_OBSOLETO": "NO USAR. Congelado el 2026-09-23. Decia drawdown maximo 3,45 %. La cifra buena esta en `kpis.rendimiento_verificado`, que la escribe scripts/kpi_report.py leyendo Alpaca."
     },
     "bot_metricas": {
       "paper": {
@@ -20482,7 +20484,8 @@
     "estado_sistema": "OPERATIVO_MEJORANDO",
     "equity_paper": 109380.24,
     "equity_real": 4548.01,
-    "_ultima_actualizacion": "2026-07-16"
+    "_ultima_actualizacion": "2026-07-16",
+    "_OBSOLETO": "NO USAR. Congelado el 2026-05-06. Decia profit factor 8,32 y win rate 55,6 %. La cifra buena esta en `kpis.rendimiento_verificado`, que la escribe scripts/kpi_report.py leyendo Alpaca."
   },
   "anomalias_detectadas": [
     {
@@ -30301,6 +30304,139 @@
       "motivos": {
         "max entradas/día paper": 1
       }
+    }
+  ],
+  "proteccion": {
+    "_meta": "Escrito por scripts/protection_report.py. Solo lectura sobre Alpaca.",
+    "ts": "2026-10-16T19:39Z",
+    "fecha_et": "2026-10-16",
+    "resumen": [
+      {
+        "cuenta": "PAPER",
+        "equity": 99773.6,
+        "equity_cierre_anterior": 99935.47,
+        "movimiento_dia_usd": -161.87,
+        "n_posiciones": 1,
+        "expuesto_usd": 9993.81,
+        "pnl_latente_usd": 285.95,
+        "_nota_latente": "Dinero que sigue en riesgo: aun no es perdida, pero puede serlo.",
+        "n_sin_proteger": 0,
+        "sin_proteger": [],
+        "n_cierres_hoy": 0,
+        "cierres_por_motivo": {},
+        "cierres_por_origen": {}
+      },
+      {
+        "cuenta": "REAL",
+        "equity": 4548.15,
+        "equity_cierre_anterior": 4548.16,
+        "movimiento_dia_usd": -0.01,
+        "n_posiciones": 1,
+        "expuesto_usd": 0.67,
+        "pnl_latente_usd": -0.3,
+        "_nota_latente": "Dinero que sigue en riesgo: aun no es perdida, pero puede serlo.",
+        "n_sin_proteger": 1,
+        "sin_proteger": [
+          "BTCUSD"
+        ],
+        "n_cierres_hoy": 0,
+        "cierres_por_motivo": {},
+        "cierres_por_origen": {}
+      }
+    ],
+    "avisos": [
+      "REAL: 1 posicion(es) sin stop vivo -> BTCUSD"
+    ],
+    "detalle": {
+      "PAPER": {
+        "posiciones": [
+          {
+            "simbolo": "MSFT",
+            "qty": 19.0,
+            "lado": "largo",
+            "cripto": false,
+            "precio_entrada": 510.94,
+            "precio_actual": 525.99,
+            "valor_mercado": 9993.81,
+            "pnl_latente_usd": 285.95,
+            "pnl_latente_pct": 2.95,
+            "estado": "ok",
+            "n_stops": 1,
+            "qty_cubierta": 19.0,
+            "stop_px": 511.45,
+            "n_objetivos": 1,
+            "ids_stop": [
+              "f0e9e9f2-a7e7-4940-943f-ef0ccd0ea4ca"
+            ]
+          }
+        ],
+        "cierres_24h": []
+      },
+      "REAL": {
+        "posiciones": [
+          {
+            "simbolo": "BTCUSD",
+            "qty": 8.299e-06,
+            "lado": "largo",
+            "cripto": true,
+            "precio_entrada": 117828.22,
+            "precio_actual": 81291.6,
+            "valor_mercado": 0.674639,
+            "pnl_latente_usd": -0.303217,
+            "pnl_latente_pct": -31.01,
+            "estado": "SIN_STOP",
+            "n_stops": 0,
+            "qty_cubierta": 0.0,
+            "stop_px": null,
+            "n_objetivos": 0,
+            "ids_stop": []
+          }
+        ],
+        "cierres_24h": []
+      }
+    }
+  },
+  "proteccion_historico": [
+    {
+      "ts": "2026-10-16T19:39Z",
+      "fecha_et": "2026-10-16",
+      "resumen": [
+        {
+          "cuenta": "PAPER",
+          "equity": 99773.6,
+          "equity_cierre_anterior": 99935.47,
+          "movimiento_dia_usd": -161.87,
+          "n_posiciones": 1,
+          "expuesto_usd": 9993.81,
+          "pnl_latente_usd": 285.95,
+          "_nota_latente": "Dinero que sigue en riesgo: aun no es perdida, pero puede serlo.",
+          "n_sin_proteger": 0,
+          "sin_proteger": [],
+          "n_cierres_hoy": 0,
+          "cierres_por_motivo": {},
+          "cierres_por_origen": {}
+        },
+        {
+          "cuenta": "REAL",
+          "equity": 4548.15,
+          "equity_cierre_anterior": 4548.16,
+          "movimiento_dia_usd": -0.01,
+          "n_posiciones": 1,
+          "expuesto_usd": 0.67,
+          "pnl_latente_usd": -0.3,
+          "_nota_latente": "Dinero que sigue en riesgo: aun no es perdida, pero puede serlo.",
+          "n_sin_proteger": 1,
+          "sin_proteger": [
+            "BTCUSD"
+          ],
+          "n_cierres_hoy": 0,
+          "cierres_por_motivo": {},
+          "cierres_por_origen": {}
+        }
+      ],
+      "avisos": [
+        "REAL: 1 posicion(es) sin stop vivo -> BTCUSD"
+      ]
     }
   ]
 }
