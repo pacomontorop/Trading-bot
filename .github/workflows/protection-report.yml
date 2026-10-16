@@ -1,0 +1,36 @@
+name: Protection Report
+on:
+  schedule:
+    # Horas UTC. Con horario de verano de Nueva York: 10:05 ET y 16:45 ET.
+    # Cuando acabe el DST (1-nov) seran 09:05 y 15:45 ET. Sirve igual: la primera
+    # pasada es con el mercado abierto y la segunda despues del cierre.
+    - cron: "5 14 * * 1-5"
+    - cron: "45 20 * * 1-5"
+  workflow_dispatch:
+concurrency:
+  group: protection-report
+  cancel-in-progress: false
+permissions:
+  contents: write   # github.token actualiza performance_log.json
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # Sin dependencias: common.py solo usa la libreria estandar salvo en atr14(),
+      # que este script no llama. NO_YF=1 lo deja claro.
+      - name: Run
+        env:
+          NO_YF: "1"
+          APCA_KEY:   ${{ secrets.APCA_KEY }}
+          APCA_SEC:   ${{ secrets.APCA_SEC }}
+          APCA_KEY_R: ${{ secrets.APCA_KEY_R }}
+          APCA_SEC_R: ${{ secrets.APCA_SEC_R }}
+          GH_TOKEN:   ${{ secrets.GH_TOKEN_TRADING || github.token }}
+          TG_TOKEN:   ${{ secrets.TG_TOKEN }}
+          TG_CHAT:    ${{ secrets.TG_CHAT }}
+        run: python scripts/protection_report.py
