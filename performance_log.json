@@ -3742,69 +3742,6 @@
       "notas": "1d=+1.5% vol=0.0x 52h_dist=0.0%"
     },
     {
-      "ticker": "RTX",
-      "symbol": "RTX",
-      "estado": "pendiente_ew",
-      "score": 7.25,
-      "score_ajustado": 7.25,
-      "score_breakdown": {
-        "beat_rate": 3.0,
-        "reaccion": 0.25,
-        "revisiones": 1.5,
-        "momentum5d": 1.0,
-        "macro": 1.0,
-        "noticias": 0.5
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 186.96,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-10-16T20:00:00Z",
-      "fecha_entrada_prevista": "2026-10-16",
-      "cerrar_antes": "2026-10-19",
-      "earnings_fecha": "2026-10-20",
-      "earnings_timing": "BMO",
-      "consenso_eps": null,
-      "whisper": null,
-      "asimetria_pct": null,
-      "beat_rate": 100.0,
-      "reaccion_media_pct": 0.66,
-      "momentum_5d_pct": 2.92,
-      "analistas": 11,
-      "fecha_scan": "2026-10-16T15:35:42Z"
-    },
-    {
-      "ticker": "VICR",
-      "symbol": "VICR",
-      "estado": "pendiente_ew",
-      "score": 7.0,
-      "score_ajustado": 7.0,
-      "score_breakdown": {
-        "beat_rate": 3.0,
-        "reaccion": 1.5,
-        "revisiones": 1.5,
-        "momentum5d": 0.0,
-        "macro": 1.0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 219.66,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-10-16T20:00:00Z",
-      "fecha_entrada_prevista": "2026-10-16",
-      "cerrar_antes": "2026-10-19",
-      "earnings_fecha": "2026-10-20",
-      "earnings_timing": "BMO",
-      "consenso_eps": null,
-      "whisper": null,
-      "asimetria_pct": null,
-      "beat_rate": 87.5,
-      "reaccion_media_pct": 9.24,
-      "momentum_5d_pct": -24.47,
-      "analistas": 5,
-      "fecha_scan": "2026-10-16T15:35:42Z"
-    },
-    {
       "ticker": "GM",
       "symbol": "GM",
       "estado": "pendiente_ew",
@@ -3814,8 +3751,9 @@
         "beat_rate": 3.0,
         "reaccion": 1.03,
         "revisiones": 1.5,
-        "momentum5d": 0.0,
-        "macro": 1.0
+        "momentum5d": 1.0,
+        "macro": -0.5,
+        "noticias": 0.5
       },
       "accion_recomendada": "entrar_apertura",
       "fuente": "ew_pipeline_gha",
@@ -3831,9 +3769,9 @@
       "asimetria_pct": null,
       "beat_rate": 100.0,
       "reaccion_media_pct": 2.74,
-      "momentum_5d_pct": 3.26,
+      "momentum_5d_pct": 2.17,
       "analistas": 14,
-      "fecha_scan": "2026-10-16T15:35:42Z"
+      "fecha_scan": "2026-10-16T16:35:52Z"
     }
   ],
   "macro_context": {
@@ -25047,7 +24985,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-16T15:35Z",
+    "ts": "2026-10-16T16:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25083,15 +25021,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -1.34}"
+        "detalle": "{'rel20': -1.25}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 27.9, 'rating': 'fear'}"
+        "detalle": "{'score': 26.2, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 7, 'menciones': 91, 'menciones_24h_antes': 163, 'ratio_24h': 0.56}"
+        "detalle": "{'en_ranking': True, 'rank': 7, 'menciones': 89, 'menciones_24h_antes': 167, 'ratio_24h': 0.53}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25099,7 +25037,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.97"
+        "detalle": "C/P 1.75"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25107,48 +25045,21 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -5.39, 'rs20': -2.94}"
+        "detalle": "{'etf': 'XLK', 'rs5': -5.33, 'rs20': -2.88}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-16T15:35Z",
+    "ts": "2026-10-16T16:35Z",
     "entrada": "2026-10-16",
     "salida": "2026-10-19",
-    "eventos": 51,
+    "eventos": 50,
     "evaluados": 22,
     "macro": {
-      "vix": 16.17,
-      "spy_above_ma50": true
+      "vix": 17.18,
+      "spy_above_ma50": false
     },
     "top": [
-      {
-        "ticker": "RTX",
-        "score": 7.25,
-        "earnings_fecha": "2026-10-20",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.25,
-          "revisiones": 1.5,
-          "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "VICR",
-        "score": 7.0,
-        "earnings_fecha": "2026-10-20",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 1.5,
-          "revisiones": 1.5,
-          "momentum5d": 0.0,
-          "macro": 1.0
-        }
-      },
       {
         "ticker": "GM",
         "score": 6.53,
@@ -25158,13 +25069,41 @@
           "beat_rate": 3.0,
           "reaccion": 1.03,
           "revisiones": 1.5,
+          "momentum5d": 1.0,
+          "macro": -0.5,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "RTX",
+        "score": 5.75,
+        "earnings_fecha": "2026-10-20",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.25,
+          "revisiones": 1.5,
+          "momentum5d": 1.0,
+          "macro": -0.5,
+          "noticias": 0.5
+        }
+      },
+      {
+        "ticker": "VICR",
+        "score": 5.5,
+        "earnings_fecha": "2026-10-20",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 1.5,
+          "revisiones": 1.5,
           "momentum5d": 0.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       },
       {
         "ticker": "CHMG",
-        "score": 5.8,
+        "score": 4.3,
         "earnings_fecha": "2026-10-20",
         "earnings_timing": "desconocido",
         "score_breakdown": {
@@ -25172,12 +25111,38 @@
           "reaccion": 1.05,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": -0.5
+        }
+      },
+      {
+        "ticker": "GE",
+        "score": 4.25,
+        "earnings_fecha": "2026-10-20",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": -0.5
+        }
+      },
+      {
+        "ticker": "MMM",
+        "score": 4.08,
+        "earnings_fecha": "2026-10-20",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.58,
+          "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": -0.5
         }
       },
       {
         "ticker": "MSCI",
-        "score": 5.5,
+        "score": 4.0,
         "earnings_fecha": "2026-10-20",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25185,13 +25150,13 @@
           "reaccion": 0.0,
           "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": 1.0,
+          "macro": -0.5,
           "noticias": 0.5
         }
       },
       {
         "ticker": "WASH",
-        "score": 5.13,
+        "score": 3.63,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "AMC",
         "score_breakdown": {
@@ -25199,12 +25164,12 @@
           "reaccion": 0.38,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       },
       {
         "ticker": "CCK",
-        "score": 4.99,
+        "score": 3.49,
         "earnings_fecha": "2026-10-19",
         "earnings_timing": "AMC",
         "score_breakdown": {
@@ -25212,25 +25177,12 @@
           "reaccion": 0.99,
           "revisiones": 0.0,
           "momentum5d": 0.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "GE",
-        "score": 4.75,
-        "earnings_fecha": "2026-10-20",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.0,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       },
       {
         "ticker": "NOC",
-        "score": 4.75,
+        "score": 3.25,
         "earnings_fecha": "2026-10-20",
         "earnings_timing": "BMO",
         "score_breakdown": {
@@ -25238,20 +25190,7 @@
           "reaccion": 0.0,
           "revisiones": 0.75,
           "momentum5d": 0.0,
-          "macro": 1.0
-        }
-      },
-      {
-        "ticker": "STLD",
-        "score": 4.63,
-        "earnings_fecha": "2026-10-19",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 2.0,
-          "reaccion": 0.63,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": -0.5
         }
       }
     ]
@@ -25267,7 +25206,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-16T15:35Z",
+    "ts": "2026-10-16T16:35Z",
     "calendario": {
       "2026-10-16": [
         {
@@ -25402,33 +25341,33 @@
           "ticker": "CLF",
           "company": "Cleveland-Cliffs Inc",
           "releaseTime": 1,
-          "total": 28,
+          "total": 31,
           "fuente": "ew"
         },
         {
           "ticker": "FITB",
           "company": "Fifth Third Bancorp",
           "releaseTime": 1,
-          "total": 9,
+          "total": 11,
           "fuente": "ew"
         },
         {
           "ticker": "SMBK",
           "company": "SmartFinancial, Inc.",
           "releaseTime": 1,
-          "total": 6,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "DX",
-          "company": "Dynex Capital, Inc.",
-          "releaseTime": 1,
-          "total": 0,
+          "total": 7,
           "fuente": "ew"
         },
         {
           "ticker": "VFS",
           "company": "VinFast Auto Ltd.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "DX",
+          "company": "Dynex Capital, Inc.",
           "releaseTime": 1,
           "total": 0,
           "fuente": "ew"
@@ -25986,13 +25925,6 @@
           "company": "FS Bancorp, Inc.",
           "releaseTime": null,
           "total": 3,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "KREF",
-          "company": "KKR Real Estate Finance Trust Inc.",
-          "releaseTime": null,
-          "total": 1,
           "fuente": "nasdaq"
         },
         {
@@ -27060,7 +26992,7 @@
           "ticker": "BE",
           "company": "Bloom Energy Corporation",
           "releaseTime": 3,
-          "total": 24,
+          "total": 25,
           "fuente": "ew"
         },
         {
@@ -27697,7 +27629,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": -1.78,
-        "score": 4.75
+        "score": 4.25
       },
       "GM": {
         "consenso_eps": null,
@@ -27717,7 +27649,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 0.66,
-        "score": 7.25
+        "score": 5.75
       },
       "STLD": {
         "consenso_eps": null,
@@ -27727,7 +27659,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 75.0,
         "reaccion_media_pct": 1.68,
-        "score": 4.63
+        "score": 3.13
       },
       "NOC": {
         "consenso_eps": null,
@@ -27737,7 +27669,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -1.05,
-        "score": 4.75
+        "score": 3.25
       },
       "MSCI": {
         "consenso_eps": null,
@@ -27747,7 +27679,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -0.85,
-        "score": 5.5
+        "score": 4.0
       },
       "MMM": {
         "consenso_eps": null,
@@ -27757,7 +27689,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 1.55,
-        "score": 4.58
+        "score": 4.08
       },
       "AGNC": {
         "consenso_eps": null,
@@ -27767,7 +27699,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 25.0,
         "reaccion_media_pct": 0.62,
-        "score": 1.23
+        "score": 0.0
       },
       "KARO": {
         "consenso_eps": null,
@@ -27777,7 +27709,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 87.5,
         "reaccion_media_pct": -3.49,
-        "score": 4.5
+        "score": 3.0
       },
       "ALLY": {
         "consenso_eps": null,
@@ -27787,7 +27719,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 75.0,
         "reaccion_media_pct": 1.03,
-        "score": 3.39
+        "score": 1.89
       },
       "HAL": {
         "consenso_eps": null,
@@ -27797,7 +27729,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 50.0,
         "reaccion_media_pct": 0.37,
-        "score": 1.14
+        "score": 0.0
       },
       "HAS": {
         "consenso_eps": null,
@@ -27807,7 +27739,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 5.29,
-        "score": 4.5
+        "score": 3.0
       },
       "VICR": {
         "consenso_eps": null,
@@ -27817,7 +27749,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": 9.24,
-        "score": 7.0
+        "score": 5.5
       },
       "CCK": {
         "consenso_eps": null,
@@ -27827,7 +27759,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": 2.65,
-        "score": 4.99
+        "score": 3.49
       },
       "GPC": {
         "consenso_eps": null,
@@ -27837,7 +27769,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 62.5,
         "reaccion_media_pct": -3.28,
-        "score": 2.25
+        "score": 0.75
       },
       "MAT": {
         "consenso_eps": null,
@@ -27847,7 +27779,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 62.5,
         "reaccion_media_pct": -2.87,
-        "score": 0.5
+        "score": 0.0
       },
       "BOKF": {
         "consenso_eps": null,
@@ -27857,7 +27789,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 87.5,
         "reaccion_media_pct": -0.34,
-        "score": 4.0
+        "score": 2.5
       },
       "RBB": {
         "consenso_eps": null,
@@ -27867,7 +27799,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 62.5,
         "reaccion_media_pct": 1.89,
-        "score": 3.71
+        "score": 2.21
       },
       "WASH": {
         "consenso_eps": null,
@@ -27877,7 +27809,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 75.0,
         "reaccion_media_pct": 1.0,
-        "score": 5.13
+        "score": 3.63
       },
       "OMC": {
         "consenso_eps": null,
@@ -27887,7 +27819,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 62.5,
         "reaccion_media_pct": 1.24,
-        "score": 3.21
+        "score": 1.71
       },
       "CHMG": {
         "consenso_eps": null,
@@ -27897,7 +27829,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 75.0,
         "reaccion_media_pct": 2.79,
-        "score": 5.8
+        "score": 4.3
       },
       "FSBW": {
         "consenso_eps": null,
@@ -27907,7 +27839,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 25.0,
         "reaccion_media_pct": 0.13,
-        "score": 0.05
+        "score": 0.0
       }
     },
     "resultados_hoy": [
