@@ -3769,9 +3769,9 @@
       "asimetria_pct": null,
       "beat_rate": 87.5,
       "reaccion_media_pct": 8.22,
-      "momentum_5d_pct": -1.91,
+      "momentum_5d_pct": -1.46,
       "analistas": 52,
-      "fecha_scan": "2026-10-21T13:36:16Z"
+      "fecha_scan": "2026-10-21T14:35:21Z"
     },
     {
       "ticker": "FIX",
@@ -3800,9 +3800,41 @@
       "asimetria_pct": null,
       "beat_rate": 100.0,
       "reaccion_media_pct": 3.79,
-      "momentum_5d_pct": -6.65,
+      "momentum_5d_pct": -7.56,
       "analistas": 5,
-      "fecha_scan": "2026-10-21T13:36:16Z"
+      "fecha_scan": "2026-10-21T14:35:21Z"
+    },
+    {
+      "ticker": "WDC",
+      "symbol": "WDC",
+      "estado": "pendiente_ew",
+      "score": 6.83,
+      "score_ajustado": 6.83,
+      "score_breakdown": {
+        "beat_rate": 3.0,
+        "reaccion": 0.58,
+        "revisiones": 0.75,
+        "momentum5d": 1.0,
+        "macro": 1.0,
+        "noticias": 0.5
+      },
+      "accion_recomendada": "entrar_apertura",
+      "fuente": "ew_pipeline_gha",
+      "precio_referencia": 364.33,
+      "runup_tolerance_pct": 5.0,
+      "expira": "2026-10-21T20:00:00Z",
+      "fecha_entrada_prevista": "2026-10-21",
+      "cerrar_antes": "2026-10-22",
+      "earnings_fecha": "2026-10-22",
+      "earnings_timing": "AMC",
+      "consenso_eps": null,
+      "whisper": null,
+      "asimetria_pct": null,
+      "beat_rate": 87.5,
+      "reaccion_media_pct": 1.56,
+      "momentum_5d_pct": 2.68,
+      "analistas": 14,
+      "fecha_scan": "2026-10-21T14:35:21Z"
     },
     {
       "ticker": "SRCE",
@@ -3833,7 +3865,7 @@
       "reaccion_media_pct": 0.47,
       "momentum_5d_pct": 2.64,
       "analistas": 6,
-      "fecha_scan": "2026-10-21T13:36:16Z"
+      "fecha_scan": "2026-10-21T14:35:21Z"
     }
   ],
   "macro_context": {
@@ -25050,7 +25082,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-21T13:36Z",
+    "ts": "2026-10-21T14:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25082,19 +25114,19 @@
       },
       "fred": {
         "ok": true,
-        "detalle": "HY OAS 3.29"
+        "detalle": "HY OAS 3.33"
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -1.61}"
+        "detalle": "{'rel20': -1.56}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 29.7, 'rating': 'fear'}"
+        "detalle": "{'score': 29.2, 'rating': 'fear'}"
       },
       "apewisdom": {
-        "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 9, 'menciones': 70, 'menciones_24h_antes': 57, 'ratio_24h': 1.23}"
+        "ok": false,
+        "detalle": "sin datos"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25102,7 +25134,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 0.7"
+        "detalle": "C/P 1.7"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25110,18 +25142,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -1.75, 'rs20': -4.44}"
+        "detalle": "{'etf': 'XLK', 'rs5': -1.66, 'rs20': -4.35}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-21T13:36Z",
+    "ts": "2026-10-21T14:35Z",
     "entrada": "2026-10-21",
     "salida": "2026-10-22",
     "eventos": 90,
     "evaluados": 39,
     "macro": {
-      "vix": 16.95,
+      "vix": 17.4,
       "spy_above_ma50": true
     },
     "top": [
@@ -25153,6 +25185,20 @@
         }
       },
       {
+        "ticker": "WDC",
+        "score": 6.83,
+        "earnings_fecha": "2026-10-22",
+        "earnings_timing": "AMC",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.58,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
+      },
+      {
         "ticker": "SRCE",
         "score": 6.68,
         "earnings_fecha": "2026-10-22",
@@ -25163,20 +25209,6 @@
           "revisiones": 1.5,
           "momentum5d": 1.0,
           "macro": 1.0
-        }
-      },
-      {
-        "ticker": "WDC",
-        "score": 5.83,
-        "earnings_fecha": "2026-10-22",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.58,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
-          "macro": 1.0,
-          "noticias": 0.5
         }
       },
       {
@@ -25247,16 +25279,17 @@
         }
       },
       {
-        "ticker": "MCBS",
+        "ticker": "DECK",
         "score": 5.25,
-        "earnings_fecha": "2026-10-23",
-        "earnings_timing": "desconocido",
+        "earnings_fecha": "2026-10-22",
+        "earnings_timing": "AMC",
         "score_breakdown": {
           "beat_rate": 3.0,
-          "reaccion": 0.25,
-          "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": 1.0
+          "reaccion": 0.0,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0,
+          "noticias": 0.5
         }
       }
     ]
@@ -25272,7 +25305,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-21T13:36Z",
+    "ts": "2026-10-21T14:35Z",
     "calendario": {
       "2026-10-21": [
         {
@@ -25489,28 +25522,28 @@
           "ticker": "TSLA",
           "company": "Tesla, Inc.",
           "releaseTime": 3,
-          "total": 102,
+          "total": 107,
           "fuente": "ew"
         },
         {
           "ticker": "META",
           "company": "Meta Platforms, Inc.",
           "releaseTime": 3,
-          "total": 90,
+          "total": 93,
           "fuente": "ew"
         },
         {
           "ticker": "IBM",
           "company": "International Business Machines Corporation",
           "releaseTime": 3,
-          "total": 37,
+          "total": 38,
           "fuente": "ew"
         },
         {
           "ticker": "LRCX",
           "company": "Lam Research Corporation",
           "releaseTime": 3,
-          "total": 30,
+          "total": 32,
           "fuente": "ew"
         },
         {
@@ -25524,7 +25557,7 @@
           "ticker": "TCBI",
           "company": "Texas Capital Bancshares, Inc. ",
           "releaseTime": 3,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -26065,14 +26098,14 @@
           "ticker": "LMT",
           "company": "Lockheed Martin Corporation",
           "releaseTime": 1,
-          "total": 26,
+          "total": 27,
           "fuente": "ew"
         },
         {
           "ticker": "NOK",
           "company": "Nokia",
           "releaseTime": 1,
-          "total": 22,
+          "total": 23,
           "fuente": "ew"
         },
         {
@@ -26125,15 +26158,15 @@
           "fuente": "ew"
         },
         {
-          "ticker": "HBAN",
-          "company": "Huntington Bancshares Incorporated",
+          "ticker": "VLO",
+          "company": "Valero Energy Corporation",
           "releaseTime": 1,
-          "total": 8,
+          "total": 9,
           "fuente": "ew"
         },
         {
-          "ticker": "VLO",
-          "company": "Valero Energy Corporation",
+          "ticker": "HBAN",
+          "company": "Huntington Bancshares Incorporated",
           "releaseTime": 1,
           "total": 8,
           "fuente": "ew"
@@ -27849,7 +27882,7 @@
           "ticker": "UPS",
           "company": "United Parcel Service, Inc.",
           "releaseTime": 1,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
@@ -27867,15 +27900,15 @@
           "fuente": "ew"
         },
         {
-          "ticker": "CVLT",
-          "company": "Commvault Systems Inc",
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
           "releaseTime": 1,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
-          "ticker": "FCX",
-          "company": "Freeport-McMoRan Inc.",
+          "ticker": "CVLT",
+          "company": "Commvault Systems Inc",
           "releaseTime": 1,
           "total": 5,
           "fuente": "ew"
@@ -28902,7 +28935,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 87.5,
         "reaccion_media_pct": 1.56,
-        "score": 5.83
+        "score": 6.83
       },
       "MXL": {
         "consenso_eps": null,
@@ -28962,7 +28995,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": -1.31,
-        "score": 4.75
+        "score": 5.25
       },
       "SLM": {
         "consenso_eps": null,
@@ -29022,7 +29055,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 75.0,
         "reaccion_media_pct": -0.1,
-        "score": 4.25
+        "score": 5.25
       },
       "FLG": {
         "consenso_eps": null,
@@ -29152,7 +29185,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": -4.89,
-        "score": 2.75
+        "score": 4.25
       },
       "KRC": {
         "consenso_eps": null,
@@ -29276,30 +29309,6 @@
       }
     },
     "resultados_hoy": [
-      {
-        "ticker": "ALLY",
-        "epsDate": "2026-10-21T09:16:00",
-        "eps": 1.34,
-        "estimate": 1.32,
-        "whisper": 1.48,
-        "revenue": 2332.0,
-        "revenueEstimate": 2280.0,
-        "earningsSurprise": -0.0945945945945946,
-        "revenueSurprise": 0.02280701754385965,
-        "subject": "Ally Financial Missed Expectations"
-      },
-      {
-        "ticker": "ALLY",
-        "epsDate": "2026-10-21T09:16:00",
-        "eps": 1.34,
-        "estimate": 1.32,
-        "whisper": 1.48,
-        "revenue": 2332.0,
-        "revenueEstimate": 2280.0,
-        "earningsSurprise": -0.0945945945945946,
-        "revenueSurprise": 0.02280701754385965,
-        "subject": "Ally Financial Missed Expectations"
-      },
       {
         "ticker": "ABT",
         "epsDate": "2026-10-21T07:30:00",
@@ -29875,6 +29884,30 @@
         "earningsSurprise": 0.007633587786259542,
         "revenueSurprise": 0.50197085040173,
         "subject": "BOK Financial Beat Expectations"
+      },
+      {
+        "ticker": "SFBS",
+        "epsDate": "2026-10-19T16:04:00",
+        "eps": 0.8,
+        "estimate": 0.83,
+        "whisper": 999,
+        "revenue": 270.465,
+        "revenueEstimate": 173.15,
+        "earningsSurprise": -0.03614457831325301,
+        "revenueSurprise": 0.5620271440947155,
+        "subject": "ServisFirst Bancshares Missed Consensus Estimates"
+      },
+      {
+        "ticker": "AGNC",
+        "epsDate": "2026-10-19T16:01:00",
+        "eps": 0.37,
+        "estimate": 0.39,
+        "whisper": 999,
+        "revenue": 1196.0,
+        "revenueEstimate": 428.41,
+        "earningsSurprise": -0.05128205128205128,
+        "revenueSurprise": 1.791718213860554,
+        "subject": "AGNC Investment Missed Consensus Estimates"
       }
     ]
   },
