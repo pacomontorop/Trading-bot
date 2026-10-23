@@ -31045,142 +31045,132 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-10-23",
-    "hora_utc": "17:45",
-    "min_desde_apertura": 255.3,
+    "hora_utc": "18:09",
+    "min_desde_apertura": 279.1,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "RCL: max entradas/día paper",
       "JCI: max entradas/día paper",
-      "KO: score 6.0<6.0",
-      "CDNS: score 5.8<6.0",
-      "AMAT: score 3.8<6.0"
+      "KO: max entradas/día paper",
+      "CDNS: score 5.8<6.0"
     ],
     "ajustes_fuentes": {
       "RCL": {
         "base": 6.91,
-        "paper": 7.71,
+        "paper": 8.06,
         "real": 6.91,
         "partes": {
           "analistas": 1.0,
+          "opciones": 0.25,
           "sector": 0.4,
-          "macro": -0.6
+          "macro": -0.5
         }
       },
       "JCI": {
         "base": 6.18,
-        "paper": 6.03,
-        "real": 6.03,
+        "paper": 6.13,
+        "real": 6.13,
         "partes": {
           "analistas": 0.6,
           "sector": -0.15,
-          "macro": -0.6
+          "macro": -0.5
         }
       },
       "KO": {
         "base": 6.17,
-        "paper": 5.97,
-        "real": 5.97,
+        "paper": 6.07,
+        "real": 6.07,
         "partes": {
           "sector": 0.4,
-          "macro": -0.6
+          "macro": -0.5
         }
       },
       "CDNS": {
         "base": 6.55,
-        "paper": 5.75,
-        "real": 5.75,
+        "paper": 5.85,
+        "real": 5.85,
         "partes": {
           "analistas": 0.2,
           "sector": -0.4,
-          "macro": -0.6
-        }
-      },
-      "AMAT": {
-        "base": 5.0,
-        "paper": 3.75,
-        "real": 3.75,
-        "partes": {
-          "analistas": -0.25,
-          "sector": -0.4,
-          "macro": -0.6
+          "macro": -0.5
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-10-23T17:45Z",
+    "ts": "2026-10-23T18:09Z",
     "macro": {
       "hy_oas": 3.4,
       "hy_cambio_20": 0.6,
       "nfci": -0.496,
       "curva_10a2a": 0.31,
-      "credito_hyg_ief_20": -2.32,
-      "fear_greed": 19.7,
+      "credito_hyg_ief_20": -2.25,
+      "fear_greed": 20.2,
       "regimen": "risk_off",
-      "ajuste": -0.6
+      "ajuste": -0.5
     },
     "estado": {
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 116,
+        "ms": 192,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1672,
+        "ms": 1578,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 708,
+        "ms": 743,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 1131,
+        "ms": 606,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 4001,
+        "ms": 2858,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 393,
+        "ms": 162,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 831,
+        "ms": 361,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 4004,
+        "ms": 2564,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 5,
+        "ok": 4,
         "fallos": 0,
-        "ms": 1650,
+        "ms": 7719,
         "ultimo_error": null
       }
     }
@@ -32577,6 +32567,17 @@
       "motivos": {
         "score N<N": 3,
         "max entradas/día paper": 2
+      }
+    },
+    {
+      "fecha": "2026-10-23",
+      "hora_utc": "18:09",
+      "candidatos": 4,
+      "ejecutados": 0,
+      "descartados": 4,
+      "motivos": {
+        "max entradas/día paper": 3,
+        "score N<N": 1
       }
     }
   ],
