@@ -31825,24 +31825,22 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-10-27",
-    "hora_utc": "14:39",
-    "min_desde_apertura": 69.5,
+    "hora_utc": "15:39",
+    "min_desde_apertura": 129.4,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "MA: max entradas/día paper",
-      "BFLY: runup +6.5%>5%",
-      "AVGO: max entradas/día paper",
+      "TSLA: max entradas/día paper",
       "ICE: max entradas/día paper",
+      "BFLY: runup +7.0%>5%",
       "FORM: max entradas/día paper",
       "CTSH: max entradas/día paper",
-      "TQQQ: max entradas/día paper",
       "MSFT: ya en cartera paper",
+      "GOOGL: max entradas/día paper",
       "F: max entradas/día paper",
-      "FTNT: score 6.0<6.0",
-      "SMCI: score 5.8<6.0",
-      "DELL: score 4.3<6.0"
+      "NVDA: score 4.8<6.0"
     ],
     "ajustes_fuentes": {
       "MA": {
@@ -31855,6 +31853,26 @@
           "macro": -0.2
         }
       },
+      "TSLA": {
+        "base": 6.88,
+        "paper": 7.63,
+        "real": 6.88,
+        "partes": {
+          "analistas": 0.8,
+          "sector": 0.15,
+          "macro": -0.2
+        }
+      },
+      "ICE": {
+        "base": 7.11,
+        "paper": 7.51,
+        "real": 7.11,
+        "partes": {
+          "analistas": 0.2,
+          "sector": 0.4,
+          "macro": -0.2
+        }
+      },
       "BFLY": {
         "base": 7.25,
         "paper": 7.4,
@@ -31862,28 +31880,6 @@
         "partes": {
           "analistas": 0.2,
           "sector": 0.15,
-          "macro": -0.2
-        }
-      },
-      "AVGO": {
-        "base": 6.88,
-        "paper": 7.28,
-        "real": 6.88,
-        "partes": {
-          "analistas": 0.75,
-          "opciones": 0.25,
-          "sector": -0.4,
-          "macro": -0.2
-        }
-      },
-      "ICE": {
-        "base": 7.11,
-        "paper": 7.11,
-        "real": 7.11,
-        "partes": {
-          "analistas": 0.2,
-          "opciones": -0.4,
-          "sector": 0.4,
           "macro": -0.2
         }
       },
@@ -31907,20 +31903,23 @@
           "macro": -0.2
         }
       },
-      "TQQQ": {
-        "base": 6.88,
-        "paper": 6.68,
-        "real": 6.68,
-        "partes": {
-          "macro": -0.2
-        }
-      },
       "MSFT": {
         "base": 6.25,
         "paper": 6.65,
         "real": 6.25,
         "partes": {
           "analistas": 0.8,
+          "sector": -0.4,
+          "social": 0.2,
+          "macro": -0.2
+        }
+      },
+      "GOOGL": {
+        "base": 6.39,
+        "paper": 6.64,
+        "real": 6.39,
+        "partes": {
+          "analistas": 0.65,
           "sector": -0.4,
           "social": 0.2,
           "macro": -0.2
@@ -31937,34 +31936,12 @@
           "macro": -0.2
         }
       },
-      "FTNT": {
-        "base": 6.08,
-        "paper": 5.98,
-        "real": 5.98,
+      "NVDA": {
+        "base": 5.0,
+        "paper": 4.85,
+        "real": 4.85,
         "partes": {
-          "analistas": 0.5,
-          "sector": -0.4,
-          "macro": -0.2
-        }
-      },
-      "SMCI": {
-        "base": 5.25,
-        "paper": 5.8,
-        "real": 5.25,
-        "partes": {
-          "analistas": 0.65,
-          "opciones": 0.5,
-          "sector": -0.4,
-          "macro": -0.2
-        }
-      },
-      "DELL": {
-        "base": 5.25,
-        "paper": 4.35,
-        "real": 4.35,
-        "partes": {
-          "insiders": -0.3,
-          "analistas": -0.25,
+          "analistas": 0.2,
           "opciones": 0.25,
           "sector": -0.4,
           "macro": -0.2
@@ -31974,76 +31951,76 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-10-27T14:39Z",
+    "ts": "2026-10-27T15:39Z",
     "macro": {
-      "hy_oas": 3.38,
-      "hy_cambio_20": 0.45,
+      "hy_oas": 3.3,
+      "hy_cambio_20": 0.28,
       "nfci": -0.496,
       "curva_10a2a": 0.32,
-      "credito_hyg_ief_20": -1.8,
-      "fear_greed": 31.0,
+      "credito_hyg_ief_20": -1.65,
+      "fear_greed": 32.6,
       "regimen": "cautela",
       "ajuste": -0.2
     },
     "estado": {
-      "cnn_fear_greed": {
-        "ok": 1,
-        "fallos": 0,
-        "ms": 160,
-        "ultimo_error": null
-      },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1200,
+        "ms": 778,
+        "ultimo_error": null
+      },
+      "cnn_fear_greed": {
+        "ok": 1,
+        "fallos": 0,
+        "ms": 82,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 334,
+        "ms": 495,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 3011,
+        "ms": 2007,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 17092,
+        "ms": 12730,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 1089,
+        "ms": 673,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 2201,
+        "ms": 1395,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 1136,
+        "ms": 2020,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 12,
+        "ok": 10,
         "fallos": 0,
-        "ms": 962,
+        "ms": 2402,
         "ultimo_error": null
       }
     }
@@ -33554,6 +33531,19 @@
         "score N<N": 3,
         "runup N%>N%": 1,
         "ya en cartera paper": 1
+      }
+    },
+    {
+      "fecha": "2026-10-27",
+      "hora_utc": "15:39",
+      "candidatos": 10,
+      "ejecutados": 0,
+      "descartados": 10,
+      "motivos": {
+        "max entradas/día paper": 7,
+        "runup N%>N%": 1,
+        "ya en cartera paper": 1,
+        "score N<N": 1
       }
     }
   ],
