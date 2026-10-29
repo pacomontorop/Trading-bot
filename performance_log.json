@@ -3742,37 +3742,6 @@
       "notas": "1d=+1.5% vol=0.0x 52h_dist=0.0%"
     },
     {
-      "ticker": "TSEM",
-      "symbol": "TSEM",
-      "estado": "pendiente_ew",
-      "score": 8.0,
-      "score_ajustado": 8.0,
-      "score_breakdown": {
-        "beat_rate": 3.0,
-        "reaccion": 1.5,
-        "revisiones": 1.5,
-        "momentum5d": 1.0,
-        "macro": 1.0
-      },
-      "accion_recomendada": "entrar_apertura",
-      "fuente": "ew_pipeline_gha",
-      "precio_referencia": 193.15,
-      "runup_tolerance_pct": 5.0,
-      "expira": "2026-10-29T20:00:00Z",
-      "fecha_entrada_prevista": "2026-10-29",
-      "cerrar_antes": "2026-10-30",
-      "earnings_fecha": "2026-11-02",
-      "earnings_timing": "BMO",
-      "consenso_eps": null,
-      "whisper": null,
-      "asimetria_pct": null,
-      "beat_rate": 100.0,
-      "reaccion_media_pct": 8.51,
-      "momentum_5d_pct": 1.92,
-      "analistas": 3,
-      "fecha_scan": "2026-10-29T01:11:48Z"
-    },
-    {
       "ticker": "AMG",
       "symbol": "AMG",
       "estado": "pendiente_ew",
@@ -3799,9 +3768,9 @@
       "asimetria_pct": null,
       "beat_rate": 87.5,
       "reaccion_media_pct": 1.18,
-      "momentum_5d_pct": -0.22,
+      "momentum_5d_pct": 0.42,
       "analistas": 6,
-      "fecha_scan": "2026-10-29T01:11:48Z"
+      "fecha_scan": "2026-10-29T13:35:53Z"
     }
   ],
   "macro_context": {
@@ -25025,14 +24994,14 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-29T01:11Z",
+    "ts": "2026-10-29T13:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
     },
     "nasdaq_calendar": {
       "ok": true,
-      "detalle": "317 filas"
+      "detalle": "312 filas"
     },
     "alpaca_datos": {
       "ok": true,
@@ -25061,15 +25030,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -1.12}"
+        "detalle": "{'rel20': -1.33}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 35.9, 'rating': 'fear'}"
+        "detalle": "{'score': 34.4, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 10, 'menciones': 54, 'menciones_24h_antes': 40, 'ratio_24h': 1.35}"
+        "detalle": "{'en_ranking': True, 'rank': 11, 'menciones': 48, 'menciones_24h_antes': 45, 'ratio_24h': 1.07}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25077,7 +25046,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 1.98"
+        "detalle": "C/P 2.17"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25085,34 +25054,21 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 1.47, 'rs20': -3.67}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.7, 'rs20': -5.4}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-29T01:11Z",
+    "ts": "2026-10-29T13:35Z",
     "entrada": "2026-10-29",
     "salida": "2026-10-30",
-    "eventos": 54,
-    "evaluados": 25,
+    "eventos": 57,
+    "evaluados": 26,
     "macro": {
-      "vix": 16.91,
+      "vix": 16.94,
       "spy_above_ma50": true
     },
     "top": [
-      {
-        "ticker": "TSEM",
-        "score": 8.0,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 1.5,
-          "revisiones": 1.5,
-          "momentum5d": 1.0,
-          "macro": 1.0
-        }
-      },
       {
         "ticker": "AMG",
         "score": 6.19,
@@ -25127,16 +25083,17 @@
         }
       },
       {
-        "ticker": "HESM",
-        "score": 5.99,
+        "ticker": "EL",
+        "score": 5.75,
         "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
+        "earnings_timing": "BMO",
         "score_breakdown": {
           "beat_rate": 3.0,
-          "reaccion": 0.24,
+          "reaccion": -0.5,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": 1.0
+          "macro": 1.0,
+          "noticias": 0.5
         }
       },
       {
@@ -25149,6 +25106,19 @@
           "reaccion": 0.56,
           "revisiones": 0.0,
           "momentum5d": 1.0,
+          "macro": 1.0
+        }
+      },
+      {
+        "ticker": "TSEM",
+        "score": 5.5,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 1.5,
+          "revisiones": 1.5,
+          "momentum5d": -1.5,
           "macro": 1.0
         }
       },
@@ -25178,6 +25148,19 @@
         }
       },
       {
+        "ticker": "HESM",
+        "score": 4.99,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 0.24,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": 1.0
+        }
+      },
+      {
         "ticker": "ETR",
         "score": 4.94,
         "earnings_fecha": "2026-11-02",
@@ -25191,30 +25174,16 @@
         }
       },
       {
-        "ticker": "EL",
-        "score": 4.75,
+        "ticker": "CHKP",
+        "score": 4.5,
         "earnings_fecha": "2026-11-02",
         "earnings_timing": "BMO",
         "score_breakdown": {
           "beat_rate": 3.0,
           "reaccion": -0.5,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
-          "macro": 1.0,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "ALM",
-        "score": 3.86,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "reaccion": 0.61,
-          "revisiones": 0.75,
+          "revisiones": 0.0,
           "momentum5d": 1.0,
-          "macro": 1.0,
-          "noticias": 0.5
+          "macro": 1.0
         }
       },
       {
@@ -25242,98 +25211,147 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-29T01:11Z",
+    "ts": "2026-10-29T13:35Z",
     "calendario": {
       "2026-10-29": [
         {
           "ticker": "CAT",
           "company": "Caterpillar Inc.",
           "releaseTime": 1,
-          "total": 40,
+          "total": 55,
           "fuente": "ew"
         },
         {
           "ticker": "LLY",
           "company": "Eli Lilly and Company",
           "releaseTime": 1,
-          "total": 37,
+          "total": 50,
           "fuente": "ew"
         },
         {
           "ticker": "MA",
           "company": "Mastercard Incorporated",
           "releaseTime": 1,
-          "total": 17,
+          "total": 21,
           "fuente": "ew"
         },
         {
           "ticker": "STM",
           "company": "STMicroelectronics N.V.",
           "releaseTime": 1,
-          "total": 14,
+          "total": 17,
           "fuente": "ew"
         },
         {
           "ticker": "CARR",
           "company": "Carrier Global Corporation",
           "releaseTime": 1,
-          "total": 12,
+          "total": 15,
           "fuente": "ew"
         },
         {
           "ticker": "LHX",
           "company": "L3Harris Technologies, Inc.",
           "releaseTime": 1,
-          "total": 11,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "HWM",
-          "company": "Howmet Aerospace Inc.",
-          "releaseTime": 1,
-          "total": 10,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "MO",
-          "company": "Altria Group, Inc.",
-          "releaseTime": 1,
-          "total": 10,
+          "total": 14,
           "fuente": "ew"
         },
         {
           "ticker": "VMC",
           "company": "Vulcan Materials Company",
           "releaseTime": 1,
-          "total": 10,
+          "total": 12,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "HWM",
+          "company": "Howmet Aerospace Inc.",
+          "releaseTime": 1,
+          "total": 11,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MO",
+          "company": "Altria Group, Inc.",
+          "releaseTime": 1,
+          "total": 11,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "SHEL",
+          "company": "Shell plc",
+          "releaseTime": 1,
+          "total": 11,
           "fuente": "ew"
         },
         {
           "ticker": "BMY",
           "company": "Bristol-Myers Squibb Company",
           "releaseTime": 1,
-          "total": 8,
+          "total": 10,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MRK",
+          "company": "Merck & Co., Inc.",
+          "releaseTime": 1,
+          "total": 10,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PWR",
+          "company": "Quanta Services, Inc.",
+          "releaseTime": 1,
+          "total": 9,
           "fuente": "ew"
         },
         {
           "ticker": "EPD",
           "company": "Enterprise Products Partners L.P.",
           "releaseTime": 1,
-          "total": 7,
+          "total": 8,
           "fuente": "ew"
         },
         {
           "ticker": "INSM",
           "company": "Insmed Incorporated",
           "releaseTime": 1,
-          "total": 7,
+          "total": 8,
           "fuente": "ew"
         },
         {
           "ticker": "PBF",
           "company": "PBF Energy Inc.",
           "releaseTime": 1,
+          "total": 8,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "FVRR",
+          "company": "Fiverr International Ltd.",
+          "releaseTime": 1,
           "total": 7,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ICE",
+          "company": "Intercontinental Exchange, Inc.",
+          "releaseTime": 1,
+          "total": 7,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "TECK",
+          "company": "Teck Resources Limited",
+          "releaseTime": 1,
+          "total": 7,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BFLY",
+          "company": "Butterfly Network, Inc.",
+          "releaseTime": 1,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -25344,8 +25362,8 @@
           "fuente": "ew"
         },
         {
-          "ticker": "ICE",
-          "company": "Intercontinental Exchange, Inc.",
+          "ticker": "DHI",
+          "company": "D.R. Horton, Inc.",
           "releaseTime": 1,
           "total": 6,
           "fuente": "ew"
@@ -25358,29 +25376,15 @@
           "fuente": "ew"
         },
         {
-          "ticker": "MRK",
-          "company": "Merck & Co., Inc.",
+          "ticker": "THC",
+          "company": "Tenet Healthcare Corporation",
           "releaseTime": 1,
           "total": 6,
           "fuente": "ew"
         },
         {
-          "ticker": "TECK",
-          "company": "Teck Resources Limited",
-          "releaseTime": 1,
-          "total": 6,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BFLY",
-          "company": "Butterfly Network, Inc.",
-          "releaseTime": 1,
-          "total": 5,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "FVRR",
-          "company": "Fiverr International Ltd.",
+          "ticker": "FTAI",
+          "company": "FTAI Aviation Ltd.",
           "releaseTime": 1,
           "total": 5,
           "fuente": "ew"
@@ -25400,6 +25404,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "LNG",
+          "company": "Cheniere Energy, Inc.",
+          "releaseTime": 1,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
           "ticker": "MPT",
           "company": "Medical Properties Trust, Inc.",
           "releaseTime": 1,
@@ -25407,17 +25418,31 @@
           "fuente": "ew"
         },
         {
-          "ticker": "PWR",
-          "company": "Quanta Services, Inc.",
+          "ticker": "OWL",
+          "company": "Blue Owl Capital Inc.",
           "releaseTime": 1,
           "total": 5,
           "fuente": "ew"
         },
         {
-          "ticker": "THC",
-          "company": "Tenet Healthcare Corporation",
+          "ticker": "QSR",
+          "company": "Restaurant Brands International Inc.",
           "releaseTime": 1,
           "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ATI",
+          "company": "ATI Inc.",
+          "releaseTime": 1,
+          "total": 4,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "BG",
+          "company": "Bunge Global SA",
+          "releaseTime": 1,
+          "total": 4,
           "fuente": "ew"
         },
         {
@@ -25435,34 +25460,6 @@
           "fuente": "ew"
         },
         {
-          "ticker": "DHI",
-          "company": "D.R. Horton, Inc.",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "FTAI",
-          "company": "FTAI Aviation Ltd.",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "LNG",
-          "company": "Cheniere Energy, Inc.",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "OWL",
-          "company": "Blue Owl Capital Inc.",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
           "ticker": "PGY",
           "company": "Pagaya Technologies Ltd.",
           "releaseTime": 1,
@@ -25470,22 +25467,8 @@
           "fuente": "ew"
         },
         {
-          "ticker": "QSR",
-          "company": "Restaurant Brands International Inc.",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "SHEL",
-          "company": "Shell plc",
-          "releaseTime": 1,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "YPF",
-          "company": "YPF S.A.",
+          "ticker": "TTE",
+          "company": "TotalEnergies SE",
           "releaseTime": 1,
           "total": 4,
           "fuente": "ew"
@@ -25493,6 +25476,13 @@
         {
           "ticker": "ALGM",
           "company": "Allegro MicroSystems, Inc.",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ALNY",
+          "company": "Alnylam Pharmaceuticals Inc",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
@@ -25519,13 +25509,6 @@
           "fuente": "ew"
         },
         {
-          "ticker": "ATI",
-          "company": "ATI Inc.",
-          "releaseTime": 1,
-          "total": 3,
-          "fuente": "ew"
-        },
-        {
           "ticker": "AVY",
           "company": "Avery Dennison Corporation",
           "releaseTime": 1,
@@ -25535,13 +25518,6 @@
         {
           "ticker": "BAX",
           "company": "Baxter International, Inc.",
-          "releaseTime": 1,
-          "total": 3,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "BG",
-          "company": "Bunge Global SA",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
@@ -25563,6 +25539,13 @@
         {
           "ticker": "CRH",
           "company": "CRH plc",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "EME",
+          "company": "EMCOR Group, Inc.",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
@@ -25680,15 +25663,15 @@
           "fuente": "ew"
         },
         {
-          "ticker": "TTE",
-          "company": "TotalEnergies SE",
+          "ticker": "TXT",
+          "company": "Textron Inc.",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
         },
         {
-          "ticker": "TXT",
-          "company": "Textron Inc.",
+          "ticker": "UPBD",
+          "company": "Upbound Group, Inc.",
           "releaseTime": 1,
           "total": 3,
           "fuente": "ew"
@@ -25731,13 +25714,6 @@
         {
           "ticker": "AGCO",
           "company": "AGCO Corporation",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ALNY",
-          "company": "Alnylam Pharmaceuticals Inc",
           "releaseTime": 1,
           "total": 2,
           "fuente": "ew"
@@ -25834,13 +25810,6 @@
           "fuente": "ew"
         },
         {
-          "ticker": "CLMB",
-          "company": "Climb Global Solutions, Inc.",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
           "ticker": "CNX",
           "company": "CNX Resources Corporation",
           "releaseTime": 1,
@@ -25906,13 +25875,6 @@
         {
           "ticker": "EFXT",
           "company": "Enerflex Ltd.",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "EME",
-          "company": "EMCOR Group, Inc.",
           "releaseTime": 1,
           "total": 2,
           "fuente": "ew"
@@ -26233,13 +26195,6 @@
           "fuente": "ew"
         },
         {
-          "ticker": "UPBD",
-          "company": "Upbound Group, Inc.",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
           "ticker": "WCC",
           "company": "WESCO International, Inc.",
           "releaseTime": 1,
@@ -26282,17 +26237,31 @@
           "fuente": "ew"
         },
         {
-          "ticker": "LXP",
-          "company": "LXP Industrial Trust ",
+          "ticker": "CIA",
+          "company": "Citizens, Inc.",
           "releaseTime": 1,
           "total": 1,
           "fuente": "ew"
         },
         {
-          "ticker": "ADRZY",
-          "company": "ANDRITZ AG",
+          "ticker": "CLMB",
+          "company": "Climb Global Solutions, Inc.",
           "releaseTime": 1,
-          "total": 0,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "FNWB",
+          "company": "First Northwest Bancorp",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "LZM",
+          "company": "Lifezone Metals",
+          "releaseTime": 1,
+          "total": 1,
           "fuente": "ew"
         }
       ],
@@ -26308,7 +26277,7 @@
           "ticker": "CVX",
           "company": "Chevron Corporation",
           "releaseTime": 1,
-          "total": 12,
+          "total": 13,
           "fuente": "ew"
         },
         {
@@ -26641,6 +26610,55 @@
           "fuente": "ew"
         },
         {
+          "ticker": "MRAAY",
+          "company": "Murata Manufacturing Co., Ltd.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ABVC",
+          "company": "AMER BRIVISION",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "CWBK",
+          "company": "CW Bancorp",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "HOCPY",
+          "company": "HOYA Corporation",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "MKTAY",
+          "company": "Makita Corp.",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "NVNO",
+          "company": "enVVeno Medical Corporation",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "OPY",
+          "company": "Oppenheimer Holdings Inc.",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
           "ticker": "OXSQ",
           "company": "Oxford Square Capital Corp.",
           "releaseTime": 1,
@@ -26650,6 +26668,13 @@
         {
           "ticker": "TUSK",
           "company": "Mammoth Energy Services, Inc.",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "TXNM",
+          "company": "TXNM Energy, Inc.",
           "releaseTime": 1,
           "total": 0,
           "fuente": "ew"
@@ -26683,31 +26708,10 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "TXNM",
-          "company": "TXNM Energy, Inc.",
-          "releaseTime": null,
-          "total": 0,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "TV",
           "company": "Grupo Televisa S.A.B.",
           "releaseTime": null,
           "total": 3,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "OPY",
-          "company": "Oppenheimer Holdings, Inc.",
-          "releaseTime": null,
-          "total": 5,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "TIPT",
-          "company": "Tiptree Inc.",
-          "releaseTime": null,
-          "total": 5,
           "fuente": "nasdaq"
         },
         {
@@ -26721,14 +26725,7 @@
           "ticker": "HOST",
           "company": "Host Digital Inc.",
           "releaseTime": null,
-          "total": 5,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "ABVC",
-          "company": "ABVC Biopharma, Inc.",
-          "releaseTime": null,
-          "total": 5,
+          "total": 3,
           "fuente": "nasdaq"
         },
         {
@@ -26739,31 +26736,24 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "NVNO",
-          "company": "enVVeno Medical Corporation",
-          "releaseTime": null,
-          "total": 0,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "SONM",
           "company": "DNA X, Inc.",
           "releaseTime": null,
-          "total": 5,
+          "total": 3,
           "fuente": "nasdaq"
         },
         {
           "ticker": "AMST",
           "company": "Amesite Inc.",
           "releaseTime": null,
-          "total": 5,
+          "total": 3,
           "fuente": "nasdaq"
         },
         {
           "ticker": "PW",
           "company": "Power REIT",
           "releaseTime": null,
-          "total": 5,
+          "total": 3,
           "fuente": "nasdaq"
         }
       ],
@@ -26793,7 +26783,7 @@
           "ticker": "CIFR",
           "company": "Cipher Mining Inc",
           "releaseTime": 1,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -26940,21 +26930,21 @@
           "ticker": "AAPL",
           "company": "Apple, Inc.",
           "releaseTime": 3,
-          "total": 61,
+          "total": 63,
           "fuente": "ew"
         },
         {
           "ticker": "PLTR",
           "company": "Palantir Technologies Inc.",
           "releaseTime": 3,
-          "total": 39,
+          "total": 41,
           "fuente": "ew"
         },
         {
           "ticker": "AEHR",
           "company": "Aehr Test Systems",
           "releaseTime": 3,
-          "total": 15,
+          "total": 16,
           "fuente": "ew"
         },
         {
@@ -26967,6 +26957,13 @@
         {
           "ticker": "FN",
           "company": "Fabrinet",
+          "releaseTime": 3,
+          "total": 5,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "ON",
+          "company": "onsemi",
           "releaseTime": 3,
           "total": 5,
           "fuente": "ew"
@@ -27023,13 +27020,6 @@
         {
           "ticker": "O",
           "company": "Realty Income Corp.",
-          "releaseTime": 3,
-          "total": 4,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "ON",
-          "company": "onsemi",
           "releaseTime": 3,
           "total": 4,
           "fuente": "ew"
@@ -27651,6 +27641,13 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "PKX",
+          "company": "POSCO HOLDINGS INC.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "SMMT",
           "company": "Summit Therapeutics Inc. ",
           "releaseTime": null,
@@ -27735,13 +27732,6 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "UUUU",
-          "company": "Energy Fuels Inc",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "SAFT",
           "company": "Safety Insurance Group, Inc.",
           "releaseTime": null,
@@ -27751,6 +27741,13 @@
         {
           "ticker": "SPTX",
           "company": "Seaport Therapeutics, Inc.",
+          "releaseTime": null,
+          "total": 7,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "NPK",
+          "company": "National Presto Industries, Inc.",
           "releaseTime": null,
           "total": 7,
           "fuente": "nasdaq"
@@ -27805,17 +27802,10 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "PYXS",
-          "company": "Pyxis Oncology, Inc.",
+          "ticker": "ISBA",
+          "company": "Isabella Bank Corporation",
           "releaseTime": null,
-          "total": 4,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "DTIL",
-          "company": "Precision BioSciences, Inc.",
-          "releaseTime": null,
-          "total": 2,
+          "total": 1,
           "fuente": "nasdaq"
         }
       ],
@@ -28458,6 +28448,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "DTIL",
+          "company": "Precision BioSciences, Inc.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
           "ticker": "AHCO",
           "company": "AdaptHealth Corp.",
           "releaseTime": 1,
@@ -28524,7 +28521,7 @@
           "ticker": "AMD",
           "company": "Advanced Micro Devices, Inc.",
           "releaseTime": 3,
-          "total": 31,
+          "total": 34,
           "fuente": "ew"
         },
         {
@@ -28862,13 +28859,6 @@
           "releaseTime": 3,
           "total": 1,
           "fuente": "ew"
-        },
-        {
-          "ticker": "ECG",
-          "company": "Everus Construction Group, Inc.",
-          "releaseTime": 3,
-          "total": 1,
-          "fuente": "ew"
         }
       ],
       "2026-11-04": [
@@ -28876,7 +28866,7 @@
           "ticker": "UBER",
           "company": "Uber Technologies, Inc.",
           "releaseTime": 1,
-          "total": 11,
+          "total": 12,
           "fuente": "ew"
         },
         {
@@ -29391,6 +29381,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "MSGE",
+          "company": "Madison Square Garden Entertainment Corp.",
+          "releaseTime": 1,
+          "total": 1,
+          "fuente": "ew"
+        },
+        {
           "ticker": "MTRN",
           "company": "Materion Corporation",
           "releaseTime": 1,
@@ -29786,14 +29783,14 @@
           "ticker": "FSLY",
           "company": "Fastly, Inc.",
           "releaseTime": 3,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
           "ticker": "COHR",
           "company": "Coherent Corp.",
           "releaseTime": 3,
-          "total": 9,
+          "total": 10,
           "fuente": "ew"
         },
         {
@@ -29811,17 +29808,17 @@
           "fuente": "ew"
         },
         {
-          "ticker": "RUN",
-          "company": "Sunrun",
+          "ticker": "BROS",
+          "company": "Dutch Bros Inc. ",
           "releaseTime": 3,
           "total": 6,
           "fuente": "ew"
         },
         {
-          "ticker": "BROS",
-          "company": "Dutch Bros Inc. ",
+          "ticker": "RUN",
+          "company": "Sunrun",
           "releaseTime": 3,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -29914,13 +29911,6 @@
           "releaseTime": 3,
           "total": 3,
           "fuente": "ew"
-        },
-        {
-          "ticker": "SNAP",
-          "company": "Snap Inc.",
-          "releaseTime": 3,
-          "total": 3,
-          "fuente": "ew"
         }
       ]
     },
@@ -29933,7 +29923,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 75.0,
         "reaccion_media_pct": -5.05,
-        "score": 1.5
+        "score": 2.5
       },
       "CHKP": {
         "consenso_eps": null,
@@ -29943,7 +29933,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -6.73,
-        "score": 2.5
+        "score": 4.5
       },
       "XENE": {
         "consenso_eps": null,
@@ -29963,7 +29953,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -2.61,
-        "score": 3.25
+        "score": 2.75
       },
       "SPTX": {
         "consenso_eps": null,
@@ -29974,6 +29964,16 @@
         "beat_rate": 0.0,
         "reaccion_media_pct": -0.27,
         "score": 1.75
+      },
+      "NPK": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": 50.0,
+        "reaccion_media_pct": null,
+        "score": 2.0
       },
       "RHLD": {
         "consenso_eps": null,
@@ -30005,16 +30005,6 @@
         "reaccion_media_pct": null,
         "score": 1.0
       },
-      "AMG": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 1.18,
-        "score": 6.19
-      },
       "CIFR": {
         "consenso_eps": null,
         "whisper": null,
@@ -30025,6 +30015,16 @@
         "reaccion_media_pct": 1.73,
         "score": 0.65
       },
+      "AMG": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 1.18,
+        "score": 6.19
+      },
       "EL": {
         "consenso_eps": null,
         "whisper": null,
@@ -30033,7 +30033,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 87.5,
         "reaccion_media_pct": -5.21,
-        "score": 4.75
+        "score": 5.75
       },
       "ALM": {
         "consenso_eps": null,
@@ -30043,7 +30043,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 50.0,
         "reaccion_media_pct": 1.62,
-        "score": 3.86
+        "score": 2.86
       },
       "TGTX": {
         "consenso_eps": null,
@@ -30063,7 +30063,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 37.5,
         "reaccion_media_pct": 0.55,
-        "score": 2.71
+        "score": 1.71
       },
       "ETR": {
         "consenso_eps": null,
@@ -30093,7 +30093,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 100.0,
         "reaccion_media_pct": 8.51,
-        "score": 8.0
+        "score": 5.5
       },
       "RYAAY": {
         "consenso_eps": null,
@@ -30123,7 +30123,7 @@
         "earnings_timing": "desconocido",
         "beat_rate": 87.5,
         "reaccion_media_pct": 0.65,
-        "score": 5.99
+        "score": 4.99
       },
       "FATN": {
         "consenso_eps": null,
@@ -30153,7 +30153,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 50.0,
         "reaccion_media_pct": null,
-        "score": 2.0
+        "score": 1.0
       },
       "PSUS": {
         "consenso_eps": null,
@@ -30178,6 +30178,90 @@
     },
     "resultados_hoy": [
       {
+        "ticker": "MA",
+        "epsDate": "2026-10-29T08:01:00",
+        "eps": 5.31,
+        "estimate": 5.14,
+        "whisper": 5.3,
+        "revenue": 9807.0,
+        "revenueEstimate": 9630.0,
+        "earningsSurprise": 0.0018867924528301887,
+        "revenueSurprise": 0.01838006230529595,
+        "subject": "Mastercard Beat Expectations"
+      },
+      {
+        "ticker": "LLY",
+        "epsDate": "2026-10-29T06:45:00",
+        "eps": 7.48,
+        "estimate": 7.11,
+        "whisper": 8.71,
+        "revenue": 24397.0,
+        "revenueEstimate": 22110.0,
+        "earningsSurprise": -0.14121699196326062,
+        "revenueSurprise": 0.10343735866123926,
+        "subject": "Eli Lilly Missed Expectations, Revises Guidance"
+      },
+      {
+        "ticker": "CAT",
+        "epsDate": "2026-10-29T06:30:00",
+        "eps": 7.2,
+        "estimate": 7.12,
+        "whisper": 7.24,
+        "revenue": 20682.0,
+        "revenueEstimate": 20580.0,
+        "earningsSurprise": -0.0055248618784530384,
+        "revenueSurprise": 0.004956268221574344,
+        "subject": "Caterpillar Missed Expectations"
+      },
+      {
+        "ticker": "CARR",
+        "epsDate": "2026-10-29T06:00:00",
+        "eps": 0.87,
+        "estimate": 0.81,
+        "whisper": 0.83,
+        "revenue": 6263.0,
+        "revenueEstimate": 6080.0,
+        "earningsSurprise": 0.04819277108433735,
+        "revenueSurprise": 0.030098684210526316,
+        "subject": "Carrier Global Beat Expectations, Revises Guidance"
+      },
+      {
+        "ticker": "LHX",
+        "epsDate": "2026-10-29T06:00:00",
+        "eps": 3.28,
+        "estimate": 2.99,
+        "whisper": 3.12,
+        "revenue": 6060.0,
+        "revenueEstimate": 5860.0,
+        "earningsSurprise": 0.05128205128205128,
+        "revenueSurprise": 0.034129692832764506,
+        "subject": "L3Harris Technologies Beat Expectations, Raises Guidance"
+      },
+      {
+        "ticker": "SIMO",
+        "epsDate": "2026-10-28T18:00:00",
+        "eps": 4.35,
+        "estimate": 3.3,
+        "whisper": 3.49,
+        "revenue": 560216.0,
+        "revenueEstimate": 532.81,
+        "earningsSurprise": 0.24641833810888253,
+        "revenueSurprise": 1050.436722283741,
+        "subject": "Silicon Motion Technology Beat Expectations, Sees Revenue Above Estimates"
+      },
+      {
+        "ticker": "SIMO",
+        "epsDate": "2026-10-28T18:00:00",
+        "eps": 4.35,
+        "estimate": 3.9,
+        "whisper": 3.49,
+        "revenue": 560216.0,
+        "revenueEstimate": 532.81,
+        "earningsSurprise": 0.24641833810888253,
+        "revenueSurprise": 1050.436722283741,
+        "subject": "Silicon Motion Technology Beat Expectations, Sees Revenue Above Estimates"
+      },
+      {
         "ticker": "ORLY",
         "epsDate": "2026-10-28T16:30:00",
         "eps": 0.97,
@@ -30190,18 +30274,6 @@
         "subject": "O'Reilly Automotive Beat Consensus Estimates, Raises Guidance In-line with Estimates"
       },
       {
-        "ticker": "NOW",
-        "epsDate": "2026-10-28T16:10:00",
-        "eps": 1.0,
-        "estimate": 1.02,
-        "whisper": 1.08,
-        "revenue": 4106.0,
-        "revenueEstimate": 4090.0,
-        "earningsSurprise": -0.07407407407407407,
-        "revenueSurprise": 0.003911980440097799,
-        "subject": "ServiceNow Missed Expectations, Provides Revenue Guidance"
-      },
-      {
         "ticker": "CMG",
         "epsDate": "2026-10-28T16:10:00",
         "eps": 0.27,
@@ -30212,6 +30284,18 @@
         "earningsSurprise": -0.1,
         "revenueSurprise": 0.0009610942249240122,
         "subject": "Chipotle Mexican Grill Missed Expectations"
+      },
+      {
+        "ticker": "NOW",
+        "epsDate": "2026-10-28T16:10:00",
+        "eps": 1.0,
+        "estimate": 1.02,
+        "whisper": 1.08,
+        "revenue": 4106.0,
+        "revenueEstimate": 4090.0,
+        "earningsSurprise": -0.07407407407407407,
+        "revenueSurprise": 0.003911980440097799,
+        "subject": "ServiceNow Missed Expectations, Provides Revenue Guidance"
       },
       {
         "ticker": "FDX",
@@ -30238,6 +30322,18 @@
         "subject": "Microsoft Missed Expectations, Sees Revenue Above Estimates"
       },
       {
+        "ticker": "KLAC",
+        "epsDate": "2026-10-28T16:05:00",
+        "eps": 1.22,
+        "estimate": 1.18,
+        "whisper": 1.22,
+        "revenue": 4136.015,
+        "revenueEstimate": 4050.0,
+        "earningsSurprise": 0,
+        "revenueSurprise": 0.021238271604938273,
+        "subject": "KLA Reported In-line with Expectations, Sees Revenue Above Estimates"
+      },
+      {
         "ticker": "CVNA",
         "epsDate": "2026-10-28T16:05:00",
         "eps": 0.39,
@@ -30260,18 +30356,6 @@
         "earningsSurprise": -0.021505376344086023,
         "revenueSurprise": 0.008932038834951457,
         "subject": "Fortinet Missed Expectations, Guides Above Estimates"
-      },
-      {
-        "ticker": "KLAC",
-        "epsDate": "2026-10-28T16:05:00",
-        "eps": 1.22,
-        "estimate": 1.18,
-        "whisper": 1.22,
-        "revenue": 4136.015,
-        "revenueEstimate": 4050.0,
-        "earningsSurprise": 0,
-        "revenueSurprise": 0.021238271604938273,
-        "subject": "KLA Reported In-line with Expectations, Sees Revenue Above Estimates"
       },
       {
         "ticker": "F",
@@ -30416,6 +30500,18 @@
         "earningsSurprise": -0.04,
         "revenueSurprise": 0.11215464538473122,
         "subject": "SK hynix Missed Expectations"
+      },
+      {
+        "ticker": "BKR",
+        "epsDate": "2026-10-27T17:00:00",
+        "eps": 0.7,
+        "estimate": 0.63,
+        "whisper": 0.71,
+        "revenue": 8025.0,
+        "revenueEstimate": 7780.0,
+        "earningsSurprise": -0.014084507042253521,
+        "revenueSurprise": 0.031491002570694086,
+        "subject": "Baker Hughes Missed Expectations, Guides Revenue In-line"
       },
       {
         "ticker": "TER",
