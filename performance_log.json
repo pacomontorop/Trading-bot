@@ -3768,9 +3768,9 @@
       "asimetria_pct": null,
       "beat_rate": 87.5,
       "reaccion_media_pct": 1.18,
-      "momentum_5d_pct": 0.13,
+      "momentum_5d_pct": -0.16,
       "analistas": 6,
-      "fecha_scan": "2026-10-29T15:35:26Z"
+      "fecha_scan": "2026-10-29T16:35:33Z"
     }
   ],
   "macro_context": {
@@ -24994,7 +24994,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-10-29T15:35Z",
+    "ts": "2026-10-29T16:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 404"
@@ -25030,15 +25030,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -1.18}"
+        "detalle": "{'rel20': -1.21}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 35.5, 'rating': 'fear'}"
+        "detalle": "{'score': 35.4, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 13, 'menciones': 47, 'menciones_24h_antes': 42, 'ratio_24h': 1.12}"
+        "detalle": "{'en_ranking': True, 'rank': 14, 'menciones': 45, 'menciones_24h_antes': 41, 'ratio_24h': 1.1}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25054,18 +25054,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.9, 'rs20': -5.24}"
+        "detalle": "{'etf': 'XLK', 'rs5': 2.7, 'rs20': -5.41}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-10-29T15:35Z",
+    "ts": "2026-10-29T16:35Z",
     "entrada": "2026-10-29",
     "salida": "2026-10-30",
     "eventos": 57,
     "evaluados": 26,
     "macro": {
-      "vix": 16.43,
+      "vix": 16.37,
       "spy_above_ma50": true
     },
     "top": [
@@ -25148,19 +25148,6 @@
         }
       },
       {
-        "ticker": "HESM",
-        "score": 4.99,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.24,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
-          "macro": 1.0
-        }
-      },
-      {
         "ticker": "ETR",
         "score": 4.94,
         "earnings_fecha": "2026-11-02",
@@ -25197,6 +25184,18 @@
           "momentum5d": 1.0,
           "macro": 1.0
         }
+      },
+      {
+        "ticker": "L",
+        "score": 3.5,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 1.0,
+          "momentum5d": 1.0,
+          "macro": 1.0,
+          "noticias": 0.5
+        }
       }
     ]
   },
@@ -25211,14 +25210,14 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-10-29T15:35Z",
+    "ts": "2026-10-29T16:35Z",
     "calendario": {
       "2026-10-29": [
         {
           "ticker": "CAT",
           "company": "Caterpillar Inc.",
           "releaseTime": 1,
-          "total": 59,
+          "total": 60,
           "fuente": "ew"
         },
         {
@@ -26288,15 +26287,15 @@
           "fuente": "ew"
         },
         {
-          "ticker": "BP",
-          "company": "BP p.l.c.",
+          "ticker": "REGN",
+          "company": "Regeneron Pharmaceuticals, Inc.",
           "releaseTime": 1,
-          "total": 10,
+          "total": 11,
           "fuente": "ew"
         },
         {
-          "ticker": "REGN",
-          "company": "Regeneron Pharmaceuticals, Inc.",
+          "ticker": "BP",
+          "company": "BP p.l.c.",
           "releaseTime": 1,
           "total": 10,
           "fuente": "ew"
@@ -26797,7 +26796,7 @@
           "ticker": "ETR",
           "company": "Entergy Corporation",
           "releaseTime": 1,
-          "total": 3,
+          "total": 4,
           "fuente": "ew"
         },
         {
@@ -27849,7 +27848,7 @@
           "ticker": "FISV",
           "company": "Fiserv, Inc.",
           "releaseTime": 1,
-          "total": 5,
+          "total": 6,
           "fuente": "ew"
         },
         {
@@ -29955,6 +29954,56 @@
         "reaccion_media_pct": -2.61,
         "score": 2.75
       },
+      "SPTX": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": 0.0,
+        "reaccion_media_pct": -0.27,
+        "score": 1.75
+      },
+      "NPK": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": 50.0,
+        "reaccion_media_pct": null,
+        "score": 1.0
+      },
+      "RHLD": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": null,
+        "reaccion_media_pct": null,
+        "score": 0.0
+      },
+      "XFLT": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "BMO",
+        "beat_rate": 16.7,
+        "reaccion_media_pct": null,
+        "score": 1.0
+      },
+      "BSBK": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "desconocido",
+        "beat_rate": 42.9,
+        "reaccion_media_pct": null,
+        "score": 1.0
+      },
       "CIFR": {
         "consenso_eps": null,
         "whisper": null,
@@ -29963,7 +30012,7 @@
         "earnings_timing": "BMO",
         "beat_rate": 37.5,
         "reaccion_media_pct": 1.73,
-        "score": 0.0
+        "score": 0.65
       },
       "AMG": {
         "consenso_eps": null,
@@ -29995,6 +30044,16 @@
         "reaccion_media_pct": 1.62,
         "score": 2.86
       },
+      "ETR": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-02",
+        "earnings_timing": "BMO",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": 2.5,
+        "score": 4.94
+      },
       "TGTX": {
         "consenso_eps": null,
         "whisper": null,
@@ -30014,16 +30073,6 @@
         "beat_rate": 37.5,
         "reaccion_media_pct": 0.55,
         "score": 1.71
-      },
-      "ETR": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "BMO",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 2.5,
-        "score": 4.94
       },
       "MAR": {
         "consenso_eps": null,
@@ -30071,59 +30120,9 @@
         "asimetria_pct": null,
         "earnings_fecha": "2026-11-02",
         "earnings_timing": "desconocido",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 0.65,
-        "score": 4.99
-      },
-      "SPTX": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "beat_rate": 0.0,
-        "reaccion_media_pct": -0.27,
-        "score": 2.75
-      },
-      "NPK": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
         "beat_rate": 50.0,
-        "reaccion_media_pct": null,
-        "score": 1.0
-      },
-      "RHLD": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 0.0
-      },
-      "XFLT": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "BMO",
-        "beat_rate": 16.7,
-        "reaccion_media_pct": null,
-        "score": 1.0
-      },
-      "BSBK": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-02",
-        "earnings_timing": "desconocido",
-        "beat_rate": 42.9,
-        "reaccion_media_pct": null,
-        "score": 1.0
+        "reaccion_media_pct": 0.65,
+        "score": 1.99
       },
       "FATN": {
         "consenso_eps": null,
