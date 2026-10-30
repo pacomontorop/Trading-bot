@@ -31776,47 +31776,70 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-10-30",
-    "hora_utc": "14:47",
-    "min_desde_apertura": 77.5,
+    "hora_utc": "15:46",
+    "min_desde_apertura": 136.3,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
       "MPC: max entradas/día paper",
-      "DOCN: max entradas/día paper"
+      "DOCN: max entradas/día paper",
+      "AEIS: max entradas/día paper",
+      "AAPL: score 3.4<6.0"
     ],
     "ajustes_fuentes": {
       "MPC": {
         "base": 6.26,
-        "paper": 7.71,
+        "paper": 7.46,
         "real": 6.26,
         "partes": {
           "analistas": 0.8,
-          "opciones": 0.25,
           "sector": 0.4
         }
       },
       "DOCN": {
         "base": 6.5,
-        "paper": 6.55,
+        "paper": 7.05,
         "real": 6.5,
         "partes": {
           "analistas": 0.45,
+          "opciones": 0.5,
           "sector": -0.4
+        }
+      },
+      "AEIS": {
+        "base": 6.5,
+        "paper": 6.85,
+        "real": 6.5,
+        "partes": {
+          "analistas": 0.2,
+          "sector": 0.15
+        }
+      },
+      "AAPL": {
+        "base": 5.0,
+        "paper": 3.4,
+        "real": 3.4,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": -0.7,
+          "opciones": -0.4,
+          "sector": -0.4,
+          "social": 0.2
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-10-30T14:47Z",
+    "ts": "2026-10-30T15:46Z",
     "macro": {
       "hy_oas": 3.26,
       "hy_cambio_20": 0.02,
       "nfci": -0.487,
       "curva_10a2a": 0.37,
-      "credito_hyg_ief_20": -2.14,
-      "fear_greed": 25.9,
+      "credito_hyg_ief_20": -2.12,
+      "fear_greed": 27.1,
       "regimen": "neutral",
       "ajuste": 0.0
     },
@@ -31824,61 +31847,61 @@
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 135,
-        "ultimo_error": null
-      },
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 894,
+        "ms": 124,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 488,
+        "ms": 176,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 1278,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 295,
+        "ms": 798,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 1749,
+        "ms": 7354,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 82,
+        "ms": 274,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 185,
+        "ms": 569,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 1728,
+        "ms": 1317,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 2,
+        "ok": 4,
         "fallos": 0,
-        "ms": 1944,
+        "ms": 1540,
         "ultimo_error": null
       }
     }
@@ -33602,6 +33625,17 @@
       "descartados": 2,
       "motivos": {
         "max entradas/día paper": 2
+      }
+    },
+    {
+      "fecha": "2026-10-30",
+      "hora_utc": "15:46",
+      "candidatos": 4,
+      "ejecutados": 0,
+      "descartados": 4,
+      "motivos": {
+        "max entradas/día paper": 3,
+        "score N<N": 1
       }
     }
   ],
