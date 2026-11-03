@@ -31918,101 +31918,101 @@
     }
   ],
   "ejecucion_apertura": {
-    "fecha": "2026-11-02",
-    "hora_utc": "19:40",
-    "min_desde_apertura": 310.9,
+    "fecha": "2026-11-03",
+    "hora_utc": "14:43",
+    "min_desde_apertura": 13.2,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
-      "CVS: max entradas/día paper",
-      "Q: score 5.5<6.0",
-      "GOOGL: score 4.5<6.0",
-      "NFLX: score 4.3<6.0"
+      "AMD: runup +5.9%>5%",
+      "SMCI: runup +5.3%>5%",
+      "CRWD: max entradas/día paper",
+      "NVDA: max entradas/día paper"
     ],
     "ajustes_fuentes": {
-      "CVS": {
-        "base": 6.93,
-        "paper": 7.18,
-        "real": 6.93,
+      "AMD": {
+        "base": 6.88,
+        "paper": 7.28,
+        "real": 6.88,
         "partes": {
-          "analistas": 0.05,
-          "sector": 0.4,
-          "macro": -0.2
-        }
-      },
-      "Q": {
-        "base": 6.5,
-        "paper": 5.55,
-        "real": 5.55,
-        "partes": {
-          "analistas": 0.05,
-          "opciones": -0.4,
-          "sector": -0.4,
-          "macro": -0.2
-        }
-      },
-      "GOOGL": {
-        "base": 5.0,
-        "paper": 4.5,
-        "real": 4.5,
-        "partes": {
-          "analistas": -0.6,
-          "opciones": 0.5,
+          "analistas": 1.0,
           "sector": -0.4,
           "social": 0.2,
-          "macro": -0.2
+          "macro": -0.4
         }
       },
-      "NFLX": {
-        "base": 5.0,
-        "paper": 4.3,
-        "real": 4.3,
+      "SMCI": {
+        "base": 6.88,
+        "paper": 7.23,
+        "real": 6.88,
         "partes": {
-          "analistas": -0.6,
+          "analistas": 0.65,
           "opciones": 0.5,
           "sector": -0.4,
-          "macro": -0.2
+          "macro": -0.4
+        }
+      },
+      "CRWD": {
+        "base": 6.88,
+        "paper": 6.58,
+        "real": 6.58,
+        "partes": {
+          "insiders": -0.3,
+          "analistas": 0.8,
+          "sector": -0.4,
+          "macro": -0.4
+        }
+      },
+      "NVDA": {
+        "base": 6.88,
+        "paper": 6.33,
+        "real": 6.33,
+        "partes": {
+          "analistas": 0.05,
+          "sector": -0.4,
+          "social": 0.2,
+          "macro": -0.4
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-11-02T19:40Z",
+    "ts": "2026-11-03T14:43Z",
     "macro": {
       "hy_oas": 3.44,
       "hy_cambio_20": 0.34,
       "nfci": -0.487,
-      "curva_10a2a": 0.38,
-      "credito_hyg_ief_20": -2.81,
-      "fear_greed": 23.2,
+      "curva_10a2a": 0.32,
+      "credito_hyg_ief_20": -2.73,
+      "fear_greed": 19.5,
       "regimen": "cautela",
-      "ajuste": -0.2
+      "ajuste": -0.4
     },
     "estado": {
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 618,
-        "ultimo_error": null
-      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 197,
+        "ms": 134,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 1238,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 349,
+        "ms": 539,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 4,
         "fallos": 0,
-        "ms": 1794,
+        "ms": 664,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -32024,31 +32024,31 @@
       "insiders": {
         "ok": 4,
         "fallos": 0,
-        "ms": 5670,
+        "ms": 9070,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 4,
         "fallos": 0,
-        "ms": 527,
+        "ms": 201,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 4,
         "fallos": 0,
-        "ms": 868,
+        "ms": 436,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 4,
         "fallos": 0,
-        "ms": 840,
+        "ms": 1989,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 4,
         "fallos": 0,
-        "ms": 1986,
+        "ms": 2084,
         "ultimo_error": null
       }
     }
@@ -33879,6 +33879,17 @@
       "motivos": {
         "score N<N": 3,
         "max entradas/día paper": 1
+      }
+    },
+    {
+      "fecha": "2026-11-03",
+      "hora_utc": "14:43",
+      "candidatos": 4,
+      "ejecutados": 0,
+      "descartados": 4,
+      "motivos": {
+        "runup N%>N%": 2,
+        "max entradas/día paper": 2
       }
     }
   ],
