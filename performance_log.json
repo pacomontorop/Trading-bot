@@ -31919,136 +31919,100 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-11-03",
-    "hora_utc": "14:43",
-    "min_desde_apertura": 13.2,
+    "hora_utc": "15:42",
+    "min_desde_apertura": 72.4,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
-      "AMD: runup +5.9%>5%",
-      "SMCI: runup +5.3%>5%",
-      "CRWD: max entradas/día paper",
-      "NVDA: max entradas/día paper"
+      "MSFT: score 5.5<6.0"
     ],
     "ajustes_fuentes": {
-      "AMD": {
-        "base": 6.88,
-        "paper": 7.28,
-        "real": 6.88,
+      "MSFT": {
+        "base": 5.0,
+        "paper": 5.45,
+        "real": 5.0,
         "partes": {
-          "analistas": 1.0,
-          "sector": -0.4,
-          "social": 0.2,
-          "macro": -0.4
-        }
-      },
-      "SMCI": {
-        "base": 6.88,
-        "paper": 7.23,
-        "real": 6.88,
-        "partes": {
-          "analistas": 0.65,
-          "opciones": 0.5,
-          "sector": -0.4,
-          "macro": -0.4
-        }
-      },
-      "CRWD": {
-        "base": 6.88,
-        "paper": 6.58,
-        "real": 6.58,
-        "partes": {
-          "insiders": -0.3,
           "analistas": 0.8,
+          "opciones": 0.25,
           "sector": -0.4,
-          "macro": -0.4
-        }
-      },
-      "NVDA": {
-        "base": 6.88,
-        "paper": 6.33,
-        "real": 6.33,
-        "partes": {
-          "analistas": 0.05,
-          "sector": -0.4,
-          "social": 0.2,
-          "macro": -0.4
+          "macro": -0.2
         }
       }
     }
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-11-03T14:43Z",
+    "ts": "2026-11-03T15:42Z",
     "macro": {
       "hy_oas": 3.44,
       "hy_cambio_20": 0.34,
       "nfci": -0.487,
       "curva_10a2a": 0.32,
-      "credito_hyg_ief_20": -2.73,
-      "fear_greed": 19.5,
+      "credito_hyg_ief_20": -2.56,
+      "fear_greed": 20.1,
       "regimen": "cautela",
-      "ajuste": -0.4
+      "ajuste": -0.2
     },
     "estado": {
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 134,
+        "ms": 138,
         "ultimo_error": null
       },
       "fred": {
         "ok": 3,
         "fallos": 0,
-        "ms": 1238,
+        "ms": 908,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 539,
+        "ms": 814,
         "ultimo_error": null
       },
       "yahoo_ficha": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 664,
+        "ms": 143,
         "ultimo_error": null
       },
       "insiders_sec": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
         "ms": 0,
         "ultimo_error": null
       },
       "insiders": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 9070,
+        "ms": 618,
         "ultimo_error": null
       },
       "yahoo_analistas": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 201,
+        "ms": 70,
         "ultimo_error": null
       },
       "yahoo_opciones": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 436,
+        "ms": 108,
         "ultimo_error": null
       },
       "sector_alpaca": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 1989,
+        "ms": 748,
         "ultimo_error": null
       },
       "social_apewisdom": {
-        "ok": 4,
+        "ok": 1,
         "fallos": 0,
-        "ms": 2084,
+        "ms": 1683,
         "ultimo_error": null
       }
     }
@@ -33890,6 +33854,16 @@
       "motivos": {
         "runup N%>N%": 2,
         "max entradas/día paper": 2
+      }
+    },
+    {
+      "fecha": "2026-11-03",
+      "hora_utc": "15:42",
+      "candidatos": 1,
+      "ejecutados": 0,
+      "descartados": 1,
+      "motivos": {
+        "score N<N": 1
       }
     }
   ],
