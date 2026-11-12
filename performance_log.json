@@ -24970,14 +24970,14 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-11-12T15:36Z",
+    "ts": "2026-11-12T16:36Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 410"
     },
     "nasdaq_calendar": {
       "ok": true,
-      "detalle": "389 filas"
+      "detalle": "354 filas"
     },
     "alpaca_datos": {
       "ok": true,
@@ -25006,15 +25006,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -0.04}"
+        "detalle": "{'rel20': 0.07}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 41.1, 'rating': 'fear'}"
+        "detalle": "{'score': 42.9, 'rating': 'fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 2951, 'menciones_24h_antes': 1372, 'ratio_24h': 2.15}"
+        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 3090, 'menciones_24h_antes': 1262, 'ratio_24h': 2.45}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25022,7 +25022,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 0.69"
+        "detalle": "C/P 0.84"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25030,21 +25030,34 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': 2.85, 'rs20': -6.99}"
+        "detalle": "{'etf': 'XLK', 'rs5': 3.79, 'rs20': -6.23}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-11-12T15:36Z",
+    "ts": "2026-11-12T16:36Z",
     "entrada": "2026-11-12",
     "salida": "2026-11-13",
     "eventos": 124,
-    "evaluados": 13,
+    "evaluados": 14,
     "macro": {
-      "vix": 18.57,
+      "vix": 17.44,
       "spy_above_ma50": false
     },
     "top": [
+      {
+        "ticker": "BRC",
+        "score": 2.37,
+        "earnings_fecha": "2026-11-16",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": 1.0,
+          "reaccion": 0.12,
+          "revisiones": 0.75,
+          "momentum5d": 1.0,
+          "macro": -0.5
+        }
+      },
       {
         "ticker": "XPEV",
         "score": 1.75,
@@ -25155,19 +25168,6 @@
           "momentum5d": 0.0,
           "macro": -0.5
         }
-      },
-      {
-        "ticker": "AGPU",
-        "score": 0.0,
-        "earnings_fecha": "2026-11-16",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "reaccion": 0.06,
-          "revisiones": 0.0,
-          "momentum5d": -1.5,
-          "macro": -0.5
-        }
       }
     ]
   },
@@ -25182,7 +25182,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-11-12T15:36Z",
+    "ts": "2026-11-12T16:36Z",
     "calendario": {
       "2026-11-12": [
         {
@@ -26201,24 +26201,24 @@
           "fuente": "ew"
         },
         {
-          "ticker": "CSCO",
-          "company": "Cisco Systems, Inc.",
-          "releaseTime": 3,
-          "total": 31,
-          "fuente": "ew"
-        },
-        {
           "ticker": "AMAT",
           "company": "Applied Materials, Inc.",
           "releaseTime": 3,
-          "total": 30,
+          "total": 33,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "CSCO",
+          "company": "Cisco Systems, Inc.",
+          "releaseTime": 3,
+          "total": 33,
           "fuente": "ew"
         },
         {
           "ticker": "CBRS",
           "company": "Cerebras Systems, Inc.",
           "releaseTime": 3,
-          "total": 28,
+          "total": 29,
           "fuente": "ew"
         },
         {
@@ -27050,13 +27050,6 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "FBYD",
-          "company": "Falcon's Beyond Global, Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "PRME",
           "company": "Prime Medicine, Inc.",
           "releaseTime": null,
@@ -27064,8 +27057,8 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "SCZM",
-          "company": "Santacruz Silver Mining Ltd.",
+          "ticker": "FBYD",
+          "company": "Falcon's Beyond Global, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -27075,6 +27068,13 @@
           "company": "Immix Biopharma, Inc.",
           "releaseTime": null,
           "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "SCZM",
+          "company": "Santacruz Silver Mining Ltd.",
+          "releaseTime": null,
+          "total": 1,
           "fuente": "nasdaq"
         },
         {
@@ -27169,6 +27169,13 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "SLNH",
+          "company": "Soluna Holdings, Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "ALXO",
           "company": "ALX Oncology Holdings Inc.",
           "releaseTime": null,
@@ -27178,13 +27185,6 @@
         {
           "ticker": "BEBE",
           "company": "TGE Value Creative Solutions Corp",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "SLNH",
-          "company": "Soluna Holdings, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -27211,15 +27211,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "RTB",
-          "company": "RTB Digital, Inc.",
+          "ticker": "PZG",
+          "company": "Paramount Gold Nevada Corp.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "PZG",
-          "company": "Paramount Gold Nevada Corp.",
+          "ticker": "RTB",
+          "company": "RTB Digital, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -27232,15 +27232,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "AMOD",
-          "company": "Alpha Modus Holdings, Inc.",
+          "ticker": "HOST",
+          "company": "Host Digital Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "QUCY",
-          "company": "Quantum Cyber N.V.",
+          "ticker": "AMOD",
+          "company": "Alpha Modus Holdings, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -27253,15 +27253,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "HOST",
-          "company": "Host Digital Inc.",
+          "ticker": "TRT",
+          "company": "Trio-Tech International",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "TRT",
-          "company": "Trio-Tech International",
+          "ticker": "QUCY",
+          "company": "Quantum Cyber N.V.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -27281,8 +27281,8 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "SAFX",
-          "company": "XCF Global, Inc.",
+          "ticker": "OSTX",
+          "company": "OS Therapies Incorporated",
           "releaseTime": null,
           "total": 2,
           "fuente": "nasdaq"
@@ -27853,6 +27853,13 @@
           "ticker": "EMAT",
           "company": "Evolution Metals & Technologies Corp.",
           "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "TRON",
+          "company": "Tron Inc.",
+          "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
         },
@@ -27861,13 +27868,6 @@
           "company": "4D Molecular Therapeutics, Inc.",
           "releaseTime": null,
           "total": 4,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "TRON",
-          "company": "Tron Inc.",
-          "releaseTime": null,
-          "total": 1,
           "fuente": "nasdaq"
         },
         {
@@ -27895,7 +27895,7 @@
           "ticker": "XTND",
           "company": "Xtend AI Robotics, Inc.",
           "releaseTime": 1,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -27913,20 +27913,6 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "AIV",
-          "company": "Apartment Investment and Management Company",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "CURR",
-          "company": "Currenc Group Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "GRRR",
           "company": "Gorilla Technology Group Inc.",
           "releaseTime": null,
@@ -27934,17 +27920,31 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "AIV",
+          "company": "Apartment Investment and Management Company",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "SY",
           "company": "So-Young International Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "CURR",
+          "company": "Currenc Group Inc.",
+          "releaseTime": null,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "YSG",
           "company": "Yatsen Holding Limited",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -27972,7 +27972,7 @@
           "ticker": "HTLM",
           "company": "HomesToLife Ltd",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28007,7 +28007,7 @@
           "ticker": "GPUS",
           "company": "Hyperscale Data, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28021,21 +28021,21 @@
           "ticker": "HHS",
           "company": "Harte Hanks, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "AIFC",
           "company": "AI Financial Corporation",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "AMCI",
           "company": "AMC Robotics Corporation",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28056,7 +28056,7 @@
           "ticker": "EONR",
           "company": "EON Resources Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28070,7 +28070,7 @@
           "ticker": "BTBD",
           "company": "BT Brands, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28095,13 +28095,6 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "ISPC",
-          "company": "iSpecimen Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "SKYE",
           "company": "Skye Bioscience, Inc.",
           "releaseTime": null,
@@ -28109,10 +28102,17 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "ISPC",
+          "company": "iSpecimen Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "IVF",
           "company": "INVO Fertility, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28174,6 +28174,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "VIK",
+          "company": "Viking Holdings Ltd",
+          "releaseTime": 1,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
           "ticker": "ENR",
           "company": "Energizer Holdings, Inc.",
           "releaseTime": 1,
@@ -28197,13 +28204,6 @@
         {
           "ticker": "TME",
           "company": "Tencent Music Entertainment Group",
-          "releaseTime": 1,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "VIK",
-          "company": "Viking Holdings Ltd",
           "releaseTime": 1,
           "total": 2,
           "fuente": "ew"
@@ -28317,7 +28317,7 @@
           "ticker": "NVDA",
           "company": "NVIDIA Corp.",
           "releaseTime": 3,
-          "total": 125,
+          "total": 128,
           "fuente": "ew"
         },
         {
@@ -28869,15 +28869,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "ASPI",
-          "company": "ASP Isotopes Inc.",
+          "ticker": "PNRG",
+          "company": "PrimeEnergy Resources Corporation",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "PNRG",
-          "company": "PrimeEnergy Resources Corporation",
+          "ticker": "ASPI",
+          "company": "ASP Isotopes Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -28886,7 +28886,7 @@
           "ticker": "UCFI",
           "company": "CN Healthy Food Tech Group Corp.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28928,14 +28928,7 @@
           "ticker": "RGCO",
           "company": "RGC Resources Inc.",
           "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "FLX",
-          "company": "BingEx Limited",
-          "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28943,6 +28936,13 @@
           "company": "Nakamoto Inc.",
           "releaseTime": null,
           "total": 2,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "FLX",
+          "company": "BingEx Limited",
+          "releaseTime": null,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -28970,7 +28970,7 @@
           "ticker": "AVAT",
           "company": "Avalanche Treasury Corporation",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29005,7 +29005,7 @@
           "ticker": "AIFA",
           "company": "All In FutureTech Alliance, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29019,7 +29019,7 @@
           "ticker": "BRLS",
           "company": "Borealis Foods Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29033,19 +29033,12 @@
           "ticker": "CETY",
           "company": "Clean Energy Technologies, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "QNME",
           "company": "Quanome Technologies, Inc.",
-          "releaseTime": null,
-          "total": 1,
-          "fuente": "nasdaq"
-        },
-        {
-          "ticker": "REBN",
-          "company": "Reborn Coffee, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -29060,6 +29053,13 @@
         {
           "ticker": "DCM",
           "company": "DeFi Capital Markets, Inc.",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "REBN",
+          "company": "Reborn Coffee, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -29082,14 +29082,14 @@
           "ticker": "GURE",
           "company": "Gulf Resources, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "MEDS",
           "company": "DataMeds AI, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29107,15 +29107,15 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "XELB",
-          "company": "Xcel Brands, Inc",
+          "ticker": "VVOS",
+          "company": "Vivos Therapeutics, Inc.",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
         },
         {
-          "ticker": "VVOS",
-          "company": "Vivos Therapeutics, Inc.",
+          "ticker": "XELB",
+          "company": "Xcel Brands, Inc",
           "releaseTime": null,
           "total": 1,
           "fuente": "nasdaq"
@@ -29124,14 +29124,14 @@
           "ticker": "QCLS",
           "company": "Q/C Technologies, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "EDVA",
           "company": "Endovia Health Sciences, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29152,14 +29152,14 @@
           "ticker": "SRTM",
           "company": "Stratum Holdings Corp.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "VIVK",
           "company": "Vivakor, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -29301,6 +29301,16 @@
         "beat_rate": null,
         "reaccion_media_pct": null,
         "score": 0.0
+      },
+      "BRC": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-16",
+        "earnings_timing": "desconocido",
+        "beat_rate": 62.5,
+        "reaccion_media_pct": 0.33,
+        "score": 2.37
       }
     },
     "resultados_hoy": [
