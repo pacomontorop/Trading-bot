@@ -7050,9 +7050,9 @@
       "equity_real_inicio_sistema": 4500,
       "pnl_total_real_dolares": 48.18,
       "pnl_total_real_pct": 1.07,
-      "spy_mismo_periodo_pct": 6.18,
-      "alpha_paper_vs_spy_pct": -15.19,
-      "alpha_real_vs_spy_pct": -5.37,
+      "spy_mismo_periodo_pct": 2.45,
+      "alpha_paper_vs_spy_pct": -11.64,
+      "alpha_real_vs_spy_pct": -1.64,
       "dias_activo_sistema": 28,
       "fecha_inicio": "2026-04-13",
       "pnl_dia_paper_dolares": -399.28,
@@ -7809,23 +7809,23 @@
     },
     "rendimiento_verificado": {
       "_meta": "Calculado por scripts/kpi_report.py desde Alpaca (fuente de verdad). No editar a mano.",
-      "actualizado_utc": "2026-11-20T02:26Z",
+      "actualizado_utc": "2026-11-20T22:30Z",
       "desde": "2026-04-13",
-      "spy_pct": 6.18,
+      "spy_pct": 2.45,
       "paper": {
         "equity_inicio": 109025.41,
-        "equity_actual": 99199.04,
-        "retorno_pct": -9.01,
-        "alpha_vs_spy_pct": -15.19,
-        "max_drawdown_pct": -9.75,
+        "equity_actual": 99001.63,
+        "retorno_pct": -9.19,
+        "alpha_vs_spy_pct": -11.64,
+        "max_drawdown_pct": -9.93,
         "acciones": {
-          "n": 120,
-          "win_rate_pct": 47.5,
-          "profit_factor": 0.45,
+          "n": 121,
+          "win_rate_pct": 47.1,
+          "profit_factor": 0.44,
           "avg_win_usd": 155.5,
-          "avg_loss_usd": -311.36,
-          "expectancy_usd": -89.6,
-          "net_usd": -10751.8
+          "avg_loss_usd": -314.09,
+          "expectancy_usd": -92.87,
+          "net_usd": -11237.82
         },
         "crypto": {
           "n": 19,
@@ -7839,13 +7839,13 @@
         "acciones_ultimas_40": {
           "n": 40,
           "win_rate_pct": 20.0,
-          "profit_factor": 0.26,
+          "profit_factor": 0.25,
           "avg_win_usd": 371.64,
-          "avg_loss_usd": -356.29,
-          "expectancy_usd": -210.7,
-          "net_usd": -8428.12
+          "avg_loss_usd": -370.67,
+          "expectancy_usd": -222.21,
+          "net_usd": -8888.42
         },
-        "retorno_60d_pct": -7.94
+        "retorno_60d_pct": -8.12
       },
       "gate_checks": {
         "n>=min_trades": true,
@@ -7857,9 +7857,9 @@
       "gate_real_ok": false,
       "real": {
         "equity_inicio": 4511.51,
-        "equity_actual": 4547.99,
+        "equity_actual": 4547.97,
         "retorno_pct": 0.81,
-        "alpha_vs_spy_pct": -5.37,
+        "alpha_vs_spy_pct": -1.64,
         "max_drawdown_pct": -0.66,
         "acciones": {
           "n": 24,
@@ -7886,8 +7886,8 @@
     },
     "aprendizaje_fuentes": {
       "_doc": "kpi_report.py: operaciones cerradas de acciones (Alpaca) atribuidas a su entrada GHA del log. Base para decidir qué fuentes extra pueden empezar a sumar en la cuenta real.",
-      "n_total": 120,
-      "n_con_fuentes_extra": 23,
+      "n_total": 121,
+      "n_con_fuentes_extra": 24,
       "por_fuente": {
         "dynamic_scanner_gha": {
           "n": 14,
@@ -7908,13 +7908,13 @@
           "net_usd": -21.84
         },
         "live_open_scan": {
-          "n": 10,
-          "win_rate_pct": 10.0,
-          "profit_factor": 0.2,
+          "n": 11,
+          "win_rate_pct": 9.1,
+          "profit_factor": 0.18,
           "avg_win_usd": 1014.98,
-          "avg_loss_usd": -570.21,
-          "expectancy_usd": -411.69,
-          "net_usd": -4116.9
+          "avg_loss_usd": -561.79,
+          "expectancy_usd": -418.45,
+          "net_usd": -4602.92
         },
         "otras": {
           "n": 95,
@@ -7929,13 +7929,13 @@
       "por_senal_extra": {
         "analistas": {
           "a_favor": {
-            "n": 17,
-            "win_rate_pct": 11.8,
+            "n": 18,
+            "win_rate_pct": 11.1,
             "profit_factor": 0.06,
             "avg_win_usd": 222.95,
-            "avg_loss_usd": -492.97,
-            "expectancy_usd": -408.74,
-            "net_usd": -6948.59
+            "avg_loss_usd": -492.53,
+            "expectancy_usd": -413.03,
+            "net_usd": -7434.61
           },
           "en_contra": {
             "n": 2,
@@ -7977,13 +7977,13 @@
         },
         "opciones": {
           "a_favor": {
-            "n": 12,
-            "win_rate_pct": 8.3,
+            "n": 13,
+            "win_rate_pct": 7.7,
             "profit_factor": 0.0,
             "avg_win_usd": 7.14,
-            "avg_loss_usd": -674.11,
-            "expectancy_usd": -617.34,
-            "net_usd": -7408.07
+            "avg_loss_usd": -658.44,
+            "expectancy_usd": -607.24,
+            "net_usd": -7894.09
           },
           "en_contra": {
             "n": 2,
@@ -7997,13 +7997,13 @@
         },
         "sector": {
           "a_favor": {
-            "n": 17,
-            "win_rate_pct": 5.9,
-            "profit_factor": 0.06,
+            "n": 18,
+            "win_rate_pct": 5.6,
+            "profit_factor": 0.05,
             "avg_win_usd": 438.77,
-            "avg_loss_usd": -496.91,
-            "expectancy_usd": -441.87,
-            "net_usd": -7511.85
+            "avg_loss_usd": -496.27,
+            "expectancy_usd": -444.33,
+            "net_usd": -7997.87
           },
           "en_contra": {
             "n": 5,
@@ -8031,13 +8031,13 @@
         }
       },
       "ajuste_positivo": {
-        "n": 22,
-        "win_rate_pct": 9.1,
+        "n": 23,
+        "win_rate_pct": 8.7,
         "profit_factor": 0.04,
         "avg_win_usd": 222.95,
-        "avg_loss_usd": -512.54,
-        "expectancy_usd": -445.68,
-        "net_usd": -9804.96
+        "avg_loss_usd": -511.28,
+        "expectancy_usd": -447.43,
+        "net_usd": -10290.98
       },
       "ajuste_cero_o_negativo": {
         "n": 1,
