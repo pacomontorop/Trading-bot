@@ -24977,7 +24977,7 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-11-20T17:35Z",
+    "ts": "2026-11-20T18:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 410"
@@ -25017,11 +25017,11 @@
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 11.5, 'rating': 'extreme fear'}"
+        "detalle": "{'score': 10.7, 'rating': 'extreme fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 1131, 'menciones_24h_antes': 985, 'ratio_24h': 1.15}"
+        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 1160, 'menciones_24h_antes': 977, 'ratio_24h': 1.19}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25037,21 +25037,34 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -3.39, 'rs20': -9.07}"
+        "detalle": "{'etf': 'XLK', 'rs5': -3.39, 'rs20': -9.08}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-11-20T17:35Z",
+    "ts": "2026-11-20T18:35Z",
     "entrada": "2026-11-20",
     "salida": "2026-11-23",
-    "eventos": 62,
-    "evaluados": 25,
+    "eventos": 59,
+    "evaluados": 24,
     "macro": {
-      "vix": 32.02,
+      "vix": 31.86,
       "spy_above_ma50": false
     },
     "top": [
+      {
+        "ticker": "ANF",
+        "score": 3.5,
+        "earnings_fecha": "2026-11-24",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 1.5,
+          "revisiones": 1.5,
+          "momentum5d": 0.0,
+          "macro": -2.5
+        }
+      },
       {
         "ticker": "ADI",
         "score": 3.08,
@@ -25067,6 +25080,20 @@
         }
       },
       {
+        "ticker": "HPE",
+        "score": 2.88,
+        "earnings_fecha": "2026-11-23",
+        "earnings_timing": "AMC",
+        "score_breakdown": {
+          "beat_rate": 3.0,
+          "reaccion": 1.13,
+          "revisiones": 0.75,
+          "momentum5d": 0.0,
+          "macro": -2.5,
+          "noticias": 0.5
+        }
+      },
+      {
         "ticker": "BBY",
         "score": 2.75,
         "earnings_fecha": "2026-11-24",
@@ -25076,33 +25103,6 @@
           "reaccion": 0.0,
           "revisiones": 0.75,
           "momentum5d": 1.0,
-          "macro": -2.5,
-          "noticias": 0.5
-        }
-      },
-      {
-        "ticker": "ANF",
-        "score": 2.5,
-        "earnings_fecha": "2026-11-24",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 2.0,
-          "reaccion": 1.5,
-          "revisiones": 1.5,
-          "momentum5d": 0.0,
-          "macro": -2.5
-        }
-      },
-      {
-        "ticker": "HPE",
-        "score": 2.36,
-        "earnings_fecha": "2026-11-23",
-        "earnings_timing": "AMC",
-        "score_breakdown": {
-          "beat_rate": 3.0,
-          "reaccion": 0.61,
-          "revisiones": 0.75,
-          "momentum5d": 0.0,
           "macro": -2.5,
           "noticias": 0.5
         }
@@ -25173,15 +25173,15 @@
         }
       },
       {
-        "ticker": "GASS",
-        "score": 1.16,
+        "ticker": "DLTR",
+        "score": 1.07,
         "earnings_fecha": "2026-11-24",
-        "earnings_timing": "desconocido",
+        "earnings_timing": "BMO",
         "score_breakdown": {
           "beat_rate": 3.0,
-          "reaccion": 0.66,
-          "revisiones": 0.0,
-          "momentum5d": 0.0,
+          "reaccion": 0.57,
+          "revisiones": -1.0,
+          "momentum5d": 1.0,
           "macro": -2.5
         }
       }
@@ -25198,7 +25198,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-11-20T17:35Z",
+    "ts": "2026-11-20T18:35Z",
     "calendario": {
       "2026-11-20": [
         {
@@ -25533,15 +25533,22 @@
           "fuente": "ew"
         },
         {
-          "ticker": "SMTC",
-          "company": "Semtech Corporation",
+          "ticker": "ZM",
+          "company": "Zoom Communications, Inc.",
+          "releaseTime": 3,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PNNT",
+          "company": "PennantPark Investment Corp.",
           "releaseTime": 3,
           "total": 2,
           "fuente": "ew"
         },
         {
-          "ticker": "ZM",
-          "company": "Zoom Communications, Inc.",
+          "ticker": "SMTC",
+          "company": "Semtech Corporation",
           "releaseTime": 3,
           "total": 2,
           "fuente": "ew"
@@ -25570,13 +25577,6 @@
         {
           "ticker": "PFLT",
           "company": "PennantPark Floating Rate Capital Ltd.",
-          "releaseTime": 3,
-          "total": 1,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "PNNT",
-          "company": "PennantPark Investment Corp.",
           "releaseTime": 3,
           "total": 1,
           "fuente": "ew"
@@ -26402,8 +26402,8 @@
         "earnings_fecha": "2026-11-23",
         "earnings_timing": "AMC",
         "beat_rate": 87.5,
-        "reaccion_media_pct": 1.63,
-        "score": 2.36
+        "reaccion_media_pct": 3.01,
+        "score": 2.88
       },
       "BBY": {
         "consenso_eps": null,
@@ -26431,9 +26431,9 @@
         "asimetria_pct": null,
         "earnings_fecha": "2026-11-24",
         "earnings_timing": "BMO",
-        "beat_rate": 75.0,
+        "beat_rate": 87.5,
         "reaccion_media_pct": 9.68,
-        "score": 2.5
+        "score": 3.5
       },
       "KSS": {
         "consenso_eps": null,
@@ -26545,6 +26545,16 @@
         "reaccion_media_pct": 1.55,
         "score": 0.0
       },
+      "ZM": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-11-23",
+        "earnings_timing": "AMC",
+        "beat_rate": 87.5,
+        "reaccion_media_pct": -0.24,
+        "score": 0.5
+      },
       "AMTM": {
         "consenso_eps": null,
         "whisper": null,
@@ -26553,7 +26563,7 @@
         "earnings_timing": "AMC",
         "beat_rate": 100.0,
         "reaccion_media_pct": -0.32,
-        "score": 0.0
+        "score": 0.5
       },
       "DY": {
         "consenso_eps": null,
@@ -26565,23 +26575,13 @@
         "reaccion_media_pct": 1.55,
         "score": 2.08
       },
-      "BHP": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-24",
-        "earnings_timing": "desconocido",
-        "beat_rate": 37.5,
-        "reaccion_media_pct": null,
-        "score": 0.0
-      },
       "GGAL": {
         "consenso_eps": null,
         "whisper": null,
         "asimetria_pct": null,
         "earnings_fecha": "2026-11-24",
         "earnings_timing": "desconocido",
-        "beat_rate": 37.5,
+        "beat_rate": 25.0,
         "reaccion_media_pct": 0.47,
         "score": 0.0
       },
@@ -26594,16 +26594,6 @@
         "beat_rate": 100.0,
         "reaccion_media_pct": 0.55,
         "score": 0.71
-      },
-      "AFJK": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-11-24",
-        "earnings_timing": "desconocido",
-        "beat_rate": null,
-        "reaccion_media_pct": null,
-        "score": 0.0
       },
       "DAC": {
         "consenso_eps": null,
@@ -26641,9 +26631,9 @@
         "asimetria_pct": null,
         "earnings_fecha": "2026-11-24",
         "earnings_timing": "desconocido",
-        "beat_rate": 87.5,
-        "reaccion_media_pct": 1.75,
-        "score": 1.16
+        "beat_rate": 75.0,
+        "reaccion_media_pct": 1.79,
+        "score": 0.17
       }
     },
     "resultados_hoy": [
