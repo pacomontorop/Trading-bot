@@ -28067,34 +28067,34 @@
   ],
   "ejecucion_apertura": {
     "fecha": "2026-11-23",
-    "hora_utc": "18:37",
-    "min_desde_apertura": 247.7,
+    "hora_utc": "19:36",
+    "min_desde_apertura": 306.3,
     "real_activa": false,
     "real_motivo": "auto: paper aún no demuestra edge (gate_real_ok=false)",
     "ejecutados": [],
     "descartados": [
-      "URBN: max entradas/día paper",
-      "NVDA: score 5.9<6.0"
+      "AVGO: max entradas/día paper",
+      "AAPL: score 5.3<6.0"
     ],
     "ajustes_fuentes": {
-      "URBN": {
-        "base": 6.5,
-        "paper": 6.5,
-        "real": 6.5,
+      "AVGO": {
+        "base": 6.88,
+        "paper": 6.83,
+        "real": 6.83,
         "partes": {
-          "sector": 0.4,
+          "analistas": 0.75,
+          "sector": -0.4,
           "macro": -0.4
         }
       },
-      "NVDA": {
-        "base": 6.88,
-        "paper": 5.93,
-        "real": 5.93,
+      "AAPL": {
+        "base": 5.62,
+        "paper": 5.32,
+        "real": 5.32,
         "partes": {
-          "analistas": -0.6,
-          "opciones": 0.25,
+          "insiders": -0.3,
+          "analistas": 0.8,
           "sector": -0.4,
-          "social": 0.2,
           "macro": -0.4
         }
       }
@@ -28102,40 +28102,40 @@
   },
   "fuentes_extra": {
     "_doc": "scripts/fuentes_extra.py: SEC Form 4, analistas, opciones, corto, sector, Reddit (ApeWisdom), FRED y Fear&Greed. Ajuste acotado ±2; paper usa el ajuste completo, real solo la parte negativa. Una fuente caída = ajuste 0.",
-    "ts": "2026-11-23T18:37Z",
+    "ts": "2026-11-23T19:36Z",
     "macro": {
       "hy_oas": 3.76,
       "hy_cambio_20": 0.38,
       "nfci": -0.478,
       "curva_10a2a": 0.29,
-      "credito_hyg_ief_20": -1.07,
-      "fear_greed": 18.4,
+      "credito_hyg_ief_20": -1.13,
+      "fear_greed": 18.0,
       "regimen": "cautela",
       "ajuste": -0.4
     },
     "estado": {
-      "fred": {
-        "ok": 3,
-        "fallos": 0,
-        "ms": 473,
-        "ultimo_error": null
-      },
       "cnn_fear_greed": {
         "ok": 1,
         "fallos": 0,
-        "ms": 91,
+        "ms": 31,
         "ultimo_error": null
       },
       "credito_hyg_ief": {
         "ok": 1,
         "fallos": 0,
-        "ms": 372,
+        "ms": 50,
+        "ultimo_error": null
+      },
+      "fred": {
+        "ok": 3,
+        "fallos": 0,
+        "ms": 1332,
         "ultimo_error": null
       },
       "yahoo_ficha": {
         "ok": 2,
         "fallos": 0,
-        "ms": 719,
+        "ms": 394,
         "ultimo_error": null
       },
       "insiders_sec": {
@@ -28147,31 +28147,31 @@
       "insiders": {
         "ok": 2,
         "fallos": 0,
-        "ms": 1425,
+        "ms": 1383,
         "ultimo_error": null
       },
       "yahoo_analistas": {
         "ok": 2,
         "fallos": 0,
-        "ms": 236,
+        "ms": 222,
         "ultimo_error": null
       },
       "yahoo_opciones": {
         "ok": 2,
         "fallos": 0,
-        "ms": 389,
+        "ms": 274,
         "ultimo_error": null
       },
       "sector_alpaca": {
         "ok": 2,
         "fallos": 0,
-        "ms": 726,
+        "ms": 68,
         "ultimo_error": null
       },
       "social_apewisdom": {
         "ok": 2,
         "fallos": 0,
-        "ms": 2369,
+        "ms": 816,
         "ultimo_error": null
       }
     }
@@ -30844,6 +30844,17 @@
     {
       "fecha": "2026-11-23",
       "hora_utc": "18:37",
+      "candidatos": 2,
+      "ejecutados": 0,
+      "descartados": 2,
+      "motivos": {
+        "max entradas/día paper": 1,
+        "score N<N": 1
+      }
+    },
+    {
+      "fecha": "2026-11-23",
+      "hora_utc": "19:36",
       "candidatos": 2,
       "ejecutados": 0,
       "descartados": 2,
