@@ -3768,9 +3768,9 @@
       "asimetria_pct": null,
       "beat_rate": 100.0,
       "reaccion_media_pct": 4.15,
-      "momentum_5d_pct": -1.86,
+      "momentum_5d_pct": -4.74,
       "analistas": 8,
-      "fecha_scan": "2026-11-27T03:45:53Z"
+      "fecha_scan": "2026-11-27T14:35:28Z"
     }
   ],
   "macro_context": {
@@ -25008,14 +25008,14 @@
     "verificado_contra": "BLS release schedule via WebSearch 2026-09-09"
   },
   "fuentes_estado": {
-    "ts": "2026-11-27T03:45Z",
+    "ts": "2026-11-27T14:35Z",
     "earningswhispers": {
       "ok": false,
       "detalle": "HTTP 410"
     },
     "nasdaq_calendar": {
       "ok": true,
-      "detalle": "12 filas"
+      "detalle": "11 filas"
     },
     "alpaca_datos": {
       "ok": true,
@@ -25036,7 +25036,7 @@
       },
       "insiders_nasdaq": {
         "ok": true,
-        "detalle": "28 filas 60 d"
+        "detalle": "29 filas 60 d"
       },
       "fred": {
         "ok": true,
@@ -25044,15 +25044,15 @@
       },
       "credito_hyg_ief": {
         "ok": true,
-        "detalle": "{'rel20': -2.55}"
+        "detalle": "{'rel20': -1.8}"
       },
       "cnn_fear_greed": {
         "ok": true,
-        "detalle": "{'score': 15.0, 'rating': 'extreme fear'}"
+        "detalle": "{'score': 21.3, 'rating': 'extreme fear'}"
       },
       "apewisdom": {
         "ok": true,
-        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 160, 'menciones_24h_antes': 562, 'ratio_24h': 0.28}"
+        "detalle": "{'en_ranking': True, 'rank': 1, 'menciones': 208, 'menciones_24h_antes': 440, 'ratio_24h': 0.47}"
       },
       "yahoo_analistas": {
         "ok": true,
@@ -25060,7 +25060,7 @@
       },
       "yahoo_opciones": {
         "ok": true,
-        "detalle": "C/P 0.57"
+        "detalle": "C/P 0.55"
       },
       "yahoo_ficha": {
         "ok": true,
@@ -25068,18 +25068,18 @@
       },
       "sector_alpaca": {
         "ok": true,
-        "detalle": "{'etf': 'XLK', 'rs5': -2.98, 'rs20': -11.26}"
+        "detalle": "{'etf': 'XLK', 'rs5': -3.08, 'rs20': -10.58}"
       }
     }
   },
   "ew_pipeline_gha": {
-    "ts": "2026-11-27T03:45Z",
+    "ts": "2026-11-27T14:35Z",
     "entrada": "2026-11-27",
     "salida": "2026-11-30",
-    "eventos": 18,
+    "eventos": 22,
     "evaluados": 8,
     "macro": {
-      "vix": 26.8,
+      "vix": 25.79,
       "spy_above_ma50": false
     },
     "top": [
@@ -25092,19 +25092,6 @@
           "beat_rate": 3.0,
           "reaccion": 1.5,
           "revisiones": 1.5,
-          "momentum5d": 1.0,
-          "macro": -0.5
-        }
-      },
-      {
-        "ticker": "CTRN",
-        "score": 2.0,
-        "earnings_fecha": "2026-12-01",
-        "earnings_timing": "BMO",
-        "score_breakdown": {
-          "beat_rate": 1.0,
-          "reaccion": 1.5,
-          "revisiones": -1.0,
           "momentum5d": 1.0,
           "macro": -0.5
         }
@@ -25153,18 +25140,7 @@
         "score_breakdown": {
           "beat_rate": -1.0,
           "revisiones": 0.0,
-          "momentum5d": 1.0,
-          "macro": -0.5
-        }
-      },
-      {
-        "ticker": "VLGEA",
-        "score": 0.0,
-        "earnings_fecha": "2026-12-01",
-        "earnings_timing": "desconocido",
-        "score_breakdown": {
-          "beat_rate": -1.0,
-          "momentum5d": 1.0,
+          "momentum5d": 0.0,
           "macro": -0.5
         }
       },
@@ -25177,6 +25153,30 @@
           "beat_rate": -1.0,
           "reaccion": 0.48,
           "revisiones": 0.0,
+          "momentum5d": 1.0,
+          "macro": -0.5
+        }
+      },
+      {
+        "ticker": "CTRN",
+        "score": 0.0,
+        "earnings_fecha": "2026-12-01",
+        "earnings_timing": "BMO",
+        "score_breakdown": {
+          "beat_rate": 1.0,
+          "reaccion": 1.5,
+          "revisiones": -1.0,
+          "momentum5d": -1.5,
+          "macro": -0.5
+        }
+      },
+      {
+        "ticker": "VLGEA",
+        "score": 0.0,
+        "earnings_fecha": "2026-12-01",
+        "earnings_timing": "desconocido",
+        "score_breakdown": {
+          "beat_rate": -1.0,
           "momentum5d": 1.0,
           "macro": -0.5
         }
@@ -25194,7 +25194,7 @@
   },
   "ew_cache": {
     "_doc": "Datos de EarningsWhispers obtenidos por GitHub Actions (API con Referer). Úsalos si no puedes llamar a la API. calendario: releaseTime 1=BMO, 3=AMC; total=nº analistas.",
-    "ts": "2026-11-27T03:45Z",
+    "ts": "2026-11-27T14:35Z",
     "calendario": {
       "2026-11-27": [
         {
@@ -25240,17 +25240,17 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "AREC",
-          "company": "American Resources Corporation",
-          "releaseTime": null,
-          "total": 2,
-          "fuente": "nasdaq"
-        },
-        {
           "ticker": "SIDU",
           "company": "Sidus Space, Inc.",
           "releaseTime": null,
           "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "AREC",
+          "company": "American Resources Corporation",
+          "releaseTime": null,
+          "total": 2,
           "fuente": "nasdaq"
         },
         {
@@ -25301,7 +25301,7 @@
           "ticker": "CHA",
           "company": "Chagee Holdings Limited",
           "releaseTime": 1,
-          "total": 2,
+          "total": 3,
           "fuente": "ew"
         },
         {
@@ -25321,6 +25321,13 @@
         {
           "ticker": "BOSC",
           "company": "B.O.S. Better Online Solutions",
+          "releaseTime": 1,
+          "total": 0,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "PWRL",
+          "company": "POWERLAW CORP",
           "releaseTime": 1,
           "total": 0,
           "fuente": "ew"
@@ -25364,7 +25371,7 @@
           "ticker": "CURR",
           "company": "Currenc Group Inc.",
           "releaseTime": null,
-          "total": 9,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25378,7 +25385,7 @@
           "ticker": "HTT",
           "company": "High Templar Tech Limited",
           "releaseTime": null,
-          "total": 9,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25415,13 +25422,6 @@
           "releaseTime": null,
           "total": 9,
           "fuente": "nasdaq"
-        },
-        {
-          "ticker": "PWRL",
-          "company": "Powerlaw Corp.",
-          "releaseTime": 1,
-          "total": 9,
-          "fuente": "nasdaq"
         }
       ],
       "2026-12-01": [
@@ -25429,7 +25429,7 @@
           "ticker": "NIO",
           "company": "NIO Inc.",
           "releaseTime": 1,
-          "total": 6,
+          "total": 7,
           "fuente": "ew"
         },
         {
@@ -25444,6 +25444,13 @@
           "company": "Vestis Corporation",
           "releaseTime": 1,
           "total": 2,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "AMBR",
+          "company": "Amber Road Inc.",
+          "releaseTime": 1,
+          "total": 0,
           "fuente": "ew"
         },
         {
@@ -25562,14 +25569,14 @@
           "ticker": "VLGEA",
           "company": "Village Super Market, Inc.",
           "releaseTime": null,
-          "total": 3,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
           "ticker": "RGCO",
           "company": "RGC Resources Inc.",
           "releaseTime": 3,
-          "total": 3,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25594,9 +25601,16 @@
           "fuente": "nasdaq"
         },
         {
-          "ticker": "AMBR",
-          "company": "Amber International Holding Limited",
-          "releaseTime": 1,
+          "ticker": "AVXL",
+          "company": "Anavex Life Sciences Corp.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "JFIN",
+          "company": "Jiayin Group Inc.",
+          "releaseTime": null,
           "total": 3,
           "fuente": "nasdaq"
         },
@@ -25610,6 +25624,20 @@
         {
           "ticker": "EVTL",
           "company": "Vertical Aerospace Ltd.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "YRD",
+          "company": "Yiren Digital Ltd.",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "PSHG",
+          "company": "Performance Shipping Inc.",
           "releaseTime": null,
           "total": 3,
           "fuente": "nasdaq"
@@ -25715,6 +25743,13 @@
           "fuente": "ew"
         },
         {
+          "ticker": "NTSK",
+          "company": "Netskope",
+          "releaseTime": 3,
+          "total": 3,
+          "fuente": "ew"
+        },
+        {
           "ticker": "AI",
           "company": "C3.ai, Inc. ",
           "releaseTime": 3,
@@ -25724,13 +25759,6 @@
         {
           "ticker": "BLBD",
           "company": "Blue Bird Corporation",
-          "releaseTime": 3,
-          "total": 2,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "NTSK",
-          "company": "Netskope",
           "releaseTime": 3,
           "total": 2,
           "fuente": "ew"
@@ -25774,7 +25802,7 @@
           "ticker": "KEN",
           "company": "Kenon Holdings Ltd.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25802,7 +25830,7 @@
           "ticker": "UCFI",
           "company": "CN Healthy Food Tech Group Corp.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25865,7 +25893,7 @@
           "ticker": "REBN",
           "company": "Reborn Coffee, Inc.",
           "releaseTime": null,
-          "total": 1,
+          "total": 0,
           "fuente": "nasdaq"
         },
         {
@@ -25917,6 +25945,13 @@
           "company": "The Toronto-Dominion Bank",
           "releaseTime": 1,
           "total": 3,
+          "fuente": "ew"
+        },
+        {
+          "ticker": "HRL",
+          "company": "Hormel Foods Corporation",
+          "releaseTime": 1,
+          "total": 2,
           "fuente": "ew"
         },
         {
@@ -25992,13 +26027,6 @@
         {
           "ticker": "GCO",
           "company": "Genesco Inc.",
-          "releaseTime": 1,
-          "total": 1,
-          "fuente": "ew"
-        },
-        {
-          "ticker": "HRL",
-          "company": "Hormel Foods Corporation",
           "releaseTime": 1,
           "total": 1,
           "fuente": "ew"
@@ -26207,10 +26235,45 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "HUBG",
+          "company": "Hub Group, Inc.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "QUIT",
+          "company": "Achieve Life Sciences, Inc. ",
+          "releaseTime": null,
+          "total": 5,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ICG",
+          "company": "Intchains Group Limited",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "BNR",
+          "company": "Burning Rock Biotech Limited",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "HUCK",
           "company": "Huckleberry.ai, Inc.",
           "releaseTime": null,
           "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "DOYU",
+          "company": "DouYu International Holdings Limited",
+          "releaseTime": null,
+          "total": 3,
           "fuente": "nasdaq"
         },
         {
@@ -26221,10 +26284,73 @@
           "fuente": "nasdaq"
         },
         {
+          "ticker": "TPCS",
+          "company": "TechPrecision Corporation",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "BZAI",
+          "company": "Blaize Holdings, Inc.",
+          "releaseTime": null,
+          "total": 1,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "SHPH",
+          "company": "Shuttle Pharmaceuticals Holdings, Inc.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "PRT",
+          "company": "PermRock Royalty Trust",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "DTSS",
+          "company": "Datasea Intelligent Technology Ltd.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "MTR",
+          "company": "Mesa Royalty Trust",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "SEGG",
+          "company": "Sports Entertainment Gaming Global Corporation ",
+          "releaseTime": null,
+          "total": 0,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "RBNE",
+          "company": "Robin Energy Ltd.",
+          "releaseTime": null,
+          "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
           "ticker": "CRMT",
           "company": "America's Car-Mart, Inc.",
           "releaseTime": null,
           "total": 3,
+          "fuente": "nasdaq"
+        },
+        {
+          "ticker": "ITP",
+          "company": "IT Tech Packaging, Inc.",
+          "releaseTime": null,
+          "total": 0,
           "fuente": "nasdaq"
         }
       ]
@@ -26270,16 +26396,6 @@
         "reaccion_media_pct": 0.55,
         "score": 1.71
       },
-      "VLGEA": {
-        "consenso_eps": null,
-        "whisper": null,
-        "asimetria_pct": null,
-        "earnings_fecha": "2026-12-01",
-        "earnings_timing": "desconocido",
-        "beat_rate": 12.5,
-        "reaccion_media_pct": null,
-        "score": 0.0
-      },
       "AFJK": {
         "consenso_eps": null,
         "whisper": null,
@@ -26308,7 +26424,17 @@
         "earnings_timing": "BMO",
         "beat_rate": 62.5,
         "reaccion_media_pct": 6.56,
-        "score": 2.0
+        "score": 0.0
+      },
+      "VLGEA": {
+        "consenso_eps": null,
+        "whisper": null,
+        "asimetria_pct": null,
+        "earnings_fecha": "2026-12-01",
+        "earnings_timing": "desconocido",
+        "beat_rate": 12.5,
+        "reaccion_media_pct": null,
+        "score": 0.0
       }
     },
     "resultados_hoy": [
